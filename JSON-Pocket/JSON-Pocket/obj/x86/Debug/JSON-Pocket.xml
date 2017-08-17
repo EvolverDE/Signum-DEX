@@ -1,0 +1,36 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+JSON-Pocket
+</name>
+</assembly>
+<members>
+<member name="P:JSONPocket.My.Resources.Resources.ResourceManager">
+	<summary>
+  Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
+</summary>
+</member><member name="P:JSONPocket.My.Resources.Resources.Culture">
+	<summary>
+  Überschreibt die CurrentUICulture-Eigenschaft des aktuellen Threads für alle
+  Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
+</summary>
+</member><member name="P:JSONPocket.My.Resources.Resources.burst">
+	<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+</summary>
+</member><member name="T:JSONPocket.My.Resources.Resources">
+	<summary>
+  Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.
+</summary>
+</member><member name="M:JSONPocket.modGlobal.BurstRequest(System.String,System.String,System.String,System.String)">
+	<summary>
+ Beschreibung
+ </summary>
+	<param name="postData">gibt die PHP-Parameter für die POST-Methode an</param>
+	<param name="Parameter">wenn angegeben, wird das JSON-Element ausgelesen und das Value zurückgegeben</param>
+	<returns>Gibt den HTML-Response zurück</returns>
+	<remarks></remarks>
+</member>
+</members>
+</doc>

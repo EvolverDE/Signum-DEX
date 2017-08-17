@@ -1,0 +1,50 @@
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\bin\Debug\BCW.exe
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\bin\Debug\BCW.pdb
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\bin\Debug\BCW.xml
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\bin\Debug\Newtonsoft.Json.dll
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\bin\Debug\Newtonsoft.Json.pdb
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\bin\Debug\Newtonsoft.Json.xml
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\obj\x86\Debug\BCW.vbprojResolveAssemblyReference.cache
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\obj\x86\Debug\BCW.Resources.resources
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\obj\x86\Debug\BCW.vbproj.GenerateResource.Cache
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\obj\x86\Debug\BCW.exe
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\obj\x86\Debug\BCW.xml
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\obj\x86\Debug\BCW.pdb
+C:\Users\MAHoops\Documents\Visual Studio 2010\Projects\BCW\BCW\obj\x86\Debug\BCW.frmBCW.resources
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\BCW.frmBCW.resources
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\BCW.Resources.resources
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\BCW.vbproj.GenerateResource.Cache
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\BCW.frmSettings.resources
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\bin\Debug\Newtonsoft.Json.pdb
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\bin\Debug\Newtonsoft.Json.xml
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\BCW.vbprojResolveAssemblyReference.cache
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\BCW.frmBCW.resources
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\BCW.frmSettings.resources
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\BCW.Resources.resources
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\BCW.vbproj.GenerateResource.Cache
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\bin\Debug\JSON-Pocket.exe
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\bin\Debug\JSON-Pocket.pdb
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\bin\Debug\JSON-Pocket.xml
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\JSON-Pocket.exe
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\JSON-Pocket.xml
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\JSON-Pocket.pdb
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\JSON-Pocket.exe
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\JSON-Pocket.xml
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\JSON-Pocket.pdb
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\bin\Debug\JSON-Pocket.exe
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\bin\Debug\JSON-Pocket.pdb
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\bin\Debug\JSON-Pocket.xml
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\bin\Debug\JSON-Pocket.exe.manifest
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\bin\Debug\JSON-Pocket.application
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\JSON-Pocket.TrustInfo.xml
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\JSON-Pocket.exe.manifest
+P:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\JSON-Pocket.application
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\bin\Debug\JSON-Pocket.exe.manifest
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\bin\Debug\JSON-Pocket.application
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\JSON-Pocket.TrustInfo.xml
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\JSON-Pocket.exe.manifest
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\JSON-Pocket.application
+J:\INTENSO 64GB\burstcoin.news\BCW\BCW\obj\x86\Debug\BCW.vbprojResolveAssemblyReference.cache
+O:\+++\+++Anwendungen+++\+++\BCW\BCW\obj\x86\Debug\JSON-Pocket.exe
+O:\+++\+++Anwendungen+++\+++\BCW\BCW\obj\x86\Debug\JSON-Pocket.xml
+O:\+++\+++Anwendungen+++\+++\BCW\BCW\obj\x86\Debug\JSON-Pocket.pdb
