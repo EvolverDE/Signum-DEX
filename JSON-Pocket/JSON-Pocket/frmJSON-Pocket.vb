@@ -1882,7 +1882,7 @@ Public Class frmJSONPocket
 
             If IsNothing(err) Or err = "" Then
                 broadcasted = dejson(response, "broadcasted")
-                If broadcasted = "true" Then
+                If broadcasted.Trim.ToLower = "true" Then
                     MsgBox(getLang(iniMsgBox.PeerResponse) + vbCrLf + vbCrLf + "OK! Transaction: " + dejson(response, "transaction"))
                 Else
                     MsgBox(getLang(iniMsgBox.PeerResponse) + vbCrLf + vbCrLf + "error!")
