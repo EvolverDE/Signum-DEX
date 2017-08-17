@@ -252,24 +252,29 @@ Public Class frmJSONPocket
             INISetValue(startuppath + "lang\" + INIGetValue("", "GUI", "Language") + ".ini", iniSections.LVContext.ToString, iniLVContext.Sender.ToString, "Sender kopieren")
             INISetValue(startuppath + "lang\" + INIGetValue("", "GUI", "Language") + ".ini", iniSections.LVContext.ToString, iniLVContext.Recipient.ToString, "Empfänger kopieren")
 
-            'main MsgBox
+            'MsgBox
             INISetValue(startuppath + "lang\" + INIGetValue("", "GUI", "Language") + ".ini", iniSections.MsgBox.ToString, iniMsgBox.GenericError.ToString, "Es ist ein Fehler aufgetreten: ")
             INISetValue(startuppath + "lang\" + INIGetValue("", "GUI", "Language") + ".ini", iniSections.MsgBox.ToString, iniMsgBox.PeerResponse.ToString, "Der Knoten antwortete mit folgender Meldung: ")
-
-            'MsgBox connection errors
+			
+            'main MsgBox
             INISetValue(startuppath + "lang\" + INIGetValue("", "GUI", "Language") + ".ini", iniSections.MainMsgBox.ToString, iniMainMsgBox.TimeoutNodeList.ToString, "Timeout beim Verbindungsaufbau zur Liste der Nodes!")
             INISetValue(startuppath + "lang\" + INIGetValue("", "GUI", "Language") + ".ini", iniSections.MainMsgBox.ToString, iniMainMsgBox.TimeOutPoolList.ToString, "Timeout beim Verbindungsaufbau zur Liste der Pools!")
             INISetValue(startuppath + "lang\" + INIGetValue("", "GUI", "Language") + ".ini", iniSections.MainMsgBox.ToString, iniMainMsgBox.GetTransError.ToString, "Anfrage über Transaktionen kann nicht verarbeitet werden!")
             INISetValue(startuppath + "lang\" + INIGetValue("", "GUI", "Language") + ".ini", iniSections.MainMsgBox.ToString, iniMainMsgBox.ConnLost.ToString, "Verbindung zum Wallet verloren.")
-
-
+			
+			
             Dim VerifyInfoMsg As String = "Um Dieses neue Konto zu verifizieren, müssen Sie einfach eine ausgehende Transaktion erstellen;;"
             VerifyInfoMsg += "(z.b. einen Namen oder eine Poolassistenz setzen);;;;"
             VerifyInfoMsg += "Dies kostet in der Regel eine Transaktionsgebühr in Höhe von 1 BURST"
 
             INISetValue(startuppath + "lang\" + INIGetValue("", "GUI", "Language") + ".ini", iniSections.MainMsgBox.ToString, iniMainMsgBox.VerifyInfo.ToString, VerifyInfoMsg)
+			
+			Dim AccNotExistTxt As String = "Dieses Konto existiert noch nicht im Burstcoin-Netzwerk!;;"
+			AccNotExistTxt += "Es wird fürs Mining empfohlen zunächst eine ""Poolassistenz"" durchzuführen!"
+			
+			INISetValue(startuppath + "lang\" + INIGetValue("", "GUI", "Language") + ".ini", iniSections.MainMsgBox.ToString, iniMainMsgBox.AccNotExist.ToString, AccNotExistTxt)
 
-
+			
             Dim URLInfoMsg As String = "Die URLs von der die Liste der Knoten geholt werden soll.;;"
             URLInfoMsg += "Es können mehrere URLs angegeben werden (semikolon(;) getrennt);;"
             URLInfoMsg += "Die Antwort der URL muss im JSON-Format vorliegen welches die folgenden Eigenschaften beinhaltet:;;;;"
@@ -1713,7 +1718,8 @@ Public Class frmJSONPocket
             Dim Balancestr As String = dejson(response, "guaranteedBalanceNQT")
 
             Dim Balancedbl As Double = CDbl(Balancestr) / 100000000
-
+			'TODO: checking Balancedbl
+			
             response = BurstRequest(ActiveGlobalNode.url, "requestType=setAccountInfo&name=" + TBName.Text.Trim + "&secretPhrase=" + passphrase + "&publicKey=" + pubKey + "&feeNQT=100000000&deadline=60")
 
             Dim err As String = dejson(response, "errorDescription")
@@ -1803,7 +1809,7 @@ Public Class frmJSONPocket
 
         Else
 
-            MsgBox("Dieses Konto existiert noch nicht im Burstcoin-Netzwerk, es wird fürs Mining empfohlen zunächst eine ""Poolassistenz"" durchzuführen!")
+            MsgBox(getLang(iniMsgBox.AccNotExist))
 
         End If
 

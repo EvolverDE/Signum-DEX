@@ -229,7 +229,7 @@ Module modGlobal
             Dim msgb As String = ""
 
             For Each msgl In msglist
-                msgb += msgl + vbCrLf
+                msgb += msgl + vbCrLf ' ;; = Carrier Return + Line Feed
             Next
             Return msgb
         Else
@@ -450,6 +450,7 @@ Module modGlobal
         GetTransError
         ConnLost
         VerifyInfo
+		AccNotExist
     End Enum
 
     Enum iniSettingsMsgBox
