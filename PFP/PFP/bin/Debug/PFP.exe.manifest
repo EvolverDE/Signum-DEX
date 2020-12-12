@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PFP.exe" size="1581552">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PFP.exe" size="1582064">
       <assemblyIdentity name="PFP" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>j0fGqAsmoaAOXVqUMJqj5KkQh5ouOiJesDtqOr8UcF4=</dsig:DigestValue>
+        <dsig:DigestValue>Pqn5d1djl9Dq1NpFF1Yr9NmbOERddzZ1cV0ToyJkemU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

@@ -1337,6 +1337,23 @@ Public Class PFPForm
 
     End Sub
 
+    Private Sub CoBxNode_DropDownClosed(sender As Object, e As EventArgs) Handles CoBxNode.DropDownClosed
+
+        If CoBxNode.Text <> olditem Then
+
+            Dim MsgResult As msgs.CustomDialogResult = msgs.MBox("Nodechanges causes reload of the List of ATs" + vbCrLf + vbCrLf + "Do you really want to change the Node?", "Reload AT-List?", msgs.DefaultButtonMaker(msgs.DBList._YesNo),, msgs.Status.Question)
+
+            If MsgResult = msgs.CustomDialogResult.Yes Then
+                Dim wait = SaveATsToCSV(New List(Of S_AT))
+                BlockTimer_Tick(90, Nothing)
+
+            Else
+                CoBxNode.SelectedItem = olditem
+            End If
+        End If
+
+    End Sub
+
     Private Sub RBPayPalEMail_CheckedChanged(sender As Object, e As EventArgs) Handles RBPayPalEMail.CheckedChanged, RBPayPalAccID.CheckedChanged, RBPayPalOrder.CheckedChanged
 
         Dim PaymentInfo As String = ""
@@ -1446,6 +1463,7 @@ Public Class PFPForm
         INISetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalAPISecret", TBPayPalAPISecret.Text)
 
     End Sub
+
 
 #End Region
 
@@ -3827,7 +3845,7 @@ Public Class PFPForm
 
     Private Sub BtTestCreate_Click(sender As Object, e As EventArgs) Handles BtTestCreate.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, "supertest") ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = "supertest"}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, "testphrase")
 
         Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
 
@@ -3849,7 +3867,7 @@ Public Class PFPForm
 
     Private Sub BtTestAccept_Click(sender As Object, e As EventArgs) Handles BtTestAccept.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, "supertest2") ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = "supertest2"}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, "testphrase")
 
         Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
 
@@ -3866,7 +3884,7 @@ Public Class PFPForm
 
     Private Sub BtTestFinish_Click(sender As Object, e As EventArgs) Handles BtTestFinish.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, "supertest") ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = "supertest"}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, "testphrase")
 
         Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
 
@@ -3883,8 +3901,7 @@ Public Class PFPForm
 
     Private Sub BtTestConvert_Click(sender As Object, e As EventArgs) Handles BtTestConvert.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text) ' With {.C_Node = CoBxNode.Text}
-
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text)
 
         Try
             TBTestConvert.Text = BCR.String2ULng(TBTestConvert.Text)
@@ -3892,12 +3909,11 @@ Public Class PFPForm
             TBTestConvert.Text = "error"
         End Try
 
-
     End Sub
 
     Private Sub BtTestConvert2_Click(sender As Object, e As EventArgs) Handles BtTestConvert2.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text) ' With {.C_Node = CoBxNode.Text}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text)
 
 
         Try
@@ -3908,9 +3924,9 @@ Public Class PFPForm
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    Private Sub BtDataStr2ULngList_Click(sender As Object, e As EventArgs) Handles BtDataStr2ULngList.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text) ' With {.C_Node = CoBxNode.Text}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text)
 
         Dim DataLngList = BCR.DataStr2ULngList(TBTestConvert.Text)
 
@@ -3925,22 +3941,6 @@ Public Class PFPForm
 
     End Sub
 
-    Private Sub CoBxNode_DropDownClosed(sender As Object, e As EventArgs) Handles CoBxNode.DropDownClosed
-
-        If CoBxNode.Text <> olditem Then
-
-            Dim MsgResult As msgs.CustomDialogResult = msgs.MBox("Nodechanges causes reload of the List of ATs" + vbCrLf + vbCrLf + "Do you really want to change the Node?", "Reload AT-List?", msgs.DefaultButtonMaker(msgs.DBList._YesNo),, msgs.Status.Question)
-
-            If MsgResult = msgs.CustomDialogResult.Yes Then
-                Dim wait = SaveATsToCSV(New List(Of S_AT))
-                BlockTimer_Tick(90, Nothing)
-
-            Else
-                CoBxNode.SelectedItem = olditem
-            End If
-        End If
-
-    End Sub
 
 
     Dim olditem As String = ""
@@ -3955,7 +3955,7 @@ Public Class PFPForm
 
         ListBox1.Items.Clear()
 
-        For i As Integer = 0 To 1000
+        For i As Integer = 0 To 100
 
             Dim alicePrivate = Elliptic.Curve25519.ClampPrivateKey(beit)
             Dim alicePublic = Elliptic.Curve25519.GetPublicKey(alicePrivate)

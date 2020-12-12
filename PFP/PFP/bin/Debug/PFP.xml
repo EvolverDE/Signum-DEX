@@ -124,6 +124,131 @@ PFP
  <returns>-1, 0 oder 1 (gemäß Vergleich)</returns>
  <remarks></remarks>
 </member>
+<member name="M:PFP.Elliptic.Curve25519.ClampPrivateKeyInline(System.Byte[])">
+ <summary>
+ Private key clamping (inline, for performance)
+ </summary>
+ <param name="key">[out] 32 random bytes</param>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.ClampPrivateKey(System.Byte[])">
+ <summary>
+ Private key clamping
+ </summary>
+ <param name="rawKey">[out] 32 random bytes</param>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.CreateRandomPrivateKey">
+ <summary>
+ Creates a random private key
+ </summary>
+ <returns>32 random bytes that are clamped to a suitable private key</returns>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.KeyGenInline(System.Byte[],System.Byte[],System.Byte[])">
+ <summary>
+ Key-pair generation (inline, for performance)
+ </summary>
+ <param name="publicKey">[out] public key</param>
+ <param name="signingKey">[out] signing key (ignored if NULL)</param>
+ <param name="privateKey">[out] private key</param>
+ <remarks>WARNING: if signingKey is not NULL, this function has data-dependent timing</remarks>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.GetPublicKey(System.Byte[])">
+ <summary>
+ Generates the public key out of the clamped private key
+ </summary>
+ <param name="privateKey">private key (must use ClampPrivateKey first!)</param>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.GetSigningKey(System.Byte[]@,System.Byte[]@,System.Byte[])">
+ <summary>
+ Generates signing key out of the clamped private key
+ </summary>
+ <param name="privateKey">private key (must use ClampPrivateKey first!)</param>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.GetSharedSecret(System.Byte[],System.Byte[])">
+ <summary>
+ Key agreement
+ </summary>
+ <param name="privateKey">[in] your private key for key agreement</param>
+ <param name="peerPublicKey">[in] peer's public key</param>
+ <returns>shared secret (needs hashing before use)</returns>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.Egcd32(System.Byte[]@,System.Byte[]@,System.Byte[]@,System.Byte[]@)">
+ <summary>
+ Returns x if a contains the gcd, y if b.
+ </summary>
+ <param name="x">x and y must have 64 bytes space for temporary use.</param>
+ <param name="y">x and y must have 64 bytes space for temporary use.</param>
+ <param name="a">requires that a[-1] and b[-1] are valid memory locations</param>
+ <param name="b">requires that a[-1] and b[-1] are valid memory locations</param>
+ <returns>Also, the returned buffer contains the inverse of a mod b as 32-byte signed.</returns>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.IsOverflow(PFP.Elliptic.Curve25519.Long10)">
+ <summary>
+ Check if reduced-form input >= 2^255-19
+ </summary>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.Copy(PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@)">
+ <summary>
+ Copy a number
+ </summary>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.Set(PFP.Elliptic.Curve25519.Long10@,System.Int32@)">
+ <summary>
+ Set a number to value, which must be in range -185861411 .. 185861411
+ </summary>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.MulSmall(PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@,System.Int64@)">
+ <summary>
+ Multiply a number by a small integer in range -185861411 .. 185861411.
+ The output is in reduced form, the input x need not be.  x and xy may point
+ to the same buffer.
+ </summary>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.Multiply(PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@)">
+ <summary>
+ Multiply two numbers. The output is in reduced form, the inputs need not be.
+ </summary>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.Square(PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@)">
+ <summary>
+ Square a number.  Optimization of  Multiply(x2, x, x)
+ </summary>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.Reciprocal(PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@,System.Boolean@)">
+ <summary>
+ Calculates a reciprocal.  The output is in reduced form, the inputs need not 
+ be.  Simply calculates  y = x^(p-2)  so it's not too fast. */
+ When sqrtassist is true, it instead calculates y = x^((p-5)/8)
+ </summary>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.IsNegative(PFP.Elliptic.Curve25519.Long10)">
+ <summary>
+ Checks if x is "negative", requires reduced input
+ </summary>
+ <param name="x">must be reduced input</param>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.CurveEquationInline(PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@)">
+ <summary>
+ Y^2 = X^3 + 486662 X^2 + X
+ </summary>
+ <param name="y2">output</param>
+ <param name="x">X</param>
+ <param name="temp">temporary</param>
+</member>
+<member name="M:PFP.Elliptic.Curve25519.Core(System.Byte[]@,System.Byte[]@,System.Byte[]@,System.Byte[]@)">
+ <summary>
+ P = kG   and  s = sign(P)/k
+ </summary>
+</member>
+<member name="F:PFP.Elliptic.Curve25519.OrderTimes8">
+ <summary>
+ Smallest multiple of the order that's >= 2^255
+ </summary>
+</member>
+<member name="F:PFP.Elliptic.Curve25519.BaseR2Y">
+ <summary>
+ Constant 1/(2Gy)
+ </summary>
+</member>
 <member name="M:PFP.ModFunctions.DateIntToCandle(System.Collections.Generic.List{System.Object})">
  <summary>
  

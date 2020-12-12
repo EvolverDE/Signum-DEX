@@ -107,7 +107,7 @@ Partial Class PFPForm
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.ListBox1 = New System.Windows.Forms.ListBox()
         Me.Button2 = New System.Windows.Forms.Button()
-        Me.Button1 = New System.Windows.Forms.Button()
+        Me.BtDataStr2ULngList = New System.Windows.Forms.Button()
         Me.BtTestConvert2 = New System.Windows.Forms.Button()
         Me.BtTestConvert = New System.Windows.Forms.Button()
         Me.TBTestConvert = New System.Windows.Forms.TextBox()
@@ -1173,7 +1173,7 @@ Partial Class PFPForm
         '
         Me.GroupBox4.Controls.Add(Me.ListBox1)
         Me.GroupBox4.Controls.Add(Me.Button2)
-        Me.GroupBox4.Controls.Add(Me.Button1)
+        Me.GroupBox4.Controls.Add(Me.BtDataStr2ULngList)
         Me.GroupBox4.Controls.Add(Me.BtTestConvert2)
         Me.GroupBox4.Controls.Add(Me.BtTestConvert)
         Me.GroupBox4.Controls.Add(Me.TBTestConvert)
@@ -1197,22 +1197,23 @@ Partial Class PFPForm
         '
         'Button2
         '
-        Me.Button2.Location = New System.Drawing.Point(318, 74)
+        Me.Button2.ForeColor = System.Drawing.Color.Black
+        Me.Button2.Location = New System.Drawing.Point(249, 74)
         Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(75, 23)
+        Me.Button2.Size = New System.Drawing.Size(102, 23)
         Me.Button2.TabIndex = 7
-        Me.Button2.Text = "Button2"
+        Me.Button2.Text = "Curve25519 test"
         Me.Button2.UseVisualStyleBackColor = True
         '
-        'Button1
+        'BtDataStr2ULngList
         '
-        Me.Button1.ForeColor = System.Drawing.Color.Black
-        Me.Button1.Location = New System.Drawing.Point(6, 45)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(104, 23)
-        Me.Button1.TabIndex = 6
-        Me.Button1.Text = "DataStr2ULngList"
-        Me.Button1.UseVisualStyleBackColor = True
+        Me.BtDataStr2ULngList.ForeColor = System.Drawing.Color.Black
+        Me.BtDataStr2ULngList.Location = New System.Drawing.Point(6, 45)
+        Me.BtDataStr2ULngList.Name = "BtDataStr2ULngList"
+        Me.BtDataStr2ULngList.Size = New System.Drawing.Size(104, 23)
+        Me.BtDataStr2ULngList.TabIndex = 6
+        Me.BtDataStr2ULngList.Text = "DataStr2ULngList"
+        Me.BtDataStr2ULngList.UseVisualStyleBackColor = True
         '
         'BtTestConvert2
         '
@@ -1799,7 +1800,7 @@ Partial Class PFPForm
     Friend WithEvents BtTestConvert As Button
     Friend WithEvents TBTestConvert As TextBox
     Friend WithEvents BtTestConvert2 As Button
-    Friend WithEvents Button1 As Button
+    Friend WithEvents BtDataStr2ULngList As Button
     Friend WithEvents BtCheckPayPalBiz As Button
     Friend WithEvents CoBxNode As ComboBox
     Friend WithEvents CoBxRefresh As ComboBox
