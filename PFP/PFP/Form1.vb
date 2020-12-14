@@ -3955,12 +3955,39 @@ Public Class PFPForm
 
         ListBox1.Items.Clear()
 
+
+        Dim aPriv = Elliptic.Curve25519.ClampPrivateKey(beit)
+        Dim aPub = Elliptic.Curve25519.GetPublicKey(aPriv)
+
+        Dim bpriv = Elliptic.Curve25519.ClampPrivateKey(beit)
+        Dim bpub = Elliptic.Curve25519.GetPublicKey(bpriv)
+
+        Dim aShared = Elliptic.Curve25519.GetSharedSecret(aPriv, bpub)
+        Dim bShared = Elliptic.Curve25519.GetSharedSecret(bpriv, aPub)
+
+        ListBox1.Items.Add("aPrv: " + ByteAry2HEX(aPriv))
+        ListBox1.Items.Add("aPub: " + ByteAry2HEX(aPub))
+        ListBox1.Items.Add("")
+        ListBox1.Items.Add("bPrv: " + ByteAry2HEX(bpriv))
+        ListBox1.Items.Add("bPub: " + ByteAry2HEX(bpub))
+        ListBox1.Items.Add("")
+        ListBox1.Items.Add("aShared: " + ByteAry2HEX(aShared))
+        ListBox1.Items.Add("bShared: " + ByteAry2HEX(bShared))
+        ListBox1.Items.Add("########################")
+
+
         For i As Integer = 0 To 100
 
-            Dim alicePrivate = Elliptic.Curve25519.ClampPrivateKey(beit)
+            Dim alicetest = GetHash("alice" + i.ToString)
+            Dim alicebyte() As Byte = HEXStr2ByteAry(alicetest)
+
+            Dim alicePrivate = Elliptic.Curve25519.ClampPrivateKey(alicebyte)
             Dim alicePublic = Elliptic.Curve25519.GetPublicKey(alicePrivate)
 
-            Dim bobPrivate = Elliptic.Curve25519.ClampPrivateKey(beit)
+            Dim bobtest = GetHash("bob" + i.ToString)
+            Dim bobbyte() As Byte = HEXStr2ByteAry(bobtest)
+
+            Dim bobPrivate = Elliptic.Curve25519.ClampPrivateKey(bobbyte)
             Dim bobPublic = Elliptic.Curve25519.GetPublicKey(bobPrivate)
 
             Dim aliceShared = Elliptic.Curve25519.GetSharedSecret(alicePrivate, bobPublic)
@@ -3982,17 +4009,36 @@ Public Class PFPForm
     End Sub
 
 
-    Function GetHash(Optional ByVal Salt As Integer = 0)
+    Function HEXStr2ByteAry(ByVal HEXStr As String) As Byte()
 
-        Dim sha As New System.Security.Cryptography.SHA1CryptoServiceProvider
+        Dim TempBytlist As List(Of Byte) = New List(Of Byte)
+
+        If HEXStr.Length Mod 2 > 0 Then
+            HEXStr += "0"
+        End If
+
+        For i As Integer = 0 To HEXStr.Length - 1 Step 2
+
+            Dim TStr As String = HEXStr.Substring(i, 2)
+            TempBytlist.Add(Convert.ToByte(TStr, 16))
+
+        Next
+
+        Return TempBytlist.ToArray
+
+    End Function
+
+    Function GetHash(Optional ByVal Salt As String = "")
+
+        Dim sha As New System.Security.Cryptography.SHA256CryptoServiceProvider
         Dim bytesToHash() As Byte
-        bytesToHash = System.Text.Encoding.ASCII.GetBytes(Now.ToLongDateString + " " + Now.ToLongTimeString + " " + Salt.ToString)
+        bytesToHash = System.Text.Encoding.ASCII.GetBytes(Now.ToLongDateString + " " + Now.ToLongTimeString + " " + Salt)
         bytesToHash = sha.ComputeHash(bytesToHash)
         Dim encPassword As String = ""
         For Each b As Byte In bytesToHash
             encPassword += b.ToString("x2")
         Next
-        encPassword = encPassword.Substring(encPassword.Length - 32)
+        'encPassword = encPassword.Substring(encPassword.Length - 32)
 
         Return encPassword
 
@@ -4022,7 +4068,7 @@ Public Class PFPForm
 
     End Function
 
-#End Region
+#End Region 'Test
 
 End Class
 
