@@ -5,7 +5,7 @@ Imports System.Security.Cryptography
 
 Public Class ClsPayPal
 
-    Const SandboxURL As String = "https://api.sandbox.paypal.com"
+    Const SandboxURL As String = "https://sandbox.paypal.com"
     Const LiveURL As String = "https://api.paypal.com"
 
     Property URL() As String
@@ -19,7 +19,7 @@ Public Class ClsPayPal
     Property Client_ID() As String
     Property Secret() As String
 
-    Private Enum URLx
+    Private Enum E_SubURL
         _v1_oauth2_token = 0
         _v1_checkout_orders = 1
         _v1_checkout_orders_ID_authorize = 2
@@ -33,6 +33,15 @@ Public Class ClsPayPal
         _v2_payments_captures_CAPID = 8
         _v2_payments_authorizations_AUTHID = 9
         _v2_payments_authorizations_AUTHID_capture = 10
+
+        _v1_payments_payment_PARAMS = 11
+        _v1_reporting_transactions_PARAMS = 12
+
+
+        _v1_notifications_webhooks = 13
+
+        _v1_reporting_balances = 14
+
     End Enum
 
 
@@ -48,27 +57,35 @@ Public Class ClsPayPal
 
     End Sub
 
-    Private Sub SetSubURL(ByVal SURL As URLx, Optional ByVal XURL As String = "")
+    Private Sub SetSubURL(ByVal SubURL As E_SubURL, Optional ByVal ExtraURL As String = "", Optional ByVal URL_PARAMS As String = "")
 
-        Select Case SURL
-            Case URLx._v1_oauth2_token
+        Select Case SubURL
+            Case E_SubURL._v1_oauth2_token
                 URL = URL + "/v1/oauth2/token"
-            Case URLx._v2_checkout_orders
+            Case E_SubURL._v2_checkout_orders
                 URL = URL + "/v2/checkout/orders"
-            Case URLx._v1_payments_payouts
+            Case E_SubURL._v1_payments_payouts
                 URL = URL + "/v1/payments/payouts"
-            Case URLx._v2_checkout_orders_ID
-                URL = URL + "/v2/checkout/orders/" + XURL
-            Case URLx._v2_checkout_orders_ID_authorize
-                URL = URL + "/v2/checkout/orders/" + XURL + "/authorize"
-            Case URLx._v2_checkout_orders_ID_capture
-                URL = URL + "/v2/checkout/orders/" + XURL + "/capture"
-            Case URLx._v2_payments_authorizations_AUTHID
-                URL = URL + "/v2/payments/authorizations/" + XURL
-            Case URLx._v2_payments_authorizations_AUTHID_capture
-                URL = URL + "/v2/payments/authorizations/" + XURL + "/capture"
-            Case URLx._v2_payments_captures_CAPID
-                URL = URL + "/v2/payments/captures/" + XURL
+            Case E_SubURL._v2_checkout_orders_ID
+                URL = URL + "/v2/checkout/orders/" + ExtraURL
+            Case E_SubURL._v2_checkout_orders_ID_authorize
+                URL = URL + "/v2/checkout/orders/" + ExtraURL + "/authorize"
+            Case E_SubURL._v2_checkout_orders_ID_capture
+                URL = URL + "/v2/checkout/orders/" + ExtraURL + "/capture"
+            Case E_SubURL._v2_payments_authorizations_AUTHID
+                URL = URL + "/v2/payments/authorizations/" + ExtraURL
+            Case E_SubURL._v2_payments_authorizations_AUTHID_capture
+                URL = URL + "/v2/payments/authorizations/" + ExtraURL + "/capture"
+            Case E_SubURL._v2_payments_captures_CAPID
+                URL = URL + "/v2/payments/captures/" + ExtraURL
+            Case E_SubURL._v1_payments_payment_PARAMS
+                URL = URL + "/v1/payments/payment" + URL_PARAMS
+            Case E_SubURL._v1_reporting_transactions_PARAMS
+                URL = URL + "/v1/reporting/transactions" + URL_PARAMS
+            Case E_SubURL._v1_notifications_webhooks
+                URL = URL + "/v1/notifications/webhooks"
+            Case E_SubURL._v1_reporting_balances
+                URL = URL + "/v1/reporting/balances"
             Case Else
 
         End Select
@@ -138,7 +155,7 @@ Public Class ClsPayPal
 
     Public Function GetAuthToken() As List(Of String)
 
-        SetSubURL(ClsPayPal.URLx._v1_oauth2_token)
+        SetSubURL(ClsPayPal.E_SubURL._v1_oauth2_token)
 
         Dim ResponseStr As String = PayPalRequest("grant_type=client_credentials",, New List(Of String)({"Accept-Language: en_US", "Authorization: Basic " + AuthCredentials}))
 
@@ -193,7 +210,7 @@ Public Class ClsPayPal
         Request += "}"
 
 
-        SetSubURL(ClsPayPal.URLx._v2_checkout_orders)
+        SetSubURL(ClsPayPal.E_SubURL._v2_checkout_orders)
         Dim ResponseStr As String = PayPalRequest(Request, , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
         If ResponseStr.Trim = "" Then
@@ -252,10 +269,32 @@ Public Class ClsPayPal
 
         Return NuList
 
+        '{
+        '	"id":"3KY70887AK977221B",
+        '	"status":"CREATED",
+        '	"links":[{
+        '			"href":"https://api.sandbox.paypal.com/v2/checkout/orders/3KY70887AK977221B",
+        '			"rel":"self",
+        '			"method":"GET"
+        '		},{
+        '			"href":"https://www.sandbox.paypal.com/checkoutnow?token=3KY70887AK977221B",
+        '			"rel":"approve",
+        '			"method":"GET"
+        '		},{
+        '			"href":"https://api.sandbox.paypal.com/v2/checkout/orders/3KY70887AK977221B",
+        '			"rel":"update",
+        '			"method":"PATCH"
+        '		},{
+        '			"href":"https://api.sandbox.paypal.com/v2/checkout/orders/3KY70887AK977221B/capture",
+        '			"rel":"capture",
+        '			"method":"POST"
+        '		}]
+        '}
+
     End Function
     Public Function CaptureOrder(ByVal OrderID As String) As List(Of String)
 
-        SetSubURL(ClsPayPal.URLx._v2_checkout_orders_ID_capture, OrderID)
+        SetSubURL(ClsPayPal.E_SubURL._v2_checkout_orders_ID_capture, OrderID)
 
         Dim ResponseStr As String = PayPalRequest("", , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
@@ -315,10 +354,105 @@ Public Class ClsPayPal
 
         Return ReturnList
 
-    End Function
-    Public Function GetOrderDetails(ByVal OrderID As String)
+        '{
+        '	"id":"2NS83667T8950703G",
+        '	"status":"COMPLETED",
+        '	"purchase_units":
+        '	[
+        '		{
+        '			"reference_id":"default",
+        '			"shipping":
+        '			{
+        '				"name":
+        '				{
+        '					"full_name":"John Doe"
+        '				},
+        '				"address":
+        '				{
+        '					"address_line_1":"ESpachstr. 1",
+        '					"admin_area_2":"Freiburg",
+        '					"admin_area_1":"Baden-Württemberg",
+        '					"postal_code":"79111",
+        '					"country_code":"DE"
+        '				}
+        '			},
+        '			"payments":
+        '			{
+        '				"captures":
+        '				[
+        '					{
+        '						"id":"7EJ68552ST726563J",
+        '						"status":"PENDING",
+        '						"status_details":
+        '						{
+        '							"reason":"RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION"
+        '						},
+        '						"amount":
+        '						{
+        '							"currency_code":"USD",
+        '							"value":"1.23"
+        '						},
+        '						"final_capture":true,
+        '						"seller_protection":
+        '						{
+        '							"status":"ELIGIBLE",
+        '							"dispute_categories":
+        '							[
+        '								"ITEM_NOT_RECEIVED",
+        '								"UNAUTHORIZED_TRANSACTION"
+        '							]
+        '						},
+        '						"links":
+        '						[
+        '							{
+        '								"href":"https://api.sandbox.paypal.com/v2/payments/captures/7EJ68552ST726563J",
+        '								"rel":"self",
+        '								"method":"GET"
+        '							},{
+        '								"href":"https://api.sandbox.paypal.com/v2/payments/captures/7EJ68552ST726563J/refund",
+        '								"rel":"refund",
+        '								"method":"POST"
+        '							},{
+        '								"href":"https://api.sandbox.paypal.com/v2/checkout/orders/2NS83667T8950703G",
+        '								"rel":"up",
+        '								"method":"GET"
+        '							}
+        '						],
+        '						"create_time":"2020-10-06T12:22:41Z",
+        '						"update_time":"2020-10-06T12:22:41Z"
+        '					}
+        '				]
+        '			}
+        '		}
+        '	],
+        '	"payer":
+        '	{
+        '		"name":
+        '		{
+        '			"given_name":"John",
+        '			"surname":"Doe"
+        '		},
+        '		"email_address":"sb-ba6ka3358898@personal.example.com",
+        '		"payer_id":"35ZAG25DABZ62",
+        '		"address":
+        '		{
+        '			"country_code":"DE"
+        '		}
+        '	},
+        '	"links":
+        '	[
+        '		{
+        '			"href":"https://api.sandbox.paypal.com/v2/checkout/orders/2NS83667T8950703G",
+        '			"rel":"self",
+        '			"method":"GET"
+        '		}
+        '	]
+        '}
 
-        SetSubURL(ClsPayPal.URLx._v2_checkout_orders_ID, OrderID)
+    End Function
+    Public Function GetOrderDetails(ByVal OrderID As String) As List(Of String)
+
+        SetSubURL(ClsPayPal.E_SubURL._v2_checkout_orders_ID, OrderID)
 
         Dim ResponseStr As String = PayPalRequest("", "GET", New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
@@ -380,13 +514,814 @@ Public Class ClsPayPal
 
         Return NuList
 
+
+        '{
+        '	"id":"2NS83667T8950703G",
+        '	"intent":"CAPTURE",
+        '	"status":"APPROVED",
+        '	"purchase_units":
+        '	[
+        '		{
+        '			"reference_id":"default",
+        '			"amount":
+        '			{
+        '				"currency_code":"USD",
+        '				"value":"1.23",
+        '				"breakdown":
+        '				{
+        '					"item_total":
+        '					{
+        '						"currency_code":"USD",
+        '						"value":"1.23"
+        '					}
+        '				}
+        '			},
+        '			"payee":
+        '			{
+        '				"email_address":"testaccount1@burstcoin.zone",
+        '				"merchant_id":"226HFCQJADVLE"
+        '			},
+        '			"items":
+        '			[
+        '				{
+        '					"name":"x 123 Burst",
+        '					"unit_amount":
+        '					{
+        '						"currency_code":"USD",
+        '						"value":"1.23"
+        '					},
+        '					"quantity":"1"
+        '				}
+        '			],
+        '			"shipping":
+        '			{
+        '				"name":
+        '				{
+        '					"full_name":"John Doe"
+        '				},
+        '				"address":
+        '				{
+        '					"address_line_1":"ESpachstr. 1",
+        '					"admin_area_2":"Freiburg",
+        '					"admin_area_1":"Baden-Württemberg",
+        '					"postal_code":"79111",
+        '					"country_code":"DE"
+        '				}
+        '			}
+        '		}
+        '	],
+        '	"payer":
+        '	{
+        '		"name":
+        '		{
+        '			"given_name":"John",
+        '			"surname":"Doe"
+        '		},
+        '		"email_address":"sb-ba6ka3358898@personal.example.com",
+        '		"payer_id":"35ZAG25DABZ62",
+        '		"address":
+        '		{
+        '			"country_code":"DE"
+        '		}
+        '	},
+        '	"create_time":"2020-10-06T09:47:26Z",
+        '	"links":
+        '	[
+        '		{
+        '			"href":"https://api.sandbox.paypal.com/v2/checkout/orders/2NS83667T8950703G",
+        '			"rel":"self",
+        '			"method":"GET"
+        '		},{
+        '			"href":"https://api.sandbox.paypal.com/v2/checkout/orders/2NS83667T8950703G",
+        '			"rel":"update",
+        '			"method":"PATCH"
+        '		},{
+        '			"href":"https://api.sandbox.paypal.com/v2/checkout/orders/2NS83667T8950703G/capture",
+        '			"rel":"capture",
+        '			"method":"POST"
+        '		}
+        '	]
+        '}
+
+    End Function
+
+
+
+    Public Function GetTransactionList(Optional ByVal SearchNote As String = "") As List(Of List(Of String))
+        ' payments/payment =  ?count=10&start_index=0&sort_by=create_time&sort_order=desc
+        ' reporting/transactions = ?start_date=2021-01-01T01:01:01-0100&end_date=2021-01-31T23:59:59-0100&fields=all&page_size=100&page=1
+
+        Dim StartDatUS As String = Now.AddDays(-30).ToString("yyyy-MM-dTHH:mm:ss-0700")
+        Dim EndDatUS As String = Now.ToString("yyyy-MM-dTHH:mm:ss-0700")
+
+
+        SetSubURL(E_SubURL._v1_reporting_transactions_PARAMS,, "?start_date=" + StartDatUS + "&end_date=" + EndDatUS + "&fields=all&page_size=100&page=1")
+
+        Dim ResponseStr As String = PayPalRequest("", "GET", New List(Of String)({"Authorization: Basic " + AuthCredentials}))
+
+        If ResponseStr.Trim = "" Then
+            Return New List(Of List(Of String))
+        End If
+
+        Dim JSONList As List(Of Object) = JSONRecursive(ResponseStr)
+        Dim ReturnList As List(Of List(Of String)) = New List(Of List(Of String))
+        Dim TXList = RecursiveSearch(JSONList, "transaction_details")
+
+        If TXList.GetType.Name = GetType(Boolean).Name Then
+
+        Else
+
+            For Each TX In TXList
+
+                Dim TXInfoList = RecursiveSearch(TX, "transaction_info")
+
+                If TXInfoList.GetType.Name = GetType(Boolean).Name Then
+
+                Else
+
+                    Dim TXNote = RecursiveSearch(TXInfoList, "transaction_note")
+                    Dim TXAmountList = RecursiveSearch(TXInfoList, "transaction_amount")
+                    Dim TXStatus As String = RecursiveSearch(TXInfoList, "transaction_status")
+
+
+                    Dim TXAmount As String = "0.0"
+                    If TXAmountList.GetType.Name = GetType(Boolean).Name Then
+                    Else
+                        TXAmount = RecursiveSearch(TXAmountList, "value")
+                    End If
+
+
+                    If TXNote.GetType.Name = GetType(Boolean).Name Then
+                    Else
+
+                        If Not SearchNote.Trim = "" Then
+
+                            If TXNote.ToString.Trim.Contains(SearchNote.Trim) Then
+
+                                Dim NuList As List(Of String) = New List(Of String)
+
+                                NuList.Add("<transaction_note>" + SearchNote.ToString + "</transaction_note>")
+                                NuList.Add("<transaction_amount>" + TXAmount.Replace(".", ",") + "</transaction_amount>")
+                                NuList.Add("<transaction_status>" + TXStatus + "</transaction_status>")
+
+                                ReturnList.Add(NuList)
+
+                                Return ReturnList
+
+                            End If
+
+                        Else
+
+                            Dim NuList As List(Of String) = New List(Of String)
+
+                            NuList.Add("<transaction_note>" + TXNote.ToString.Trim + "</transaction_note>")
+                            NuList.Add("<transaction_amount>" + TXAmount.Replace(".", ",") + "</transaction_amount>")
+                            NuList.Add("<transaction_status>" + TXStatus + "</transaction_status>")
+
+                            ReturnList.Add(NuList)
+
+                        End If
+
+                    End If
+
+                End If
+
+            Next
+
+        End If
+
+
+
+
+        Return ReturnList
+
+
+
+#Region "normal Payments"
+
+        '{
+        '	"transaction_details":
+        '	[
+        '		{
+        '			"transaction_info":
+        '			{
+        '				"paypal_account_id":"X4Q272J3TRDRJ",
+        '				"transaction_id":"8T494979HY558923F",
+        '				"transaction_event_code":"T0000",
+        '				"transaction_initiation_date":"2021-01-22T08:02:08+0000",
+        '				"transaction_updated_date":"2021-01-22T08:02:08+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"8.63"
+        '				},
+        '				"transaction_status":"S",
+        '				"transaction_note":"pommes", <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-305.08"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-305.08"
+        '				},
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"account_id":"X4Q272J3TRDRJ",
+        '				"email_address":"Jack.Jack@burstcoin.com",
+        '				"address_status":"N",
+        '				"payer_status":"Y",
+        '				"payer_name":
+        '				{
+        '					"given_name":"Jack",
+        '					"surname":"Jackman",
+        '					"alternate_full_name":"Jack Jackman"
+        '				},
+        '				"country_code":"US"
+        '			},
+        '			"shipping_info":
+        '			{
+        '				"name":"Jack, Jackman"
+        '			},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		},{
+        '			"transaction_info":
+        '			{
+        '				"paypal_account_id":"X4Q272J3TRDRJ",
+        '				"transaction_id":"3TN98377CT965432N",
+        '				"transaction_event_code":"T0000",
+        '				"transaction_initiation_date":"2021-01-22T08:34:19+0000",
+        '				"transaction_updated_date":"2021-01-22T08:34:19+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"USD",
+        '					"value":"-10.99"
+        '				},
+        '				"fee_amount":
+        '				{
+        '					"currency_code":"USD",
+        '					"value":"-0.11"
+        '				},
+        '				"transaction_status":"S",
+        '				"transaction_note":"erdbeeren",<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"USD",
+        '					"value":"-11.10"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"USD",
+        '					"value":"-11.10"
+        '				},
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"account_id":"X4Q272J3TRDRJ",
+        '				"email_address":"Jack.Jack@burstcoin.com",
+        '				"address_status":"N",
+        '				"payer_status":"Y",
+        '				"payer_name":
+        '				{
+        '					"given_name":"Jack",
+        '					"surname":"Jackman",
+        '					"alternate_full_name":"Jack Jackman"
+        '				},
+        '				"country_code":"US"
+        '			},
+        '			"shipping_info":
+        '			{
+        '				"name":"evo, lver"
+        '			},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		},{
+        '			"transaction_info":
+        '			{
+        '				"transaction_id":"0Y902817BE6359618",
+        '				"paypal_reference_id":"3TN98377CT965432N",
+        '				"paypal_reference_id_type":"TXN",
+        '				"transaction_event_code":"T0200",
+        '				"transaction_initiation_date":"2021-01-22T08:34:19+0000",
+        '				"transaction_updated_date":"2021-01-22T08:34:19+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-10.10"
+        '				},
+        '				"transaction_status":"S",
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-315.18"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-315.18"
+        '				},
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"address_status":"N",
+        '				"payer_name":{}
+        '			},
+        '			"shipping_info":{},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		},{
+        '			"transaction_info":
+        '			{
+        '				"transaction_id":"0PR94740RF748560F",
+        '				"paypal_reference_id":"3TN98377CT965432N",
+        '				"paypal_reference_id_type":"TXN",
+        '				"transaction_event_code":"T0200",
+        '				"transaction_initiation_date":"2021-01-22T08:34:19+0000",
+        '				"transaction_updated_date":"2021-01-22T08:34:19+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"USD",
+        '					"value":"11.10"
+        '				},
+        '				"transaction_status":"S",
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"USD",
+        '					"value":"0.00"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"USD",
+        '					"value":"0.00"
+        '				},
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"address_status":"N",
+        '               "payer_name":{}
+        '			},
+        '			"shipping_info":{},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		}
+        '	],
+        '	"account_number":"226HFCQJADVLE",
+        '	"start_date":"2020-12-23T19:56:05+0000",
+        '	"end_date":"2021-01-22T09:59:59+0000",
+        '	"last_refreshed_datetime":"2021-01-22T09:59:59+0000",
+        '	"page":1,
+        '	"total_items":4,
+        '	"total_pages":1,
+        '	"links":
+        '	[
+        '		{
+        '			"href":"https://api.sandbox.paypal.com/v1/reporting/transactions?end_date=2021-01-22T12%3A56%3A05-0700&fields=all&start_date=2020-12-23T12%3A56%3A05-0700&page_size=100&page=1",
+        '			"rel":"self",
+        '			"method":"GET"
+        '		}
+        '	]
+        '}
+
+#End Region
+
+#Region "Order Transactions"
+
+        '{
+        '"transaction_details":
+        '	[
+        '		{
+        '			"transaction_info":
+        '			{
+        '				"transaction_id":"3CG39330U9149701F",
+        '				"transaction_event_code":"T1503",
+        '				"transaction_initiation_date":"2020-11-04T03:17:22+0000",
+        '				"transaction_updated_date":"2020-11-04T03:17:22+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-125.46"
+        '				},
+        '				"transaction_status":"S",
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-62.79"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-62.79"
+        '				},
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"address_status":"N",
+        '				"payer_name":
+        '				{}
+        '			},
+        '			"shipping_info":{},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		},{
+        '			"transaction_info":
+        '			{
+        '				"paypal_account_id":"X4Q272J3TRDRJ",
+        '				"transaction_id":"66K47261S71446539",
+        '				"transaction_event_code":"T0001",
+        '				"transaction_initiation_date":"2020-11-04T03:17:23+0000",
+        '				"transaction_updated_date":"2020-11-04T03:17:23+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-123.00"
+        '				},
+        '				"fee_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-2.46"
+        '				},
+        '				"transaction_status":"S",
+        '				"transaction_subject":"You got a Payment from BLS!",
+        '				"transaction_note":"You have received a automatic Payment from BLS!",
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-188.25"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-188.25"
+        '				},
+        '				"custom_field":"A0FB97F7",
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"account_id":"X4Q272J3TRDRJ",
+        '				"email_address":"Jack.Jack@burstcoin.com",
+        '				"address_status":"N",
+        '				"payer_status":"Y",
+        '				"payer_name":
+        '				{
+        '					"given_name":"Jack",
+        '					"surname":"Jackman",
+        '					"alternate_full_name":"Jack Jackman"
+        '				},
+        '				"country_code":"US"
+        '			},
+        '			"shipping_info":
+        '			{
+        '				"name":"evo, lver"
+        '			},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		},{
+        '			"transaction_info":
+        '			{
+        '				"transaction_id":"56P0311095152650R",
+        '				"paypal_reference_id":"66K47261S71446539",
+        '				"paypal_reference_id_type":"TXN",
+        '				"transaction_event_code":"T1105",
+        '				"transaction_initiation_date":"2020-11-04T03:17:23+0000",
+        '				"transaction_updated_date":"2020-11-04T03:17:23+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"125.46"
+        '				},
+        '				"transaction_status":"S",
+        '				"transaction_subject":"You got a Payment from BLS!",
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-62.79"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-62.79"
+        '				},
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"address_status":"N",
+        '				"payer_name":{}
+        '			},
+        '			"shipping_info":{},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		},{
+        '			"transaction_info":
+        '			{
+        '				"transaction_id":"7E108794XK360315M",
+        '				"transaction_event_code":"T1503",
+        '				"transaction_initiation_date":"2020-11-04T03:18:34+0000",
+        '				"transaction_updated_date":"2020-11-04T03:18:34+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-125.46"
+        '				},
+        '				"transaction_status":"S",
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-188.25"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-188.25"
+        '				},
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"address_status":"N",
+        '				"payer_name":{}
+        '			},
+        '			"shipping_info":{},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		},{
+        '			"transaction_info":
+        '			{
+        '				"paypal_account_id":"X4Q272J3TRDRJ",
+        '				"transaction_id":"19W4763450106520H",
+        '				"transaction_event_code":"T0001",
+        '				"transaction_initiation_date":"2020-11-04T03:18:35+0000",
+        '				"transaction_updated_date":"2020-11-04T03:18:35+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-123.00"
+        '				},
+        '				"fee_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-2.46"
+        '				},
+        '				"transaction_status":"S",
+        '				"transaction_subject":"You got a Payment from BLS!",
+        '				"transaction_note":"You have received a automatic Payment from BLS!",
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-313.71"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-313.71"
+        '				},
+        '				"custom_field":"DE20CDE7",
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"account_id":"X4Q272J3TRDRJ",
+        '				"email_address":"Jack.Jack@burstcoin.com",
+        '				"address_status":"N",
+        '				"payer_status":"Y",
+        '				"payer_name":
+        '				{
+        '					"given_name":"Jack",
+        '					"surname":"Jackman",
+        '					"alternate_full_name":"Jack Jackman"
+        '				},
+        '				"country_code":"US"
+        '			},
+        '			"shipping_info":
+        '			{
+        '				"name":"evo, lver"
+        '			},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		},{
+        '			"transaction_info":
+        '			{
+        '				"transaction_id":"18E91754AW612013M",
+        '				"paypal_reference_id":"19W4763450106520H",
+        '				"paypal_reference_id_type":"TXN",
+        '				"transaction_event_code":"T1105",
+        '				"transaction_initiation_date":"2020-11-04T03:18:35+0000",
+        '				"transaction_updated_date":"2020-11-04T03:18:35+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"125.46"
+        '				},
+        '				"transaction_status":"S",
+        '				"transaction_subject":"You got a Payment from BLS!",
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-188.25"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-188.25"
+        '				},
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"address_status":"N",
+        '				"payer_name":{}
+        '			},
+        '			"shipping_info":{},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		},{
+        '			"transaction_info":
+        '			{
+        '				"transaction_id":"012549011F338644V",
+        '				"transaction_event_code":"T1503",
+        '				"transaction_initiation_date":"2020-11-04T04:12:47+0000",
+        '				"transaction_updated_date":"2020-11-04T04:12:47+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-125.46"
+        '				},
+        '				"transaction_status":"S",
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-313.71"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-313.71"
+        '				},
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"address_status":"N",
+        '				"payer_name":{}
+        '			},
+        '			"shipping_info":{},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		},{
+        '			"transaction_info":
+        '			{
+        '				"paypal_account_id":"X4Q272J3TRDRJ",
+        '				"transaction_id":"3W203167R09582206",
+        '				"transaction_event_code":"T0001",
+        '				"transaction_initiation_date":"2020-11-04T04:12:48+0000",
+        '				"transaction_updated_date":"2020-11-04T04:12:48+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-123.00"
+        '				},
+        '				"fee_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-2.46"
+        '				},
+        '				"transaction_status":"S",
+        '				"transaction_subject":"You got a Payment from BLS!",
+        '				"transaction_note":"You have received a automatic Payment from BLS!",
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-439.17"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-439.17"
+        '				},
+        '				"custom_field":"606F2547",
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"account_id":"X4Q272J3TRDRJ",
+        '				"email_address":"Jack.Jack@burstcoin.com",
+        '				"address_status":"N",
+        '				"payer_status":"Y",
+        '				"payer_name":
+        '				{
+        '					"given_name":"Jack",
+        '					"surname":"Jackman",
+        '					"alternate_full_name":"Jack Jackman"
+        '				},
+        '				"country_code":"US"
+        '			},
+        '			"shipping_info":
+        '			{
+        '				"name":"evo, lver"
+        '			},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		},{
+        '			"transaction_info":
+        '			{
+        '				"transaction_id":"9AA61785GB401852S",
+        '				"paypal_reference_id":"3W203167R09582206",
+        '				"paypal_reference_id_type":"TXN",
+        '				"transaction_event_code":"T1105",
+        '				"transaction_initiation_date":"2020-11-04T04:12:48+0000",
+        '				"transaction_updated_date":"2020-11-04T04:12:48+0000",
+        '				"transaction_amount":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"125.46"
+        '				},
+        '				"transaction_status":"S",
+        '				"transaction_subject":"You got a Payment from BLS!",
+        '				"ending_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-313.71"
+        '				},
+        '				"available_balance":
+        '				{
+        '					"currency_code":"EUR",
+        '					"value":"-313.71"
+        '				},
+        '				"protection_eligibility":"02"
+        '			},
+        '			"payer_info":
+        '			{
+        '				"address_status":"N",
+        '				"payer_name":{}
+        '			},
+        '			"shipping_info":{},
+        '			"cart_info":{},
+        '			"store_info":{},
+        '			"auction_info":{},
+        '			"incentive_info":{}
+        '		}
+        '	],
+        '	"account_number":"226HFCQJADVLE",
+        '	"start_date":"2020-11-01T08:01:01+0000",
+        '	"end_date":"2020-11-05T06:59:59+0000",
+        '	"last_refreshed_datetime":"2021-01-22T01:59:59+0000",
+        '	"page":1,
+        '	"total_items":9,
+        '	"total_pages":1,
+        '	"links":
+        '	[
+        '		{
+        '			"href":"https://api.sandbox.paypal.com/v1/reporting/transactions?end_date=2020-11-04T23%3A59%3A59-0700&fields=all&start_date=2020-11-01T01%3A01%3A01-0700&page_size=100&page=1",
+        '			"rel":"self",
+        '			"method":"GET"
+        '		}
+        '	]
+        '}
+
+#End Region
+
+
     End Function
 
 
 
     Public Function AuthOrder()
 
-        SetSubURL(ClsPayPal.URLx._v2_checkout_orders_ID_authorize, "2NS83667T8950703G")
+        SetSubURL(ClsPayPal.E_SubURL._v2_checkout_orders_ID_authorize, "2NS83667T8950703G")
 
         Dim ResponseStr As String = PayPalRequest("", , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
@@ -402,7 +1337,7 @@ Public Class ClsPayPal
 
     Public Function GetPaymentDetails()
 
-        SetSubURL(ClsPayPal.URLx._v2_payments_authorizations_AUTHID, "7EJ68552ST726563J")
+        SetSubURL(ClsPayPal.E_SubURL._v2_payments_authorizations_AUTHID, "7EJ68552ST726563J")
 
         Dim ResponseStr As String = PayPalRequest("", "GET", New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
@@ -412,10 +1347,11 @@ Public Class ClsPayPal
 
         ResponseStr = ResponseStr
 
+
     End Function
     Public Function CaptureAuthPayment()
 
-        SetSubURL(ClsPayPal.URLx._v2_payments_authorizations_AUTHID_capture, "7EJ68552ST726563J")
+        SetSubURL(ClsPayPal.E_SubURL._v2_payments_authorizations_AUTHID_capture, "7EJ68552ST726563J")
 
         Dim Request = "{"
         Request += """amount"" {"
@@ -437,7 +1373,7 @@ Public Class ClsPayPal
     End Function
     Public Function CapturePaymentDetails()
 
-        SetSubURL(ClsPayPal.URLx._v2_payments_captures_CAPID, "7EJ68552ST726563J")
+        SetSubURL(ClsPayPal.E_SubURL._v2_payments_captures_CAPID, "7EJ68552ST726563J")
 
         Dim ResponseStr As String = PayPalRequest("", "GET", New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
@@ -447,10 +1383,61 @@ Public Class ClsPayPal
 
         ResponseStr = ResponseStr
 
+
+        '{
+        '	"id":"7EJ68552ST726563J",
+        '	"amount":
+        '	{
+        '		"currency_code":"USD",
+        '		"value":"1.23"
+        '	},
+        '	"final_capture":true,
+        '	"seller_protection":
+        '	{
+        '		"status":"ELIGIBLE",
+        '		"dispute_categories":
+        '		[
+        '			"ITEM_NOT_RECEIVED",
+        '			"UNAUTHORIZED_TRANSACTION"
+        '		]
+        '	},
+        '	"status":"PENDING",
+        '	"status_details":
+        '	{
+        '		"reason":"RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION"
+        '	},
+        '	"create_time":"2020-10-06T12:22:41Z",
+        '	"update_time":"2020-10-06T12:22:41Z",
+        '	"links":
+        '	[
+        '		{
+        '			"href":"https://api.sandbox.paypal.com/v2/payments/captures/7EJ68552ST726563J",
+        '			"rel":"self",
+        '			"method":"GET"
+        '		},{
+        '			"href":"https://api.sandbox.paypal.com/v2/payments/captures/7EJ68552ST726563J/refund",
+        '			"rel":"refund",
+        '			"method":"POST"
+        '		},{
+        '			"href":"https://api.sandbox.paypal.com/v2/checkout/orders/2NS83667T8950703G",
+        '			"rel":"up",
+        '			"method":"GET"
+        '		}
+        '	]
+        '}
+
+
+
     End Function
 
 
-    Public Function CreateBatchPayOut(ByVal Recipient As String, ByVal Amount As Double, Optional ByVal SendType As String = "EMAIL", Optional ByVal Currency As String = "USD")
+    Enum E_RecipientType
+        EMAIL = 0
+        PHONE = 1
+        PAYPAL_ID = 2
+    End Enum
+
+    Public Function CreateBatchPayOut(ByVal Recipient As String, ByVal Amount As Double, Optional ByVal SendType As E_RecipientType = E_RecipientType.EMAIL, Optional ByVal Currency As String = "USD")
 
         Dim Hash As String = CreateHash(Now.ToLongDateString + " " + Now.ToLongTimeString)
 
@@ -465,7 +1452,7 @@ Public Class ClsPayPal
         Request += """items"": ["
         Request += "{"
 
-        If SendType.Trim = "EMAIL" Then
+        If SendType = E_RecipientType.EMAIL Then
 
             Request += """recipient_type"":""EMAIL"", "
             Request += """amount"": { "
@@ -476,7 +1463,7 @@ Public Class ClsPayPal
             Request += """sender_item_id"": """ + Hash + """, "
             Request += """receiver"": """ + Recipient + """" 'sb-ba6ka3358898@personal.example.com
 
-        ElseIf SendType.Trim = "PAYPAL_ID" Then
+        ElseIf SendType = E_RecipientType.PAYPAL_ID Then
 
             Request += """recipient_type"":""PAYPAL_ID"", "
             Request += """amount"": { "
@@ -493,7 +1480,7 @@ Public Class ClsPayPal
         Request += "]"
         Request += "}"
 
-        SetSubURL(ClsPayPal.URLx._v1_payments_payouts)
+        SetSubURL(ClsPayPal.E_SubURL._v1_payments_payouts)
         Dim ResponseStr As String = PayPalRequest(Request, , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
         Dim ReturnList As List(Of Object) = JSONRecursive(ResponseStr)
@@ -504,11 +1491,21 @@ Public Class ClsPayPal
 
     End Function
 
+    Public Function CheckPayOuts()
+
+        SetSubURL(ClsPayPal.E_SubURL._v1_payments_payouts)
+        Dim ResponseStr As String = PayPalRequest("", , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
+
+        ResponseStr = ResponseStr
+
+    End Function
 
 
 #Region "Toolfunctions"
 
     Dim RekursivRest As List(Of Object) = New List(Of Object)
+
+
     Private Structure S_Sorter
         Dim Timestamp As ULong
         Dim TXID As ULong
@@ -933,10 +1930,12 @@ Public Class ClsPayPal
                     Input = T_Input(0)
                 End If
 
-
-                If Input(0) = "," Then
-                    Input = Input.Substring(1)
+                If Not Input.Trim = "" Then
+                    If Input(0) = "," Then
+                        Input = Input.Substring(1)
+                    End If
                 End If
+
 
                 Dim SubList As List(Of Object) = JSONRecursive(Input)
 
@@ -1009,6 +2008,75 @@ Public Class ClsPayPal
         Else
             Return New List(Of Object)
         End If
+
+
+        '{
+        '	"result":
+        '	{
+        '		"txid":"5f17e18c0e0363fc3a14dd6c2e74141d6f0e636d0592b48d94d0a6272dcb4ef3",
+        '		"hash":"188bf760059888f9304321cfb771586b71ef50e1b4f988fdba8db3b405864c5d",
+        '		"version":2,
+        '		"size":222,
+        '		"vsize":141,
+        '		"weight":561,
+        '		"locktime":1746616,
+        '		"vin":
+        '		[
+        '			{
+        '				"txid":"9f30228774543ac5c5ba07a56e26e6079ae1c9221fa3eccb7798596cbb401711",
+        '				"vout":0,
+        '				"scriptSig":
+        '				{
+        '					"asm":"",
+        '					"hex":""
+        '				},
+        '				"txinwitness":
+        '				[
+        '					"30440220225eef02bf7d4f9b655b61a96e8095f9b5f7e482748dbb8d26d642eee64977f70220566064db332acd0577a8918826c03842ce1e6eb19ee8ba3c2fef9a1b6d89cefe01",
+        '					"031abc3d54d4d388dd81f154395566397911ff0e6a6e6317d2579d195416332a3d"
+        '				],
+        '				"sequence":4294967294
+        '			}
+        '		],
+        '		"vout":
+        '		[
+        '			{
+        '				"value":0.01198846,
+        '				"n":0,
+        '				"scriptPubKey":
+        '				{
+        '					"asm":"0 b0f27c0a32d29689acf19940c62fade458e5edb1",
+        '					"hex":"0014b0f27c0a32d29689acf19940c62fade458e5edb1",
+        '					"reqSigs":1,
+        '					"type":"witness_v0_keyhash",
+        '					"addresses":
+        '					[
+        '						"tb1qkre8cz3j62tgnt83n9qvvtadu3vwtmd3fzx5vd"
+        '					]
+        '				}
+        '			},
+        '			{
+        '				"value":0.00500000,
+        '				"n":1,
+        '				"scriptPubKey":
+        '				{
+        '					"asm":"0 0f0f5f15ce92234399a10469a2ca7f890eccc2cc",
+        '					"hex":"00140f0f5f15ce92234399a10469a2ca7f890eccc2cc",
+        '					"reqSigs":1,
+        '					"type":"witness_v0_keyhash",
+        '					"addresses":
+        '					[
+        '						"tb1qpu8479wwjg358xdpq3569jnl3y8veskvwqugjt"
+        '					]
+        '				}
+        '			}
+        '		]
+        '	},
+        '	"error":null,
+        '    "id": 1
+        '}
+
+
 
     End Function
     Function JSONSplitter(ByVal input As String, ByVal Splitter As String) As List(Of String)

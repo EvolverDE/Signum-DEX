@@ -157,7 +157,7 @@ PFP
  </summary>
  <param name="privateKey">private key (must use ClampPrivateKey first!)</param>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.GetSigningKey(System.Byte[]@,System.Byte[]@,System.Byte[])">
+<member name="M:PFP.Elliptic.Curve25519.GetSigningKey(System.Byte[])">
  <summary>
  Generates signing key out of the clamped private key
  </summary>
@@ -171,7 +171,7 @@ PFP
  <param name="peerPublicKey">[in] peer's public key</param>
  <returns>shared secret (needs hashing before use)</returns>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.Egcd32(System.Byte[]@,System.Byte[]@,System.Byte[]@,System.Byte[]@)">
+<member name="M:PFP.Elliptic.Curve25519.Egcd32(System.Byte[],System.Byte[],System.Byte[],System.Byte[])">
  <summary>
  Returns x if a contains the gcd, y if b.
  </summary>
@@ -186,34 +186,34 @@ PFP
  Check if reduced-form input >= 2^255-19
  </summary>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.Copy(PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@)">
+<member name="M:PFP.Elliptic.Curve25519.Copy(PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10)">
  <summary>
  Copy a number
  </summary>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.Set(PFP.Elliptic.Curve25519.Long10@,System.Int32@)">
+<member name="M:PFP.Elliptic.Curve25519.Set(PFP.Elliptic.Curve25519.Long10,System.Int32)">
  <summary>
  Set a number to value, which must be in range -185861411 .. 185861411
  </summary>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.MulSmall(PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@,System.Int64@)">
+<member name="M:PFP.Elliptic.Curve25519.MulSmall(PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10,System.Int64)">
  <summary>
  Multiply a number by a small integer in range -185861411 .. 185861411.
  The output is in reduced form, the input x need not be.  x and xy may point
  to the same buffer.
  </summary>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.Multiply(PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@)">
+<member name="M:PFP.Elliptic.Curve25519.Multiply(PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10)">
  <summary>
  Multiply two numbers. The output is in reduced form, the inputs need not be.
  </summary>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.Square(PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@)">
+<member name="M:PFP.Elliptic.Curve25519.Square(PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10)">
  <summary>
  Square a number.  Optimization of  Multiply(x2, x, x)
  </summary>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.Reciprocal(PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@,System.Boolean@)">
+<member name="M:PFP.Elliptic.Curve25519.Reciprocal(PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10,System.Boolean)">
  <summary>
  Calculates a reciprocal.  The output is in reduced form, the inputs need not 
  be.  Simply calculates  y = x^(p-2)  so it's not too fast. */
@@ -226,7 +226,7 @@ PFP
  </summary>
  <param name="x">must be reduced input</param>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.CurveEquationInline(PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@,PFP.Elliptic.Curve25519.Long10@)">
+<member name="M:PFP.Elliptic.Curve25519.CurveEquationInline(PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10)">
  <summary>
  Y^2 = X^3 + 486662 X^2 + X
  </summary>
@@ -234,7 +234,7 @@ PFP
  <param name="x">X</param>
  <param name="temp">temporary</param>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.Core(System.Byte[]@,System.Byte[]@,System.Byte[]@,System.Byte[]@)">
+<member name="M:PFP.Elliptic.Curve25519.Core(System.Byte[],System.Byte[],System.Byte[],System.Byte[])">
  <summary>
  P = kG   and  s = sign(P)/k
  </summary>

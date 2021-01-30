@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PFP.exe" size="1582576">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PFP.exe" size="2706416">
       <assemblyIdentity name="PFP" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>g9WHce+MZWha26HXA/2X7ertWCeoWb7v2zN51uS6+AA=</dsig:DigestValue>
+        <dsig:DigestValue>hd+W8ddh0WydHs1okUO7vUTtnh3ridieVEeB7Ju8z7U=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -60,7 +60,7 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>KvVP36WJBfJk9Nrpf6sa1zK+6R8u+mbD47n5rY6PLEk=</dsig:DigestValue>
+      <dsig:DigestValue>e0JvxcYIhb5EAw8eEuNE40c7tTeQ09xqOgNNw+mqH9U=</dsig:DigestValue>
     </hash>
   </file>
   <file name="PFP.exe.config" size="188">

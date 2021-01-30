@@ -1,4 +1,6 @@
-﻿
+﻿'Public Class Curve25519
+
+'End Class
 
 ' Ported parts from Java to C# and refactored by Hans Wolff, 17/09/2013 
 
@@ -17,14 +19,12 @@ Imports System
 Imports System.Security.Cryptography
 
 Namespace Elliptic
-
-
     Public Class Curve25519
         ' key size 
         Public Const KeySize As Integer = 32
 
         ' group order (a prime near 2^252+2^124) 
-        Public Shared ReadOnly Order As Byte() = {237, 211, 245, 92, 26, 99, 18, 88, 214, 156, 247, 162, 222, 249, 222, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16}
+        Private Shared ReadOnly Order As Byte() = {237, 211, 245, 92, 26, 99, 18, 88, 214, 156, 247, 162, 222, 249, 222, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16}
 
 
         ' ******* KEY AGREEMENT ********
@@ -105,9 +105,9 @@ Namespace Elliptic
         ''' Generates signing key out of the clamped private key
         ''' </summary>
         ''' <param name="privateKey">private key (must use ClampPrivateKey first!)</param>
-        Public Shared Function GetSigningKey(ByRef publicKey As Byte(), ByRef signingKey As Byte(), ByVal privateKey As Byte()) As Byte()
-            'Dim signingKey = New Byte(31) {}
-            'Dim publicKey = New Byte(31) {}
+        Public Shared Function GetSigningKey(ByVal privateKey As Byte()) As Byte()
+            Dim signingKey = New Byte(31) {}
+            Dim publicKey = New Byte(31) {}
             Core(publicKey, signingKey, privateKey, Nothing)
             Return signingKey
         End Function
@@ -131,7 +131,7 @@ Namespace Elliptic
         ' sahn0:
         '  Using this class instead of long[10] to avoid bounds checks. 
 
-        Public NotInheritable Class Long10
+        Private NotInheritable Class Long10
             Public Sub New()
             End Sub
 
@@ -154,7 +154,7 @@ Namespace Elliptic
 
         ' ******************* radix 2^8 math ********************
 
-        Public Shared Sub Copy32(ByRef source As Byte(), ByRef destination As Byte())
+        Private Shared Sub Copy32(ByVal source As Byte(), ByVal destination As Byte())
             Array.Copy(source, 0, destination, 0, 32)
         End Sub
 
@@ -163,29 +163,18 @@ Namespace Elliptic
         ' n is the size of x 
         ' n+m is the size of p and q 
 
-        Public Shared Function MultiplyArraySmall(ByRef p As Byte(), ByRef q As Byte(), ByRef m As Integer, ByRef x As Byte(), ByRef n As Integer, ByRef z As Integer) As Integer
-            'Dim v As Integer = 0
-            'Dim i As Integer = 0
-
-            'While i < n
-            '    v += (q(i + m) And &HFF) + z * (x(i) And &HFF)
-            '    p(i + m) = CByte(v)
-            '    v >>= 8
-            '    Threading.Interlocked.Increment(i)
-            'End While
-
-            'Return v
-
-
+        Private Shared Function MultiplyArraySmall(ByVal p As Byte(), ByVal q As Byte(), ByVal m As Integer, ByVal x As Byte(), ByVal n As Integer, ByVal z As Integer) As Integer
             Dim v As Integer = 0
-            For i As Integer = 0 To n - 1
+            Dim i As Integer = 0
+
+            While i < n
                 v += (q(i + m) And &HFF) + z * (x(i) And &HFF)
-                p(i + m) = BitConverter.GetBytes(v)(0)
+                p(i + m) = CByte(v)
                 v >>= 8
-            Next
+                Threading.Interlocked.Increment(i)
+            End While
 
             Return v
-
         End Function
 
 
@@ -193,7 +182,7 @@ Namespace Elliptic
         '  x is size 32, y is size t, p is size 32+t
         '  y is allowed to overlap with p+32 if you don't care about the upper half  
 
-        Public Shared Sub MultiplyArray32(ByRef p As Byte(), ByRef x As Byte(), ByRef y As Byte(), ByRef t As Integer, ByRef z As Integer)
+        Private Shared Sub MultiplyArray32(ByVal p As Byte(), ByVal x As Byte(), ByVal y As Byte(), ByVal t As Integer, ByVal z As Integer)
             Const n As Integer = 31
             Dim w As Integer = 0
             Dim i As Integer = 0
@@ -201,12 +190,12 @@ Namespace Elliptic
             While i < t
                 Dim zy As Integer = z * (y(i) And &HFF)
                 w += MultiplyArraySmall(p, p, i, x, n, zy) + (p(i + n) And &HFF) + zy * (x(n) And &HFF)
-                p(i + n) = BitConverter.GetBytes(w)(0)
+                p(i + n) = CByte(w)
                 w >>= 8
                 i += 1
             End While
 
-            p(i + n) = BitConverter.GetBytes(w + (p(i + n) And &HFF))(0)
+            p(i + n) = CByte(w + (p(i + n) And &HFF))
         End Sub
 
 
@@ -215,7 +204,7 @@ Namespace Elliptic
         '  requires t > 0 && d[t-1] != 0
         '  requires that r[-1] and d[-1] are valid memory locations
         '  q may overlap with r+t 
-        Public Shared Sub DivMod(ByRef q As Byte(), ByRef r As Byte(), ByRef n As Integer, ByRef d As Byte(), ByRef t As Integer)
+        Private Shared Sub DivMod(ByVal q As Byte(), ByVal r As Byte(), ByVal n As Integer, ByVal d As Byte(), ByVal t As Integer)
             Dim rn As Integer = 0
             Dim dt As Integer = (d(t - 1) And &HFF) << 8
 
@@ -242,31 +231,14 @@ Namespace Elliptic
         End Sub
 
         Private Shared Function GetNumSize(ByVal num As Byte(), ByVal maxSize As Integer) As Integer
-            'Dim i As Integer = maxSize - 1
+            Dim i As Integer = maxSize
 
-            'While i >= 0
-            '    If num(i) = 0 Then Return i + 1
-            '    i += 1
-            'End While
+            While i >= 0
+                If num(i) = 0 Then Return i + 1
+                i += 1
+            End While
 
-
-            Dim NUnum As List(Of Byte) = New List(Of Byte)
-            Dim NuMax As Integer = num.Length
-
-            If NuMax > maxSize Then
-                NuMax = maxSize
-            End If
-
-            For i As Integer = 0 To NuMax - 1
-
-                If num(i) = 0 Then
-                    Return i
-                End If
-
-            Next
-
-            Return maxSize
-
+            Return 0
         End Function
 
 
@@ -278,7 +250,7 @@ Namespace Elliptic
         ''' <param name="a">requires that a[-1] and b[-1] are valid memory locations</param>
         ''' <param name="b">requires that a[-1] and b[-1] are valid memory locations</param>
         ''' <returns>Also, the returned buffer contains the inverse of a mod b as 32-byte signed.</returns>
-        Private Shared Function Egcd32(ByRef x As Byte(), ByRef y As Byte(), ByRef a As Byte(), ByRef b As Byte()) As Byte()
+        Private Shared Function Egcd32(ByVal x As Byte(), ByVal y As Byte(), ByVal a As Byte(), ByVal b As Byte()) As Byte()
             Dim bn As Integer = 32
             Dim i As Integer
 
@@ -296,16 +268,12 @@ Namespace Elliptic
                 Dim qn As Integer = bn - an + 1
                 DivMod(temp, b, bn, a, an)
                 bn = GetNumSize(b, bn)
-                If bn = 0 Then
-                    Return x
-                End If
+                If bn = 0 Then Return x
                 MultiplyArray32(y, x, temp, qn, -1)
                 qn = an - bn + 1
                 DivMod(temp, a, an, b, bn)
                 an = GetNumSize(a, an)
-                If an = 0 Then
-                    Return y
-                End If
+                If an = 0 Then Return y
                 MultiplyArray32(x, y, temp, qn, -1)
             End While
         End Function
@@ -318,7 +286,7 @@ Namespace Elliptic
 
         ' Convert to internal format from little-endian byte format 
 
-        Public Shared Sub Unpack(ByRef x As Long10, ByRef m As Byte())
+        Private Shared Sub Unpack(ByVal x As Long10, ByVal m As Byte())
             x.N0 = m(0) And &HFF Or (m(1) And &HFF) << 8 Or (m(2) And &HFF) << 16 Or (m(3) And &HFF And 3) << 24
             x.N1 = (m(3) And &HFF And Not 3) >> 2 Or (m(4) And &HFF) << 6 Or (m(5) And &HFF) << 14 Or (m(6) And &HFF And 7) << 22
             x.N2 = (m(6) And &HFF And Not 7) >> 3 Or (m(7) And &HFF) << 5 Or (m(8) And &HFF) << 13 Or (m(9) And &HFF And 31) << 21
@@ -346,7 +314,7 @@ Namespace Elliptic
         '      set --  if input in range 0 .. P25
         '  If you're unsure if the number is reduced, first multiply it by 1.  
 
-        Private Shared Sub Pack(ByRef x As Long10, ByRef m As Byte())
+        Private Shared Sub Pack(ByVal x As Long10, ByVal m As Byte())
             Dim ld As Integer = If(IsOverflow(x), 1, 0) - If(x.N9 < 0, 1, 0)
             Dim ud As Integer = ld * -(P25 + 1)
             ld *= 19
@@ -413,7 +381,7 @@ Namespace Elliptic
         ''' <summary>
         ''' Copy a number
         ''' </summary>
-        Public Shared Sub Copy(ByRef numOut As Long10, ByRef numIn As Long10)
+        Private Shared Sub Copy(ByVal numOut As Long10, ByVal numIn As Long10)
             numOut.N0 = numIn.N0
             numOut.N1 = numIn.N1
             numOut.N2 = numIn.N2
@@ -430,7 +398,7 @@ Namespace Elliptic
         ''' <summary>
         ''' Set a number to value, which must be in range -185861411 .. 185861411
         ''' </summary>
-        Public Shared Sub [Set](ByRef numOut As Long10, ByRef numIn As Integer)
+        Private Shared Sub [Set](ByVal numOut As Long10, ByVal numIn As Integer)
             numOut.N0 = numIn
             numOut.N1 = 0
             numOut.N2 = 0
@@ -447,7 +415,7 @@ Namespace Elliptic
         ' Add/subtract two numbers.  The inputs must be in reduced form, and the 
         '  output isn't, so to do another addition or subtraction on the output, 
         '  first multiply it by one to reduce it. 
-        Public Shared Sub Add(ByRef xy As Long10, ByRef x As Long10, ByRef y As Long10)
+        Private Shared Sub Add(ByVal xy As Long10, ByVal x As Long10, ByVal y As Long10)
             xy.N0 = x.N0 + y.N0
             xy.N1 = x.N1 + y.N1
             xy.N2 = x.N2 + y.N2
@@ -460,7 +428,7 @@ Namespace Elliptic
             xy.N9 = x.N9 + y.N9
         End Sub
 
-        Public Shared Sub [Sub](ByRef xy As Long10, ByRef x As Long10, ByRef y As Long10)
+        Private Shared Sub [Sub](ByVal xy As Long10, ByVal x As Long10, ByVal y As Long10)
             xy.N0 = x.N0 - y.N0
             xy.N1 = x.N1 - y.N1
             xy.N2 = x.N2 - y.N2
@@ -479,7 +447,7 @@ Namespace Elliptic
         ''' The output is in reduced form, the input x need not be.  x and xy may point
         ''' to the same buffer.
         ''' </summary>
-        Public Shared Sub MulSmall(ByRef xy As Long10, ByRef x As Long10, ByRef y As Long)
+        Private Shared Sub MulSmall(ByVal xy As Long10, ByVal x As Long10, ByVal y As Long)
             Dim temp As Long = x.N8 * y
             xy.N8 = temp And (1 << 26) - 1
             temp = (temp >> 26) + x.N9 * y
@@ -509,7 +477,7 @@ Namespace Elliptic
         ''' <summary>
         ''' Multiply two numbers. The output is in reduced form, the inputs need not be.
         ''' </summary>
-        Public Shared Sub Multiply(ByRef xy As Long10, ByRef x As Long10, ByRef y As Long10)
+        Private Shared Sub Multiply(ByVal xy As Long10, ByVal x As Long10, ByVal y As Long10)
             ' sahn0:
             '  Using local variables to avoid class access.
             '  This seem to improve performance a bit...
@@ -545,7 +513,7 @@ Namespace Elliptic
         ''' <summary>
         ''' Square a number.  Optimization of  Multiply(x2, x, x)
         ''' </summary>
-        Public Shared Sub Square(ByRef xsqr As Long10, ByRef x As Long10)
+        Private Shared Sub Square(ByVal xsqr As Long10, ByVal x As Long10)
             Dim x0 As Long = x.N0, x1 As Long = x.N1, x2 As Long = x.N2, x3 As Long = x.N3, x4 As Long = x.N4, x5 As Long = x.N5, x6 As Long = x.N6, x7 As Long = x.N7, x8 As Long = x.N8, x9 As Long = x.N9
             Dim t As Long = x4 * x4 + 2 * (x0 * x8 + x2 * x6) + 38 * (x9 * x9) + 4 * (x1 * x7 + x3 * x5)
             xsqr.N8 = t And (1 << 26) - 1
@@ -578,7 +546,7 @@ Namespace Elliptic
         ''' be.  Simply calculates  y = x^(p-2)  so it's not too fast. */
         ''' When sqrtassist is true, it instead calculates y = x^((p-5)/8)
         ''' </summary>
-        Public Shared Sub Reciprocal(ByRef y As Long10, ByRef x As Long10, ByRef sqrtAssist As Boolean)
+        Private Shared Sub Reciprocal(ByVal y As Long10, ByVal x As Long10, ByVal sqrtAssist As Boolean)
             Dim t0 As Long10 = New Long10(), t1 As Long10 = New Long10(), t2 As Long10 = New Long10(), t3 As Long10 = New Long10(), t4 As Long10 = New Long10()
             Dim i As Integer
             ' the chain for x^(2^255-21) is straight from djb's implementation 
@@ -657,7 +625,7 @@ Namespace Elliptic
         ''' Checks if x is "negative", requires reduced input
         ''' </summary>
         ''' <param name="x">must be reduced input</param>
-        Public Shared Function IsNegative(ByVal x As Long10) As Integer
+        Private Shared Function IsNegative(ByVal x As Long10) As Integer
             Return If(IsOverflow(x) Or x.N9 < 0, 1, 0) Xor x.N0 And 1
         End Function
 
@@ -715,7 +683,7 @@ Namespace Elliptic
         ''' <param name="y2">output</param>
         ''' <param name="x">X</param>
         ''' <param name="temp">temporary</param>
-        Public Shared Sub CurveEquationInline(ByRef y2 As Long10, ByRef x As Long10, ByRef temp As Long10)
+        Private Shared Sub CurveEquationInline(ByVal y2 As Long10, ByVal x As Long10, ByVal temp As Long10)
             Square(temp, x)
             MulSmall(y2, x, 486662)
             Add(temp, temp, y2)
@@ -727,7 +695,7 @@ Namespace Elliptic
         ''' <summary>
         ''' P = kG   and  s = sign(P)/k
         ''' </summary>
-        Public Shared Sub Core(ByRef publicKey As Byte(), ByRef signingKey As Byte(), ByRef privateKey As Byte(), ByRef peerPublicKey As Byte())
+        Private Shared Sub Core(ByVal publicKey As Byte(), ByVal signingKey As Byte(), ByVal privateKey As Byte(), ByVal peerPublicKey As Byte())
             If publicKey Is Nothing Then Throw New ArgumentNullException("publicKey")
             If publicKey.Length <> 32 Then Throw New ArgumentException(String.Format("publicKey must be 32 bytes long (but was {0} bytes long)", publicKey.Length), "publicKey")
             If signingKey IsNot Nothing AndAlso signingKey.Length <> 32 Then Throw New ArgumentException(String.Format("signingKey must be null or 32 bytes long (but was {0} bytes long)", signingKey.Length), "signingKey")
@@ -797,14 +765,6 @@ Namespace Elliptic
                 If IsNegative(t1) <> 0 Then ' sign is 1, so just copy  
                     Copy32(privateKey, signingKey) ' sign is -1, so negate  
                 Else
-
-                    ' p[m..n+m-1] = q[m..n+m-1] + z * x 
-                    ' n is the size of x 
-                    ' n+m is the size of p and q 
-
-                    'Public Shared Function MultiplyArraySmall(p,q,m As Integer, x , n As Integer, z As Integer) As Integer
-
-
                     MultiplyArraySmall(signingKey, OrderTimes8, 0, privateKey, 32, -1)
                 End If
 
@@ -832,7 +792,7 @@ Namespace Elliptic
         ''' <summary>
         ''' Constant 1/(2Gy)
         ''' </summary>
-        Public Shared ReadOnly BaseR2Y As Long10 = New Long10(5744, 8160848, 4790893, 13779497, 35730846, 12541209, 49101323, 30047407, 40071253, 6226132)
+        Private Shared ReadOnly BaseR2Y As Long10 = New Long10(5744, 8160848, 4790893, 13779497, 35730846, 12541209, 49101323, 30047407, 40071253, 6226132)
 
     End Class
 End Namespace

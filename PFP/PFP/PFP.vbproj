@@ -139,6 +139,7 @@
     </Compile>
     <Compile Include="Tools\ClsBurstAPI.vb" />
     <Compile Include="Tools\ClsPayPal.vb" />
+    <Compile Include="Tools\ClsPayPalManager.vb" />
     <Compile Include="Tools\CSV.vb" />
     <Compile Include="Tools\Curve25519.vb" />
     <Compile Include="Tools\modINITools.vb" />
@@ -183,8 +184,8 @@
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="obj\Debug\WABC.Form1.resources" />
-    <EmbeddedResource Include="obj\Debug\WABC.Resources.resources" />
+    <EmbeddedResource Include="obj\Debug\PFP.Form1.resources" />
+    <EmbeddedResource Include="obj\Debug\PFP.Resources.resources" />
     <EmbeddedResource Include="TradeTracker\TradeTrackerSlot.resx">
       <DependentUpon>TradeTrackerSlot.vb</DependentUpon>
     </EmbeddedResource>
@@ -199,7 +200,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="bin\Debug\WABC.exe.config" />
+    <None Include="bin\Debug\PFP.exe.config" />
     <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
@@ -213,22 +214,24 @@
     <None Include="App.config" />
     <None Include="obj\Debug\DesignTimeResolveAssemblyReferences.cache" />
     <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
-    <None Include="obj\Debug\WABC.vbproj.CoreCompileInputs.cache" />
-    <None Include="obj\Debug\WABC.vbproj.GenerateResource.cache" />
-    <None Include="obj\Debug\WABC.vbprojAssemblyReference.cache" />
-    <None Include="obj\Release\WABC.vbproj.CoreCompileInputs.cache" />
+    <None Include="obj\Debug\PFP.vbproj.CoreCompileInputs.cache" />
+    <None Include="obj\Debug\PFP.vbproj.GenerateResource.cache" />
+    <None Include="obj\Debug\PFP.vbprojAssemblyReference.cache" />
+    <None Include="obj\Release\PFP.vbproj.CoreCompileInputs.cache" />
+    <None Include="scripts\tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="bin\Debug\TestAccs.txt" />
-    <Content Include="bin\Debug\WABC.exe" />
-    <Content Include="bin\Debug\WABC.pdb" />
-    <Content Include="bin\Debug\WABC.xml" />
+    <Content Include="bin\Debug\PFP.exe" />
+    <Content Include="bin\Debug\PFP.pdb" />
+    <Content Include="bin\Debug\PFP.xml" />
     <Content Include="obj\Debug\TempPE\My Project.Resources.Designer.vb.dll" />
-    <Content Include="obj\Debug\WABC.exe" />
-    <Content Include="obj\Debug\WABC.pdb" />
-    <Content Include="obj\Debug\WABC.vbproj.FileListAbsolute.txt" />
-    <Content Include="obj\Debug\WABC.xml" />
+    <Content Include="obj\Debug\PFP.exe" />
+    <Content Include="obj\Debug\PFP.pdb" />
+    <Content Include="obj\Debug\PFP.vbproj.FileListAbsolute.txt" />
+    <Content Include="obj\Debug\PFP.xml" />
     <Content Include="Resources\logo.bmp" />
+    <None Include="PFP_TemporaryKey.pfx" />
     <None Include="Resources\logo.ico" />
     <None Include="Resources\symbol.jpg" />
     <None Include="Resources\settings.jpg" />
@@ -264,7 +267,7 @@
       <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
-    <PublishFile Include="bin\Debug\WABC.exe">
+    <PublishFile Include="bin\Debug\PFP.exe">
       <Visible>False</Visible>
       <Group>
       </Group>
@@ -274,7 +277,7 @@
       <IncludeHash>False</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
-    <PublishFile Include="bin\Debug\WABC.pdb">
+    <PublishFile Include="bin\Debug\PFP.pdb">
       <Visible>False</Visible>
       <Group>
       </Group>
@@ -284,7 +287,7 @@
       <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
-    <PublishFile Include="bin\Debug\WABC.xml">
+    <PublishFile Include="bin\Debug\PFP.xml">
       <Visible>False</Visible>
       <Group>
       </Group>
@@ -294,7 +297,7 @@
       <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
-    <PublishFile Include="obj\Debug\WABC.exe">
+    <PublishFile Include="obj\Debug\PFP.exe">
       <Visible>False</Visible>
       <Group>
       </Group>
@@ -304,7 +307,7 @@
       <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
-    <PublishFile Include="obj\Debug\WABC.pdb">
+    <PublishFile Include="obj\Debug\PFP.pdb">
       <Visible>False</Visible>
       <Group>
       </Group>
@@ -314,7 +317,7 @@
       <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
-    <PublishFile Include="obj\Debug\WABC.vbproj.FileListAbsolute.txt">
+    <PublishFile Include="obj\Debug\PFP.vbproj.FileListAbsolute.txt">
       <Visible>False</Visible>
       <Group>
       </Group>
@@ -324,7 +327,7 @@
       <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
-    <PublishFile Include="obj\Debug\WABC.xml">
+    <PublishFile Include="obj\Debug\PFP.xml">
       <Visible>False</Visible>
       <Group>
       </Group>
@@ -334,6 +337,10 @@
       <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="scripts\curvymodel.ts" />
+    <TypeScriptCompile Include="scripts\ECKAAAAAT.ts" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

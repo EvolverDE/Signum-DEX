@@ -10,7 +10,7 @@ Public Class ClsBurstAPI
     'acceptOrder: 4714436802908501638
     'finishOrder: 3125596792462301675
 
-    Const _ReferenceTX As String = "4449312026944639919"
+    Const _ReferenceTX As String = "4449312026944639919" '15288802811961789572" '16765061203337282908 '15223937934525417316 '15288802811961789572
 
     'CreateOrder method address: 224685783a1b4991 HEX ; 2469808197076732305 DEC -1286274751219789663
     'AcceptOrder method address: 416d0b4b4963b686 HEX ; 4714436802908501638 DEC
@@ -134,7 +134,6 @@ Public Class ClsBurstAPI
 
 
 #Region "Get"
-
 
     Public Function GetAccountFromPassPhrase() As List(Of String)
 
@@ -579,12 +578,12 @@ Public Class ClsBurstAPI
 
     End Function
 
-    Public Function GetAccountTransactions(ByVal AccountID As String, Optional ByVal LastTimestamp As String = "") As List(Of List(Of String))
+    Public Function GetAccountTransactions(ByVal AccountID As String, Optional ByVal FromTimestamp As String = "") As List(Of List(Of String))
 
         Dim Request As String = "requestType=getAccountTransactions&account=" + AccountID
 
-        If Not LastTimestamp.Trim = "" Then
-            Request += "&timestamp=" + LastTimestamp
+        If Not FromTimestamp.Trim = "" Then
+            Request += "&timestamp=" + FromTimestamp
         End If
 
         Dim Response As String = BurstRequest(Request)
@@ -1139,7 +1138,7 @@ Public Class ClsBurstAPI
             Dim PPEM As String = RecursiveSearch(DecryptedMsg, "ppem")
             Dim PPAccID As String = RecursiveSearch(DecryptedMsg, "ppacid")
             Dim PPOrder As String = RecursiveSearch(DecryptedMsg, "ppodr")
-            Dim Info As String = RecursiveSearch(DecryptedMsg, "info")
+            Dim Info As String = ConvertList2String(RecursiveSearch(DecryptedMsg, "info"))
 
             If AT.Trim = "False" Or FTX.Trim = "False" Then
 
@@ -1167,6 +1166,29 @@ Public Class ClsBurstAPI
         Return ReturnStr
 
     End Function
+
+
+    Function ConvertList2String(ByVal input As Object) As String
+
+        If input.GetType.Name = GetType(String).Name Then
+            Return input.ToString
+        ElseIf input.GetType.Name = GetType(List(Of )).Name Then
+
+            Dim ReturnStr As String = ""
+
+            For Each Entry In input
+                ReturnStr += Entry.ToString
+            Next
+
+            Return ReturnStr
+
+        Else
+            Return input.ToString
+        End If
+
+
+    End Function
+
 
     Public Function DecryptFrom(ByVal AccountRS As String, ByVal data As String, ByVal nonce As String, Optional ByVal IsText As Boolean = True)
 
@@ -1622,36 +1644,6 @@ Public Class ClsBurstAPI
 
 #Region "Toolfunctions"
 
-    'TODO: sendMoney without passphrase-cleartext
-    'signTx local
-    'broadcase TX
-    Private Function sign(ByVal message() As Byte, ByVal secretPhrase As String) As SByte()
-
-        Dim P(31) As Byte
-        Dim s(31) As Byte
-        Dim cSHA256 As System.Security.Cryptography.SHA256 = System.Security.Cryptography.SHA256Managed.Create()
-        Elliptic.Curve25519.GetSigningKey(P, s, cSHA256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(secretPhrase)))
-
-        Dim m() As Byte = cSHA256.ComputeHash(message)
-
-        cSHA256.TransformBlock(m, 0, m.Length, m, 0)
-        Dim x() As Byte = cSHA256.ComputeHash(s)
-
-        Dim Y() As Byte = Elliptic.Curve25519.GetPublicKey(x)
-
-        cSHA256.TransformBlock(m, 0, m.Length, m, 0)
-        Dim h() As Byte = cSHA256.ComputeHash(Y)
-
-        Dim v(31) As Byte
-        Elliptic.Curve25519.Core(v, h, x, s)
-
-        Dim signature(63) As SByte
-        Array.Copy(v, 0, signature, 0, 32)
-        Array.Copy(h, 0, signature, 32, 32)
-
-        Return signature
-
-    End Function
 
     Private Structure S_Sorter
         Dim Timestamp As ULong
@@ -2242,12 +2234,83 @@ Public Class ClsBurstAPI
             Return New List(Of Object)
         End If
 
+
+        '{
+        '	"result":
+        '	{
+        '		"txid":"5f17e18c0e0363fc3a14dd6c2e74141d6f0e636d0592b48d94d0a6272dcb4ef3",
+        '		"hash":"188bf760059888f9304321cfb771586b71ef50e1b4f988fdba8db3b405864c5d",
+        '		"version":2,
+        '		"size":222,
+        '		"vsize":141,
+        '		"weight":561,
+        '		"locktime":1746616,
+        '		"vin":
+        '		[
+        '			{
+        '				"txid":"9f30228774543ac5c5ba07a56e26e6079ae1c9221fa3eccb7798596cbb401711",
+        '				"vout":0,
+        '				"scriptSig":
+        '				{
+        '					"asm":"",
+        '					"hex":""
+        '				},
+        '				"txinwitness":
+        '				[
+        '					"30440220225eef02bf7d4f9b655b61a96e8095f9b5f7e482748dbb8d26d642eee64977f70220566064db332acd0577a8918826c03842ce1e6eb19ee8ba3c2fef9a1b6d89cefe01",
+        '					"031abc3d54d4d388dd81f154395566397911ff0e6a6e6317d2579d195416332a3d"
+        '				],
+        '				"sequence":4294967294
+        '			}
+        '		],
+        '		"vout":
+        '		[
+        '			{
+        '				"value":0.01198846,
+        '				"n":0,
+        '				"scriptPubKey":
+        '				{
+        '					"asm":"0 b0f27c0a32d29689acf19940c62fade458e5edb1",
+        '					"hex":"0014b0f27c0a32d29689acf19940c62fade458e5edb1",
+        '					"reqSigs":1,
+        '					"type":"witness_v0_keyhash",
+        '					"addresses":
+        '					[
+        '						"tb1qkre8cz3j62tgnt83n9qvvtadu3vwtmd3fzx5vd"
+        '					]
+        '				}
+        '			},
+        '			{
+        '				"value":0.00500000,
+        '				"n":1,
+        '				"scriptPubKey":
+        '				{
+        '					"asm":"0 0f0f5f15ce92234399a10469a2ca7f890eccc2cc",
+        '					"hex":"00140f0f5f15ce92234399a10469a2ca7f890eccc2cc",
+        '					"reqSigs":1,
+        '					"type":"witness_v0_keyhash",
+        '					"addresses":
+        '					[
+        '						"tb1qpu8479wwjg358xdpq3569jnl3y8veskvwqugjt"
+        '					]
+        '				}
+        '			}
+        '		]
+        '	},
+        '	"error":null,
+        '    "id":   1
+        '}
+
+
+
     End Function
     Function RecursiveSearch(ByVal List As Object, ByVal Key As String) As Object
 
         Dim Returner As Object = False
 
         Try
+
+
 
             For Each Entry In List
 
