@@ -1136,7 +1136,7 @@ Public Class ClsBurstAPI
             Dim AT As String = RecursiveSearch(DecryptedMsg, "at")
             Dim FTX As String = RecursiveSearch(DecryptedMsg, "tx")
             Dim PPEM As String = RecursiveSearch(DecryptedMsg, "ppem")
-            Dim PPAccID As String = RecursiveSearch(DecryptedMsg, "ppacid")
+            'Dim PPAccID As String = RecursiveSearch(DecryptedMsg, "ppacid")
             Dim PPOrder As String = RecursiveSearch(DecryptedMsg, "ppodr")
             Dim Info As String = ConvertList2String(RecursiveSearch(DecryptedMsg, "info"))
 
@@ -1147,9 +1147,9 @@ Public Class ClsBurstAPI
                 If PPEM.Trim <> "False" Then
                     ReturnStr += "<ppem>" + PPEM + "</ppem>"
                 End If
-                If PPAccID.Trim <> "False" Then
-                    ReturnStr += "<ppacid>" + PPAccID + "</ppacid>"
-                End If
+                'If PPAccID.Trim <> "False" Then
+                '    ReturnStr += "<ppacid>" + PPAccID + "</ppacid>"
+                'End If
                 If PPOrder.Trim <> "False" Then
                     ReturnStr += "<ppodr>" + PPOrder + "</ppodr>"
                 End If
@@ -1216,7 +1216,7 @@ Public Class ClsBurstAPI
             Dim AT As String = RecursiveSearch(DecryptedMsg, "at")
             Dim FTX As String = RecursiveSearch(DecryptedMsg, "tx")
             Dim PPEM As String = RecursiveSearch(DecryptedMsg, "ppem")
-            Dim PPAccID As String = RecursiveSearch(DecryptedMsg, "ppacid")
+            'Dim PPAccID As String = RecursiveSearch(DecryptedMsg, "ppacid")
             Dim PPOrder As String = RecursiveSearch(DecryptedMsg, "ppodr")
             Dim Info As String = RecursiveSearch(DecryptedMsg, "info")
 
@@ -1227,9 +1227,9 @@ Public Class ClsBurstAPI
                 If PPEM.Trim <> "False" Then
                     ReturnStr += "<ppem>" + PPEM + "</ppem>"
                 End If
-                If PPAccID.Trim <> "False" Then
-                    ReturnStr += "<ppacid>" + PPAccID + "</ppacid>"
-                End If
+                'If PPAccID.Trim <> "False" Then
+                '    ReturnStr += "<ppacid>" + PPAccID + "</ppacid>"
+                'End If
                 If PPOrder.Trim <> "False" Then
                     ReturnStr += "<ppodr>" + PPOrder + "</ppodr>"
                 End If

@@ -123,6 +123,8 @@ Partial Class PFPForm
         Me.BtTestAccept = New System.Windows.Forms.Button()
         Me.BtTestCreate = New System.Windows.Forms.Button()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
+        Me.RBUseXItemSettings = New System.Windows.Forms.RadioButton()
+        Me.RBUsePaymentInfo = New System.Windows.Forms.RadioButton()
         Me.ChBxCheckXItemTX = New System.Windows.Forms.CheckBox()
         Me.Label21 = New System.Windows.Forms.Label()
         Me.Label20 = New System.Windows.Forms.Label()
@@ -131,17 +133,13 @@ Partial Class PFPForm
         Me.Label19 = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.BtSaveSettings = New System.Windows.Forms.Button()
-        Me.ChBxUsePayPalSettings = New System.Windows.Forms.CheckBox()
         Me.ChBxAutoSendPaymentInfo = New System.Windows.Forms.CheckBox()
         Me.TBPaymentInfo = New System.Windows.Forms.TextBox()
-        Me.LabPaymentInfo = New System.Windows.Forms.Label()
         Me.GrpBxSeller = New System.Windows.Forms.GroupBox()
         Me.TabControl2 = New System.Windows.Forms.TabControl()
         Me.TabPage4 = New System.Windows.Forms.TabPage()
         Me.RBPayPalOrder = New System.Windows.Forms.RadioButton()
-        Me.RBPayPalAccID = New System.Windows.Forms.RadioButton()
         Me.RBPayPalEMail = New System.Windows.Forms.RadioButton()
-        Me.TBPayPalAccID = New System.Windows.Forms.TextBox()
         Me.TBPayPalEMail = New System.Windows.Forms.TextBox()
         Me.TabPage5 = New System.Windows.Forms.TabPage()
         Me.BtCheckPayPalBiz = New System.Windows.Forms.Button()
@@ -1361,6 +1359,8 @@ Partial Class PFPForm
         '
         'GroupBox3
         '
+        Me.GroupBox3.Controls.Add(Me.RBUseXItemSettings)
+        Me.GroupBox3.Controls.Add(Me.RBUsePaymentInfo)
         Me.GroupBox3.Controls.Add(Me.ChBxCheckXItemTX)
         Me.GroupBox3.Controls.Add(Me.Label21)
         Me.GroupBox3.Controls.Add(Me.Label20)
@@ -1369,10 +1369,8 @@ Partial Class PFPForm
         Me.GroupBox3.Controls.Add(Me.Label19)
         Me.GroupBox3.Controls.Add(Me.Label6)
         Me.GroupBox3.Controls.Add(Me.BtSaveSettings)
-        Me.GroupBox3.Controls.Add(Me.ChBxUsePayPalSettings)
         Me.GroupBox3.Controls.Add(Me.ChBxAutoSendPaymentInfo)
         Me.GroupBox3.Controls.Add(Me.TBPaymentInfo)
-        Me.GroupBox3.Controls.Add(Me.LabPaymentInfo)
         Me.GroupBox3.ForeColor = System.Drawing.Color.White
         Me.GroupBox3.Location = New System.Drawing.Point(8, 13)
         Me.GroupBox3.Name = "GroupBox3"
@@ -1381,10 +1379,32 @@ Partial Class PFPForm
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "General Settings"
         '
+        'RBUseXItemSettings
+        '
+        Me.RBUseXItemSettings.AutoSize = True
+        Me.RBUseXItemSettings.Location = New System.Drawing.Point(28, 65)
+        Me.RBUseXItemSettings.Name = "RBUseXItemSettings"
+        Me.RBUseXItemSettings.Size = New System.Drawing.Size(115, 17)
+        Me.RBUseXItemSettings.TabIndex = 18
+        Me.RBUseXItemSettings.TabStop = True
+        Me.RBUseXItemSettings.Text = "Use XItem Settings"
+        Me.RBUseXItemSettings.UseVisualStyleBackColor = True
+        '
+        'RBUsePaymentInfo
+        '
+        Me.RBUsePaymentInfo.AutoSize = True
+        Me.RBUsePaymentInfo.Location = New System.Drawing.Point(28, 42)
+        Me.RBUsePaymentInfo.Name = "RBUsePaymentInfo"
+        Me.RBUsePaymentInfo.Size = New System.Drawing.Size(112, 17)
+        Me.RBUsePaymentInfo.TabIndex = 17
+        Me.RBUsePaymentInfo.TabStop = True
+        Me.RBUsePaymentInfo.Text = "Use Payment Info:"
+        Me.RBUsePaymentInfo.UseVisualStyleBackColor = True
+        '
         'ChBxCheckXItemTX
         '
         Me.ChBxCheckXItemTX.AutoSize = True
-        Me.ChBxCheckXItemTX.Location = New System.Drawing.Point(23, 68)
+        Me.ChBxCheckXItemTX.Location = New System.Drawing.Point(6, 137)
         Me.ChBxCheckXItemTX.Name = "ChBxCheckXItemTX"
         Me.ChBxCheckXItemTX.Size = New System.Drawing.Size(270, 17)
         Me.ChBxCheckXItemTX.TabIndex = 16
@@ -1459,17 +1479,6 @@ Partial Class PFPForm
         Me.BtSaveSettings.Text = "save settings"
         Me.BtSaveSettings.UseVisualStyleBackColor = False
         '
-        'ChBxUsePayPalSettings
-        '
-        Me.ChBxUsePayPalSettings.AutoSize = True
-        Me.ChBxUsePayPalSettings.Enabled = False
-        Me.ChBxUsePayPalSettings.Location = New System.Drawing.Point(23, 91)
-        Me.ChBxUsePayPalSettings.Name = "ChBxUsePayPalSettings"
-        Me.ChBxUsePayPalSettings.Size = New System.Drawing.Size(122, 17)
-        Me.ChBxUsePayPalSettings.TabIndex = 8
-        Me.ChBxUsePayPalSettings.Text = "Use PayPal Settings"
-        Me.ChBxUsePayPalSettings.UseVisualStyleBackColor = True
-        '
         'ChBxAutoSendPaymentInfo
         '
         Me.ChBxAutoSendPaymentInfo.AutoSize = True
@@ -1483,20 +1492,10 @@ Partial Class PFPForm
         'TBPaymentInfo
         '
         Me.TBPaymentInfo.Enabled = False
-        Me.TBPaymentInfo.Location = New System.Drawing.Point(123, 42)
+        Me.TBPaymentInfo.Location = New System.Drawing.Point(146, 41)
         Me.TBPaymentInfo.Name = "TBPaymentInfo"
-        Me.TBPaymentInfo.Size = New System.Drawing.Size(202, 20)
+        Me.TBPaymentInfo.Size = New System.Drawing.Size(179, 20)
         Me.TBPaymentInfo.TabIndex = 7
-        '
-        'LabPaymentInfo
-        '
-        Me.LabPaymentInfo.AutoSize = True
-        Me.LabPaymentInfo.Enabled = False
-        Me.LabPaymentInfo.Location = New System.Drawing.Point(20, 45)
-        Me.LabPaymentInfo.Name = "LabPaymentInfo"
-        Me.LabPaymentInfo.Size = New System.Drawing.Size(69, 13)
-        Me.LabPaymentInfo.TabIndex = 6
-        Me.LabPaymentInfo.Text = "PaymentInfo:"
         '
         'GrpBxSeller
         '
@@ -1524,9 +1523,7 @@ Partial Class PFPForm
         '
         Me.TabPage4.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
         Me.TabPage4.Controls.Add(Me.RBPayPalOrder)
-        Me.TabPage4.Controls.Add(Me.RBPayPalAccID)
         Me.TabPage4.Controls.Add(Me.RBPayPalEMail)
-        Me.TabPage4.Controls.Add(Me.TBPayPalAccID)
         Me.TabPage4.Controls.Add(Me.TBPayPalEMail)
         Me.TabPage4.Location = New System.Drawing.Point(4, 22)
         Me.TabPage4.Name = "TabPage4"
@@ -1538,22 +1535,12 @@ Partial Class PFPForm
         'RBPayPalOrder
         '
         Me.RBPayPalOrder.AutoSize = True
-        Me.RBPayPalOrder.Location = New System.Drawing.Point(5, 61)
+        Me.RBPayPalOrder.Location = New System.Drawing.Point(5, 32)
         Me.RBPayPalOrder.Name = "RBPayPalOrder"
         Me.RBPayPalOrder.Size = New System.Drawing.Size(243, 17)
         Me.RBPayPalOrder.TabIndex = 12
         Me.RBPayPalOrder.Text = "create a PayPal Order (need PayPal Business)"
         Me.RBPayPalOrder.UseVisualStyleBackColor = True
-        '
-        'RBPayPalAccID
-        '
-        Me.RBPayPalAccID.AutoSize = True
-        Me.RBPayPalAccID.Location = New System.Drawing.Point(5, 33)
-        Me.RBPayPalAccID.Name = "RBPayPalAccID"
-        Me.RBPayPalAccID.Size = New System.Drawing.Size(118, 17)
-        Me.RBPayPalAccID.TabIndex = 11
-        Me.RBPayPalAccID.Text = "PayPal Account ID:"
-        Me.RBPayPalAccID.UseVisualStyleBackColor = True
         '
         'RBPayPalEMail
         '
@@ -1567,19 +1554,11 @@ Partial Class PFPForm
         Me.RBPayPalEMail.Text = "PayPal E-Mail:"
         Me.RBPayPalEMail.UseVisualStyleBackColor = True
         '
-        'TBPayPalAccID
-        '
-        Me.TBPayPalAccID.Enabled = False
-        Me.TBPayPalAccID.Location = New System.Drawing.Point(129, 32)
-        Me.TBPayPalAccID.Name = "TBPayPalAccID"
-        Me.TBPayPalAccID.Size = New System.Drawing.Size(237, 20)
-        Me.TBPayPalAccID.TabIndex = 9
-        '
         'TBPayPalEMail
         '
-        Me.TBPayPalEMail.Location = New System.Drawing.Point(129, 6)
+        Me.TBPayPalEMail.Location = New System.Drawing.Point(104, 6)
         Me.TBPayPalEMail.Name = "TBPayPalEMail"
-        Me.TBPayPalEMail.Size = New System.Drawing.Size(237, 20)
+        Me.TBPayPalEMail.Size = New System.Drawing.Size(262, 20)
         Me.TBPayPalEMail.TabIndex = 7
         '
         'TabPage5
@@ -1862,14 +1841,10 @@ Partial Class PFPForm
     Friend WithEvents Label14 As Label
     Friend WithEvents Label13 As Label
     Friend WithEvents TBPaymentInfo As TextBox
-    Friend WithEvents LabPaymentInfo As Label
     Friend WithEvents GroupBox3 As GroupBox
-    Friend WithEvents ChBxUsePayPalSettings As CheckBox
     Friend WithEvents TabControl2 As TabControl
     Friend WithEvents TabPage4 As TabPage
-    Friend WithEvents RBPayPalAccID As RadioButton
     Friend WithEvents RBPayPalEMail As RadioButton
-    Friend WithEvents TBPayPalAccID As TextBox
     Friend WithEvents TBPayPalEMail As TextBox
     Friend WithEvents TabPage5 As TabPage
     Friend WithEvents ColumnHeader41 As ColumnHeader
@@ -1917,4 +1892,6 @@ Partial Class PFPForm
     Friend WithEvents TBTestDelTXINI As TextBox
     Friend WithEvents TBTestGetTXINI As TextBox
     Friend WithEvents TBTestSetTXINI As TextBox
+    Friend WithEvents RBUseXItemSettings As RadioButton
+    Friend WithEvents RBUsePaymentInfo As RadioButton
 End Class

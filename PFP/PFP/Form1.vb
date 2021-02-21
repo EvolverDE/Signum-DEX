@@ -22,15 +22,25 @@ Public Class PFPForm
         Get
             If ChBxAutoSendPaymentInfo.Checked Then
 
-                If ChBxUsePayPalSettings.Checked Then
+                If RBUseXItemSettings.Checked Then
 
-                    If RBPayPalEMail.Checked Then
-                        _PaymentInfo = ", ""ppem"":""" + TBPayPalEMail.Text.Replace(",", ";") + """"
-                    ElseIf RBPayPalAccID.Checked Then
-                        _PaymentInfo = ", ""ppacid"":""" + TBPayPalAccID.Text.Replace(",", ";") + """"
-                    ElseIf RBPayPalOrder.Checked Then
-                        _PaymentInfo = ", ""ppodr"":""" + "<PAYPALORDER>" + """"
+                    'TODO: Load XItem Payment Settings
+
+                    If Not GetMarketCurrencyIsCrypto(CoBxMarket.Text) Then
+                        'is no Crypto-Crypto market
+                        If RBPayPalEMail.Checked Then
+                            _PaymentInfo = ", ""ppem"":""" + TBPayPalEMail.Text.Replace(",", ";") + """"
+                        ElseIf RBPayPalOrder.Checked Then
+                            _PaymentInfo = ", ""ppodr"":""" + "<PAYPALORDER>" + """"
+                        End If
+
+                    Else
+                        'is Crypto-Crypto market
+
+                        _PaymentInfo = ", ""info"":""" + TBPaymentInfo.Text.Replace(",", ";") + """"
+
                     End If
+
 
                 Else
                     _PaymentInfo = ", ""info"":""" + TBPaymentInfo.Text.Replace(",", ";") + """"
@@ -174,7 +184,7 @@ Public Class PFPForm
                 Changes = True
             End If
 
-            If ChBxUsePayPalSettings.Checked <> CBool(INIGetValue(Application.StartupPath + "/Settings.ini", "General", "UsePayPalSettings", "False")) Then
+            If RBUseXItemSettings.Checked <> CBool(INIGetValue(Application.StartupPath + "/Settings.ini", "General", "UsePayPalSettings", "False")) Then
                 Changes = True
             End If
 
@@ -187,12 +197,10 @@ Public Class PFPForm
             Dim RBs As String = ""
             If RBPayPalEMail.Checked Then
                 RBs = "EMail"
-            ElseIf RBPayPalAccID.Checked Then
-                RBs = "AccountID"
             ElseIf RBPayPalOrder.Checked Then
                 RBs = "Order"
             Else
-                RBs = "Order"
+                RBs = "EMail"
             End If
 
             If RBs <> INIGetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalChoice", "Order") Then
@@ -204,9 +212,6 @@ Public Class PFPForm
                 Changes = True
             End If
 
-            If TBPayPalAccID.Text <> INIGetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalID", "a1b2c3d4") Then
-                Changes = True
-            End If
 
             If TBPayPalAPIUser.Text <> INIGetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalAPIUser", "1234") Then
                 Changes = True
@@ -232,14 +237,13 @@ Public Class PFPForm
                     INISetValue(Application.StartupPath + "/Settings.ini", "General", "AutoSendPaymentInfo", ChBxAutoSendPaymentInfo.Checked.ToString)
                     INISetValue(Application.StartupPath + "/Settings.ini", "General", "AutoCheckAndFinishAT", ChBxCheckXItemTX.Checked.ToString)
                     'ChBxCheckItemXTX.Checked = CBool(INIGetValue(Application.StartupPath + "/Settings.ini", "General", "AutoCheckAndFinishAT", "False"))
-                    INISetValue(Application.StartupPath + "/Settings.ini", "General", "UsePayPalSettings", ChBxUsePayPalSettings.Checked.ToString)
+                    INISetValue(Application.StartupPath + "/Settings.ini", "General", "UsePayPalSettings", RBUseXItemSettings.Checked.ToString)
 
                     INISetValue(Application.StartupPath + "/Settings.ini", "PaymentInfo", "PaymentInfoText", TBPaymentInfo.Text)
 
                     INISetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalChoice", RBs)
 
                     INISetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalEMail", TBPayPalEMail.Text)
-                    INISetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalID", TBPayPalAccID.Text)
 
                     INISetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalAPIUser", TBPayPalAPIUser.Text)
                     INISetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalAPISecret", TBPayPalAPISecret.Text)
@@ -367,7 +371,7 @@ Public Class PFPForm
 
         ChBxAutoSendPaymentInfo.Checked = CBool(INIGetValue(Application.StartupPath + "/Settings.ini", "General", "AutoSendPaymentInfo", "False"))
         ChBxCheckXItemTX.Checked = CBool(INIGetValue(Application.StartupPath + "/Settings.ini", "General", "AutoCheckAndFinishAT", "False"))
-        ChBxUsePayPalSettings.Checked = CBool(INIGetValue(Application.StartupPath + "/Settings.ini", "General", "UsePayPalSettings", "False"))
+        RBUseXItemSettings.Checked = CBool(INIGetValue(Application.StartupPath + "/Settings.ini", "General", "UsePayPalSettings", "False"))
 
 
         TBPaymentInfo.Text = INIGetValue(Application.StartupPath + "/Settings.ini", "PaymentInfo", "PaymentInfoText", "self pickup")
@@ -376,8 +380,8 @@ Public Class PFPForm
 
         If RBs.Trim = "EMail" Then
             RBPayPalEMail.Checked = True
-        ElseIf RBs.Trim = "AccountID" Then
-            RBPayPalAccID.Checked = True
+            'ElseIf RBs.Trim = "AccountID" Then
+            '    RBPayPalAccID.Checked = True
         ElseIf RBs.Trim = "Order" Then
             RBPayPalOrder.Checked = True
         Else
@@ -386,7 +390,7 @@ Public Class PFPForm
 
 
         TBPayPalEMail.Text = INIGetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalEMail", "test@test.com")
-        TBPayPalAccID.Text = INIGetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalID", "a1b2c3d4")
+        'TBPayPalAccID.Text = INIGetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalID", "a1b2c3d4")
 
         TBPayPalAPIUser.Text = INIGetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalAPIUser", "1234")
         TBPayPalAPISecret.Text = INIGetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalAPISecret", "abcd")
@@ -611,13 +615,13 @@ Public Class PFPForm
 
                 'If MarketIsCrypto Then
                 If XItemMinAmount / MinAmount < MinXAmount Then
-                    msgs.MBox("Minimum for one Burst must be greater than " + Dbl2LVStr(MinXAmount, Decimals) + " " + CoBxMarket.Text + "!", "Value too low",,, msgs.Status.Erro)
+                    msgs.MBox("Minimum for one Burst must be greater than " + Dbl2LVStr(MinXAmount, Decimals) + " " + CoBxMarket.Text + "!", "Value to low",,, msgs.Status.Erro)
 
                     Exit Sub
                 End If
 
             Else
-                msgs.MBox("Minimum values must be greater than 0.0!", "Value too low",,, msgs.Status.Erro)
+                msgs.MBox("Minimum values must be greater than 0.0!", "Value to low",,, msgs.Status.Erro)
                 Exit Sub
             End If
 
@@ -658,9 +662,9 @@ Public Class PFPForm
                 If ChBxAutoSendPaymentInfo.Checked Then
                     'autosignal
 
-                    If ChBxUsePayPalSettings.Checked And RBPayPalOrder.Checked Then
+                    If RBUseXItemSettings.Checked And RBPayPalOrder.Checked Then
                         Item += "-PB"
-                    ElseIf ChBxUsePayPalSettings.Checked And (RBPayPalEMail.Checked Or RBPayPalAccID.Checked) Then
+                    ElseIf RBUseXItemSettings.Checked And (RBPayPalEMail.Checked) Then 'Or RBPayPalAccID.Checked
                         Item += "-PA"
                     Else
 
@@ -1340,61 +1344,67 @@ Public Class PFPForm
 #Region "Settings - Controls"
     Dim OldPaymentinfoText As String = Nothing
 
-    Private Sub ChBxAutoSendPaymentInfo_CheckedChanged(sender As Object, e As EventArgs) Handles ChBxAutoSendPaymentInfo.CheckedChanged
+    'Private Sub ChBxAutoSendPaymentInfo_CheckedChanged(sender As Object, e As EventArgs) Handles ChBxAutoSendPaymentInfo.CheckedChanged
 
-        If ChBxAutoSendPaymentInfo.Checked Then
-            LabPaymentInfo.Enabled = True
+    '    If ChBxAutoSendPaymentInfo.Checked Then
+    '        TBPaymentInfo.Enabled = True
+    '        'ChBxUsePayPalSettings.Enabled = True
+    '    Else
+
+    '        TBPaymentInfo.Enabled = False
+    '        'ChBxUsePayPalSettings.Enabled = False
+    '    End If
+
+    'End Sub
+
+    'Private Sub ChBxUsePayPalSettings_CheckedChanged(sender As Object, e As EventArgs)
+
+    '    If ChBxUsePayPalSettings.Checked Then
+
+    '        TBPaymentInfo.Enabled = False
+    '        OldPaymentinfoText = TBPaymentInfo.Text
+    '    Else
+
+    '        TBPaymentInfo.Enabled = True
+    '    End If
+
+    '    RBPayPalEMail_CheckedChanged(Nothing, Nothing)
+
+    'End Sub
+
+
+    Private Sub RBSendPaymentInfo_CheckedChanged(sender As Object, e As EventArgs) Handles RBUsePaymentInfo.CheckedChanged, RBUseXItemSettings.CheckedChanged
+
+        If RBUsePaymentInfo.Checked Then
             TBPaymentInfo.Enabled = True
-            ChBxUsePayPalSettings.Enabled = True
-        Else
-            LabPaymentInfo.Enabled = False
+            TBPaymentInfo.Text = OldPaymentinfoText
+        ElseIf RBUseXItemSettings.Checked Then
+            'other payment informations (PayPal Email/Orders, BTC Address, ETH address ...)
+            'TODO: load XItem Payment Settings
             TBPaymentInfo.Enabled = False
-            ChBxUsePayPalSettings.Enabled = False
         End If
 
     End Sub
 
-    Private Sub ChBxUsePayPalSettings_CheckedChanged(sender As Object, e As EventArgs) Handles ChBxUsePayPalSettings.CheckedChanged
 
-        If ChBxUsePayPalSettings.Checked Then
-            LabPaymentInfo.Enabled = False
-            TBPaymentInfo.Enabled = False
-            OldPaymentinfoText = TBPaymentInfo.Text
-        Else
-            LabPaymentInfo.Enabled = True
-            TBPaymentInfo.Enabled = True
-        End If
-
-        RBPayPalEMail_CheckedChanged(Nothing, Nothing)
-
-    End Sub
-
-    Private Sub RBPayPalEMail_CheckedChanged(sender As Object, e As EventArgs) Handles RBPayPalEMail.CheckedChanged, RBPayPalAccID.CheckedChanged, RBPayPalOrder.CheckedChanged
+    Private Sub RBPayPalEMail_CheckedChanged(sender As Object, e As EventArgs) Handles RBPayPalEMail.CheckedChanged, RBPayPalOrder.CheckedChanged
 
         Dim PaymentInfo As String = ""
 
         If RBPayPalEMail.Checked Then
 
             TBPayPalEMail.Enabled = True
-            TBPayPalAccID.Enabled = False
             PaymentInfo = TBPayPalEMail.Text
-
-        ElseIf RBPayPalAccID.Checked Then
-
-            TBPayPalEMail.Enabled = False
-            TBPayPalAccID.Enabled = True
-            PaymentInfo = TBPayPalAccID.Text
 
         ElseIf RBPayPalOrder.Checked Then
 
             TBPayPalEMail.Enabled = False
-            TBPayPalAccID.Enabled = False
             PaymentInfo = ""
 
         End If
 
 
-        If ChBxUsePayPalSettings.Checked Then
+        If RBUseXItemSettings.Checked Then
             TBPaymentInfo.Text = PaymentInfo
         Else
             If Not IsNothing(OldPaymentinfoText) Then
@@ -1404,7 +1414,7 @@ Public Class PFPForm
 
     End Sub
 
-    Private Sub TBPayPalEMail_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TBPayPalEMail.KeyPress, TBPayPalAccID.KeyPress
+    Private Sub TBPayPalEMail_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TBPayPalEMail.KeyPress
 
         Dim keys As Integer = Asc(e.KeyChar)
 
@@ -1455,15 +1465,15 @@ Public Class PFPForm
 
         INISetValue(Application.StartupPath + "/Settings.ini", "General", "AutoSendPaymentInfo", ChBxAutoSendPaymentInfo.Checked.ToString)
         INISetValue(Application.StartupPath + "/Settings.ini", "General", "AutoCheckAndFinishAT", ChBxCheckXItemTX.Checked.ToString)
-        INISetValue(Application.StartupPath + "/Settings.ini", "General", "UsePayPalSettings", ChBxUsePayPalSettings.Checked.ToString)
+        INISetValue(Application.StartupPath + "/Settings.ini", "General", "UsePayPalSettings", RBUseXItemSettings.Checked.ToString)
 
         INISetValue(Application.StartupPath + "/Settings.ini", "PaymentInfo", "PaymentInfoText", TBPaymentInfo.Text)
 
         Dim RBs As String = ""
         If RBPayPalEMail.Checked Then
             RBs = "EMail"
-        ElseIf RBPayPalAccID.Checked Then
-            RBs = "AccountID"
+            'ElseIf RBPayPalAccID.Checked Then
+            '    RBs = "AccountID"
         ElseIf RBPayPalOrder.Checked Then
             RBs = "Order"
         Else
@@ -1473,7 +1483,7 @@ Public Class PFPForm
         INISetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalChoice", RBs)
 
         INISetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalEMail", TBPayPalEMail.Text)
-        INISetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalID", TBPayPalAccID.Text)
+        'INISetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalID", TBPayPalAccID.Text)
 
         INISetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalAPIUser", TBPayPalAPIUser.Text)
         INISetValue(Application.StartupPath + "/Settings.ini", "PayPal", "PayPalAPISecret", TBPayPalAPISecret.Text)
@@ -1830,12 +1840,9 @@ Public Class PFPForm
 #Region "Convert AT TXs to Orders"
             SBLSAT.AT_OrderList = ConvertTXs2Orders(SBLSAT)
 
-            For Each Order As S_Order In SBLSAT.AT_OrderList
-
-                Order = Order
-
-            Next
-
+            'For Each Order As S_Order In SBLSAT.AT_OrderList
+            '    Order = Order
+            'Next
 
 #End Region
 
@@ -2089,14 +2096,17 @@ Public Class PFPForm
                                             Dim APIOK As String = CheckPayPalAPI()
 
                                             If APIOK = "True" Then
-                                                Dim PPAPI_Autosignal As ClsPayPal = New ClsPayPal
-                                                PPAPI_Autosignal.Client_ID = TBPayPalAPIUser.Text
-                                                PPAPI_Autosignal.Secret = TBPayPalAPISecret.Text
+                                                Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal
+                                                PPAPI_Autoinfo.Client_ID = TBPayPalAPIUser.Text
+                                                PPAPI_Autoinfo.Secret = TBPayPalAPISecret.Text
 
-                                                Dim PPOrderID As List(Of String) = PPAPI_Autosignal.CreateOrder("Burst", Order.Quantity, Order.XAmount, "EUR")
-                                                T_PaymentInfoJSON = T_PaymentInfoJSON.Replace("<PAYPALORDER>", PPAPI_Autosignal.BetweenFromList(PPOrderID, "<id>", "</id>"))
+                                                Dim PPOrderID As List(Of String) = PPAPI_Autoinfo.CreateOrder("Burst", Order.Quantity, Order.XAmount, "EUR")
+                                                T_PaymentInfoJSON = T_PaymentInfoJSON.Replace("<PAYPALORDER>", PPAPI_Autoinfo.BetweenFromList(PPOrderID, "<id>", "</id>"))
                                             End If
 
+                                        Else
+                                            'other Paymentinfos like BTC address, ETH address ...
+                                            T_PaymentInfoJSON = T_PaymentInfoJSON
                                         End If
 
                                         Dim T_MsgStr As String = "{""at"":""" + Order.AT + """, ""tx"":""" + Order.FirstTransaction + """" + T_PaymentInfoJSON + "}"
@@ -2119,7 +2129,6 @@ Public Class PFPForm
 
                                 Dim BillingInfo As String = BCR.Between(AlreadySend, "<info>", "</info>", GetType(String))
                                 Dim PayPalEMail As String = BCR.Between(AlreadySend, "<ppem>", "</ppem>", GetType(String))
-                                Dim PayPalAccID As String = BCR.Between(AlreadySend, "<ppacid>", "</ppacid>", GetType(String))
                                 Dim PayPalOrder As String = BCR.Between(AlreadySend, "<ppodr>", "</ppodr>", GetType(String))
 
 
@@ -2133,16 +2142,11 @@ Public Class PFPForm
                                     Dim TXStr As String = BCR.Between(AlreadySend, "<tx>", "</tx>", GetType(String))
                                     AlreadySend = "Payment Channel: " + ATStr + " Payment Reference: " + TXStr + " PayPal-EMail: " + PayPalEMail
                                 End If
-                                If PayPalAccID.Trim <> "" Then
-                                    Dim ATStr As String = BCR.Between(AlreadySend, "<at>", "</at>", GetType(String))
-                                    Dim TXStr As String = BCR.Between(AlreadySend, "<tx>", "</tx>", GetType(String))
-                                    AlreadySend = "Payment Channel: " + ATStr + " Payment Reference: " + TXStr + " PayPal-AccountID: " + PayPalAccID
-                                End If
 
 
                                 If ChBxCheckXItemTX.Checked Then 'autosignal AT
 
-                                    If ChBxUsePayPalSettings.Checked Then
+                                    If RBUseXItemSettings.Checked Then
 
                                         Dim APIOK As String = CheckPayPalAPI()
                                         If APIOK = "True" Then
@@ -2199,53 +2203,57 @@ Public Class PFPForm
                                                 End If
 
 #End Region
-                                            Else 'If RBPayPalAccID.Checked Then
+                                            Else 'If RBPayPalEMail.Checked Then
 #Region "PayPal Check TX Automation"
-                                                Dim BCR1 As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text)
-                                                Dim CheckAttachment As String = BCR1.ULngList2DataStr(New List(Of ULong)({BCR1.ReferenceFinishOrder}))
-                                                Dim UTXCheck As Boolean = CheckForUTX(Order.Seller, Order.ATRS, CheckAttachment)
-                                                Dim TXCheck As Boolean = CheckForTX(Order.Seller, Order.ATRS, Order.FirstTimestamp, CheckAttachment)
+
+                                                If Not PayPalEMail = "0" And Not PayPalEMail = "" Then
+
+                                                    Dim BCR1 As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text)
+                                                    Dim CheckAttachment As String = BCR1.ULngList2DataStr(New List(Of ULong)({BCR1.ReferenceFinishOrder}))
+                                                    Dim UTXCheck As Boolean = CheckForUTX(Order.Seller, Order.ATRS, CheckAttachment)
+                                                    Dim TXCheck As Boolean = CheckForTX(Order.Seller, Order.ATRS, Order.FirstTimestamp, CheckAttachment)
 
 
-                                                If Not UTXCheck And Not TXCheck Then
+                                                    If Not UTXCheck And Not TXCheck Then
 
-                                                    If Not GetAutosignalTXFromINI(Order.FirstTransaction) Then 'Check for autosignal-TX in Settings.ini and skip if founded
+                                                        If Not GetAutosignalTXFromINI(Order.FirstTransaction) Then 'Check for autosignal-TX in Settings.ini and skip if founded
 
-                                                        'PayPal Approving check
-                                                        Dim PPAPI As ClsPayPal = New ClsPayPal
-                                                        PPAPI.Client_ID = TBPayPalAPIUser.Text
-                                                        PPAPI.Secret = TBPayPalAPISecret.Text
+                                                            'PayPal Approving check
+                                                            Dim PPAPI_GetPayPalTX_to_Autosignal_AT As ClsPayPal = New ClsPayPal
+                                                            PPAPI_GetPayPalTX_to_Autosignal_AT.Client_ID = TBPayPalAPIUser.Text
+                                                            PPAPI_GetPayPalTX_to_Autosignal_AT.Secret = TBPayPalAPISecret.Text
 
-                                                        Dim TXDetails As List(Of List(Of String)) = PPAPI.GetTransactionList(Order.FirstTransaction)
+                                                            Dim TXDetails As List(Of List(Of String)) = PPAPI_GetPayPalTX_to_Autosignal_AT.GetTransactionList(Order.FirstTransaction)
 
-                                                        If TXDetails.Count > 0 Then
+                                                            If TXDetails.Count > 0 Then
 
-                                                            Dim Status As String = PPAPI.BetweenFromList(TXDetails(0), "<transaction_status>", "</transaction_status>")
-                                                            Dim Amount As String = PPAPI.BetweenFromList(TXDetails(0), "<transaction_amount>", "</transaction_amount>")
+                                                                Dim Status As String = PPAPI_GetPayPalTX_to_Autosignal_AT.BetweenFromList(TXDetails(0), "<transaction_status>", "</transaction_status>")
+                                                                Dim Amount As String = PPAPI_GetPayPalTX_to_Autosignal_AT.BetweenFromList(TXDetails(0), "<transaction_amount>", "</transaction_amount>")
 
-                                                            If CDbl(Amount) >= Order.XAmount And Status.ToLower.Trim = "s" Then
-                                                                'complete
-                                                                Dim TXStr As String = BCR1.SendMessage2BLSAT(Order.AT, 1.0, New List(Of ULong)({BCR1.ReferenceFinishOrder}))
-                                                                AlreadySend = "COMPLETED"
+                                                                If CDbl(Amount) >= Order.XAmount And Status.ToLower.Trim = "s" Then
+                                                                    'complete
+                                                                    Dim TXStr As String = BCR1.SendMessage2BLSAT(Order.AT, 1.0, New List(Of ULong)({BCR1.ReferenceFinishOrder}))
+                                                                    AlreadySend = "COMPLETED"
 
 
-                                                                If SetAutosignalTX2INI(Order.FirstTransaction) Then 'Set autosignal-TX in Settings.ini
-                                                                    'ok
+                                                                    If SetAutosignalTX2INI(Order.FirstTransaction) Then 'Set autosignal-TX in Settings.ini
+                                                                        'ok
+                                                                    End If
+
                                                                 End If
 
                                                             End If
 
                                                         End If
 
+                                                    Else
+
+                                                        AlreadySend = "PENDING"
+
                                                     End If
-
-                                                Else
-
-                                                    AlreadySend = "PENDING"
 
                                                 End If
 
-                                                ' End If
 #End Region
                                             End If
 
@@ -2285,7 +2293,6 @@ Public Class PFPForm
 
                                 Dim BillingInfo As String = BCR.Between(AlreadySend, "<info>", "</info>", GetType(String))
                                 Dim PayPalEMail As String = BCR.Between(AlreadySend, "<ppem>", "</ppem>", GetType(String))
-                                Dim PayPalAccID As String = BCR.Between(AlreadySend, "<ppacid>", "</ppacid>", GetType(String))
                                 Dim PayPalOrder As String = BCR.Between(AlreadySend, "<ppodr>", "</ppodr>", GetType(String))
 
                                 If BillingInfo.Trim <> "" Then
@@ -2294,15 +2301,10 @@ Public Class PFPForm
                                     AlreadySend = "Payment Channel: " + ATStr + " Payment Reference: " + TXStr + " Payment Info: " + BillingInfo
                                 End If
                                 If PayPalEMail.Trim <> "" Then
-                                    Dim ATStr As String = BCR.Between(AlreadySend, "<at>", "</at>", GetType(String))
-                                    Dim TXStr As String = BCR.Between(AlreadySend, "<tx>", "</tx>", GetType(String))
-                                    AlreadySend = "Payment Channel: " + ATStr + " Payment Reference: " + TXStr + " PayPal-EMail: " + PayPalEMail
-                                End If
-                                If PayPalAccID.Trim <> "" Then
                                     'TODO: Send Automatic PayPal Payment with CreateBatchPayOut function only once
                                     Dim ATStr As String = BCR.Between(AlreadySend, "<at>", "</at>", GetType(String))
                                     Dim TXStr As String = BCR.Between(AlreadySend, "<tx>", "</tx>", GetType(String))
-                                    AlreadySend = "Payment Channel: " + ATStr + " Payment Reference: " + TXStr + " PayPal-AccountID: " + PayPalAccID
+                                    AlreadySend = "Payment Channel: " + ATStr + " Payment Reference: " + TXStr + " PayPal-EMail: " + PayPalEMail
                                 End If
                                 If PayPalOrder.Trim <> "" Then
                                     Dim PPAPI As ClsPayPal = New ClsPayPal
