@@ -4326,30 +4326,30 @@ Public Class PFPForm
 
         ListBox1.Items.Clear()
 
-        For i As Integer = 0 To 1000
+        'For i As Integer = 0 To 1000
 
 
 
-            Dim alicePrivate = Elliptic.Curve25519.ClampPrivateKey(beit)
-            Dim alicePublic = Elliptic.Curve25519.GetPublicKey(alicePrivate)
+        '    Dim alicePrivate = Elliptic.Old_Curve25519.ClampPrivateKey(beit)
+        '    Dim alicePublic = Elliptic.Old_Curve25519.GetPublicKey(alicePrivate)
 
-            Dim bobPrivate = Elliptic.Curve25519.ClampPrivateKey(beit)
-            Dim bobPublic = Elliptic.Curve25519.GetPublicKey(bobPrivate)
+        '    Dim bobPrivate = Elliptic.Old_Curve25519.ClampPrivateKey(beit)
+        '    Dim bobPublic = Elliptic.Old_Curve25519.GetPublicKey(bobPrivate)
 
-            Dim aliceShared = Elliptic.Curve25519.GetSharedSecret(alicePrivate, bobPublic)
-            Dim bobShared = Elliptic.Curve25519.GetSharedSecret(bobPrivate, alicePublic)
+        '    Dim aliceShared = Elliptic.Old_Curve25519.GetSharedSecret(alicePrivate, bobPublic)
+        '    Dim bobShared = Elliptic.Old_Curve25519.GetSharedSecret(bobPrivate, alicePublic)
 
-            ListBox1.Items.Add("alicePrv: " + ByteAry2HEX(alicePrivate))
-            ListBox1.Items.Add("alicePub: " + ByteAry2HEX(alicePublic))
-            ListBox1.Items.Add("")
-            ListBox1.Items.Add("bobPrv: " + ByteAry2HEX(bobPrivate))
-            ListBox1.Items.Add("bobPub: " + ByteAry2HEX(bobPublic))
-            ListBox1.Items.Add("")
-            ListBox1.Items.Add("aliceShared: " + ByteAry2HEX(aliceShared))
-            ListBox1.Items.Add("bobShared: " + ByteAry2HEX(bobShared))
-            ListBox1.Items.Add("--------------------------")
+        '    ListBox1.Items.Add("alicePrv: " + ByteAry2HEX(alicePrivate))
+        '    ListBox1.Items.Add("alicePub: " + ByteAry2HEX(alicePublic))
+        '    ListBox1.Items.Add("")
+        '    ListBox1.Items.Add("bobPrv: " + ByteAry2HEX(bobPrivate))
+        '    ListBox1.Items.Add("bobPub: " + ByteAry2HEX(bobPublic))
+        '    ListBox1.Items.Add("")
+        '    ListBox1.Items.Add("aliceShared: " + ByteAry2HEX(aliceShared))
+        '    ListBox1.Items.Add("bobShared: " + ByteAry2HEX(bobShared))
+        '    ListBox1.Items.Add("--------------------------")
 
-        Next
+        'Next
 
 
 

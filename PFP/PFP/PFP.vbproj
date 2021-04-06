@@ -137,11 +137,16 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Tools\AES.vb" />
+    <Compile Include="Tools\BurstNET.vb" />
     <Compile Include="Tools\ClsBurstAPI.vb" />
     <Compile Include="Tools\ClsPayPal.vb" />
     <Compile Include="Tools\ClsPayPalManager.vb" />
     <Compile Include="Tools\CSV.vb" />
     <Compile Include="Tools\Curve25519.vb" />
+    <Compile Include="Tools\EC-KCDSA.vb" />
+    <Compile Include="Tools\GZip.vb" />
+    <Compile Include="Tools\ModGlobal.vb" />
     <Compile Include="Tools\modINITools.vb" />
     <Compile Include="Tools\msgs.vb" />
     <Compile Include="TradeTracker\Graph.vb" />
@@ -257,16 +262,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <PublishFile Include="bin\Debug\TestAccs.txt">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>File</FileType>
-    </PublishFile>
     <PublishFile Include="bin\Debug\PFP.exe">
       <Visible>False</Visible>
       <Group>
@@ -288,6 +283,16 @@
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="bin\Debug\PFP.xml">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="bin\Debug\TestAccs.txt">
       <Visible>False</Visible>
       <Group>
       </Group>

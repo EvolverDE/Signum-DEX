@@ -124,129 +124,97 @@ PFP
  <returns>-1, 0 oder 1 (gemäß Vergleich)</returns>
  <remarks></remarks>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.ClampPrivateKeyInline(System.Byte[])">
+<member name="M:PFP.BurstNET.GenerateMasterKeys(System.String)">
  <summary>
- Private key clamping (inline, for performance)
+ Generates the Masterkeys from PassPhrase 0=PublicKey; 1=SignKey; 2=AgreementKey
  </summary>
- <param name="key">[out] 32 random bytes</param>
+ <param name="PassPhrase">The PassPhrase as String</param>
+ <returns>List of Masterkeys</returns>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.ClampPrivateKey(System.Byte[])">
+<member name="M:PFP.BurstNET.Keygen(System.Byte[])">
+ <summary>
+ Generates the Masterkeys from KeyHash
+ </summary>
+ <param name="KeyHash">The 32 Byte hashed PassPhrase</param>
+ <returns>Array of Masterkeys</returns>
+</member>
+<member name="M:PFP.BurstNET.GenerateSignature(System.String,System.String)">
+ <summary>
+ Generates the Signature of the MessageHEX
+ </summary>
+ <param name="MessageHEX">Message as HEX String</param>
+ <param name="PrivateKey">The Private Key to Sign with</param>
+ <returns>Signature in HEX String</returns>
+</member>
+<member name="M:PFP.BurstNET.VerifySignature(System.String,System.String,System.String)">
+ <summary>
+ Verify the Signature of the UnsignedMessageHEX String
+ </summary>
+ <param name="Signature">The Signature as HEX String</param>
+ <param name="UnsignedMessageHex">The Unsigned Message as HEX String</param>
+ <param name="PublicKey">The Public Key as HEX String</param>
+ <returns></returns>
+</member>
+<member name="M:PFP.Curve25519.Clamp(System.Byte[]@)">
  <summary>
  Private key clamping
  </summary>
- <param name="rawKey">[out] 32 random bytes</param>
+ <param name="AgreementKey">[in] 32 random bytes, [out] your private key for key agreement</param>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.CreateRandomPrivateKey">
+<member name="M:PFP.Curve25519.KeyGen(System.Byte[]@,System.Byte[]@,System.Byte[]@)">
  <summary>
- Creates a random private key
+ Key-Pair generation * WARNING: if s is not NULL, this function has data-dependent timing 
  </summary>
- <returns>32 random bytes that are clamped to a suitable private key</returns>
+ <param name="PublicKey">[out] your public key</param>
+ <param name="SignKey">[out] your private key for signing</param>
+ <param name="AgreementKey">[in] 32 random bytes, [out] your private key for key agreement</param>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.KeyGenInline(System.Byte[],System.Byte[],System.Byte[])">
- <summary>
- Key-pair generation (inline, for performance)
- </summary>
- <param name="publicKey">[out] public key</param>
- <param name="signingKey">[out] signing key (ignored if NULL)</param>
- <param name="privateKey">[out] private key</param>
- <remarks>WARNING: if signingKey is not NULL, this function has data-dependent timing</remarks>
-</member>
-<member name="M:PFP.Elliptic.Curve25519.GetPublicKey(System.Byte[])">
- <summary>
- Generates the public key out of the clamped private key
- </summary>
- <param name="privateKey">private key (must use ClampPrivateKey first!)</param>
-</member>
-<member name="M:PFP.Elliptic.Curve25519.GetSigningKey(System.Byte[])">
- <summary>
- Generates signing key out of the clamped private key
- </summary>
- <param name="privateKey">private key (must use ClampPrivateKey first!)</param>
-</member>
-<member name="M:PFP.Elliptic.Curve25519.GetSharedSecret(System.Byte[],System.Byte[])">
+<member name="M:PFP.Curve25519.GetSharedSecret(System.Byte[]@,System.Byte[],System.Byte[])">
  <summary>
  Key agreement
  </summary>
- <param name="privateKey">[in] your private key for key agreement</param>
- <param name="peerPublicKey">[in] peer's public key</param>
- <returns>shared secret (needs hashing before use)</returns>
+ <param name="SharedSecret">[out] shared secret (needs hashing before use)</param>
+ <param name="AgreementKey">[in]  your private key for key agreement</param>
+ <param name="PublicKey">[in] peer's public key</param>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.Egcd32(System.Byte[],System.Byte[],System.Byte[],System.Byte[])">
+<member name="T:PFP.Curve25519.Long10">
  <summary>
- Returns x if a contains the gcd, y if b.
- </summary>
- <param name="x">x and y must have 64 bytes space for temporary use.</param>
- <param name="y">x and y must have 64 bytes space for temporary use.</param>
- <param name="a">requires that a[-1] and b[-1] are valid memory locations</param>
- <param name="b">requires that a[-1] and b[-1] are valid memory locations</param>
- <returns>Also, the returned buffer contains the inverse of a mod b as 32-byte signed.</returns>
-</member>
-<member name="M:PFP.Elliptic.Curve25519.IsOverflow(PFP.Elliptic.Curve25519.Long10)">
- <summary>
- Check if reduced-form input >= 2^255-19
+ Using this class instead of long[10] to avoid bounds checks. 
  </summary>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.Copy(PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10)">
+<member name="M:PFP.Curve25519.Copy32(System.Byte[]@,System.Byte[])">
  <summary>
- Copy a number
+ Copies 32 Bytes from Input to Output
+ </summary>
+ <param name="Output">[out] Copy of Input</param>
+ <param name="Input">[in] Input to Copy to Output</param>
+</member>
+<member name="M:PFP.EC_KCDSA.Sign(System.Byte[],System.Byte[],System.Byte[])">
+ <summary>
+ Signature generation primitive, calculates (x-h)s mod q
+ </summary>
+ <param name="SignHash">signature hash (of message, signature pub key, and context data)</param>
+ <param name="SignPrivKey">signature private key</param>
+ <param name="PrivKey">private key for signing</param>
+ <returns>signature value</returns>
+</member>
+<member name="M:PFP.EC_KCDSA.Verify(System.Byte[],System.Byte[],System.Byte[])">
+ <summary>
+ Signature verification primitive, calculates Y = vP + hG
+ </summary>
+ <param name="SignValue">signature value</param>
+ <param name="SignHash">signature hash</param>
+ <param name="PublicKey">public key</param>
+ <returns>signature public key</returns>
+</member>
+<member name="M:PFP.GZip.Compress(System.Byte[])">
+ <summary>
+ Receives bytes, returns compressed bytes.
  </summary>
 </member>
-<member name="M:PFP.Elliptic.Curve25519.Set(PFP.Elliptic.Curve25519.Long10,System.Int32)">
+<member name="M:PFP.GZip.Inflate(System.Byte[])">
  <summary>
- Set a number to value, which must be in range -185861411 .. 185861411
- </summary>
-</member>
-<member name="M:PFP.Elliptic.Curve25519.MulSmall(PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10,System.Int64)">
- <summary>
- Multiply a number by a small integer in range -185861411 .. 185861411.
- The output is in reduced form, the input x need not be.  x and xy may point
- to the same buffer.
- </summary>
-</member>
-<member name="M:PFP.Elliptic.Curve25519.Multiply(PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10)">
- <summary>
- Multiply two numbers. The output is in reduced form, the inputs need not be.
- </summary>
-</member>
-<member name="M:PFP.Elliptic.Curve25519.Square(PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10)">
- <summary>
- Square a number.  Optimization of  Multiply(x2, x, x)
- </summary>
-</member>
-<member name="M:PFP.Elliptic.Curve25519.Reciprocal(PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10,System.Boolean)">
- <summary>
- Calculates a reciprocal.  The output is in reduced form, the inputs need not 
- be.  Simply calculates  y = x^(p-2)  so it's not too fast. */
- When sqrtassist is true, it instead calculates y = x^((p-5)/8)
- </summary>
-</member>
-<member name="M:PFP.Elliptic.Curve25519.IsNegative(PFP.Elliptic.Curve25519.Long10)">
- <summary>
- Checks if x is "negative", requires reduced input
- </summary>
- <param name="x">must be reduced input</param>
-</member>
-<member name="M:PFP.Elliptic.Curve25519.CurveEquationInline(PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10,PFP.Elliptic.Curve25519.Long10)">
- <summary>
- Y^2 = X^3 + 486662 X^2 + X
- </summary>
- <param name="y2">output</param>
- <param name="x">X</param>
- <param name="temp">temporary</param>
-</member>
-<member name="M:PFP.Elliptic.Curve25519.Core(System.Byte[],System.Byte[],System.Byte[],System.Byte[])">
- <summary>
- P = kG   and  s = sign(P)/k
- </summary>
-</member>
-<member name="F:PFP.Elliptic.Curve25519.OrderTimes8">
- <summary>
- Smallest multiple of the order that's >= 2^255
- </summary>
-</member>
-<member name="F:PFP.Elliptic.Curve25519.BaseR2Y">
- <summary>
- Constant 1/(2Gy)
+ Receives bytes, returns decompressed bytes.
  </summary>
 </member>
 <member name="M:PFP.ModFunctions.DateIntToCandle(System.Collections.Generic.List{System.Object})">
