@@ -149,6 +149,7 @@
     <Compile Include="Tools\ModGlobal.vb" />
     <Compile Include="Tools\modINITools.vb" />
     <Compile Include="Tools\msgs.vb" />
+    <Compile Include="Tools\out.vb" />
     <Compile Include="TradeTracker\Graph.vb" />
     <Compile Include="TradeTracker\ModFunctions.vb" />
     <Compile Include="TradeTracker\TradeTrackerSlot.Designer.vb">
@@ -223,7 +224,6 @@
     <None Include="obj\Debug\PFP.vbproj.GenerateResource.cache" />
     <None Include="obj\Debug\PFP.vbprojAssemblyReference.cache" />
     <None Include="obj\Release\PFP.vbproj.CoreCompileInputs.cache" />
-    <None Include="scripts\tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="bin\Debug\TestAccs.txt" />
@@ -342,10 +342,6 @@
       <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
-  </ItemGroup>
-  <ItemGroup>
-    <TypeScriptCompile Include="scripts\curvymodel.ts" />
-    <TypeScriptCompile Include="scripts\ECKAAAAAT.ts" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

@@ -9,8 +9,9 @@ Public Class ClsBurstAPI
     'createOrder: 716726961670769723
     'acceptOrder: 4714436802908501638
     'finishOrder: 3125596792462301675
+    'injectResponder: 6956773156128522497
 
-    Const _ReferenceTX As String = "4449312026944639919" '15288802811961789572" '16765061203337282908 '15223937934525417316 '15288802811961789572
+    Public Const _ReferenceTX As String = "2758976048878098469" ' "4449312026944639919" '15288802811961789572" '16765061203337282908 '15223937934525417316 '15288802811961789572
 
     'CreateOrder method address: 224685783a1b4991 HEX ; 2469808197076732305 DEC -1286274751219789663
     'AcceptOrder method address: 416d0b4b4963b686 HEX ; 4714436802908501638 DEC
@@ -19,6 +20,7 @@ Public Class ClsBurstAPI
     ReadOnly _ReferenceCreateOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(716726961670769723), 0)
     ReadOnly _ReferenceAcceptOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(4714436802908501638), 0)
     ReadOnly _ReferenceFinishOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(3125596792462301675), 0)
+    ReadOnly _ReferenceInjectResponder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(6956773156128522497), 0)
 
     Dim RekursivRest As List(Of Object) = New List(Of Object)
 
@@ -37,21 +39,27 @@ Public Class ClsBurstAPI
         End Get
     End Property
 
-    ReadOnly Property ReferenceCreateOrder As ULong
+    Public ReadOnly Property ReferenceCreateOrder As ULong
         Get
             Return _ReferenceCreateOrder
         End Get
     End Property
 
-    ReadOnly Property ReferenceAcceptOrder As ULong
+    Public ReadOnly Property ReferenceAcceptOrder As ULong
         Get
             Return _ReferenceAcceptOrder
         End Get
     End Property
 
-    ReadOnly Property ReferenceFinishOrder As ULong
+    Public ReadOnly Property ReferenceFinishOrder As ULong
         Get
             Return _ReferenceFinishOrder
+        End Get
+    End Property
+
+    Public ReadOnly Property ReferenceInjectResponder As ULong
+        Get
+            Return _ReferenceInjectResponder
         End Get
     End Property
 
@@ -93,7 +101,42 @@ Public Class ClsBurstAPI
 
 #Region "Blockchain Communication"
 
+
 #Region "Basic API"
+
+    Function BroadcastTransaction(ByVal TXBytesHexStr As String) As String
+
+        Dim Response As String = BurstRequest("requestType=broadcastTransaction&transactionBytes=" + TXBytesHexStr)
+
+        If Response.Contains(Application.ProductName + "-error") Then
+            Return Application.ProductName + "-error in BroadcastTransaction(): ->" + vbCrLf + Response
+        End If
+
+        Dim RespList As Object = JSONRecursive(Response)
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            Return Application.ProductName + "-error in BroadcastTransaction(): " + Response
+        End If
+
+
+        Dim UTX As Object = RecursiveSearch(RespList, "transaction")
+
+        Dim Returner As String = ""
+        If UTX.GetType.Name = GetType(String).Name Then
+            Returner = CStr(UTX)
+        ElseIf UTX.GetType.Name = GetType(Boolean).Name Then
+
+        ElseIf UTX.GetType.Name = GetType(List(Of )).Name Then
+
+        End If
+
+        Return Returner
+
+    End Function
 
     Function BurstRequest(ByVal postData As String) As String
 
@@ -110,8 +153,8 @@ Public Class ClsBurstAPI
 
             Dim dataStream As Stream = request.GetRequestStream()
             dataStream.Write(byteArray, 0, byteArray.Length)
-
             dataStream.Close()
+
 
             Dim response As WebResponse = request.GetResponse()
             dataStream = response.GetResponseStream()
@@ -125,7 +168,8 @@ Public Class ClsBurstAPI
             Return responseFromServer
 
         Catch ex As Exception
-            Return "error"
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in BurstRequest(): " + ex.Message
+            Return Application.ProductName + "-error in BurstRequest(): " + ex.Message
         End Try
 
     End Function
@@ -135,33 +179,128 @@ Public Class ClsBurstAPI
 
 #Region "Get"
 
+    Public Function IsAT(ByVal AccountID As String) As Boolean
+
+        Dim Out As out = New out(Application.StartupPath)
+
+        Dim Response As String = BurstRequest("requestType=getAccount&account=" + AccountID)
+
+        If Response.Contains(Application.ProductName + "-error") Then
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in IsAT(): -> " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in IsAT(): -> " + Response)
+            Return False
+        End If
+
+        Dim RespList As Object = JSONRecursive(Response)
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in IsAT(): " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in IsAT(): " + Response)
+            Return False
+        End If
+
+        Dim PubKey As String = RecursiveSearch(RespList, "publicKey").ToString
+
+        If PubKey = "0000000000000000000000000000000000000000000000000000000000000000" Then
+            Return True
+        Else
+            Return False
+        End If
+
+    End Function
+
     Public Function GetAccountFromPassPhrase() As List(Of String)
 
-        Dim Response As String = BurstRequest("requestType=getAccountId&secretPhrase=" + C_PassPhrase.Trim)
+        Dim Out As out = New out(Application.StartupPath)
 
-        If Response.Trim = "error" Then
+        Dim Burst As BurstNET = New BurstNET(C_PassPhrase)
+        Dim MasterkeyList As List(Of Byte()) = Burst.GenerateMasterKeys()
+        Dim Response As String = BurstRequest("requestType=getAccountId&publicKey=" + ByteAry2HEX(MasterkeyList(0)).Trim)
+
+        If Response.Contains(Application.ProductName + "-error") Then
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountFromPassPhrase(): -> " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetAccountFromPassPhrase(): -> " + Response)
             Return New List(Of String)
         End If
 
         Dim RespList As Object = JSONRecursive(Response)
 
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountFromPassPhrase(): " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetAccountFromPassPhrase(): " + Response)
+            Return New List(Of String)
+        End If
+
+
         Dim Account As String = RecursiveSearch(RespList, "account").ToString
-        'Dim AccountRS As String = RecursiveSearch(RespList, "accountRS").ToString
         Dim Balance As List(Of String) = GetBalance(Account)
 
         Return Balance
 
     End Function
 
+    Public Function GetAccountPublicKeyFromAccountID_RS(ByVal AccountID_RS As String) As String
+
+        Dim Response As String = BurstRequest("requestType=getAccountPublicKey&account=" + AccountID_RS.Trim)
+
+        If Response.Contains(Application.ProductName + "-error") Then
+            Return Application.ProductName + "-error in GetAccountPublicKeyFromAccountID_RS(): ->" + vbCrLf + Response
+        End If
+
+        Dim RespList As Object = JSONRecursive(Response)
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            Return Application.ProductName + "-error in GetAccountPublicKeyFromAccountID_RS(): " + Response
+        End If
+
+
+        Dim PublicKey As Object = RecursiveSearch(RespList, "publicKey").ToString
+
+        Dim Returner As String = ""
+        If PublicKey.GetType.Name = GetType(String).Name Then
+            Returner = CStr(PublicKey)
+        End If
+
+        Return Returner
+
+    End Function
+
     Public Function RSConvert(ByVal Input As String) As List(Of String)
+
+        Dim Out As out = New out(Application.StartupPath)
 
         Dim Response As String = BurstRequest("requestType=rsConvert&account=" + Input.Trim)
 
-        If Response.Trim = "error" Then
+        If Response.Contains(Application.ProductName + "-error") Then
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in RSConvert(): -> " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in RSConvert(): -> " + Response)
             Return New List(Of String)
         End If
 
         Dim RespList As Object = JSONRecursive(Response)
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in RSConvert(): " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in RSConvert(): " + Response)
+            Return New List(Of String)
+        End If
 
         Dim Account As String = RecursiveSearch(RespList, "account").ToString
         Dim AccountRS As String = RecursiveSearch(RespList, "accountRS").ToString
@@ -173,19 +312,35 @@ Public Class ClsBurstAPI
 
     Public Function GetBalance(Optional ByVal AccountID As String = "") As List(Of String)
 
+        Dim Out As out = New out(Application.StartupPath)
+
         If AccountID.Trim = "" Then
             AccountID = C_AccountID
         End If
 
-        Dim CoinBal As List(Of String) = New List(Of String)({"<coin>BURST</coin>", "<account>" + AccountID + "</account>", "<address>" + AccountID + "</address>", "<balance>0</balance>", "<available>0</available>", "<pending>0</pending>"})  ' C_Balance = New C_Balance With {.Address = "", .Available = "0", .Balance = "0", .Currency = Coin, .Pending = "0"}
+        Dim CoinBal As List(Of String) = New List(Of String)({"<coin>BURST</coin>", "<account>" + AccountID + "</account>", "<address>" + AccountID + "</address>", "<balance>0</balance>", "<available>0</available>", "<pending>0</pending>"})
 
-        Dim Response As String = BurstRequest("requestType=getAccount&account=" + AccountID.Trim) 'BURST-ZWLW-FZZ7-YMM6-ECHQ9
+        Dim Response As String = BurstRequest("requestType=getAccount&account=" + AccountID.Trim)
 
-        If Response.Trim = "error" Then
+        If Response.Contains(Application.ProductName + "-error") Then
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetBalance(): -> " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetBalance(): -> " + Response)
             Return CoinBal
         End If
 
+
         Dim RespList As Object = JSONRecursive(Response)
+
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetBalance(): " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetBalance(): " + Response)
+            Return CoinBal
+        End If
 
 
         Dim BalancePlanckStr As String = RecursiveSearch(RespList, "balanceNQT").ToString
@@ -201,7 +356,7 @@ Public Class ClsBurstAPI
         Dim Available As Double = 0.0
 
         Try
-            Available = CDbl(BalancePlanckStr.Insert(BalancePlanckStr.Length - 8, ","))
+            Available = CDbl(AvailablePlanckStr.Insert(AvailablePlanckStr.Length - 8, ","))
         Catch ex As Exception
 
         End Try
@@ -211,7 +366,7 @@ Public Class ClsBurstAPI
         Dim Address As String = RecursiveSearch(RespList, "accountRS").ToString
 
 
-        '(Coin, Address, Balance, Available, Pending)
+        '(Coin, Account, Address, Balance, Available, Pending)
         CoinBal(0) = "<coin>BURST</coin>"
         CoinBal(1) = "<account>" + AccountID.Trim + "</account>"
         CoinBal(2) = "<address>" + Address.Trim + "</address>"
@@ -235,47 +390,36 @@ Public Class ClsBurstAPI
             SlotFee *= (TXList.Count + 1)
         End If
 
-
-        'Dim Response As String = BurstRequest("requestType=getUnconfirmedTransactions")
-
-        'If Response.Trim = "error" Then
-        '    Return 0.00735
-        'End If
-
-
-        'Dim RespList As Object = JSONRecursive(Response)
-        'Dim UTX As Object = RecursiveSearch(RespList, "unconfirmedTransactions")
-
-        'If UTX.GetType.Name = GetType(String).Name Then
-        '    Return 0.00735
-        'Else
-        '    Dim CNTer As Integer = 0
-
-        '    For Each Entry In UTX
-        '        If Entry(0) = "type" Then
-        '            CNTer += 1
-        '        End If
-
-        '    Next
-
-        '    Dim SlotFee As Double = 0.00735 * (CNTer + 1)
-
         Return SlotFee
-
-        'End If
 
     End Function
 
 
     Public Function GetUnconfirmedTransactions() As List(Of List(Of String))
 
+        Dim Out As out = New out(Application.StartupPath)
+
         Dim Response As String = BurstRequest("requestType=getUnconfirmedTransactions")
 
-        If Response.Trim = "error" Then
+        If Response.Contains(Application.ProductName + "-error") Then
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetUnconfirmedTransactions(): -> " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetUnconfirmedTransactions(): -> " + Response)
             Return New List(Of List(Of String))
         End If
 
         Dim RespList As Object = JSONRecursive(Response)
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetUnconfirmedTransactions(): " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetUnconfirmedTransactions(): " + Response)
+            Return New List(Of List(Of String))
+        End If
+
+
         Dim UTX As Object = RecursiveSearch(RespList, "unconfirmedTransactions")
 
         Dim EntryList As List(Of Object) = New List(Of Object)
@@ -450,22 +594,37 @@ Public Class ClsBurstAPI
 
     Public Function GetCurrentBlock() As Integer
 
+        Dim Out As out = New out(Application.StartupPath)
+
         Dim BlockHeightInt As Integer = 0
 
         Dim Response As String = BurstRequest("requestType=getMiningInfo")
 
-        If Response.Trim = "error" Then
+        If Response.Contains(Application.ProductName + "-error") Then
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetCurrentBlock(): -> " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): -> " + Response)
             Return 0
         End If
 
+
         Dim RespList As Object = JSONRecursive(Response)
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetCurrentBlock(): " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): " + Response)
+            Return 0
+        End If
 
         Dim BlockHeightStr As Object = RecursiveSearch(RespList, "height")
 
         Try
             BlockHeightInt = CInt(BlockHeightStr)
         Catch ex As Exception
-            'out.ErrorLog2File("Blockheight-Error (" + Now.ToShortDateString + " " + Now.ToShortTimeString + "):" + vbCrLf + ex.Message)
+            Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): -> " + ex.Message)
             Return 0
         End Try
 
@@ -475,13 +634,31 @@ Public Class ClsBurstAPI
 
     Public Function GetTransaction(ByVal TXID As String) As List(Of String)
 
+        Dim Out As out = New out(Application.StartupPath)
+
         Dim Response As String = BurstRequest("requestType=getTransaction&transaction=" + TXID)
 
-        If Response.Trim = "error" Then
+        If Response.Contains(Application.ProductName + "-error") Then
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetTransaction(): -> " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetTransaction(): -> " + Response)
             Return New List(Of String)
         End If
 
         Dim RespList As Object = JSONRecursive(Response)
+
+
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetTransaction(): " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetTransaction(): " + Response)
+            Return New List(Of String)
+        End If
+
+
 
         Dim TXDetailList As List(Of String) = New List(Of String)
 
@@ -580,6 +757,8 @@ Public Class ClsBurstAPI
 
     Public Function GetAccountTransactions(ByVal AccountID As String, Optional ByVal FromTimestamp As String = "") As List(Of List(Of String))
 
+        Dim Out As out = New out(Application.StartupPath)
+
         Dim Request As String = "requestType=getAccountTransactions&account=" + AccountID
 
         If Not FromTimestamp.Trim = "" Then
@@ -587,7 +766,27 @@ Public Class ClsBurstAPI
         End If
 
         Dim Response As String = BurstRequest(Request)
+
+        If Response.Contains(Application.ProductName + "-error") Then
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountTransactions(): -> " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetAccountTransactions(): -> " + Response)
+            Return New List(Of List(Of String))
+        End If
+
         Dim RespList As Object = JSONRecursive(Response)
+
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountTransactions(): " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetAccountTransactions(): " + Response)
+            Return New List(Of List(Of String))
+        End If
+
+
 
         Dim EntryList As List(Of Object) = New List(Of Object)
 
@@ -699,10 +898,12 @@ Public Class ClsBurstAPI
 
                         Case entry(0) = "sender"
 
-                            Dim T_TX = GetATDetails(entry(1))
-                            Dim IsAT As String = BetweenFromList(T_TX, "<machineCode>", "</machineCode>")
 
-                            If Not IsAT.Trim = "" Then
+
+                            'Dim T_TX = GetATDetails(entry(1))
+                            'Dim IsAT As String = BetweenFromList(T_TX, "<machineCode>", "</machineCode>")
+
+                            If IsAT(entry(1)) Then ' Not IsAT.Trim = "" Then
                                 TempList(0) = "<type>BLSTX</type>"
                             Else
 
@@ -773,6 +974,9 @@ Public Class ClsBurstAPI
                         MesULng = DataStr2ULngList(T_Message)
                     End If
 
+                    Dim CNT As Integer = MesULng.Count
+
+
                     If MesULng.Count = 0 Then
                         If MSgIdx = -1 Then
 
@@ -780,30 +984,100 @@ Public Class ClsBurstAPI
                             TXEntry(MSgIdx) = "<attachment></attachment>"
                         End If
 
-                    ElseIf MesULng.Count >= 3 Then
-                        Dim AttMsg As String = "<attachment><method>" + MesULng(0).ToString + "</method><colBuyAmount>" + MesULng(1).ToString + "</colBuyAmount><xAmount>" + MesULng(2).ToString + "</xAmount></attachment>"
-
-                        If MesULng.Count = 4 Then
-                            Dim MSGStr As String = ULng2String(MesULng(3))
-                            AttMsg = "<attachment><method>" + MesULng(0).ToString + "</method><colBuyAmount>" + MesULng(1).ToString + "</colBuyAmount><xAmount>" + MesULng(2).ToString + "</xAmount><xItem>" + MSGStr.Trim + "</xItem></attachment>"
-                        End If
-
-                        TXEntry(MSgIdx) = AttMsg
-
-                        Dim T_Sum As Double = CDbl(T_AmountNQT) - CDbl(MesULng(1))
-
-                        If T_Sum < 0 Then
-                            TXEntry(0) = "<type>BuyOrder</type>"
-                        Else
-                            TXEntry(0) = "<type>SellOrder</type>"
-                        End If
-
                     Else
-                        Dim AttMsg As String = "<attachment><method>" + MesULng(0).ToString + "</method></attachment>"
+
+                        Dim AttMsg As String = "<attachment><method>" + MesULng(0).ToString + "</method>"
+
+                        Select Case MesULng(0)
+                            Case ReferenceCreateOrder
+
+                                Select Case MesULng.Count
+                                    Case 1
+
+                                    Case 2
+                                        AttMsg += "<colBuyAmount>" + MesULng(1).ToString + "</colBuyAmount>"
+                                    Case 3
+                                        AttMsg += "<colBuyAmount>" + MesULng(1).ToString + "</colBuyAmount>"
+                                        AttMsg += "<xAmount>" + MesULng(2).ToString + "</xAmount>"
+                                    Case 4
+
+                                        Dim MSGStr As String = ULng2String(MesULng(3))
+
+                                        AttMsg += "<colBuyAmount>" + MesULng(1).ToString + "</colBuyAmount>"
+                                        AttMsg += "<xAmount>" + MesULng(2).ToString + "</xAmount>"
+                                        AttMsg += "<xItem>" + MSGStr.Trim + "</xItem>"
+
+                                End Select
+
+                                AttMsg += "</attachment>"
+
+                                Dim T_Sum As Double = CDbl(T_AmountNQT) - CDbl(MesULng(1))
+
+                                If T_Sum < 0 Then
+                                    TXEntry(0) = "<type>BuyOrder</type>"
+                                Else
+                                    TXEntry(0) = "<type>SellOrder</type>"
+                                End If
+
+
+                            Case ReferenceAcceptOrder
+                                TXEntry(0) = "<type>ResponseOrder</type>"
+
+
+                            Case ReferenceInjectResponder
+                                TXEntry(0) = "<type>ResponseOrder</type>"
+
+                                Select Case MesULng.Count
+                                    Case 1
+
+                                    Case 2
+                                        AttMsg += "<injectedResponser>" + MesULng(1).ToString + "</injectedResponser>"
+                                    Case 3
+
+                                    Case 4
+
+                                    Case Else
+
+                                End Select
+
+                                AttMsg += "</attachment>"
+
+                            Case ReferenceFinishOrder
+                                TXEntry(0) = "<type>ResponseOrder</type>"
+                            Case Else
+                                TXEntry(0) = "<type>ResponseOrder</type>"
+
+                        End Select
 
                         TXEntry(MSgIdx) = AttMsg
 
-                        TXEntry(0) = "<type>ResponseOrder</type>"
+                        '    ElseIf MesULng.Count >= 3 Then
+
+                        '    'The Message contains Paymentinfos
+
+                        '    Dim AttMsg As String = "<attachment><method>" + MesULng(0).ToString + "</method><colBuyAmount>" + MesULng(1).ToString + "</colBuyAmount><xAmount>" + MesULng(2).ToString + "</xAmount></attachment>"
+
+                        '    If MesULng.Count = 4 Then
+                        '        Dim MSGStr As String = ULng2String(MesULng(3))
+                        '        AttMsg = "<attachment><method>" + MesULng(0).ToString + "</method><colBuyAmount>" + MesULng(1).ToString + "</colBuyAmount><xAmount>" + MesULng(2).ToString + "</xAmount><xItem>" + MSGStr.Trim + "</xItem></attachment>"
+                        '    End If
+
+                        '    TXEntry(MSgIdx) = AttMsg
+
+
+
+                        'ElseIf MesULng.Count = 2 Then
+
+                        '    'The message contains inject infos
+
+
+
+                        'Else
+                        '    Dim AttMsg As String = "<attachment><method>" + MesULng(0).ToString + "</method></attachment>"
+
+                        '    TXEntry(MSgIdx) = AttMsg
+
+                        '    TXEntry(0) = "<type>ResponseOrder</type>"
 
                     End If
 
@@ -889,15 +1163,30 @@ Public Class ClsBurstAPI
     End Function
 
 
-
     Public Function GetATIds() As List(Of String)
+
+        Dim Out As out = New out(Application.StartupPath)
+
         Dim Response As String = BurstRequest("requestType=getATIds")
 
-        If Response.Trim = "error" Then
+        If Response.Contains(Application.ProductName + "-error") Then
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATIds(): -> " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetATIds(): -> " + Response)
             Return New List(Of String)
         End If
 
         Dim RespList As List(Of Object) = JSONRecursive(Response)
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATIds(): " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetATIds(): " + Response)
+            Return New List(Of String)
+        End If
+
 
         For Each RespEntry In RespList
 
@@ -923,15 +1212,32 @@ Public Class ClsBurstAPI
         Return New List(Of String)
 
     End Function
+
     Public Function GetATDetails(ByVal ATId As String) As List(Of String)
+
+        Dim Out As out = New out(Application.StartupPath)
 
         Dim Response As String = BurstRequest("requestType=getATDetails&at=" + ATId)
 
-        If Response.Trim = "error" Then
+        If Response.Contains(Application.ProductName + "-error") Then
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATDetails(" + ATId + "): -> " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails(" + ATId + "): -> " + Response)
             Return New List(Of String)
         End If
 
         Dim RespList As Object = JSONRecursive(Response)
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATDetails(" + ATId + "): " + Response
+            Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails(" + ATId + "): " + Response)
+            Return New List(Of String)
+        End If
+
+
 
         Dim ATDetailList As List(Of String) = New List(Of String)
 
@@ -1003,11 +1309,19 @@ Public Class ClsBurstAPI
 
 #Region "Send"
 
-    Public Function SendMoney(ByVal RecipientID As String, ByVal Amount As Double, Optional ByVal Fee As Double = 0.0, Optional ByVal Message As String = "", Optional ByVal MessageIsText As Boolean = True, Optional ByVal RecipientPublicKey As String = "")
+    Public Function SendMoney(ByVal RecipientID As String, ByVal Amount As Double, Optional ByVal Fee As Double = 0.0, Optional ByVal Message As String = "", Optional ByVal MessageIsText As Boolean = True, Optional ByVal RecipientPublicKey As String = "") As String
 
         If C_PassPhrase.Trim = "" Then
-            Return "error"
+            Return "error in SendMoney(): no PassPhrase"
         End If
+
+        Dim Burst As BurstNET = New BurstNET(C_PassPhrase)
+        Dim MasterkeyList As List(Of Byte()) = Burst.GenerateMasterKeys()
+
+        Dim PublicKey As String = ByteAry2HEX(MasterkeyList(0))
+        'Dim SignKey As String = ByteAry2HEX(MasterkeyList(1))
+        'Dim AgreementKey As String = ByteAry2HEX(MasterkeyList(2))
+
 
         Dim AmountNQT As String = Dbl2Planck(Amount).ToString
 
@@ -1017,12 +1331,11 @@ Public Class ClsBurstAPI
 
         Dim FeeNQT As String = Dbl2Planck(Fee).ToString
 
-
         Dim postDataRL As String = "requestType=sendMoney"
         postDataRL += "&recipient=" + RecipientID
         postDataRL += "&amountNQT=" + AmountNQT
-        postDataRL += "&secretPhrase=" + C_PassPhrase
-        'postDataRL += "&publicKey="
+        'postDataRL += "&secretPhrase=" + C_PassPhrase
+        postDataRL += "&publicKey=" + PublicKey ' <<< debug errormaker
         postDataRL += "&feeNQT=" + FeeNQT
         postDataRL += "&deadline=60"
         'postDataRL += "&referencedTransactionFullHash="
@@ -1049,96 +1362,196 @@ Public Class ClsBurstAPI
 
         Dim Response As String = BurstRequest(postDataRL)
 
-        If Response.Trim = "error" Then
-            Return "error"
+        If Response.Contains(Application.ProductName + "-error") Then
+            Return Application.ProductName + "-error in SendMoney(): ->" + vbCrLf + Response
         End If
 
         Dim RespList As Object = JSONRecursive(Response)
 
-        Dim TX As String = RecursiveSearch(RespList, "transaction")
 
-        Return TX
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            Return Application.ProductName + "-error in SendMoney(): " + Response
+        End If
+
+
+        Dim UTX As Object = RecursiveSearch(RespList, "unsignedTransactionBytes")
+
+        Dim Returner As String = ""
+        If UTX.GetType.Name = GetType(String).Name Then
+            Returner = CStr(UTX)
+        End If
+
+
+        If Not Returner.Trim = "" Then
+            Dim STX As BurstNET.S_Signature = Burst.SignHelper(UTX)
+            Returner = BroadcastTransaction(STX.SignedTransaction)
+        End If
+
+        Return Returner
 
     End Function
-    Public Function SendMessage(ByVal RecipientID As String, ByVal Message As String, Optional ByVal MessageIsText As Boolean = True, Optional ByVal Encrypt As Boolean = False, Optional ByVal Fee As Double = 0.0, Optional ByVal RecipientPublicKey As String = "")
+    Public Function SendMessage(ByVal RecipientID As String, ByVal Message As String, Optional ByVal MessageIsText As Boolean = True, Optional ByVal Encrypt As Boolean = False, Optional ByVal Fee As Double = 0.0) As String
+
+        If C_PassPhrase.Trim = "" Then '.Contains(Application.ProductName + "-error") Then
+            Return Application.ProductName + "-error in SendMessage(): no PassPhrase"
+        End If
 
         If Fee = 0.0 Then
             Fee = GetSlotFee()
         End If
         Dim FeeNQT As String = Dbl2Planck(Fee).ToString
 
+        Dim RecipientPublicKey As String = GetAccountPublicKeyFromAccountID_RS(RecipientID)
+
+        If RecipientPublicKey.Trim = "" Then
+            Encrypt = False
+        End If
+
+        Dim Burst As BurstNET = New BurstNET(C_PassPhrase)
+        Dim MasterkeyList As List(Of Byte()) = Burst.GenerateMasterKeys()
+
+        Dim PublicKey As String = ByteAry2HEX(MasterkeyList(0))
+        'Dim SignKey As String = ByteAry2HEX(MasterkeyList(1))
+        Dim AgreementKey As String = ByteAry2HEX(MasterkeyList(2))
 
         Dim postDataRL As String = "requestType=sendMessage"
         postDataRL += "&recipient=" + RecipientID
-        postDataRL += "&secretPhrase=" + C_PassPhrase
-        'postDataRL += "&publicKey="
+        'postDataRL += "&secretPhrase=" + C_PassPhrase
+        postDataRL += "&publicKey=" + PublicKey
         postDataRL += "&feeNQT=" + FeeNQT
         postDataRL += "&deadline=60"
         'postDataRL += "&referencedTransactionFullHash="
         'postDataRL += "&broadcast="
 
         If Encrypt Then
-            postDataRL += "&messageToEncrypt=" + Message
+            ' postDataRL += "&messageToEncrypt=" + Message
             postDataRL += "&messageToEncryptIsText=" + MessageIsText.ToString
+
+            Dim EncryptedMessage_Nonce As String() = Burst.EncryptMessage(Message, RecipientPublicKey, AgreementKey)
+
+            postDataRL += "&encryptedMessageData=" + EncryptedMessage_Nonce(0)
+            postDataRL += "&encryptedMessageNonce=" + EncryptedMessage_Nonce(1)
+
         Else
             postDataRL += "&message=" + Message
             postDataRL += "&messageIsText=" + MessageIsText.ToString
         End If
 
-        'postDataRL += "&encryptedMessageData="
-        'postDataRL += "&encryptedMessageNonce="
+
         'postDataRL += "&messageToEncryptToSelf="
         'postDataRL += "&messageToEncryptToSelfIsText="
         'postDataRL += "&encryptToSelfMessageData="
         'postDataRL += "&encryptToSelfMessageNonce="
 
-        If Not RecipientPublicKey.Trim = "" Then
-            postDataRL += " &recipientPublicKey=" + RecipientPublicKey
-        End If
+        'If Not RecipientPublicKey.Trim = "" Then
+        postDataRL += " &recipientPublicKey=" + RecipientPublicKey
+        'End If
 
         Dim Response As String = BurstRequest(postDataRL)
 
-        If Response.Trim = "error" Then
-            Return "error"
+        If Response.Contains(Application.ProductName + "-error") Then
+            Return Application.ProductName + "-error in SendMessage(): ->" + vbCrLf + Response
         End If
 
         Dim RespList As Object = JSONRecursive(Response)
-        Dim TX As String = RecursiveSearch(RespList, "transaction")
 
-        Return TX
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            Return Application.ProductName + "-error in SendMessage(): " + Response
+        End If
+
+        Dim UTX As Object = RecursiveSearch(RespList, "unsignedTransactionBytes")
+
+
+        Dim Returner As String = ""
+        If UTX.GetType.Name = GetType(String).Name Then
+            Returner = CStr(UTX)
+        End If
+
+        If Not Returner.Trim = "" Then
+            Dim STX As BurstNET.S_Signature = Burst.SignHelper(UTX)
+            Returner = BroadcastTransaction(STX.SignedTransaction)
+        End If
+
+        Return Returner
 
     End Function
 
     Public Function ReadMessage(ByVal TX As String) As String
 
-        Dim postDataRL As String = "requestType=readMessage&transaction=" + TX + "&secretPhrase=" + C_PassPhrase
+        If C_PassPhrase.Trim = "" Then
+            Return Application.ProductName + "-error in ReadMessage(): no PassPhrase"
+        End If
 
+        Dim Burst As BurstNET = New BurstNET(C_PassPhrase)
+        Dim MasterkeyList As List(Of Byte()) = Burst.GenerateMasterKeys()
+
+        Dim PublicKey As String = ByteAry2HEX(MasterkeyList(0))
+        Dim AgreementKey As String = ByteAry2HEX(MasterkeyList(2))
+
+        Dim postDataRL As String = "requestType=getTransaction&transaction=" + TX
         Dim Response As String = BurstRequest(postDataRL)
 
-        If Response.Trim = "error" Then
-            Return "error"
+        If Response.Contains(Application.ProductName + "-error") Then
+            Return Application.ProductName + "-error in ReadMessage(): -> " + vbCrLf + Response
         End If
 
         Response = Response.Replace("\", "")
 
         Dim RespList As Object = JSONRecursive(Response)
 
-        Dim DecryptedMsg = RecursiveSearch(RespList, "decryptedMessage")
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            Return Application.ProductName + "-error in ReadMessage(): " + Response
+        End If
+
+
+        Dim EncryptedMsg As Object = RecursiveSearch(RespList, "encryptedMessage")
+
+        Dim SenderPublicKey As String = RecursiveSearch(RespList, "senderPublicKey")
+        Dim RecipientPublicKey As String = RecursiveSearch(RespList, "recipient")
+        RecipientPublicKey = GetAccountPublicKeyFromAccountID_RS(RecipientPublicKey)
+
+        If PublicKey = SenderPublicKey Then
+            PublicKey = RecipientPublicKey
+        ElseIf PublicKey = RecipientPublicKey Then
+            PublicKey = SenderPublicKey
+        End If
 
         Dim ReturnStr As String = ""
 
-        If DecryptedMsg.GetType.Name = GetType(String).Name Then
-            ReturnStr = DecryptedMsg
-        ElseIf DecryptedMsg.GetType.Name = GetType(Boolean).Name Then
+        If EncryptedMsg.GetType.Name = GetType(String).Name Then
+            ReturnStr = EncryptedMsg
+        ElseIf EncryptedMsg.GetType.Name = GetType(Boolean).Name Then
 
         Else
 
-            Dim AT As String = RecursiveSearch(DecryptedMsg, "at")
-            Dim FTX As String = RecursiveSearch(DecryptedMsg, "tx")
-            Dim PPEM As String = RecursiveSearch(DecryptedMsg, "ppem")
-            'Dim PPAccID As String = RecursiveSearch(DecryptedMsg, "ppacid")
-            Dim PPOrder As String = RecursiveSearch(DecryptedMsg, "ppodr")
-            Dim Info As String = ConvertList2String(RecursiveSearch(DecryptedMsg, "info"))
+            Dim Data As String = RecursiveSearch(EncryptedMsg, "data")
+            Dim Nonce As String = RecursiveSearch(EncryptedMsg, "nonce")
+
+            Dim DecryptedMsg As String = Burst.DecryptMessage(Data, Nonce, PublicKey, AgreementKey)
+
+            If DecryptedMsg.Contains(Application.ProductName + "-error") Then
+                Return Application.ProductName + "-error in ReadMessage(): -> " + vbCrLf + DecryptedMsg
+            End If
+
+            RespList = JSONRecursive(DecryptedMsg)
+
+            Dim AT As String = RecursiveSearch(RespList, "at")
+            Dim FTX As String = RecursiveSearch(RespList, "tx")
+            Dim PPEM As String = RecursiveSearch(RespList, "ppem")
+            Dim PPOrder As String = RecursiveSearch(RespList, "ppodr")
+            Dim Info As String = ConvertList2String(RecursiveSearch(RespList, "info"))
 
             If AT.Trim = "False" Or FTX.Trim = "False" Then
 
@@ -1147,9 +1560,6 @@ Public Class ClsBurstAPI
                 If PPEM.Trim <> "False" Then
                     ReturnStr += "<ppem>" + PPEM + "</ppem>"
                 End If
-                'If PPAccID.Trim <> "False" Then
-                '    ReturnStr += "<ppacid>" + PPAccID + "</ppacid>"
-                'End If
                 If PPOrder.Trim <> "False" Then
                     ReturnStr += "<ppodr>" + PPOrder + "</ppodr>"
                 End If
@@ -1159,9 +1569,7 @@ Public Class ClsBurstAPI
 
             End If
 
-
         End If
-
 
         Return ReturnStr
 
@@ -1190,53 +1598,54 @@ Public Class ClsBurstAPI
     End Function
 
 
-    Public Function DecryptFrom(ByVal AccountRS As String, ByVal data As String, ByVal nonce As String, Optional ByVal IsText As Boolean = True)
+    Public Function DecryptFrom(ByVal AccountRS As String, ByVal data As String, ByVal nonce As String, Optional ByVal IsText As Boolean = True) As String
 
-        Dim postDataRL As String = "requestType=decryptFrom&account=" + AccountRS + "&data=" + data + "&nonce=" + nonce + "&decryptedMessageIsText=" + IsText.ToString + "&secretPhrase=" + C_PassPhrase
-
-        Dim Response As String = BurstRequest(postDataRL)
-
-        If Response.Trim = "error" Then
-            Return "error"
+        If C_PassPhrase.Trim = "" Then
+            Return Application.ProductName + "-error in DecryptFrom(): no PassPhrase"
         End If
 
-        Response = Response.Replace("\", "")
+        Dim Burst As BurstNET = New BurstNET(C_PassPhrase)
+        Dim MasterkeyList As List(Of Byte()) = Burst.GenerateMasterKeys()
 
-        Dim RespList As Object = JSONRecursive(Response)
-        Dim DecryptedMsg = RecursiveSearch(RespList, "decryptedMessage")
+        Dim PrivateKey As String = ByteAry2HEX(MasterkeyList(2))
+        Dim PublicKey As String = GetAccountPublicKeyFromAccountID_RS(AccountRS)
+
+        Dim DecryptedMsg As String = Burst.DecryptMessage(data, nonce, PublicKey, PrivateKey)
+
+        If DecryptedMsg.Contains(Application.ProductName + "-error") Then
+            Return Application.ProductName + "-error in DecryptFrom(): -> " + vbCrLf + DecryptedMsg
+        End If
+
+        Dim DecryptedMsgList As Object = JSONRecursive(DecryptedMsg)
+
+        Dim Error0 As Object = RecursiveSearch(DecryptedMsgList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            Return Application.ProductName + "-error in DecryptFrom(): " + DecryptedMsgList
+        End If
 
         Dim ReturnStr As String = ""
 
-        If DecryptedMsg.GetType.Name = GetType(String).Name Then
-            ReturnStr = DecryptedMsg
-        ElseIf DecryptedMsg.GetType.Name = GetType(Boolean).Name Then
+        Dim AT As String = RecursiveSearch(DecryptedMsgList, "at")
+        Dim FTX As String = RecursiveSearch(DecryptedMsgList, "tx")
+        Dim PPEM As String = RecursiveSearch(DecryptedMsgList, "ppem")
+        Dim PPOrder As String = RecursiveSearch(DecryptedMsgList, "ppodr")
+        Dim Info As String = RecursiveSearch(DecryptedMsgList, "info")
+
+        If AT.Trim = "False" Or FTX.Trim = "False" Then
 
         Else
-
-            Dim AT As String = RecursiveSearch(DecryptedMsg, "at")
-            Dim FTX As String = RecursiveSearch(DecryptedMsg, "tx")
-            Dim PPEM As String = RecursiveSearch(DecryptedMsg, "ppem")
-            'Dim PPAccID As String = RecursiveSearch(DecryptedMsg, "ppacid")
-            Dim PPOrder As String = RecursiveSearch(DecryptedMsg, "ppodr")
-            Dim Info As String = RecursiveSearch(DecryptedMsg, "info")
-
-            If AT.Trim = "False" Or FTX.Trim = "False" Then
-
-            Else
-                ReturnStr = "<at>" + AT + "</at><tx>" + FTX + "</tx>"
-                If PPEM.Trim <> "False" Then
-                    ReturnStr += "<ppem>" + PPEM + "</ppem>"
-                End If
-                'If PPAccID.Trim <> "False" Then
-                '    ReturnStr += "<ppacid>" + PPAccID + "</ppacid>"
-                'End If
-                If PPOrder.Trim <> "False" Then
-                    ReturnStr += "<ppodr>" + PPOrder + "</ppodr>"
-                End If
-                If Info.Trim <> "False" Then
-                    ReturnStr += "<info>" + Info + "</info>"
-                End If
-
+            ReturnStr = "<at>" + AT + "</at><tx>" + FTX + "</tx>"
+            If PPEM.Trim <> "False" Then
+                ReturnStr += "<ppem>" + PPEM + "</ppem>"
+            End If
+            If PPOrder.Trim <> "False" Then
+                ReturnStr += "<ppodr>" + PPOrder + "</ppodr>"
+            End If
+            If Info.Trim <> "False" Then
+                ReturnStr += "<info>" + Info + "</info>"
             End If
 
         End If
@@ -1250,11 +1659,28 @@ Public Class ClsBurstAPI
 
 #Region "Send Advance"
 
-    Public Function CreateAT()
+    Public Function CreateAT() As List(Of String)
+
+        Dim out As out = New out(Application.StartupPath)
+
+        If C_PassPhrase.Trim = "" Then
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): no PassPhrase"
+
+            out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): no PassPhrase")
+            Return New List(Of String)
+        End If
+
+        Dim Burst As BurstNET = New BurstNET(C_PassPhrase)
+        Dim MasterkeyList As List(Of Byte()) = Burst.GenerateMasterKeys()
+
+        Dim PublicKey As String = ByteAry2HEX(MasterkeyList(0))
+        Dim SignKey As String = ByteAry2HEX(MasterkeyList(1))
+        Dim AgreementKey As String = ByteAry2HEX(MasterkeyList(2))
+
 
         Dim postDataRL As String = "requestType=createATProgram"
         postDataRL += "&name=BLS"
-        postDataRL += "&description=BLS2"
+        postDataRL += "&description=BLS2WLS"
         postDataRL += "&creationBytes=" + C_ReferenceCreationBytes
         'postDataRL += "&code=" 
         'postDataRL += "&data="
@@ -1262,8 +1688,8 @@ Public Class ClsBurstAPI
         'postDataRL += "&cspages="
         'postDataRL += "&uspages="
         postDataRL += "&minActivationAmountNQT=100000000"
-        postDataRL += "&secretPhrase=" + C_PassPhrase
-        'postDataRL += "&publicKey="
+        'postDataRL += "&secretPhrase=" + C_PassPhrase
+        postDataRL += "&publicKey=" + PublicKey
         postDataRL += "&feeNQT=200000000" ' + Dbl2Planck(GetSlotFee()).ToString
         postDataRL += "&deadline=60"
         'postDataRL += "&referencedTransactionFullHash="
@@ -1280,10 +1706,44 @@ Public Class ClsBurstAPI
         'postDataRL += "&encryptToSelfMessageNonce="
         'postDataRL += "&recipientPublicKey"
 
+
         Dim Response As String = BurstRequest(postDataRL)
 
+        If Response.Contains(Application.ProductName + "-error") Then
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): -> " + Response
+
+            out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): -> " + Response)
+
+            Return New List(Of String)
+        End If
 
         Dim RespList As Object = JSONRecursive(Response)
+
+        Dim Error0 As Object = RecursiveSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): " + Response
+
+            out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): " + Response)
+
+            Return New List(Of String)
+        End If
+
+
+        Dim UTX As Object = RecursiveSearch(RespList, "unsignedTransactionBytes")
+
+        Dim TX As String = ""
+        If UTX.GetType.Name = GetType(String).Name Then
+            TX = CStr(UTX)
+        End If
+
+
+        If Not TX.Trim = "" Then
+            Dim STX As BurstNET.S_Signature = Burst.SignHelper(UTX)
+            TX = BroadcastTransaction(STX.SignedTransaction)
+        End If
 
         Dim TXDetailList As List(Of String) = New List(Of String)
 
@@ -1301,14 +1761,14 @@ Public Class ClsBurstAPI
                     Dim Type As String = RecursiveSearch(Entry(1), "type")
                     Dim SubType As String = RecursiveSearch(Entry(1), "subtype")
                     Dim Timestamp As String = RecursiveSearch(Entry(1), "timestamp")
-                    Dim Deadline As String = RecursiveSearch(Entry(1), "deadline")
-                    Dim senderPublicKey As String = RecursiveSearch(Entry(1), "senderPublicKey")
+                    'Dim Deadline As String = RecursiveSearch(Entry(1), "deadline")
+                    'Dim senderPublicKey As String = RecursiveSearch(Entry(1), "senderPublicKey")
                     Dim AmountNQT As String = RecursiveSearch(Entry(1), "amountNQT")
                     Dim FeeNQT As String = RecursiveSearch(Entry(1), "feeNQT")
-                    Dim Signature As String = RecursiveSearch(Entry(1), "signature")
-                    Dim SignatureHash As String = RecursiveSearch(Entry(1), "signatureHash")
-                    Dim FullHash As String = RecursiveSearch(Entry(1), "fullHash")
-                    Dim Transaction As String = RecursiveSearch(Entry(1), "transaction")
+                    'Dim Signature As String = RecursiveSearch(Entry(1), "signature")
+                    'Dim SignatureHash As String = RecursiveSearch(Entry(1), "signatureHash")
+                    'Dim FullHash As String = RecursiveSearch(Entry(1), "fullHash")
+                    Dim Transaction As String = TX ' RecursiveSearch(Entry(1), "transaction")
                     'Dim Attachments = RecursiveSearch(Entry(1), "attachment")
 
                     Dim Attachments As List(Of Object) = TryCast(RecursiveSearch(Entry(1), "attachment"), List(Of Object))
@@ -1354,10 +1814,6 @@ Public Class ClsBurstAPI
 
     Public Function SetBLSATBuyOrder(ByVal ATId As String, ByVal WantToBuyAmount As Double, ByVal Collateral As Double, ByVal Xitem As String, ByVal XAmount As Double, Optional Fee As Double = 0.0) As String
 
-        If C_PassPhrase.Trim = "" Then
-            Return "error"
-        End If
-
         Dim AmountNQT As ULong = Dbl2Planck(Collateral)
         Dim XAmountNQT As ULong = Dbl2Planck(XAmount)
 
@@ -1365,16 +1821,16 @@ Public Class ClsBurstAPI
             Fee = GetSlotFee()
         End If
 
-        Dim FeeNQT As ULong = Dbl2Planck(Fee)
+        'Dim FeeNQT As ULong = Dbl2Planck(Fee)
         Dim ReserveNQT As ULong = Dbl2Planck(WantToBuyAmount)
-        Dim ATDetails = GetATDetails(ATId)
+        'Dim ATDetails = GetATDetails(ATId)
 
-        Dim Name As String = BetweenFromList(ATDetails, "<name>", "</name>")
-        Dim ATRS As String = BetweenFromList(ATDetails, "<atRS>", "</atRS>")
-        Dim Description As String = BetweenFromList(ATDetails, "<desciption>", "</desciption>")
-        Dim MachineCode As String = BetweenFromList(ATDetails, "<machineCode>", "</machineCode>")
-        Dim MachineData As String = BetweenFromList(ATDetails, "<machineData>", "</machineData>")
-        Dim ParaList As List(Of ULong) = DataStr2ULngList(MachineData)
+        'Dim Name As String = BetweenFromList(ATDetails, "<name>", "</name>")
+        'Dim ATRS As String = BetweenFromList(ATDetails, "<atRS>", "</atRS>")
+        'Dim Description As String = BetweenFromList(ATDetails, "<desciption>", "</desciption>")
+        'Dim MachineCode As String = BetweenFromList(ATDetails, "<machineCode>", "</machineCode>")
+        'Dim MachineData As String = BetweenFromList(ATDetails, "<machineData>", "</machineData>")
+        'Dim ParaList As List(Of ULong) = DataStr2ULngList(MachineData)
 
         '2469808197076732305 CreateOrder method address: 224685783a1b4991 HEX ; 2469808197076732305 DEC     00c012 HEX ; 49170 DEC    00000547 HEX ; 1351 DEC
         '4714436802908501638 AcceptOrder method address: 416d0b4b4963b686 HEX ; 4714436802908501638 DEC     008c12 HEX ; 35858 DEC    000003d0 HEX ; 976  DEC
@@ -1382,42 +1838,35 @@ Public Class ClsBurstAPI
 
         Dim ULngList As List(Of ULong) = New List(Of ULong)({CULng(ReferenceCreateOrder), ReserveNQT, XAmountNQT, String2ULng(Xitem.Trim)})
         Dim MsgStr As String = ULngList2DataStr(ULngList)
-        Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ATRS.Trim + "&amountNQT=" + AmountNQT.ToString.Trim + "&secretPhrase=" + C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
 
-        Dim Response As String = BurstRequest(postDataRL)
-        If Response.Trim = "error" Then
-            Return ""
+        Dim Response As String = SendMoney(ATId, Collateral, Fee, MsgStr.Trim, False)
+
+        If Response.Contains(Application.ProductName + "-error") Then
+            Response = Application.ProductName + "-error in SetBLSATBuyOrder(): -> " + vbCrLf + Response
         End If
 
-        Dim RespList As Object = JSONRecursive(Response)
-        Response = RecursiveSearch(RespList, "transaction").ToString
         Return Response
 
     End Function
     Public Function SetBLSATSellOrder(ByVal ATId As String, ByVal WantToSellAmount As Double, ByVal Collateral As Double, ByVal Xitem As String, ByVal XAmount As Double, Optional Fee As Double = 0.0) As String
 
-        If C_PassPhrase.Trim = "" Then
-            Return "error"
-        End If
-
-        Dim AmountNQT As ULong = Dbl2Planck(WantToSellAmount)
+        'Dim AmountNQT As ULong = Dbl2Planck(WantToSellAmount)
         Dim XAmountNQT As ULong = Dbl2Planck(XAmount)
 
         If Fee = 0.0 Then
             Fee = GetSlotFee()
         End If
 
-        Dim FeeNQT As ULong = Dbl2Planck(Fee)
+        'Dim FeeNQT As ULong = Dbl2Planck(Fee)
         Dim CollateralNQT As ULong = Dbl2Planck(Collateral)
-        Dim ATDetails = GetATDetails(ATId)
+        'Dim ATDetails = GetATDetails(ATId)
 
-        Dim Name As String = BetweenFromList(ATDetails, "<name>", "</name>")
-        Dim ATRS As String = BetweenFromList(ATDetails, "<atRS>", "</atRS>")
-        Dim Description As String = BetweenFromList(ATDetails, "<desciption>", "</desciption>")
-        Dim MachineCode As String = BetweenFromList(ATDetails, "<machineCode>", "</machineCode>")
-        Dim MachineData As String = BetweenFromList(ATDetails, "<machineData>", "</machineData>")
-        Dim ParaList As List(Of ULong) = DataStr2ULngList(MachineData)
+        'Dim Name As String = BetweenFromList(ATDetails, "<name>", "</name>")
+        'Dim ATRS As String = BetweenFromList(ATDetails, "<atRS>", "</atRS>")
+        'Dim Description As String = BetweenFromList(ATDetails, "<desciption>", "</desciption>")
+        'Dim MachineCode As String = BetweenFromList(ATDetails, "<machineCode>", "</machineCode>")
+        'Dim MachineData As String = BetweenFromList(ATDetails, "<machineData>", "</machineData>")
+        'Dim ParaList As List(Of ULong) = DataStr2ULngList(MachineData)
 
         '2469808197076732305 CreateOrder method address: 224685783a1b4991 HEX ; 2469808197076732305 DEC     00c012 HEX ; 49170 DEC    00000547 HEX ; 1351 DEC
         '4714436802908501638 AcceptOrder method address: 416d0b4b4963b686 HEX ; 4714436802908501638 DEC     008c12 HEX ; 35858 DEC    000003d0 HEX ; 976  DEC
@@ -1425,49 +1874,32 @@ Public Class ClsBurstAPI
 
         Dim ULngList As List(Of ULong) = New List(Of ULong)({CULng(ReferenceCreateOrder), CollateralNQT, XAmountNQT, String2ULng(Xitem.Trim)})
         Dim MsgStr As String = ULngList2DataStr(ULngList)
-        Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ATRS.Trim + "&amountNQT=" + AmountNQT.ToString.Trim + "&secretPhrase=" + C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+        Dim Response As String = SendMoney(ATId, WantToSellAmount, Fee, MsgStr.Trim, False)
 
-        Dim Response As String = BurstRequest(postDataRL)
-        If Response.Trim = "error" Then
-            Return ""
+        If Response.Contains(Application.ProductName + "-error") Then
+            Response = Application.ProductName + "-error in SetBLSATSellOrder(): -> " + vbCrLf + Response
         End If
 
-        Dim RespList As Object = JSONRecursive(Response)
-        Response = RecursiveSearch(RespList, "transaction").ToString
         Return Response
 
     End Function
 
-
     Public Function SendMessage2BLSAT(ByVal ATId As String, ByVal Collateral As Double, ByVal ULongMsgList As List(Of ULong), Optional ByVal Fee As Double = 0.0) As String
-
-        If C_PassPhrase.Trim = "" Then
-            Return "error"
-        End If
-
-        Dim AmountNQT As ULong = Dbl2Planck(Collateral)
 
         If Fee = 0.0 Then
             Fee = GetSlotFee()
         End If
 
-        Dim FeeNQT As ULong = Dbl2Planck(Fee)
         Dim MsgStr As String = ULngList2DataStr(ULongMsgList)
-        Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ATId.Trim + "&amountNQT=" + AmountNQT.ToString.Trim + "&secretPhrase=" + C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+        Dim Response As String = SendMoney(ATId, Collateral, Fee, MsgStr.Trim, False)
 
-        Dim Response As String = BurstRequest(postDataRL)
-        If Response.Trim = "error" Then
-            Return ""
+        If Response.Contains(Application.ProductName + "-error") Then
+            Response = Application.ProductName + "-error in SendMessage2BLSAT(): -> " + vbCrLf + Response
         End If
 
-        Dim RespList As Object = JSONRecursive(Response)
-        Response = RecursiveSearch(RespList, "transaction").ToString
         Return Response
 
     End Function
-
 
 #End Region
 
@@ -1643,7 +2075,6 @@ Public Class ClsBurstAPI
 #End Region
 
 #Region "Toolfunctions"
-
 
     Private Structure S_Sorter
         Dim Timestamp As ULong
@@ -2309,8 +2740,6 @@ Public Class ClsBurstAPI
         Dim Returner As Object = False
 
         Try
-
-
 
             For Each Entry In List
 

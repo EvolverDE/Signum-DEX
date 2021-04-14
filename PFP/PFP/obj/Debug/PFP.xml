@@ -124,11 +124,10 @@ PFP
  <returns>-1, 0 oder 1 (gemäß Vergleich)</returns>
  <remarks></remarks>
 </member>
-<member name="M:PFP.BurstNET.GenerateMasterKeys(System.String)">
+<member name="M:PFP.BurstNET.GenerateMasterKeys">
  <summary>
  Generates the Masterkeys from PassPhrase 0=PublicKey; 1=SignKey; 2=AgreementKey
  </summary>
- <param name="PassPhrase">The PassPhrase as String</param>
  <returns>List of Masterkeys</returns>
 </member>
 <member name="M:PFP.BurstNET.Keygen(System.Byte[])">
@@ -153,6 +152,24 @@ PFP
  <param name="Signature">The Signature as HEX String</param>
  <param name="UnsignedMessageHex">The Unsigned Message as HEX String</param>
  <param name="PublicKey">The Public Key as HEX String</param>
+ <returns></returns>
+</member>
+<member name="M:PFP.BurstNET.EncryptMessage(System.String,System.String,System.String)">
+ <summary>
+ Encrypts Message from Parameters 0=Data; 1=Nonce
+ </summary>
+ <param name="Plaintext"></param>
+ <param name="RecipientPublicKeyHex"></param>
+ <param name="SenderAgreementKeyHex"></param>
+ <returns></returns>
+</member>
+<member name="M:PFP.BurstNET.EncryptData(System.Byte[],System.String,System.String)">
+ <summary>
+ Encrypt Data from Parameters 0=Data; 1=Nonce
+ </summary>
+ <param name="Data"></param>
+ <param name="RecipientPublicKeyHex"></param>
+ <param name="SenderAgreementKeyHex"></param>
  <returns></returns>
 </member>
 <member name="M:PFP.Curve25519.Clamp(System.Byte[]@)">

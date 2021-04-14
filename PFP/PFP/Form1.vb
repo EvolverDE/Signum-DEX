@@ -517,8 +517,8 @@ Public Class PFPForm
         Dim keys As Integer = Asc(e.KeyChar)
 
         Select Case keys
-            'Case 48 To 57, 44, 8
-                ' Zahlen, 8=Backspace und 32=Space 46=Punkt 44=Komma zulassen
+                'Case 48 To 57, 44, 8
+                    ' Zahlen, 8=Backspace und 32=Space 46=Punkt 44=Komma zulassen
             Case 13
                 ' ENTER
                 BtCheckAddress.PerformClick()
@@ -555,6 +555,10 @@ Public Class PFPForm
         If MsgResult = msgs.CustomDialogResult.Yes Then
 
             Dim NuList As List(Of String) = BSR.CreateAT()
+
+            If NuList.Count = 0 Then
+                'TODO: NuList error handler
+            End If
 
             Dim NuATList As List(Of S_AT) = New List(Of S_AT)
 
@@ -662,10 +666,11 @@ Public Class PFPForm
                 If ChBxAutoSendPaymentInfo.Checked Then
                     'autosignal
 
+                    'TODO: request/response payment method from/to peer 
                     If RBUseXItemSettings.Checked And RBPayPalOrder.Checked Then
-                        Item += "-PB"
+                        'Item += "-PB"
                     ElseIf RBUseXItemSettings.Checked And (RBPayPalEMail.Checked) Then 'Or RBPayPalAccID.Checked
-                        Item += "-PA"
+                        'Item += "-PA"
                     Else
 
                     End If
@@ -691,7 +696,13 @@ Public Class PFPForm
 
                         If MsgResult = msgs.CustomDialogResult.Yes Then
                             Dim TX As String = BSR.SetBLSATSellOrder(Recipient, Amount + Collateral + 1.0, Collateral, Item, ItemAmount, Fee)
-                            msgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, msgs.Status.Information)
+                            If TX.Contains(Application.ProductName + "-error") Then
+                                Dim out As out = New out(Application.StartupPath)
+                                out.ErrorLog2File(TX)
+                            Else
+                                msgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, msgs.Status.Information)
+                            End If
+
                         End If
 
                     Else
@@ -708,7 +719,15 @@ Public Class PFPForm
 
                         If MsgResult = msgs.CustomDialogResult.Yes Then
                             Dim TX As String = BSR.SetBLSATBuyOrder(Recipient, Amount, Collateral + 1.0, Item, ItemAmount, Fee)
-                            msgs.MBox("BuyOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, msgs.Status.Information)
+
+                            If TX.Contains(Application.ProductName + "-error") Then
+                                Dim out As out = New out(Application.StartupPath)
+                                out.ErrorLog2File(TX)
+                            Else
+                                msgs.MBox("BuyOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, msgs.Status.Information)
+                            End If
+
+
                         End If
 
                     Else
@@ -837,7 +856,16 @@ Public Class PFPForm
 
                     If MsgResult = msgs.CustomDialogResult.Yes Then
                         Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, Amount + 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
-                        msgs.MBox("SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+
+
+                        If TX.Contains(Application.ProductName + "-error") Then
+                            Dim out As out = New out(Application.StartupPath)
+                            out.ErrorLog2File(TX)
+                        Else
+                            msgs.MBox("SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+                        End If
+
+
                     End If
 
                 Else
@@ -850,7 +878,13 @@ Public Class PFPForm
 
                 If MsgResult = msgs.CustomDialogResult.Yes Then
                     Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
-                    msgs.MBox("SellOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+
+                    If TX.Contains(Application.ProductName + "-error") Then
+                        Dim out As out = New out(Application.StartupPath)
+                        out.ErrorLog2File(TX)
+                    Else
+                        msgs.MBox("SellOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+                    End If
 
                 End If
 
@@ -904,7 +938,9 @@ Public Class PFPForm
 
                         Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, Sum + 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
-                        If TX.Trim = "error" Then
+                        If TX.Contains(Application.ProductName + "-error") Then
+                            Dim out As out = New out(Application.StartupPath)
+                            out.ErrorLog2File(TX)
 
                         Else
 
@@ -928,6 +964,13 @@ Public Class PFPForm
                                 Dim T_MsgStr As String = "{""at"":""" + BLS.AT + """, ""tx"":""" + BLSAT_TX.Transaction + """" + T_PaymentInfoJSON + "}"
                                 Dim TXr As String = SendBillingInfos(BLSAT_TX.Sender, T_MsgStr)
 
+                                If TXr.Contains(Application.ProductName + "-error") Then
+                                    Dim out As out = New out(Application.StartupPath)
+                                    out.ErrorLog2File(TXr)
+                                Else
+
+                                End If
+
                             End If
 
                             msgs.MBox("BuyOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
@@ -947,7 +990,13 @@ Public Class PFPForm
 
                 If MsgResult = msgs.CustomDialogResult.Yes Then
                     Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
-                    msgs.MBox("BuyOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created", ,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+
+                    If TX.Contains(Application.ProductName + "-error") Then
+                        Dim out As out = New out(Application.StartupPath)
+                        out.ErrorLog2File(TX)
+                    Else
+                        msgs.MBox("BuyOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created", ,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+                    End If
 
                 End If
 
@@ -1123,7 +1172,6 @@ Public Class PFPForm
         End If
 
     End Sub
-    'Private Sub LVMyOpenOrders_Click(sender As Object, e As EventArgs) Handles LVMyOpenOrders.Click
 
 
     Private Sub LVMyClosedOrders_MouseUp(sender As Object, e As MouseEventArgs) Handles LVMyClosedOrders.MouseUp
@@ -1166,7 +1214,6 @@ Public Class PFPForm
     End Sub
 
 
-    'End Sub
     Private Sub Copy2CB(sender As Object, e As EventArgs)
 
         Try
@@ -1202,7 +1249,14 @@ Public Class PFPForm
                     If MsgResult = msgs.CustomDialogResult.Yes Then
                         Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
                         Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
-                        msgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+
+                        If TXStr.Contains(Application.ProductName + "-error") Then
+                            Dim out As out = New out(Application.StartupPath)
+                            out.ErrorLog2File(TXStr)
+                        Else
+                            msgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+                        End If
+
                     End If
 
                 Else
@@ -1212,12 +1266,20 @@ Public Class PFPForm
                     If MsgResult = msgs.CustomDialogResult.Yes Then
                         Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
                         Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceFinishOrder}))
-                        msgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+
+                        If TXStr.Contains(Application.ProductName + "-error") Then
+                            Dim out As out = New out(Application.StartupPath)
+                            out.ErrorLog2File(TXStr)
+                        Else
+                            msgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+
+                        End If
+
                     End If
 
                 End If
 
-            Else
+            Else 'BuyOrder
 
                 If TX.Seller.Trim = "" Then
                     'cancel AT
@@ -1227,7 +1289,13 @@ Public Class PFPForm
                         Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
                         Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
-                        msgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+                        If TXStr.Contains(Application.ProductName + "-error") Then
+                            Dim out As out = New out(Application.StartupPath)
+                            out.ErrorLog2File(TXStr)
+                        Else
+                            msgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+                        End If
+
                     End If
 
                 Else
@@ -1237,7 +1305,14 @@ Public Class PFPForm
                     If MsgResult = msgs.CustomDialogResult.Yes Then
                         Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
                         Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceFinishOrder}))
-                        msgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+
+                        If TXStr.Contains(Application.ProductName + "-error") Then
+                            Dim out As out = New out(Application.StartupPath)
+                            out.ErrorLog2File(TXStr)
+                        Else
+                            msgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+                        End If
+
                     End If
 
                 End If
@@ -1245,8 +1320,6 @@ Public Class PFPForm
             End If
 
         End If
-
-
 
     End Sub
     Private Sub BtPayOrder_Click(sender As Object, e As EventArgs) Handles BtPayOrder.Click
@@ -1300,7 +1373,13 @@ Public Class PFPForm
                     Dim T_MsgStr As String = "{""at"":""" + BLP_Order.AT + """, ""tx"":""" + BLP_Order.FirstTX.Transaction + """" + T_PaymentInfoJSON + "}"
                     Dim TXr As String = SendBillingInfos(BLP_Order.FirstTX.Sender, T_MsgStr)
 
-                    msgs.MBox("New PayPal Order sended as encrypted Message", "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+                    If TXr.Contains(Application.ProductName + "-error") Then
+                        Dim out As out = New out(Application.StartupPath)
+                        out.ErrorLog2File(TXr)
+                    Else
+                        msgs.MBox("New PayPal Order sended as encrypted Message", "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+                    End If
+
 
                 End If
 
@@ -1327,13 +1406,19 @@ Public Class PFPForm
 
             Dim TXr As String = SendBillingInfos(Recipient, T_MsgStr, ChBxEncMsg.Checked)
 
-            If ChBxEncMsg.Checked Then
-                msgs.MBox("encrypted Message sended" + vbCrLf + vbCrLf + "TX: " + TXr, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+            If TXr.Contains(Application.ProductName + "-error") Then
+                Dim out As out = New out(Application.StartupPath)
+                out.ErrorLog2File(TXr)
             Else
-                msgs.MBox("public Message sended" + vbCrLf + vbCrLf + "TX: " + TXr, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
-            End If
+                If ChBxEncMsg.Checked Then
+                    msgs.MBox("encrypted Message sended" + vbCrLf + vbCrLf + "TX: " + TXr, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+                Else
+                    msgs.MBox("public Message sended" + vbCrLf + vbCrLf + "TX: " + TXr, "Transaction created",,, msgs.Status.Information, 5, msgs.Timer_Art.AutoOK)
+                End If
 
-            TBManuMsg.Text = ""
+                TBManuMsg.Text = ""
+
+            End If
 
         End If
 
@@ -1423,8 +1508,8 @@ Public Class PFPForm
         TBx.BackColor = Color.Yellow
 
         Select Case keys
-            'Case 48 To 57, 44, 8
-                ' Zahlen, 8=Backspace und 32=Space 46=Punkt 44=Komma zulassen
+                'Case 48 To 57, 44, 8
+                    ' Zahlen, 8=Backspace und 32=Space 46=Punkt 44=Komma zulassen
             Case 13
                 ' ENTER
                 TBx.BackColor = SystemColors.Window
@@ -1802,23 +1887,23 @@ Public Class PFPForm
             StatusLabel.Text = "checking AT Details for " + ATRS
 
             Dim SBLSAT As S_BLSAT = New S_BLSAT With {
-                .AT = AT,
-                .ATRS = ATRS,
-                .Description = Description,
-                .Name = Name,
-                .Sellorder = SellOrder,
-                .Initiator = InitiatorRS,
-                .InitiatorsCollateral = InitiatorCollateral,
-                .ResponsersCollateral = ResponserCollateral,
-                .BuySellAmount = BuySellAmount,
-                .Responser = ResponserRS,
-                .Balance = Balance,
-                .Frozen = Frozen,
-                .Running = Running,
-                .Stopped = Stopped,
-                .Finished = Finished,
-                .Dead = Dead
-            }
+                    .AT = AT,
+                    .ATRS = ATRS,
+                    .Description = Description,
+                    .Name = Name,
+                    .Sellorder = SellOrder,
+                    .Initiator = InitiatorRS,
+                    .InitiatorsCollateral = InitiatorCollateral,
+                    .ResponsersCollateral = ResponserCollateral,
+                    .BuySellAmount = BuySellAmount,
+                    .Responser = ResponserRS,
+                    .Balance = Balance,
+                    .Frozen = Frozen,
+                    .Running = Running,
+                    .Stopped = Stopped,
+                    .Finished = Finished,
+                    .Dead = Dead
+                }
 
 #End Region
 
@@ -2083,7 +2168,12 @@ Public Class PFPForm
                         If TBSNOAddress.Text = Order.Seller Then
 
                             Dim AlreadySend As String = CheckBillingInfosAlreadySend(Order)
-                            If AlreadySend.Trim = "" Then
+
+                            If AlreadySend.Contains(Application.ProductName + "-error") Then
+                                Dim Out As out = New out(Application.StartupPath)
+                                Out.ErrorLog2File(AlreadySend)
+
+                            ElseIf AlreadySend.Trim = "" Then
 
                                 If Not GetAutoinfoTXFromINI(Order.FirstTransaction) Then 'Check for autosend-info-TX in Settings.ini and skip if founded
 
@@ -2112,9 +2202,13 @@ Public Class PFPForm
                                         Dim T_MsgStr As String = "{""at"":""" + Order.AT + """, ""tx"":""" + Order.FirstTransaction + """" + T_PaymentInfoJSON + "}"
                                         Dim TXr As String = SendBillingInfos(Order.BuyerID, T_MsgStr)
 
-
-                                        If SetAutoinfoTX2INI(Order.FirstTransaction) Then 'Set autosend-info-TX in Settings.ini
-                                            'ok
+                                        If TXr.Contains(Application.ProductName + "-error") Then
+                                            Dim out As out = New out(Application.StartupPath)
+                                            out.ErrorLog2File(TXr)
+                                        Else
+                                            If SetAutoinfoTX2INI(Order.FirstTransaction) Then 'Set autosend-info-TX in Settings.ini
+                                                'ok
+                                            End If
                                         End If
 
                                     End If
@@ -2175,7 +2269,14 @@ Public Class PFPForm
                                                         If Status = "COMPLETED" Then
                                                             Dim BCR1 As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
                                                             Dim TXStr As String = BCR1.SendMessage2BLSAT(Order.AT, 1.0, New List(Of ULong)({BCR1.ReferenceFinishOrder}))
-                                                            AlreadySend = "COMPLETED"
+
+                                                            If TXStr.Contains(Application.ProductName + "-error") Then
+                                                                Dim out As out = New out(Application.StartupPath)
+                                                                out.ErrorLog2File(TXStr)
+                                                            Else
+                                                                AlreadySend = "COMPLETED"
+                                                            End If
+
                                                         Else
                                                             AlreadySend = Status
                                                         End If
@@ -2289,7 +2390,13 @@ Public Class PFPForm
                             Dim SellerTX = BCR.GetAccountTransactions(Order.SellerID, Order.FirstTimestamp)
 
                             Dim AlreadySend As String = CheckBillingInfosAlreadySend(Order)
-                            If AlreadySend.Trim <> "" Then
+
+                            If AlreadySend.Contains(Application.ProductName + "-error") Then
+
+                                Dim Out As out = New out(Application.StartupPath)
+                                Out.ErrorLog2File(AlreadySend)
+
+                            ElseIf AlreadySend.Trim <> "" Then
 
                                 Dim BillingInfo As String = BCR.Between(AlreadySend, "<info>", "</info>", GetType(String))
                                 Dim PayPalEMail As String = BCR.Between(AlreadySend, "<ppem>", "</ppem>", GetType(String))
@@ -2798,7 +2905,8 @@ Public Class PFPForm
         NuBLSTX.Reverse()
 
         Dim Found As Boolean = False
-        Dim ReferenceSender As String = ""
+        Dim ReferenceSenderID As String = ""
+        Dim ReferenceSenderRS As String = ""
 
 
         For i As Integer = 0 To NuBLSTX.Count - 1
@@ -2811,8 +2919,19 @@ Public Class PFPForm
                     Found = False
                 End If
 
-                If Not ReferenceSender = BLSAT_TX.SenderRS Then
-                    Found = False
+                If Not ReferenceSenderRS = BLSAT_TX.SenderRS Then
+
+                    If Not BLSAT_TX.Attachment.Contains("<injectedResponser>" + ReferenceSenderID + "</injectedResponser>") Then
+                        Found = False
+                    Else
+
+                        Found = True
+
+                        BLSAT_TX.Sender = ReferenceSenderID
+                        BLSAT_TX.SenderRS = ReferenceSenderRS
+
+                    End If
+
                 Else
                     Found = True
                 End If
@@ -2827,7 +2946,9 @@ Public Class PFPForm
 
                 If TTX.Attachment.Contains(AttSearch) Then
                     Found = True
-                    ReferenceSender = TTX.RecipientRS
+                    ReferenceSenderRS = TTX.RecipientRS
+                    ReferenceSenderID = TTX.Recipient
+
                 End If
 
             End If
@@ -3051,49 +3172,49 @@ Public Class PFPForm
             Dim WTSAmount As Double = BCR.Planck2Dbl(CULng(FirstTX.AmountNQT)) - Collateral - 1
 
             NuOrder = New S_Order With {
-                .AT = BLSAT.AT,
-                .ATRS = BLSAT.ATRS,
-                .Type = FirstTX.Type,
-                .Seller = FirstTX.SenderRS,
-                .SellerID = FirstTX.Sender,
-                .Buyer = ResponserRS,
-                .BuyerID = ResponserID,
-                .XItem = Xitem,
-                .XAmount = Xamount,
-                .Quantity = WTSAmount,
-                .Price = Xamount / WTSAmount,
-                .Collateral = Collateral,
-                .Status = Status,
-                .Attachment = FirstTX.Attachment.ToString,
-                .FirstTransaction = FirstTX.Transaction,
-                .FirstTimestamp = FirstTX.Timestamp,
-                .FirstTX = FirstTX,
-                .LastTX = LastTX
-            }
+                    .AT = BLSAT.AT,
+                    .ATRS = BLSAT.ATRS,
+                    .Type = FirstTX.Type,
+                    .Seller = FirstTX.SenderRS,
+                    .SellerID = FirstTX.Sender,
+                    .Buyer = ResponserRS,
+                    .BuyerID = ResponserID,
+                    .XItem = Xitem,
+                    .XAmount = Xamount,
+                    .Quantity = WTSAmount,
+                    .Price = Xamount / WTSAmount,
+                    .Collateral = Collateral,
+                    .Status = Status,
+                    .Attachment = FirstTX.Attachment.ToString,
+                    .FirstTransaction = FirstTX.Transaction,
+                    .FirstTimestamp = FirstTX.Timestamp,
+                    .FirstTX = FirstTX,
+                    .LastTX = LastTX
+                }
 
 
         ElseIf FirstTX.Type = "BuyOrder" Then
 
             NuOrder = New S_Order With {
-                .AT = BLSAT.AT,
-                .ATRS = BLSAT.ATRS,
-                .Type = FirstTX.Type,
-                .Seller = ResponserRS,
-                .SellerID = ResponserID,
-                .Buyer = FirstTX.SenderRS,
-                .BuyerID = FirstTX.Sender,
-                .XItem = Xitem,
-                .XAmount = Xamount,
-                .Quantity = Collateral,
-                .Price = Xamount / Collateral,
-                .Collateral = BCR.Planck2Dbl(CULng(FirstTX.AmountNQT)),
-                .Status = Status,
-                .Attachment = FirstTX.Attachment.ToString,
-                .FirstTransaction = FirstTX.Transaction,
-                .FirstTimestamp = FirstTX.Timestamp,
-                .FirstTX = FirstTX,
-                .LastTX = LastTX
-            }
+                    .AT = BLSAT.AT,
+                    .ATRS = BLSAT.ATRS,
+                    .Type = FirstTX.Type,
+                    .Seller = ResponserRS,
+                    .SellerID = ResponserID,
+                    .Buyer = FirstTX.SenderRS,
+                    .BuyerID = FirstTX.Sender,
+                    .XItem = Xitem,
+                    .XAmount = Xamount,
+                    .Quantity = Collateral,
+                    .Price = Xamount / Collateral,
+                    .Collateral = BCR.Planck2Dbl(CULng(FirstTX.AmountNQT)),
+                    .Status = Status,
+                    .Attachment = FirstTX.Attachment.ToString,
+                    .FirstTransaction = FirstTX.Transaction,
+                    .FirstTimestamp = FirstTX.Timestamp,
+                    .FirstTX = FirstTX,
+                    .LastTX = LastTX
+                }
 
         End If
 
@@ -3125,24 +3246,25 @@ Public Class PFPForm
                 TX_Attachment = BCR.BetweenFromList(ATTX, "<message>", "</message>")
             End If
 
+
             Dim TX_Sender As String = BCR.BetweenFromList(ATTX, "<sender>", "</sender>")
             Dim TX_SenderRS As String = BCR.BetweenFromList(ATTX, "<senderRS>", "</senderRS>")
             Dim TX_Confirmations As String = BCR.BetweenFromList(ATTX, "<confirmations>", "</confirmations>")
 
 
             Dim BLSTX As S_BLSAT_TX = New S_BLSAT_TX With {
-                .Type = TX_Type,
-                .Timestamp = TX_Timestamp,
-                .Recipient = TX_Recipient,
-                .RecipientRS = TX_RecipientRS,
-                .AmountNQT = TX_AmountNQT,
-                .FeeNQT = TX_FeeNQT,
-                .Transaction = TX_Transaction,
-                .Attachment = TX_Attachment,
-                .Sender = TX_Sender,
-                .SenderRS = TX_SenderRS,
-                .Confirmations = TX_Confirmations
-            }
+                    .Type = TX_Type,
+                    .Timestamp = TX_Timestamp,
+                    .Recipient = TX_Recipient,
+                    .RecipientRS = TX_RecipientRS,
+                    .AmountNQT = TX_AmountNQT,
+                    .FeeNQT = TX_FeeNQT,
+                    .Transaction = TX_Transaction,
+                    .Attachment = TX_Attachment,
+                    .Sender = TX_Sender,
+                    .SenderRS = TX_SenderRS,
+                    .Confirmations = TX_Confirmations
+                }
             BLSTXs.Add(BLSTX)
 
         Next
@@ -3529,7 +3651,7 @@ Public Class PFPForm
     End Function
 
     Function CheckBillingInfosAlreadySend(ByVal Order As S_Order) As String
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text)
 
         Dim T_UTXList As List(Of List(Of String)) = BCR.GetUnconfirmedTransactions()
         T_UTXList.Reverse()
@@ -3558,7 +3680,8 @@ Public Class PFPForm
                         If DCAT = Order.AT And DCTransaction = Order.FirstTransaction Then
                             Return DecryptedMsg
                         End If
-
+                    ElseIf DecryptedMsg.Contains(Application.ProductName + "-error") Then
+                        Return Application.ProductName + "-error in CheckBillingInfosAlreadySend(1): -> " + DecryptedMsg
                     End If
 
                 End If
@@ -3582,6 +3705,8 @@ Public Class PFPForm
                             Return DecryptedMsg
                         End If
 
+                    ElseIf DecryptedMsg.Contains(Application.ProductName + "-error") Then
+                        Return Application.ProductName + "-error in CheckBillingInfosAlreadySend(2): -> " + DecryptedMsg
                     End If
 
                 End If
@@ -3613,6 +3738,9 @@ Public Class PFPForm
                     If DCAT = Order.AT And DCTransaction = Order.FirstTransaction Then
                         Return DecryptedMsg
                     End If
+                Else
+                    Dim Out As out = New out(Application.StartupPath)
+                    Out.ErrorLog2File(DecryptedMsg)
 
                 End If
 
@@ -3628,7 +3756,9 @@ Public Class PFPForm
                     If DCAT = Order.AT And DCTransaction = Order.FirstTransaction Then
                         Return DecryptedMsg
                     End If
-
+                Else
+                    Dim Out As out = New out(Application.StartupPath)
+                    Out.ErrorLog2File(DecryptedMsg)
                 End If
 
             End If
@@ -3679,6 +3809,8 @@ Public Class PFPForm
                             Return DecryptedMsg
                         End If
 
+                    ElseIf DecryptedMsg.Contains(Application.ProductName + "-error") Then
+                        Return Application.ProductName + "-error in CheckPaymentAlreadySend(): -> " + DecryptedMsg
                     End If
 
                 End If
@@ -3735,7 +3867,9 @@ Public Class PFPForm
                     If DCAT = Order.AT And DCTransaction = Order.FirstTransaction Then
                         Return DecryptedMsg
                     End If
-
+                Else
+                    Dim Out As out = New out(Application.StartupPath)
+                    Out.ErrorLog2File(DecryptedMsg)
                 End If
 
             End If
@@ -3750,7 +3884,7 @@ Public Class PFPForm
 
     Function SetAutoinfoTX2INI(ByVal TX As String) As Boolean
 
-        Dim AutoinfoTXStr As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Temp", "Autoinfotransactions", " ")
+        Dim AutoinfoTXStr As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Temp", "Autoinfotransactions", "")
 
         If AutoinfoTXStr.Trim = "" Then
             AutoinfoTXStr = TX + ";"
@@ -3765,7 +3899,7 @@ Public Class PFPForm
     End Function
     Function GetAutoinfoTXFromINI(ByVal TX As String) As Boolean
 
-        Dim AutoinfoTXStr As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Temp", "Autoinfotransactions", " ")
+        Dim AutoinfoTXStr As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Temp", "Autoinfotransactions", "")
         Dim AutoinfoTXList As List(Of String) = New List(Of String)
 
         If AutoinfoTXStr.Contains(";") Then
@@ -3793,7 +3927,7 @@ Public Class PFPForm
     End Function
     Function DelAutoinfoTXFromINI(ByVal TX As String) As Boolean
 
-        Dim AutoinfoTXStr As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Temp", "Autoinfotransactions", " ")
+        Dim AutoinfoTXStr As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Temp", "Autoinfotransactions", "")
         Dim AutoinfoTXList As List(Of String) = New List(Of String)
 
         Dim Returner As Boolean = False
@@ -3812,7 +3946,7 @@ Public Class PFPForm
 
     Function SetAutosignalTX2INI(ByVal TX As String) As Boolean
 
-        Dim AutosignalTXStr As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Temp", "Autosignaltransactions", " ")
+        Dim AutosignalTXStr As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Temp", "Autosignaltransactions", "")
 
         If AutosignalTXStr.Trim = "" Then
             AutosignalTXStr = TX + ";"
@@ -3827,7 +3961,7 @@ Public Class PFPForm
     End Function
     Function GetAutosignalTXFromINI(ByVal TX As String) As Boolean
 
-        Dim AutosignalTXStr As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Temp", "Autosignaltransactions", " ")
+        Dim AutosignalTXStr As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Temp", "Autosignaltransactions", "")
         Dim AutosignalTXList As List(Of String) = New List(Of String)
 
         If AutosignalTXStr.Contains(";") Then
@@ -3855,7 +3989,7 @@ Public Class PFPForm
     End Function
     Function DelAutosignalTXFromINI(ByVal TX As String) As Boolean
 
-        Dim AutosignalTXStr As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Temp", "Autosignaltransactions", " ")
+        Dim AutosignalTXStr As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Temp", "Autosignaltransactions", "")
         Dim AutosignalTXList As List(Of String) = New List(Of String)
 
         Dim Returner As Boolean = False
@@ -4198,19 +4332,20 @@ Public Class PFPForm
 
     Private Sub BtTestCreate_Click(sender As Object, e As EventArgs) Handles BtTestCreate.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, "supertest") ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = "supertest"}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBTestCreatePP.Text)
 
         Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
 
-        'AT: 2556199170550828612
+        'AT: 16929721168878840386
         'createOrder: 716726961670769723
         'acceptOrder: 4714436802908501638
         'finishOrder: 3125596792462301675
+        'injectResponder: 2795299366291175831
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({716726961670769723, 3000000000, 100000000, BCR.String2ULng("EUR")})
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.ReferenceCreateOrder, 3000000000, 100000000, BCR.String2ULng("EUR")})
         Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
         Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + "2556199170550828612" + "&amountNQT=" + "13000000000" + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsBurstAPI._ReferenceTX + "&amountNQT=" + "13000000000" + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
 
         Dim Response As String = BCR.BurstRequest(postDataRL)
 
@@ -4220,14 +4355,14 @@ Public Class PFPForm
 
     Private Sub BtTestAccept_Click(sender As Object, e As EventArgs) Handles BtTestAccept.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, "supertest2") ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = "supertest2"}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBTestAcceptPP.Text)
 
         Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({4714436802908501638})
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.ReferenceAcceptOrder})
         Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
         Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + "2556199170550828612" + "&amountNQT=" + "3100000000" + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsBurstAPI._ReferenceTX + "&amountNQT=" + "3100000000" + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
 
         Dim Response As String = BCR.BurstRequest(postDataRL)
 
@@ -4237,20 +4372,40 @@ Public Class PFPForm
 
     Private Sub BtTestFinish_Click(sender As Object, e As EventArgs) Handles BtTestFinish.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, "supertest") ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = "supertest"}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBTestFinishPP.Text)
 
         Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({3125596792462301675})
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.ReferenceFinishOrder})
         Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
         Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + "2556199170550828612" + "&amountNQT=" + "100000000" + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsBurstAPI._ReferenceTX + "&amountNQT=" + "100000000" + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
 
         Dim Response As String = BCR.BurstRequest(postDataRL)
 
         Response = Response
 
     End Sub
+
+    Private Sub BtTestInject_Click(sender As Object, e As EventArgs) Handles BtTestInject.Click
+
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBTestInjectPP.Text)
+
+        Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
+
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.ReferenceInjectResponder, CULng(TBTestResponder.Text)})
+        Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
+        Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
+        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsBurstAPI._ReferenceTX + "&amountNQT=" + "100000000" + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+
+        Dim Response As String = BCR.BurstRequest(postDataRL)
+
+        Response = Response
+
+    End Sub
+
+
+
 
     Private Sub BtTestConvert_Click(sender As Object, e As EventArgs) Handles BtTestConvert.Click
 
@@ -4283,16 +4438,20 @@ Public Class PFPForm
 
         Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text) ' With {.C_Node = CoBxNode.Text}
 
-        Dim DataLngList = BCR.DataStr2ULngList(TBTestConvert.Text)
 
-        Dim DataStr As String = ""
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.String2ULng(TBTestConvert.Text.Trim)})
+        Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
 
-        For Each DataLng In DataLngList
-            DataStr += DataLng.ToString + " "
-        Next
+        'Dim DataLngList = BCR.DataStr2ULngList(TBTestConvert.Text)
+
+        'Dim DataStr As String = ""
+
+        'For Each DataLng In DataLngList
+        '    DataStr += DataLng.ToString + " "
+        'Next
 
 
-        TBTestConvert.Text = DataStr
+        TBTestConvert.Text = MsgStr
 
     End Sub
 
@@ -4320,42 +4479,6 @@ Public Class PFPForm
         olditem = CoBxNode.Text
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-
-        Dim beit() As Byte = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
-
-        ListBox1.Items.Clear()
-
-        'For i As Integer = 0 To 1000
-
-
-
-        '    Dim alicePrivate = Elliptic.Old_Curve25519.ClampPrivateKey(beit)
-        '    Dim alicePublic = Elliptic.Old_Curve25519.GetPublicKey(alicePrivate)
-
-        '    Dim bobPrivate = Elliptic.Old_Curve25519.ClampPrivateKey(beit)
-        '    Dim bobPublic = Elliptic.Old_Curve25519.GetPublicKey(bobPrivate)
-
-        '    Dim aliceShared = Elliptic.Old_Curve25519.GetSharedSecret(alicePrivate, bobPublic)
-        '    Dim bobShared = Elliptic.Old_Curve25519.GetSharedSecret(bobPrivate, alicePublic)
-
-        '    ListBox1.Items.Add("alicePrv: " + ByteAry2HEX(alicePrivate))
-        '    ListBox1.Items.Add("alicePub: " + ByteAry2HEX(alicePublic))
-        '    ListBox1.Items.Add("")
-        '    ListBox1.Items.Add("bobPrv: " + ByteAry2HEX(bobPrivate))
-        '    ListBox1.Items.Add("bobPub: " + ByteAry2HEX(bobPublic))
-        '    ListBox1.Items.Add("")
-        '    ListBox1.Items.Add("aliceShared: " + ByteAry2HEX(aliceShared))
-        '    ListBox1.Items.Add("bobShared: " + ByteAry2HEX(bobShared))
-        '    ListBox1.Items.Add("--------------------------")
-
-        'Next
-
-
-
-
-
-    End Sub
 
 
     Function GetHash(Optional ByVal Salt As Integer = 0)
@@ -4443,6 +4566,8 @@ Public Class PFPForm
         MsgBox(DelAutoinfoTXFromINI(TBTestDelTXINI.Text).ToString)
 
     End Sub
+
+
 
 #End Region
 

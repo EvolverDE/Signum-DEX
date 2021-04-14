@@ -105,6 +105,17 @@ Partial Class PFPForm
         Me.ColumnHeader16 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabPage3 = New System.Windows.Forms.TabPage()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.Label25 = New System.Windows.Forms.Label()
+        Me.Label24 = New System.Windows.Forms.Label()
+        Me.Label23 = New System.Windows.Forms.Label()
+        Me.Label22 = New System.Windows.Forms.Label()
+        Me.Label21 = New System.Windows.Forms.Label()
+        Me.TBTestResponder = New System.Windows.Forms.TextBox()
+        Me.TBTestInjectPP = New System.Windows.Forms.TextBox()
+        Me.TBTestFinishPP = New System.Windows.Forms.TextBox()
+        Me.TBTestAcceptPP = New System.Windows.Forms.TextBox()
+        Me.TBTestCreatePP = New System.Windows.Forms.TextBox()
+        Me.BtTestInject = New System.Windows.Forms.Button()
         Me.TBTestDelTXINI = New System.Windows.Forms.TextBox()
         Me.TBTestGetTXINI = New System.Windows.Forms.TextBox()
         Me.TBTestSetTXINI = New System.Windows.Forms.TextBox()
@@ -114,7 +125,6 @@ Partial Class PFPForm
         Me.Button3 = New System.Windows.Forms.Button()
         Me.BtTestPPAPI = New System.Windows.Forms.Button()
         Me.ListBox1 = New System.Windows.Forms.ListBox()
-        Me.Button2 = New System.Windows.Forms.Button()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.BtTestConvert2 = New System.Windows.Forms.Button()
         Me.BtTestConvert = New System.Windows.Forms.Button()
@@ -126,7 +136,6 @@ Partial Class PFPForm
         Me.RBUseXItemSettings = New System.Windows.Forms.RadioButton()
         Me.RBUsePaymentInfo = New System.Windows.Forms.RadioButton()
         Me.ChBxCheckXItemTX = New System.Windows.Forms.CheckBox()
-        Me.Label21 = New System.Windows.Forms.Label()
         Me.Label20 = New System.Windows.Forms.Label()
         Me.CoBxNode = New System.Windows.Forms.ComboBox()
         Me.CoBxRefresh = New System.Windows.Forms.ComboBox()
@@ -1178,6 +1187,17 @@ Partial Class PFPForm
         '
         'GroupBox4
         '
+        Me.GroupBox4.Controls.Add(Me.Label25)
+        Me.GroupBox4.Controls.Add(Me.Label24)
+        Me.GroupBox4.Controls.Add(Me.Label23)
+        Me.GroupBox4.Controls.Add(Me.Label22)
+        Me.GroupBox4.Controls.Add(Me.Label21)
+        Me.GroupBox4.Controls.Add(Me.TBTestResponder)
+        Me.GroupBox4.Controls.Add(Me.TBTestInjectPP)
+        Me.GroupBox4.Controls.Add(Me.TBTestFinishPP)
+        Me.GroupBox4.Controls.Add(Me.TBTestAcceptPP)
+        Me.GroupBox4.Controls.Add(Me.TBTestCreatePP)
+        Me.GroupBox4.Controls.Add(Me.BtTestInject)
         Me.GroupBox4.Controls.Add(Me.TBTestDelTXINI)
         Me.GroupBox4.Controls.Add(Me.TBTestGetTXINI)
         Me.GroupBox4.Controls.Add(Me.TBTestSetTXINI)
@@ -1187,7 +1207,6 @@ Partial Class PFPForm
         Me.GroupBox4.Controls.Add(Me.Button3)
         Me.GroupBox4.Controls.Add(Me.BtTestPPAPI)
         Me.GroupBox4.Controls.Add(Me.ListBox1)
-        Me.GroupBox4.Controls.Add(Me.Button2)
         Me.GroupBox4.Controls.Add(Me.Button1)
         Me.GroupBox4.Controls.Add(Me.BtTestConvert2)
         Me.GroupBox4.Controls.Add(Me.BtTestConvert)
@@ -1201,6 +1220,96 @@ Partial Class PFPForm
         Me.GroupBox4.TabIndex = 9
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Testing"
+        '
+        'Label25
+        '
+        Me.Label25.AutoSize = True
+        Me.Label25.Location = New System.Drawing.Point(247, 114)
+        Me.Label25.Name = "Label25"
+        Me.Label25.Size = New System.Drawing.Size(94, 13)
+        Me.Label25.TabIndex = 27
+        Me.Label25.Text = "TestResponderID:"
+        '
+        'Label24
+        '
+        Me.Label24.AutoSize = True
+        Me.Label24.Location = New System.Drawing.Point(247, 153)
+        Me.Label24.Name = "Label24"
+        Me.Label24.Size = New System.Drawing.Size(66, 13)
+        Me.Label24.TabIndex = 26
+        Me.Label24.Text = "PassPhrase:"
+        '
+        'Label23
+        '
+        Me.Label23.AutoSize = True
+        Me.Label23.Location = New System.Drawing.Point(165, 153)
+        Me.Label23.Name = "Label23"
+        Me.Label23.Size = New System.Drawing.Size(66, 13)
+        Me.Label23.TabIndex = 25
+        Me.Label23.Text = "PassPhrase:"
+        '
+        'Label22
+        '
+        Me.Label22.AutoSize = True
+        Me.Label22.Location = New System.Drawing.Point(84, 153)
+        Me.Label22.Name = "Label22"
+        Me.Label22.Size = New System.Drawing.Size(66, 13)
+        Me.Label22.TabIndex = 24
+        Me.Label22.Text = "PassPhrase:"
+        '
+        'Label21
+        '
+        Me.Label21.AutoSize = True
+        Me.Label21.Location = New System.Drawing.Point(4, 153)
+        Me.Label21.Name = "Label21"
+        Me.Label21.Size = New System.Drawing.Size(66, 13)
+        Me.Label21.TabIndex = 23
+        Me.Label21.Text = "PassPhrase:"
+        '
+        'TBTestResponder
+        '
+        Me.TBTestResponder.Location = New System.Drawing.Point(250, 130)
+        Me.TBTestResponder.Name = "TBTestResponder"
+        Me.TBTestResponder.Size = New System.Drawing.Size(105, 20)
+        Me.TBTestResponder.TabIndex = 22
+        '
+        'TBTestInjectPP
+        '
+        Me.TBTestInjectPP.Location = New System.Drawing.Point(250, 169)
+        Me.TBTestInjectPP.Name = "TBTestInjectPP"
+        Me.TBTestInjectPP.Size = New System.Drawing.Size(105, 20)
+        Me.TBTestInjectPP.TabIndex = 21
+        '
+        'TBTestFinishPP
+        '
+        Me.TBTestFinishPP.Location = New System.Drawing.Point(168, 169)
+        Me.TBTestFinishPP.Name = "TBTestFinishPP"
+        Me.TBTestFinishPP.Size = New System.Drawing.Size(75, 20)
+        Me.TBTestFinishPP.TabIndex = 20
+        '
+        'TBTestAcceptPP
+        '
+        Me.TBTestAcceptPP.Location = New System.Drawing.Point(87, 169)
+        Me.TBTestAcceptPP.Name = "TBTestAcceptPP"
+        Me.TBTestAcceptPP.Size = New System.Drawing.Size(75, 20)
+        Me.TBTestAcceptPP.TabIndex = 19
+        '
+        'TBTestCreatePP
+        '
+        Me.TBTestCreatePP.Location = New System.Drawing.Point(6, 169)
+        Me.TBTestCreatePP.Name = "TBTestCreatePP"
+        Me.TBTestCreatePP.Size = New System.Drawing.Size(75, 20)
+        Me.TBTestCreatePP.TabIndex = 18
+        '
+        'BtTestInject
+        '
+        Me.BtTestInject.ForeColor = System.Drawing.Color.Black
+        Me.BtTestInject.Location = New System.Drawing.Point(250, 195)
+        Me.BtTestInject.Name = "BtTestInject"
+        Me.BtTestInject.Size = New System.Drawing.Size(105, 23)
+        Me.BtTestInject.TabIndex = 17
+        Me.BtTestInject.Text = "injectResponder"
+        Me.BtTestInject.UseVisualStyleBackColor = True
         '
         'TBTestDelTXINI
         '
@@ -1276,19 +1385,10 @@ Partial Class PFPForm
         'ListBox1
         '
         Me.ListBox1.FormattingEnabled = True
-        Me.ListBox1.Location = New System.Drawing.Point(7, 103)
+        Me.ListBox1.Location = New System.Drawing.Point(7, 259)
         Me.ListBox1.Name = "ListBox1"
-        Me.ListBox1.Size = New System.Drawing.Size(1572, 264)
+        Me.ListBox1.Size = New System.Drawing.Size(1572, 108)
         Me.ListBox1.TabIndex = 8
-        '
-        'Button2
-        '
-        Me.Button2.Location = New System.Drawing.Point(1000, 74)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(75, 23)
-        Me.Button2.TabIndex = 7
-        Me.Button2.Text = "Button2"
-        Me.Button2.UseVisualStyleBackColor = True
         '
         'Button1
         '
@@ -1330,7 +1430,7 @@ Partial Class PFPForm
         'BtTestFinish
         '
         Me.BtTestFinish.ForeColor = System.Drawing.Color.Black
-        Me.BtTestFinish.Location = New System.Drawing.Point(168, 74)
+        Me.BtTestFinish.Location = New System.Drawing.Point(168, 195)
         Me.BtTestFinish.Name = "BtTestFinish"
         Me.BtTestFinish.Size = New System.Drawing.Size(75, 23)
         Me.BtTestFinish.TabIndex = 2
@@ -1340,7 +1440,7 @@ Partial Class PFPForm
         'BtTestAccept
         '
         Me.BtTestAccept.ForeColor = System.Drawing.Color.Black
-        Me.BtTestAccept.Location = New System.Drawing.Point(87, 74)
+        Me.BtTestAccept.Location = New System.Drawing.Point(87, 195)
         Me.BtTestAccept.Name = "BtTestAccept"
         Me.BtTestAccept.Size = New System.Drawing.Size(75, 23)
         Me.BtTestAccept.TabIndex = 1
@@ -1350,7 +1450,7 @@ Partial Class PFPForm
         'BtTestCreate
         '
         Me.BtTestCreate.ForeColor = System.Drawing.Color.Black
-        Me.BtTestCreate.Location = New System.Drawing.Point(6, 74)
+        Me.BtTestCreate.Location = New System.Drawing.Point(6, 195)
         Me.BtTestCreate.Name = "BtTestCreate"
         Me.BtTestCreate.Size = New System.Drawing.Size(75, 23)
         Me.BtTestCreate.TabIndex = 0
@@ -1362,7 +1462,6 @@ Partial Class PFPForm
         Me.GroupBox3.Controls.Add(Me.RBUseXItemSettings)
         Me.GroupBox3.Controls.Add(Me.RBUsePaymentInfo)
         Me.GroupBox3.Controls.Add(Me.ChBxCheckXItemTX)
-        Me.GroupBox3.Controls.Add(Me.Label21)
         Me.GroupBox3.Controls.Add(Me.Label20)
         Me.GroupBox3.Controls.Add(Me.CoBxNode)
         Me.GroupBox3.Controls.Add(Me.CoBxRefresh)
@@ -1410,17 +1509,6 @@ Partial Class PFPForm
         Me.ChBxCheckXItemTX.TabIndex = 16
         Me.ChBxCheckXItemTX.Text = "automatically check XItem transaction and finish AT"
         Me.ChBxCheckXItemTX.UseVisualStyleBackColor = True
-        '
-        'Label21
-        '
-        Me.Label21.AutoSize = True
-        Me.Label21.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label21.ForeColor = System.Drawing.Color.Yellow
-        Me.Label21.Location = New System.Drawing.Point(65, 211)
-        Me.Label21.Name = "Label21"
-        Me.Label21.Size = New System.Drawing.Size(260, 13)
-        Me.Label21.TabIndex = 15
-        Me.Label21.Text = "It is strongly recommended to use localhost !"
         '
         'Label20
         '
@@ -1880,8 +1968,6 @@ Partial Class PFPForm
     Friend WithEvents Label19 As Label
     Friend WithEvents Label6 As Label
     Friend WithEvents Label20 As Label
-    Friend WithEvents Label21 As Label
-    Friend WithEvents Button2 As Button
     Friend WithEvents ListBox1 As ListBox
     Friend WithEvents BtTestPPAPI As Button
     Friend WithEvents Button3 As Button
@@ -1894,4 +1980,15 @@ Partial Class PFPForm
     Friend WithEvents TBTestSetTXINI As TextBox
     Friend WithEvents RBUseXItemSettings As RadioButton
     Friend WithEvents RBUsePaymentInfo As RadioButton
+    Friend WithEvents BtTestInject As Button
+    Friend WithEvents TBTestInjectPP As TextBox
+    Friend WithEvents TBTestFinishPP As TextBox
+    Friend WithEvents TBTestAcceptPP As TextBox
+    Friend WithEvents TBTestCreatePP As TextBox
+    Friend WithEvents Label25 As Label
+    Friend WithEvents Label24 As Label
+    Friend WithEvents Label23 As Label
+    Friend WithEvents Label22 As Label
+    Friend WithEvents Label21 As Label
+    Friend WithEvents TBTestResponder As TextBox
 End Class

@@ -1,11 +1,18 @@
 ﻿Public Class BurstNET
 
+
+
+    Public Property PassPhrase() As String = ""
+
+    Sub New(Optional ByVal _PassPhrase As String = "")
+        PassPhrase = _PassPhrase
+    End Sub
+
     ''' <summary>
     ''' Generates the Masterkeys from PassPhrase 0=PublicKey; 1=SignKey; 2=AgreementKey
     ''' </summary>
-    ''' <param name="PassPhrase">The PassPhrase as String</param>
     ''' <returns>List of Masterkeys</returns>
-    Function GenerateMasterKeys(ByVal PassPhrase As String) As List(Of Byte())
+    Function GenerateMasterKeys() As List(Of Byte())
 
         Dim Managed_SHA256 As System.Security.Cryptography.SHA256 = System.Security.Cryptography.SHA256Managed.Create()
         Dim HashPhrase() As Byte = Managed_SHA256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(PassPhrase).ToArray)
@@ -48,11 +55,11 @@
 
     End Structure
 
-    Function SignHelper(ByVal UnsignedMessageHex As String, ByVal PassPhrase As String) As S_Signature
+    Function SignHelper(ByVal UnsignedMessageHex As String) As S_Signature
 
         Dim Signature As S_Signature = New S_Signature
 
-        Dim PassPhraseHash As List(Of Byte()) = GenerateMasterKeys(PassPhrase)
+        Dim PassPhraseHash As List(Of Byte()) = GenerateMasterKeys()
 
         Signature.UnsignedTransaction = UnsignedMessageHex
         Signature.PublicKey = ByteAry2HEX(PassPhraseHash(0))
@@ -66,9 +73,9 @@
 
         Dim TransactionHEX As String = UnsignedMessageHex
 
-        Dim TXBEnd As String = TransactionHEX.Substring(TransactionHEX.Length - 32)
-        TransactionHEX = TransactionHEX.Remove(TransactionHEX.Length - 160)
-        TransactionHEX += Sign + TXBEnd
+        Dim TXBEnd As String = TransactionHEX.Substring(320)
+        TransactionHEX = TransactionHEX.Remove(192)
+        TransactionHEX &= Sign & TXBEnd
         Signature.SignedTransaction = TransactionHEX
 
         Dim cSHA256_sigHash As System.Security.Cryptography.SHA256 = System.Security.Cryptography.SHA256Managed.Create()
@@ -154,14 +161,13 @@
 
     End Function
 
-
-
-
-
-
-
-
-
+    ''' <summary>
+    ''' Encrypts Message from Parameters 0=Data; 1=Nonce
+    ''' </summary>
+    ''' <param name="Plaintext"></param>
+    ''' <param name="RecipientPublicKeyHex"></param>
+    ''' <param name="SenderAgreementKeyHex"></param>
+    ''' <returns></returns>
     Function EncryptMessage(ByVal Plaintext As String, ByVal RecipientPublicKeyHex As String, ByVal SenderAgreementKeyHex As String) As String()
 
         Dim PlaintextBytes As Byte() = HEXStr2ByteAry(Str2Hex(Plaintext))
@@ -171,7 +177,13 @@
 
     End Function
 
-
+    ''' <summary>
+    ''' Encrypt Data from Parameters 0=Data; 1=Nonce
+    ''' </summary>
+    ''' <param name="Data"></param>
+    ''' <param name="RecipientPublicKeyHex"></param>
+    ''' <param name="SenderAgreementKeyHex"></param>
+    ''' <returns></returns>
     Function EncryptData(ByVal Data As Byte(), ByVal RecipientPublicKeyHex As String, ByVal SenderAgreementKeyHex As String) As String()
 
         Dim Curve As Curve25519 = New Curve25519
@@ -198,13 +210,18 @@
 
 
     Function DecryptMessage(ByVal EncryptedMessage As String, ByVal Nonce As String, ByVal SenderPublicKeyHex As String, ByVal RecipientAgreementKeyHex As String) As String
+        Try
 
-        Dim EncryptedMessageBytes As Byte() = HEXStr2ByteAry(EncryptedMessage)
-        Dim NonceBytes As Byte() = HEXStr2ByteAry(Nonce)
+            Dim EncryptedMessageBytes As Byte() = HEXStr2ByteAry(EncryptedMessage)
+            Dim NonceBytes As Byte() = HEXStr2ByteAry(Nonce)
 
-        Dim PlainText As String = DecryptData(EncryptedMessageBytes, NonceBytes, SenderPublicKeyHex, RecipientAgreementKeyHex)
+            Dim PlainText As String = DecryptData(EncryptedMessageBytes, NonceBytes, SenderPublicKeyHex, RecipientAgreementKeyHex)
 
-        Return PlainText
+            Return PlainText
+
+        Catch ex As Exception
+            Return Application.ProductName + "-error in BurstNET.DecryptMessage(): " + ex.Message
+        End Try
 
     End Function
 
@@ -251,14 +268,5 @@
         Return DecryptBytes
 
     End Function
-
-
-
-
-
-
-
-
-
 
 End Class
