@@ -23,14 +23,14 @@ Public Class TradeTrackerTimeLine
 
 
     <DefaultValue(100.0!), Description("Bereich in Sekunden der in der TimeLine angezeigt werden soll.")>
-    Public Property WorkTrackTimerInterval() As Single
+    Public Property TradeTrackTimerInterval() As Single
         Get
-            Return WorkTrackTimer.Interval
+            Return TradeTrackTimer.Interval
         End Get
         Set(ByVal Value As Single)
-            If WorkTrackTimer.Interval <> Value Then
+            If TradeTrackTimer.Interval <> Value Then
                 If Value < 10 Then Value = 10
-                WorkTrackTimer.Interval = CInt(Value)
+                TradeTrackTimer.Interval = CInt(Value)
                 Me.Invalidate()
             End If
         End Set
@@ -38,13 +38,13 @@ Public Class TradeTrackerTimeLine
 
 
     <DefaultValue(False), Description("Legt fest, ob der timer aktiv sein soll")>
-    Public Property WorkTrackTimerEnable() As Boolean
+    Public Property TradeTrackTimerEnable() As Boolean
         Get
-            Return WorkTrackTimer.Enabled
+            Return TradeTrackTimer.Enabled
         End Get
         Set(ByVal Value As Boolean)
-            If WorkTrackTimer.Enabled <> Value Then
-                WorkTrackTimer.Enabled = Value
+            If TradeTrackTimer.Enabled <> Value Then
+                TradeTrackTimer.Enabled = Value
                 Me.Invalidate()
             End If
         End Set
@@ -149,13 +149,13 @@ Public Class TradeTrackerTimeLine
             DoubleBuffered = True
             'Select Case ZehnSeks * 10
             '    Case Is < 60
-            '        GFX_Graphics.DrawString("Skala: " + CStr(ZehnSeks * 10).ToString + " Sek. Bereich: " + BereichSekunden.ToString + " Sek. Aktualisierung: " + Math.Round(WorkTrackTimer.Interval / 1000, 2).ToString + " Sek.", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
+            '        GFX_Graphics.DrawString("Skala: " + CStr(ZehnSeks * 10).ToString + " Sek. Bereich: " + BereichSekunden.ToString + " Sek. Aktualisierung: " + Math.Round(TradeTrackTimer.Interval / 1000, 2).ToString + " Sek.", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
             '    Case 60 To 3599
-            '        GFX_Graphics.DrawString("Skala: " + CStr(ZehnSeks * 10 / 60).ToString + " Min. Bereich: " + CStr(Math.Round(BereichSekunden / 60, 2)) + " Min. Aktualisierung: " + Math.Round(WorkTrackTimer.Interval / 1000, 2).ToString + " Sek.", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
+            '        GFX_Graphics.DrawString("Skala: " + CStr(ZehnSeks * 10 / 60).ToString + " Min. Bereich: " + CStr(Math.Round(BereichSekunden / 60, 2)) + " Min. Aktualisierung: " + Math.Round(TradeTrackTimer.Interval / 1000, 2).ToString + " Sek.", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
             '    Case 3600 To 74700
-            '        GFX_Graphics.DrawString("Skala: " + CStr(ZehnSeks * 10 / 60 / 60).ToString + " Std. Bereich: " + CStr(Math.Round(BereichSekunden / 60 / 60, 2)) + " Std. Aktualisierung: " + Math.Round(WorkTrackTimer.Interval / 1000, 2).ToString + " Sek.", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
+            '        GFX_Graphics.DrawString("Skala: " + CStr(ZehnSeks * 10 / 60 / 60).ToString + " Std. Bereich: " + CStr(Math.Round(BereichSekunden / 60 / 60, 2)) + " Std. Aktualisierung: " + Math.Round(TradeTrackTimer.Interval / 1000, 2).ToString + " Sek.", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
             '    Case Else
-            '        GFX_Graphics.DrawString("Skala: " + CStr(ZehnSeks * 10 / 60 / 60 / 24).ToString + " Tag(e) Bereich: " + CStr(Math.Round(BereichSekunden / 60 / 60 / 24, 2)) + " Tag(e) Aktualisierung: " + Math.Round(WorkTrackTimer.Interval / 1000, 2).ToString + " Sek.", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
+            '        GFX_Graphics.DrawString("Skala: " + CStr(ZehnSeks * 10 / 60 / 60 / 24).ToString + " Tag(e) Bereich: " + CStr(Math.Round(BereichSekunden / 60 / 60 / 24, 2)) + " Tag(e) Aktualisierung: " + Math.Round(TradeTrackTimer.Interval / 1000, 2).ToString + " Sek.", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
             'End Select
 
             'BorderDrawingPen.Dispose()
@@ -226,7 +226,7 @@ Public Class TradeTrackerTimeLine
             Dater = Now
         End If
 
-        Dim XFactor As Integer = 1000 'WorkTrackTimer.Interval
+        Dim XFactor As Integer = 1000
         'Select Case XFactor.ToString.Length
         '    Case 2
         '        XFactor *= 100
@@ -322,7 +322,7 @@ Public Class TradeTrackerTimeLine
     Dim DragDropTime As Date
 
 
-    Private Sub WorkTrackerTimeLine_MouseHover(sender As Object, e As MouseEventArgs) Handles Me.MouseWheel
+    Private Sub TradeTrackerTimeLine_MouseHover(sender As Object, e As MouseEventArgs) Handles Me.MouseWheel
 
         Dim Multiplikator As Single = 0
 
@@ -456,12 +456,12 @@ Public Class TradeTrackerTimeLine
     Dim mouseYrast As Integer = 0
 
 
-    Private Sub WorkTrackerTimeLine_MouseDown(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
+    Private Sub TradeTrackerTimeLine_MouseDown(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
 
         If e.Button = MouseButtons.Left Then
 
-            old_Timerinterval = WorkTrackTimer.Interval
-            WorkTrackTimer.Interval = 10
+            old_Timerinterval = TradeTrackTimer.Interval
+            TradeTrackTimer.Interval = 10
 
             DragDropTime = Now
 
@@ -482,12 +482,12 @@ Public Class TradeTrackerTimeLine
 
     End Sub
 
-    Private Sub WorkTrackerTimeLine_MouseUp(sender As Object, e As MouseEventArgs) Handles Me.MouseUp
+    Private Sub TradeTrackerTimeLine_MouseUp(sender As Object, e As MouseEventArgs) Handles Me.MouseUp
 
         If e.Button = MouseButtons.Left Then
             MouseDownFlag = False
             Try
-                WorkTrackTimer.Interval = old_Timerinterval
+                TradeTrackTimer.Interval = old_Timerinterval
             Catch ex As Exception
 
             End Try
@@ -499,11 +499,11 @@ Public Class TradeTrackerTimeLine
     Dim XOffset As Integer = 0
 
     Dim old_Timerinterval As Integer
-    Private Sub WorkTrackerTimeLine_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
+    Private Sub TradeTrackerTimeLine_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
 
         If MouseDownFlag Then
 
-            Dim XFactor As Integer = 1000 'CInt(WorkTrackTimer.Interval)
+            Dim XFactor As Integer = 1000
             'Select Case XFactor.ToString.Length
             '    Case 2
             '        XFactor *= 100
@@ -523,17 +523,17 @@ Public Class TradeTrackerTimeLine
             'TL_ScaleStartDate = Rast1.AddMilliseconds(-(XFactor * TL_Zoom) + XDiff)
             'TL_ScaleEndDate = Rast2.AddMilliseconds((XFactor * TL_Zoom) + XDiff)
         Else
-            WorkTrackTimer.Interval = CInt(WorkTrackTimerInterval)
+            TradeTrackTimer.Interval = CInt(TradeTrackTimerInterval)
         End If
 
     End Sub
 
 
-    Protected Overridable Sub WorkTrackTimer_Tick(sender As Object, e As EventArgs) Handles WorkTrackTimer.Tick
+    Protected Overridable Sub TradeTrackTimer_Tick(sender As Object, e As EventArgs) Handles TradeTrackTimer.Tick
 
         RaiseEvent TimerTick(Me.GetType)
 
-        Dim XFactor As Integer = 1000 'WorkTrackTimer.Interval
+        Dim XFactor As Integer = 1000
         'Select Case XFactor.ToString.Length
         '    Case 2
         '        XFactor *= 100

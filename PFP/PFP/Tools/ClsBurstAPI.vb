@@ -11,7 +11,7 @@ Public Class ClsBurstAPI
     'finishOrder: 3125596792462301675
     'injectResponder: 6956773156128522497
 
-    Public Const _ReferenceTX As String = "2758976048878098469" ' "4449312026944639919" '15288802811961789572" '16765061203337282908 '15223937934525417316 '15288802811961789572
+    Public Const _ReferenceTX As String = "5527904978073323480" ' "2758976048878098469" ' "4449312026944639919" '15288802811961789572" '16765061203337282908 '15223937934525417316 '15288802811961789572
 
     'CreateOrder method address: 224685783a1b4991 HEX ; 2469808197076732305 DEC -1286274751219789663
     'AcceptOrder method address: 416d0b4b4963b686 HEX ; 4714436802908501638 DEC
@@ -142,7 +142,7 @@ Public Class ClsBurstAPI
 
         Try
 
-            Dim request As WebRequest = WebRequest.Create(C_Node) 'https://testnet.burstcoin.network:6876/burst") 'http://nivbox.co.uk:6876/") '"https://testnet-2.burst-alliance.org:6876/burst") '"https://wallet.testnet.burstscan.net/burst") 'https://wallet.dev.burst-test.net/burst
+            Dim request As WebRequest = WebRequest.Create(C_Node)
             request.Method = "POST"
 
             Dim byteArray As Byte() = Encoding.UTF8.GetBytes(postData)
@@ -168,8 +168,8 @@ Public Class ClsBurstAPI
             Return responseFromServer
 
         Catch ex As Exception
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in BurstRequest(): " + ex.Message
-            Return Application.ProductName + "-error in BurstRequest(): " + ex.Message
+            PFPForm.StatusLabel.Text = Application.ProductName + "-error in BurstRequest(" + C_Node + "): " + ex.Message
+            Return Application.ProductName + "-error in BurstRequest(" + C_Node + "): " + ex.Message
         End Try
 
     End Function
@@ -242,7 +242,8 @@ Public Class ClsBurstAPI
 
 
         Dim Account As String = RecursiveSearch(RespList, "account").ToString
-        Dim Balance As List(Of String) = GetBalance(Account)
+        Dim AccountRS As String = RecursiveSearch(RespList, "accountRS").ToString
+        Dim Balance As List(Of String) = GetBalance(Account, AccountRS)
 
         Return Balance
 
@@ -310,7 +311,7 @@ Public Class ClsBurstAPI
     End Function
 
 
-    Public Function GetBalance(Optional ByVal AccountID As String = "") As List(Of String)
+    Public Function GetBalance(Optional ByVal AccountID As String = "", Optional ByVal Address1 As String = "") As List(Of String)
 
         Dim Out As out = New out(Application.StartupPath)
 
@@ -318,7 +319,11 @@ Public Class ClsBurstAPI
             AccountID = C_AccountID
         End If
 
-        Dim CoinBal As List(Of String) = New List(Of String)({"<coin>BURST</coin>", "<account>" + AccountID + "</account>", "<address>" + AccountID + "</address>", "<balance>0</balance>", "<available>0</available>", "<pending>0</pending>"})
+        If Address1.Trim = "" Then
+            Address1 = C_Address
+        End If
+
+        Dim CoinBal As List(Of String) = New List(Of String)({"<coin>BURST</coin>", "<account>" + AccountID + "</account>", "<address>" + Address1 + "</address>", "<balance>0</balance>", "<available>0</available>", "<pending>0</pending>"})
 
         Dim Response As String = BurstRequest("requestType=getAccount&account=" + AccountID.Trim)
 
@@ -1245,9 +1250,9 @@ Public Class ClsBurstAPI
 
             Select Case Entry(0)
                 Case "creator"
-
+                    ATDetailList.Add("<creator>" + Entry(1) + "</creator>")
                 Case "creatorRS"
-
+                    ATDetailList.Add("<creatorRS>" + Entry(1) + "</creatorRS>")
                 Case "at"
                     ATDetailList.Add("<at>" + Entry(1) + "</at>")
 

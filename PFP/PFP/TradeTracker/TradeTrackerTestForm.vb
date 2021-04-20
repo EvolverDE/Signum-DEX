@@ -15,7 +15,7 @@ Public Class TradeTrackerTestForm
     Dim WTSList As List(Of TradeTrackerSlot) = New List(Of TradeTrackerSlot)
 
 
-    Private Sub WorkTrackerTestForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub TradeTrackerTestForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         SplitPanel.Dock = DockStyle.Fill
         SplitPanel.Orientation = Orientation.Horizontal
@@ -38,7 +38,7 @@ Public Class TradeTrackerTestForm
         WTTL.Height = TLS.Height
 
 
-        AddHandler WTTL.TimerTick, AddressOf WorkTrackerTimeLine1_TimerTick
+        AddHandler WTTL.TimerTick, AddressOf TradeTrackerTimeLine1_TimerTick
 
         TLS.Panel2.Controls.Add(WTTL)
 
@@ -66,7 +66,7 @@ Public Class TradeTrackerTestForm
 
 
     Dim ticks As Integer = 0
-    Private Sub WorkTrackerTimeLine1_TimerTick(sender As Object)
+    Private Sub TradeTrackerTimeLine1_TimerTick(sender As Object)
 
         If ticks > 100 Then
 

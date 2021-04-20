@@ -24,17 +24,17 @@ Partial Class TradeTrackerTestForm
     Private Sub InitializeComponent()
         Me.SuspendLayout()
         '
-        'WorkTrackerTestForm
+        'TradeTrackerTestForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(948, 449)
         Me.Margin = New System.Windows.Forms.Padding(2)
-        Me.Name = "WorkTrackerTestForm"
+        Me.Name = "TradeTrackerTestForm"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "WorkTrackerTestForm"
+        Me.Text = "TradeTrackerTestForm"
         Me.ResumeLayout(False)
 
     End Sub
-    Friend WithEvents WorkTrackerSlot1 As TradeTrackerSlot
+    Friend WithEvents TradeTrackerSlot1 As TradeTrackerSlot
 End Class

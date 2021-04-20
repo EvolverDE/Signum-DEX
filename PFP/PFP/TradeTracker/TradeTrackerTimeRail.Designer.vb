@@ -24,11 +24,11 @@ Partial Class TradeTrackerTimeRail
     Private Sub InitializeComponent()
         Me.SuspendLayout()
         '
-        'WorkTrackerTimeRail
+        'TradeTrackerTimeRail
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.Name = "WorkTrackerTimeRail"
+        Me.Name = "TradeTrackerTimeRail"
         Me.Size = New System.Drawing.Size(895, 60)
         Me.ResumeLayout(False)
 

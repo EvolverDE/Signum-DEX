@@ -101,7 +101,7 @@ Public Class TradeTrackerSlot
 
 
 
-    Private Sub WorkTrackerSlot_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub TradeTrackerSlot_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Chart_EMA_TR.Dock = DockStyle.Fill
         MACD_RSI_TR.Dock = DockStyle.Fill
 

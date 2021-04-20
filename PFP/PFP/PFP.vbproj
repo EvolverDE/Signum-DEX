@@ -200,6 +200,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TradeTracker\TradeTrackerTimeLine.resx">
       <DependentUpon>TradeTrackerTimeLine.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="TradeTracker\TradeTrackerTimeRail.resx">
       <DependentUpon>TradeTrackerTimeRail.vb</DependentUpon>

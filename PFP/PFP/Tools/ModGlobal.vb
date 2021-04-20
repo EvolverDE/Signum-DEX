@@ -2,6 +2,7 @@
 
 Module ModGlobal
 
+
     Public Function ByteAry2HEX(ByVal BytAry() As Byte) As String
 
         Dim RetStr As String = ""

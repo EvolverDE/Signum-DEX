@@ -23,11 +23,8 @@ Partial Class TradeTrackerTimeLine
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Me.WorkTrackTimer = New System.Windows.Forms.Timer(Me.components)
+        Me.TradeTrackTimer = New System.Windows.Forms.Timer(Me.components)
         Me.SuspendLayout()
-        '
-        'WorkTrackTimer
-        '
         '
         'TradeTrackerTimeLine
         '
@@ -40,5 +37,5 @@ Partial Class TradeTrackerTimeLine
 
     End Sub
 
-    Friend WithEvents WorkTrackTimer As Timer
+    Friend WithEvents TradeTrackTimer As Timer
 End Class

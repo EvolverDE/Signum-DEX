@@ -3,6 +3,10 @@
 '<PermissionSet(SecurityAction.Demand, Name:="FullTrust")> <System.Runtime.InteropServices.ComVisibleAttribute(True)>
 Public Class PFPForm
 
+    Property NodeList() As List(Of String) = New List(Of String)
+
+    Property PrimaryNode() As String = ""
+
     Property ReferenceMachineCode() As String = ""
 
     Property Block() As Integer = 0
@@ -64,9 +68,11 @@ Public Class PFPForm
     End Structure
     Property ATList() As List(Of S_AT) = New List(Of S_AT)
 
-    Structure S_BLSAT
+
+    Public Structure S_BLSAT
         Dim AT As String
         Dim ATRS As String
+        Dim Creator As String
         Dim Name As String
         Dim Description As String
         Dim Sellorder As Boolean
@@ -89,7 +95,7 @@ Public Class PFPForm
     End Structure
     Property BLSList() As List(Of S_BLSAT) = New List(Of S_BLSAT)
 
-    Structure S_BLSAT_TX
+    Public Structure S_BLSAT_TX
 
         Sub New(ByVal null)
             Type = ""
@@ -120,7 +126,7 @@ Public Class PFPForm
     End Structure
     'Property BLSAT_TX_List() As List(Of S_BLSAT_TX) = New List(Of S_BLSAT_TX)
 
-    Structure S_Order
+    Public Structure S_Order
         Dim AT As String
         Dim ATRS As String
         Dim Type As String
@@ -142,11 +148,25 @@ Public Class PFPForm
     End Structure
     Property OrderList() As List(Of S_Order) = New List(Of S_Order)
 
+
+    Structure S_APIRequest
+        Dim RequestThread As Threading.Thread
+        Dim Command As String
+        Dim Node As String
+        Dim Status As String
+        Dim Result As Object
+    End Structure
+
+    Property APIRequestList As List(Of S_APIRequest) = New List(Of S_APIRequest)
+
+
+
     Dim SplitPanel As SplitContainer = New SplitContainer
     Dim PanelForSplitPanel As Panel = New Panel
 
     Dim TLS As SplitContainer = New SplitContainer
-    Dim WTTL As TradeTrackerTimeLine = New TradeTrackerTimeLine
+    Dim TTTL As TradeTrackerTimeLine = New TradeTrackerTimeLine
+
 
 #Region "GUI Control"
 
@@ -171,7 +191,7 @@ Public Class PFPForm
                 Changes = True
             End If
 
-            If CoBxNode.SelectedItem <> INIGetValue(Application.StartupPath + "/Settings.ini", "Basic", "Node", "http://nivbox.co.uk:6876/burst") Then
+            If CoBxNode.SelectedItem <> INIGetValue(Application.StartupPath + "/Settings.ini", "Basic", "DefaultNode", "http://nivbox.co.uk:6876/burst") Then
                 Changes = True
             End If
 
@@ -232,7 +252,7 @@ Public Class PFPForm
                     INISetValue(Application.StartupPath + "/Settings.ini", "Basic", "Passphrase", TBSNOPassPhrase.Text)
                     INISetValue(Application.StartupPath + "/Settings.ini", "Basic", "LastMarketViewed", CoBxMarket.Text)
                     INISetValue(Application.StartupPath + "/Settings.ini", "Basic", "RefreshMinutes", CoBxRefresh.Text)
-                    INISetValue(Application.StartupPath + "/Settings.ini", "Basic", "Node", CoBxNode.Text)
+                    INISetValue(Application.StartupPath + "/Settings.ini", "Basic", "DefaultNode", PrimaryNode)
 
                     INISetValue(Application.StartupPath + "/Settings.ini", "General", "AutoSendPaymentInfo", ChBxAutoSendPaymentInfo.Checked.ToString)
                     INISetValue(Application.StartupPath + "/Settings.ini", "General", "AutoCheckAndFinishAT", ChBxCheckXItemTX.Checked.ToString)
@@ -282,10 +302,10 @@ Public Class PFPForm
         'TLS.SplitterDistance = 32
         TLS.Size = New Size(0, 70)
         'WTTL.Dock = DockStyle.Fill
-        WTTL.Height = TLS.Height
-        WTTL.WorkTrackTimerEnable = False
+        TTTL.Height = TLS.Height
+        TTTL.TradeTrackTimerEnable = False
 
-        AddHandler WTTL.TimerTick, AddressOf WorkTrackerTimeLine1_TimerTick
+        AddHandler TTTL.TimerTick, AddressOf TradeTrackerTimeLine1_TimerTick
 
         Dim LabChart As Label = New Label
         LabChart.Text = "Chart (Days): "
@@ -316,7 +336,7 @@ Public Class PFPForm
         CoBxTick.SelectedItem = CoBxTick.Items(2)
 
         TLS.Panel1.Controls.AddRange({LabChart, LabTick, CoBxChart, CoBxTick})
-        TLS.Panel2.Controls.Add(WTTL)
+        TLS.Panel2.Controls.Add(TTTL)
 
         Dim WTS As TradeTrackerSlot = New TradeTrackerSlot
         WTS.Location = New Point(0, 0)
@@ -361,10 +381,27 @@ Public Class PFPForm
 
         CoBxMarket.SelectedItem = INIGetValue(Application.StartupPath + "/Settings.ini", "Basic", "LastMarketViewed", "EUR")
         CoBxRefresh.SelectedItem = INIGetValue(Application.StartupPath + "/Settings.ini", "Basic", "RefreshMinutes", "1")
-        CoBxNode.SelectedItem = INIGetValue(Application.StartupPath + "/Settings.ini", "Basic", "Node", "http://nivbox.co.uk:6876/burst")
+
+        Dim Nodes As String = INIGetValue(Application.StartupPath + "/Settings.ini", "Basic", "Nodes", "http://nivbox.co.uk:6876/burst;https://octalsburstnode.ddns.net:6876/burst;https://testnetwallet.burstcoin.ro/burst;http://nivbox.co.uk:6876/burst;https://testnet.burstcoin.network:6876/burst;https://testnet-2.burst-alliance.org:6876/burst;https://wallet.testnet.burstscan.net/burst;https://wallet.dev.burst-test.net/burst;http://localhost:6876/burst")
+
+        NodeList.Clear()
+        If Nodes.Contains(";") Then
+            NodeList.AddRange(Nodes.Split(";"))
+        Else
+            NodeList.Add(Nodes)
+        End If
+
+        CoBxNode.Items.Clear()
+
+        CoBxNode.Items.AddRange(NodeList.ToArray)
+
+
+        CoBxNode.SelectedItem = INIGetValue(Application.StartupPath + "/Settings.ini", "Basic", "DefaultNode", "http://nivbox.co.uk:6876/burst")
+        PrimaryNode = CoBxNode.SelectedItem
 
         If CoBxNode.Text.Trim = "" Then
             CoBxNode.SelectedItem = CoBxNode.Items(0)
+            PrimaryNode = CoBxNode.Items(0)
         End If
 
         RefreshTime = CInt(CoBxRefresh.Text) * 600
@@ -415,17 +452,19 @@ Public Class PFPForm
         'End If
 
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text) ' With {.C_Node = CoBxNode.Text}
-
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode)
         ReferenceMachineCode = BCR.C_ReferenceMachineCode
 
         ATList = GetATsFromCSV()
+
+        SplitContainer2.Panel1.Visible = False
+        SplitContainer12.Enabled = False
 
         BlockTimer_Tick(90, Nothing)
 
     End Sub
 
-    Private Sub WorkTrackerTimeLine1_TimerTick(sender As Object)
+    Private Sub TradeTrackerTimeLine1_TimerTick(sender As Object)
 
         For Each TTSlot As TradeTrackerSlot In PanelForSplitPanel.Controls
 
@@ -435,7 +474,7 @@ Public Class PFPForm
             TLS.SplitterDistance = TTSlot.SplitterDistance
 
             TTSlot.Dock = DockStyle.Fill
-            WTTL.Dock = DockStyle.Fill
+            TTTL.Dock = DockStyle.Fill
 
             TTSlot.Chart_EMA_StartDate = TempTimeLine.SkalaStartDate
             TTSlot.Chart_EMA_EndDate = TempTimeLine.SkalaEndDate
@@ -463,10 +502,15 @@ Public Class PFPForm
 
             Boottime = 0
             BlockTimer.Enabled = False
-            WTTL.WorkTrackTimer.Enabled = False
-            SplitContainer2.Panel1.Visible = False
 
             Dim Wait As Boolean = Loading()
+
+            TTTL.TradeTrackTimer.Enabled = False
+            'SplitContainer2.Panel1.Visible = False
+            'SplitContainer12.Enabled = False
+
+            Wait = SetInLVs()
+
             RefreshTime = CInt(CoBxRefresh.Text) * 600
 
             Dim CoBxChartVal As Integer = 1
@@ -492,10 +536,11 @@ Public Class PFPForm
 
 
             Dim ViewThread As Threading.Thread = New Threading.Thread(AddressOf LoadHistory)
-            ViewThread.Start(New List(Of Object)({CoBxChartVal, CoBxTickVal, CoBxMarket.Text, CoBxNode.Text}))
+            ViewThread.Start(New List(Of Object)({CoBxChartVal, CoBxTickVal, CoBxMarket.Text}))
 
             SplitContainer2.Panel1.Visible = True
-            WTTL.WorkTrackTimer.Enabled = True
+            SplitContainer12.Enabled = True
+            TTTL.TradeTrackTimer.Enabled = True
             BlockTimer.Enabled = True
         End If
 
@@ -548,7 +593,7 @@ Public Class PFPForm
 
     Private Sub BtCreateNewAT_Click(sender As Object, e As EventArgs) Handles BtCreateNewAT.Click
 
-        Dim BSR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text)
+        Dim BSR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text)
 
         Dim MsgResult As msgs.CustomDialogResult = msgs.MBox("Do you really want to create a new Payment channel" + vbCrLf + "(AT=Automated Transaction)?", "Create AT", msgs.DefaultButtonMaker(msgs.DBList._YesNo),, msgs.Status.Question)
 
@@ -591,11 +636,11 @@ Public Class PFPForm
     End Sub
     Private Sub BtSNOSetOrder_Click(sender As Object, e As EventArgs) Handles BtSNOSetOrder.Click
 
-        Dim BSR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text,, AccountID) ' With {.C_Node = CoBxNode.Text, .C_AccountID = AccountID}
+        Dim BSR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode,, AccountID) ' With {.C_Node = CoBxNode.Text, .C_AccountID = AccountID}
 
         Try
 
-            Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+            Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
             Dim x As List(Of String) = BCR.GetAccountFromPassPhrase()
 
             TBSNOAddress.Text = BCR.BetweenFromList(x, "<address>", "</address>")
@@ -634,22 +679,42 @@ Public Class PFPForm
 
             If LVOpenChannels.Items.Count > 0 Then
 
-                Dim BLS As S_BLSAT = Nothing ' New S_BLSAT ' DirectCast(LVOpenChannels.Items(0).Tag, S_BLSAT)
+                Dim BLS As S_BLSAT = Nothing
+
+                Dim FoundOne As Boolean = False
 
                 For Each LVi As ListViewItem In LVOpenChannels.Items
 
-                    If Not LVi.BackColor = Color.Crimson Then
+                    Dim Status As String = GetLVColNameFromSubItem(LVOpenChannels, "Status", LVi)
+
+                    If Status = "Reserved for you" Then
+                        FoundOne = True
                         BLS = DirectCast(LVi.Tag, S_BLSAT)
-
-                        If CheckForUTX(, BLS.ATRS) Or CheckATforTX(BLS.ATRS) Then
-                            BLS = Nothing ' New S_BLSAT
-                        Else
-                            Exit For
-                        End If
-
+                        Exit For
                     End If
 
                 Next
+
+
+                If Not FoundOne Then
+
+                    For Each LVi As ListViewItem In LVOpenChannels.Items
+
+                        If Not LVi.BackColor = Color.Crimson Then
+                            BLS = DirectCast(LVi.Tag, S_BLSAT)
+
+                            If CheckForUTX(, BLS.ATRS) Or CheckATforTX(BLS.ATRS) Then
+                                BLS = Nothing ' New S_BLSAT
+                            Else
+                                Exit For
+                            End If
+
+                        End If
+
+                    Next
+                End If
+
+
 
                 If IsNothing(BLS.ATRS) Then
                     msgs.MBox("All Payment Channels are in Use.", "No free Payment Channel found",,, msgs.Status.Information)
@@ -657,7 +722,7 @@ Public Class PFPForm
                 End If
 
 
-                Dim Recipient As String = BLS.AT  ' GetLVColName2SubItem(LVOpenChannels, "SmartContract", LVOpenChannels.Items(0))
+                Dim Recipient As String = BLS.AT
                 Dim Amount As Double = CDbl(NUDSNOAmount.Value)
                 Dim Fee As Double = CDbl(NUDSNOTXFee.Value)
                 Dim Collateral As Double = CDbl(NUDSNOCollateral.Value)
@@ -829,13 +894,13 @@ Public Class PFPForm
                 Exit Sub
             End If
 
-            Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+            Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
             Dim BLSAT_TX As S_BLSAT_TX = GetLastTXWithValues(BLS.AT_TXList, CoBxMarket.Text)
             Dim Amount As Double = BCR.Planck2Dbl(CULng(BCR.Between(BLSAT_TX.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
 
 
             If Not BLS.Initiator = TBSNOAddress.Text Then
-                Dim BCR2 As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+                Dim BCR2 As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
                 Dim x As List(Of String) = BCR2.GetAccountFromPassPhrase()
 
                 'AccountID = BCR2.BetweenFromList(x, "<account>", "</account>")
@@ -906,7 +971,7 @@ Public Class PFPForm
                 Exit Sub
             End If
 
-            Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+            Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
             Dim BLSAT_TX As S_BLSAT_TX = GetLastTXWithValues(BLS.AT_TXList, CoBxMarket.Text)
             Dim Amount As Double = BCR.Planck2Dbl(CULng(BCR.Between(BLSAT_TX.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
             Dim XItem As String = BCR.Between(BLSAT_TX.Attachment, "<xItem>", "</xItem>", GetType(String))
@@ -915,7 +980,7 @@ Public Class PFPForm
 
             If Not BLS.Initiator = TBSNOAddress.Text Then
 
-                Dim BCR2 As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+                Dim BCR2 As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
                 Dim x As List(Of String) = BCR2.GetAccountFromPassPhrase()
 
                 'AccountID = BCR2.BetweenFromList(x, "<account>", "</account>")
@@ -936,7 +1001,7 @@ Public Class PFPForm
 
                     If MsgResult = msgs.CustomDialogResult.Yes Then
 
-                        Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, Sum + 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
+                        Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, Sum, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
                         If TX.Contains(Application.ProductName + "-error") Then
                             Dim out As out = New out(Application.StartupPath)
@@ -1247,7 +1312,7 @@ Public Class PFPForm
                     Dim MsgResult As msgs.CustomDialogResult = msgs.MBox("Do you really want to cancel the AT?", "cancel AT?", msgs.DefaultButtonMaker(msgs.DBList._YesNo),, msgs.Status.Question)
 
                     If MsgResult = msgs.CustomDialogResult.Yes Then
-                        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+                        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
                         Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
                         If TXStr.Contains(Application.ProductName + "-error") Then
@@ -1264,7 +1329,7 @@ Public Class PFPForm
                     Dim MsgResult As msgs.CustomDialogResult = msgs.MBox("Do you really want to execute the AT?", "execute AT?", msgs.DefaultButtonMaker(msgs.DBList._YesNo),, msgs.Status.Question)
 
                     If MsgResult = msgs.CustomDialogResult.Yes Then
-                        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+                        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
                         Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceFinishOrder}))
 
                         If TXStr.Contains(Application.ProductName + "-error") Then
@@ -1286,7 +1351,7 @@ Public Class PFPForm
                     Dim MsgResult As msgs.CustomDialogResult = msgs.MBox("Do you really want to cancel the AT?", "cancel AT?", msgs.DefaultButtonMaker(msgs.DBList._YesNo),, msgs.Status.Question)
 
                     If MsgResult = msgs.CustomDialogResult.Yes Then
-                        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+                        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text)
                         Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
                         If TXStr.Contains(Application.ProductName + "-error") Then
@@ -1303,7 +1368,7 @@ Public Class PFPForm
                     Dim MsgResult As msgs.CustomDialogResult = msgs.MBox("Do you really want to execute the AT?", "execute AT?", msgs.DefaultButtonMaker(msgs.DBList._YesNo),, msgs.Status.Question)
 
                     If MsgResult = msgs.CustomDialogResult.Yes Then
-                        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+                        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text)
                         Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceFinishOrder}))
 
                         If TXStr.Contains(Application.ProductName + "-error") Then
@@ -1345,7 +1410,7 @@ Public Class PFPForm
                 Exit Sub
             End If
 
-            Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+            Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text)
 
 
             Dim Amount As Double = BCR.Planck2Dbl(CULng(BCR.Between(BLP_Order.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
@@ -1545,7 +1610,17 @@ Public Class PFPForm
         INISetValue(Application.StartupPath + "/Settings.ini", "Basic", "Passphrase", TBSNOPassPhrase.Text)
         INISetValue(Application.StartupPath + "/Settings.ini", "Basic", "LastMarketViewed", CoBxMarket.Text)
         INISetValue(Application.StartupPath + "/Settings.ini", "Basic", "RefreshMinutes", CoBxRefresh.Text)
-        INISetValue(Application.StartupPath + "/Settings.ini", "Basic", "Node", CoBxNode.Text)
+        INISetValue(Application.StartupPath + "/Settings.ini", "Basic", "DefaultNode", PrimaryNode)
+
+        Dim Nodes As String = ""
+
+        For Each Nod As String In CoBxNode.Items
+            Nodes += Nod + ";"
+        Next
+
+        Nodes = Nodes.Remove(Nodes.Length - 1)
+
+        INISetValue(Application.StartupPath + "/Settings.ini", "Basic", "Nodes", Nodes)
 
 
         INISetValue(Application.StartupPath + "/Settings.ini", "General", "AutoSendPaymentInfo", ChBxAutoSendPaymentInfo.Checked.ToString)
@@ -1616,324 +1691,10 @@ Public Class PFPForm
 
     End Function
 
-    Function Loading() As Boolean
 
-        Dim BCR2 As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+    Function SetInLVs()
 
-        Dim x As List(Of String) = BCR2.GetAccountFromPassPhrase()
-
-        TBSNOAddress.Text = BCR2.BetweenFromList(x, "<address>", "</address>")
-        TBSNOBalance.Text = BCR2.BetweenFromList(x, "<available>", "</available>")
-        AccountID = BCR2.BetweenFromList(x, "<account>", "</account>")
-
-        LabXItem.Text = CoBxMarket.Text
-        LabXitemAmount.Text = CoBxMarket.Text + " Amount: "
-
-        MarketIsCrypto = GetMarketCurrencyIsCrypto(CoBxMarket.Text)
-        Decimals = GetCurrencyDecimals(CoBxMarket.Text)
-
-        NUDSNOItemAmount.DecimalPlaces = Decimals
-
-
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text) ' With {.C_Node = CoBxNode.Text}
-
-        StatusBar.Visible = True
-
-        SplitContainer12.Enabled = False
-
-        Dim ATStrList As List(Of String) = BCR.GetATIds()
-
-        StatusBar.Value = 0
-        StatusBar.Maximum = ATStrList.Count
-
-
-        For i As Integer = 0 To ATList.Count - 1
-            Dim SAT As S_AT = ATList(i)
-
-            If SAT.IsBLS_AT Then
-
-                Dim ATDetails = BCR.GetATDetails(SAT.AT)
-                Dim MachineCode As String = BCR.BetweenFromList(ATDetails, "<machineCode>", "</machineCode>")
-
-                Application.DoEvents()
-
-                If ReferenceMachineCode.Trim = MachineCode.Trim Then
-                    SAT.IsBLS_AT = True
-                Else
-                    SAT.IsBLS_AT = False
-                End If
-
-                ATList(i) = SAT
-
-            End If
-
-        Next
-
-
-
-        Dim ATFilterList As List(Of String) = New List(Of String)
-        For i As Integer = 0 To ATStrList.Count - 1
-            Dim ATid As String = ATStrList(i)
-
-            StatusBar.Value = i
-
-            StatusLabel.Text = "Filter AT(" + i.ToString + "/" + ATStrList.Count.ToString + "): " + ATid
-
-            Dim ContinueFor As Boolean = False
-            For Each SAT As S_AT In ATList
-
-                If SAT.AT = ATid Then
-                    ContinueFor = True
-                    Exit For
-                End If
-
-            Next
-
-            If ContinueFor Then Continue For
-
-            ATFilterList.Add(ATid)
-        Next
-
-        StatusBar.Value = 0
-        StatusBar.Maximum = ATFilterList.Count
-
-        Dim ThreadPool As List(Of Threading.Thread) = New List(Of Threading.Thread)
-        For i As Integer = 0 To ATFilterList.Count - 1
-            Dim ATid As String = ATFilterList(i)
-            StatusBar.Value = i
-
-            StatusLabel.Text = "Checking AT(" + i.ToString + "/" + ATFilterList.Count.ToString + "): " + ATid
-            Application.DoEvents()
-
-            Dim CheckThread As Threading.Thread = New Threading.Thread(AddressOf ATCheckThread)
-
-            ThreadPool.Add(CheckThread)
-            ThreadPool(ThreadPool.Count - 1).Start({ATid, CoBxNode.Text})
-
-            Threading.Thread.Sleep(100)
-
-        Next
-
-        StatusBar.Value = 0
-        StatusBar.Maximum = ThreadPool.Count
-
-        StatusLabel.Text = "loading ATs..."
-
-        Dim StillRun As Boolean = True
-        While StillRun
-            StillRun = False
-
-            Dim ThrCnt As Integer = 0
-            For Each th In ThreadPool
-                If th.IsAlive Then
-                    StillRun = True
-                    'Exit For
-                Else
-                    ThrCnt += 1
-                End If
-            Next
-
-            StatusBar.Value = ThrCnt
-            Application.DoEvents()
-
-        End While
-
-        SaveATsToCSV(ATList)
-        BLSList.Clear()
-
-        StatusBar.Value = 0
-        StatusBar.Maximum = ATList.Count
-        StatusLabel.Text = "searching BLSATs..."
-
-        Dim NuATList As List(Of S_AT) = New List(Of S_AT)
-
-        For i As Integer = 0 To ATList.Count - 1
-            Dim SAT As S_AT = ATList(i)
-
-            StatusBar.Value = i
-
-            If Not SAT.IsBLS_AT Then
-                Continue For
-            End If
-            NuATList.Add(SAT)
-        Next
-
-        StatusBar.Value = 0
-        StatusBar.Maximum = NuATList.Count
-
-        For i As Integer = 0 To NuATList.Count - 1
-            Dim SAT As S_AT = NuATList(i)
-
-            StatusBar.Value = i
-
-            StatusLabel.Text = "Get ATDetails for: " + SAT.ATRS
-
-            Application.DoEvents()
-
-#Region "get AT Details"
-
-            Dim ATDetails As List(Of String) = BCR.GetATDetails(SAT.AT)
-
-            Dim AT As String = BCR.BetweenFromList(ATDetails, "<at>", "</at>")
-            Dim ATRS As String = BCR.BetweenFromList(ATDetails, "<atRS>", "</atRS>")
-            Dim Name As String = BCR.BetweenFromList(ATDetails, "<name>", "</name>")
-            Dim Description As String = BCR.BetweenFromList(ATDetails, "<description>", "</description>")
-
-            Dim Balance As String = BCR.BetweenFromList(ATDetails, "<balanceNQT>", "</balanceNQT>")
-            If Balance = "" Then
-                Balance = "0"
-            End If
-
-            Dim BalDbl As Double = BCR.Planck2Dbl(CULng(Balance))
-
-            Dim MachineData As String = BCR.BetweenFromList(ATDetails, "<machineData>", "</machineData>")
-
-            Dim MachineDataULongList As List(Of ULong) = BCR.DataStr2ULngList(MachineData)
-
-            '0 = Address Initiator = null
-            '1 = Address Responder = null
-
-            '2 = Long InitiatorsCollateral 
-            '3 = Long RespondersCollateral
-            '4 = Long BuySellAmount
-
-            '5 = Boolean SellOrder = False
-
-            Dim Initiator As ULong = 0
-            Dim InitiatorRS As String = ""
-            Dim Responser As ULong = 0
-            Dim ResponserRS As String = ""
-
-            Dim InitiatorCollateral As Double = 0.0
-            Dim ResponserCollateral As Double = 0.0
-
-            Dim BuySellAmount As Double = 0.0
-
-            Dim SellOrder As Boolean = False
-
-            If MachineDataULongList.Count > 0 Then
-                Initiator = MachineDataULongList(0)
-
-                If Initiator = CULng(0) Then
-                    'InitiatorRS = ""
-                Else
-                    InitiatorRS = BCR.BetweenFromList(BCR.RSConvert(Initiator.ToString), "<accountRS>", "</accountRS>")
-                End If
-
-                Responser = MachineDataULongList(1)
-
-                If Responser = CULng(0) Then
-                    ResponserRS = ""
-                Else
-                    ResponserRS = BCR.BetweenFromList(BCR.RSConvert(Responser.ToString), "<accountRS>", "</accountRS>")
-                End If
-
-                InitiatorCollateral = BCR.Planck2Dbl(MachineDataULongList(2))
-                ResponserCollateral = BCR.Planck2Dbl(MachineDataULongList(3))
-
-                BuySellAmount = BCR.Planck2Dbl(MachineDataULongList(4))
-
-                SellOrder = False
-
-                If MachineDataULongList(7) = CULng(1) Then
-                    SellOrder = True
-                End If
-
-            End If
-
-
-
-            Dim Frozen As Boolean = False
-            Dim FrozenStr As String = BCR.BetweenFromList(ATDetails, "<frozen>", "</frozen>")
-
-            If Not FrozenStr = "" Then
-                Frozen = CBool(FrozenStr)
-            End If
-
-
-            Dim Running As Boolean = False
-            Dim RunningStr As String = BCR.BetweenFromList(ATDetails, "<running>", "</running>")
-
-            If Not RunningStr = "" Then
-                Running = CBool(RunningStr)
-            End If
-
-
-            Dim Stopped As Boolean = False
-            Dim StoppedStr As String = BCR.BetweenFromList(ATDetails, "<stopped>", "</stopped>")
-
-            If Not StoppedStr = "" Then
-                Stopped = CBool(StoppedStr)
-            End If
-
-
-
-            Dim Finished As Boolean = False
-            Dim FinishedStr As String = BCR.BetweenFromList(ATDetails, "<finished>", "</finished>")
-
-            If Not FinishedStr = "" Then
-                Finished = CBool(FinishedStr)
-            End If
-
-
-            Dim Dead As Boolean = False
-            Dim DeadStr As String = BCR.BetweenFromList(ATDetails, "<dead>", "</dead>")
-
-            If Not DeadStr = "" Then
-                Dead = CBool(DeadStr)
-            End If
-
-
-            StatusLabel.Text = "checking AT Details for " + ATRS
-
-            Dim SBLSAT As S_BLSAT = New S_BLSAT With {
-                    .AT = AT,
-                    .ATRS = ATRS,
-                    .Description = Description,
-                    .Name = Name,
-                    .Sellorder = SellOrder,
-                    .Initiator = InitiatorRS,
-                    .InitiatorsCollateral = InitiatorCollateral,
-                    .ResponsersCollateral = ResponserCollateral,
-                    .BuySellAmount = BuySellAmount,
-                    .Responser = ResponserRS,
-                    .Balance = Balance,
-                    .Frozen = Frozen,
-                    .Running = Running,
-                    .Stopped = Stopped,
-                    .Finished = Finished,
-                    .Dead = Dead
-                }
-
-#End Region
-
-#Region "get AT TXs"
-
-            StatusLabel.Text = "Get AT TX for: " + SAT.ATRS
-            Application.DoEvents()
-
-            Dim BLSTXs As List(Of S_BLSAT_TX) = GetAccountTXList(SAT.AT)
-
-            SBLSAT.AT_TXList = New List(Of S_BLSAT_TX)(BLSTXs.ToArray)
-            SBLSAT.Status = GetCurrentBLSATStatus(BLSTXs)
-            SBLSAT.XItem = GetCurrentBLSATXItem(BLSTXs)
-            SBLSAT.XAmount = GetCurrentBLSATXAmount(BLSTXs)
-
-            'T_BLSAT_TX_List.AddRange(BLSTXs.ToArray)
-#End Region
-
-#Region "Convert AT TXs to Orders"
-            SBLSAT.AT_OrderList = ConvertTXs2Orders(SBLSAT)
-
-            'For Each Order As S_Order In SBLSAT.AT_OrderList
-            '    Order = Order
-            'Next
-
-#End Region
-
-            BLSList.Add(SBLSAT)
-
-        Next
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode)
 
 #Region "set LVs"
 
@@ -2022,16 +1783,14 @@ Public Class PFPForm
 
             If BLS.AT_TXList.Count = 0 Then
 
-                With LVOpenChannels.Items.Add(BLS.ATRS) 'SmartContract
-                    .SubItems.Add(BLS.Name) 'Name
-                    .SubItems.Add(BLS.Description) 'Description
-                    .SubItems.Add(BLS.Status) 'Status
-                    .Tag = BLS
-                End With
+                If BLS.Creator = TBSNOAddress.Text Then
+                    With LVOpenChannels.Items.Add(BLS.ATRS) 'SmartContract
+                        .SubItems.Add("Reserved for you") 'Status
+                        .Tag = BLS
+                    End With
+                End If
 
             Else 'TXList > 0
-
-                'Dim T_OrderList As List(Of S_Order) = ConvertTXs2Orders(BLS)
 
                 OrderList.AddRange(BLS.AT_OrderList)
 
@@ -2267,7 +2026,7 @@ Public Class PFPForm
                                                         Status = PPAPI.BetweenFromList(OrderDetails, "<status>", "</status>")
 
                                                         If Status = "COMPLETED" Then
-                                                            Dim BCR1 As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+                                                            Dim BCR1 As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text)
                                                             Dim TXStr As String = BCR1.SendMessage2BLSAT(Order.AT, 1.0, New List(Of ULong)({BCR1.ReferenceFinishOrder}))
 
                                                             If TXStr.Contains(Application.ProductName + "-error") Then
@@ -2309,7 +2068,7 @@ Public Class PFPForm
 
                                                 If Not PayPalEMail = "0" And Not PayPalEMail = "" Then
 
-                                                    Dim BCR1 As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text)
+                                                    Dim BCR1 As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text)
                                                     Dim CheckAttachment As String = BCR1.ULngList2DataStr(New List(Of ULong)({BCR1.ReferenceFinishOrder}))
                                                     Dim UTXCheck As Boolean = CheckForUTX(Order.Seller, Order.ATRS, CheckAttachment)
                                                     Dim TXCheck As Boolean = CheckForTX(Order.Seller, Order.ATRS, Order.FirstTimestamp, CheckAttachment)
@@ -2422,7 +2181,7 @@ Public Class PFPForm
 
                             End If
 
-                            Dim BCR1 As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text)
+                            Dim BCR1 As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text)
                             Dim CheckAttachment As String = BCR1.ULngList2DataStr(New List(Of ULong)({BCR.ReferenceFinishOrder}))
                             Dim UTXCheck As Boolean = CheckForUTX(Order.Seller, Order.ATRS, CheckAttachment)
                             Dim TXCheck As Boolean = CheckForTX(Order.Seller, Order.ATRS, Order.FirstTimestamp, CheckAttachment)
@@ -2513,17 +2272,17 @@ Public Class PFPForm
 
                     If BLS.Frozen.ToString.ToLower = "true" And BLS.Finished.ToString.ToLower = "true" And BLS.Dead.ToString.ToLower <> "true" Then
                         With LVOpenChannels.Items.Add(BLS.ATRS) 'SmartContract
-                            .SubItems.Add(BLS.Name) 'Name
-                            .SubItems.Add(BLS.Description) 'Description
-                            .SubItems.Add(BLS.Status) 'Status
+                            '.SubItems.Add(BLS.Name) 'Name
+                            '.SubItems.Add(BLS.Description) 'Description
+                            .SubItems.Add("Free to use") 'Status
                             .Tag = BLS
                         End With
 
                     ElseIf BLS.Dead.ToString.ToLower = "true" Then
 
                         With LVOpenChannels.Items.Add(BLS.ATRS) 'SmartContract
-                            .SubItems.Add(BLS.Name) 'Name
-                            .SubItems.Add(BLS.Description) 'Description
+                            '.SubItems.Add(BLS.Name) 'Name
+                            '.SubItems.Add(BLS.Description) 'Description
                             .SubItems.Add("DEAD") 'Status
                             .BackColor = Color.Crimson
                             .ForeColor = Color.White
@@ -2560,7 +2319,7 @@ Public Class PFPForm
         StatusFeeLabel.Text = "loading Current Slotfee..."
         StatusStrip1.Refresh()
 
-        T_BlockFeeThread.Start(CoBxNode.Text)
+        T_BlockFeeThread.Start(PrimaryNode)
 
 
         'BLSAT_TX_List.Clear()
@@ -2573,7 +2332,416 @@ Public Class PFPForm
         StatusBar.Visible = False
         StatusLabel.Text = ""
 
-        SplitContainer12.Enabled = True
+        Return True
+
+    End Function
+
+
+    Function Loading() As Boolean
+
+        Dim BCR2 As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text)
+
+        Dim x As List(Of String) = BCR2.GetAccountFromPassPhrase()
+
+        TBSNOAddress.Text = BCR2.BetweenFromList(x, "<address>", "</address>")
+        TBSNOBalance.Text = BCR2.BetweenFromList(x, "<available>", "</available>")
+        AccountID = BCR2.BetweenFromList(x, "<account>", "</account>")
+
+        LabXItem.Text = CoBxMarket.Text
+        LabXitemAmount.Text = CoBxMarket.Text + " Amount: "
+
+        MarketIsCrypto = GetMarketCurrencyIsCrypto(CoBxMarket.Text)
+        Decimals = GetCurrencyDecimals(CoBxMarket.Text)
+
+        NUDSNOItemAmount.DecimalPlaces = Decimals
+
+
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode)
+
+        StatusBar.Visible = True
+
+
+
+        Dim ATStrList As List(Of String) = BCR.GetATIds()
+
+        StatusBar.Value = 0
+        StatusBar.Maximum = ATStrList.Count
+
+
+        For i As Integer = 0 To ATList.Count - 1
+            Dim SAT As S_AT = ATList(i)
+
+            If SAT.IsBLS_AT Then
+
+                Dim ATDetails As List(Of String) = BCR.GetATDetails(SAT.AT)
+                Dim MachineCode As String = BCR.BetweenFromList(ATDetails, "<machineCode>", "</machineCode>")
+
+                Application.DoEvents()
+
+                If ReferenceMachineCode.Trim = MachineCode.Trim Then
+                    SAT.IsBLS_AT = True
+                Else
+                    SAT.IsBLS_AT = False
+                End If
+
+                ATList(i) = SAT
+
+            End If
+
+        Next
+
+
+
+        Dim ATFilterList As List(Of String) = New List(Of String)
+        For i As Integer = 0 To ATStrList.Count - 1
+            Dim ATid As String = ATStrList(i)
+
+            StatusBar.Value = i
+
+            StatusLabel.Text = "Filter AT(" + i.ToString + "/" + ATStrList.Count.ToString + "): " + ATid
+
+            Dim ContinueFor As Boolean = False
+            For Each SAT As S_AT In ATList
+
+                If SAT.AT = ATid Then
+                    ContinueFor = True
+                    Exit For
+                End If
+
+            Next
+
+            If ContinueFor Then Continue For
+
+            ATFilterList.Add(ATid)
+        Next
+
+        StatusBar.Value = 0
+        StatusBar.Maximum = ATFilterList.Count
+
+        Dim ThreadPool As List(Of Threading.Thread) = New List(Of Threading.Thread)
+        For i As Integer = 0 To ATFilterList.Count - 1
+            Dim ATid As String = ATFilterList(i)
+            StatusBar.Value = i
+
+            StatusLabel.Text = "Checking AT(" + i.ToString + "/" + ATFilterList.Count.ToString + "): " + ATid
+            Application.DoEvents()
+
+            Dim CheckThread As Threading.Thread = New Threading.Thread(AddressOf ATCheckThread)
+
+            ThreadPool.Add(CheckThread)
+            ThreadPool(ThreadPool.Count - 1).Start({ATid, PrimaryNode})
+
+            Threading.Thread.Sleep(100)
+
+        Next
+
+        StatusBar.Value = 0
+        StatusBar.Maximum = ThreadPool.Count
+
+        StatusLabel.Text = "loading ATs..."
+
+        Dim StillRun As Boolean = True
+        While StillRun
+            StillRun = False
+
+            Dim ThrCnt As Integer = 0
+            For Each th In ThreadPool
+                If th.IsAlive Then
+                    StillRun = True
+                    'Exit For
+                Else
+                    ThrCnt += 1
+                End If
+            Next
+
+            StatusBar.Value = ThrCnt
+            Application.DoEvents()
+
+        End While
+
+        SaveATsToCSV(ATList)
+        BLSList.Clear()
+
+        StatusBar.Value = 0
+        StatusBar.Maximum = ATList.Count
+        StatusLabel.Text = "searching BLSATs..."
+
+        Dim NuATList As List(Of S_AT) = New List(Of S_AT)
+
+        For i As Integer = 0 To ATList.Count - 1
+            Dim SAT As S_AT = ATList(i)
+
+            StatusBar.Value = i
+
+            If Not SAT.IsBLS_AT Then
+                Continue For
+            End If
+            NuATList.Add(SAT)
+        Next
+
+        StatusBar.Value = 0
+        StatusBar.Maximum = NuATList.Count
+
+
+        APIRequestList.Clear()
+
+        Dim GetThr As Threading.Thread = New Threading.Thread(AddressOf GetThread)
+        GetThr.Start()
+
+        For i As Integer = 0 To NuATList.Count - 1
+            Dim SAT As S_AT = NuATList(i)
+
+            StatusBar.Value = i
+
+            StatusLabel.Text = "Get ATDetails for: " + SAT.ATRS
+            Application.DoEvents()
+
+
+            Dim TestMulti As S_APIRequest = New S_APIRequest
+
+            TestMulti.Command = "GetDetails(" + SAT.AT + ")"
+            TestMulti.Status = "Wait..."
+
+            APIRequestList.Add(TestMulti)
+
+#Region "deprecated, now Multithreaded"
+
+
+            '#Region "get AT Details"
+
+            '            Dim ATDetails As List(Of String) = BCR.GetATDetails(SAT.AT)
+
+            '            Dim AT As String = BCR.BetweenFromList(ATDetails, "<at>", "</at>")
+            '            Dim ATRS As String = BCR.BetweenFromList(ATDetails, "<atRS>", "</atRS>")
+            '            Dim Name As String = BCR.BetweenFromList(ATDetails, "<name>", "</name>")
+            '            Dim Description As String = BCR.BetweenFromList(ATDetails, "<description>", "</description>")
+
+            '            Dim Balance As String = BCR.BetweenFromList(ATDetails, "<balanceNQT>", "</balanceNQT>")
+            '            If Balance = "" Then
+            '                Balance = "0"
+            '            End If
+
+            '            Dim BalDbl As Double = BCR.Planck2Dbl(CULng(Balance))
+
+            '            Dim MachineData As String = BCR.BetweenFromList(ATDetails, "<machineData>", "</machineData>")
+
+            '            Dim MachineDataULongList As List(Of ULong) = BCR.DataStr2ULngList(MachineData)
+
+            '            '0 = Address Initiator = null
+            '            '1 = Address Responder = null
+
+            '            '2 = Long InitiatorsCollateral 
+            '            '3 = Long RespondersCollateral
+            '            '4 = Long BuySellAmount
+
+            '            '5 = Boolean SellOrder = False
+
+            '            Dim Initiator As ULong = 0
+            '            Dim InitiatorRS As String = ""
+            '            Dim Responser As ULong = 0
+            '            Dim ResponserRS As String = ""
+
+            '            Dim InitiatorCollateral As Double = 0.0
+            '            Dim ResponserCollateral As Double = 0.0
+
+            '            Dim BuySellAmount As Double = 0.0
+
+            '            Dim SellOrder As Boolean = False
+
+            '            If MachineDataULongList.Count > 0 Then
+            '                Initiator = MachineDataULongList(0)
+
+            '                If Initiator = CULng(0) Then
+            '                    'InitiatorRS = ""
+            '                Else
+            '                    InitiatorRS = BCR.BetweenFromList(BCR.RSConvert(Initiator.ToString), "<accountRS>", "</accountRS>")
+            '                End If
+
+            '                Responser = MachineDataULongList(1)
+
+            '                If Responser = CULng(0) Then
+            '                    ResponserRS = ""
+            '                Else
+            '                    ResponserRS = BCR.BetweenFromList(BCR.RSConvert(Responser.ToString), "<accountRS>", "</accountRS>")
+            '                End If
+
+            '                InitiatorCollateral = BCR.Planck2Dbl(MachineDataULongList(2))
+            '                ResponserCollateral = BCR.Planck2Dbl(MachineDataULongList(3))
+
+            '                BuySellAmount = BCR.Planck2Dbl(MachineDataULongList(4))
+
+            '                SellOrder = False
+
+            '                If MachineDataULongList(7) = CULng(1) Then
+            '                    SellOrder = True
+            '                End If
+
+            '            End If
+
+
+
+            '            Dim Frozen As Boolean = False
+            '            Dim FrozenStr As String = BCR.BetweenFromList(ATDetails, "<frozen>", "</frozen>")
+
+            '            If Not FrozenStr = "" Then
+            '                Frozen = CBool(FrozenStr)
+            '            End If
+
+
+            '            Dim Running As Boolean = False
+            '            Dim RunningStr As String = BCR.BetweenFromList(ATDetails, "<running>", "</running>")
+
+            '            If Not RunningStr = "" Then
+            '                Running = CBool(RunningStr)
+            '            End If
+
+
+            '            Dim Stopped As Boolean = False
+            '            Dim StoppedStr As String = BCR.BetweenFromList(ATDetails, "<stopped>", "</stopped>")
+
+            '            If Not StoppedStr = "" Then
+            '                Stopped = CBool(StoppedStr)
+            '            End If
+
+
+
+            '            Dim Finished As Boolean = False
+            '            Dim FinishedStr As String = BCR.BetweenFromList(ATDetails, "<finished>", "</finished>")
+
+            '            If Not FinishedStr = "" Then
+            '                Finished = CBool(FinishedStr)
+            '            End If
+
+
+            '            Dim Dead As Boolean = False
+            '            Dim DeadStr As String = BCR.BetweenFromList(ATDetails, "<dead>", "</dead>")
+
+            '            If Not DeadStr = "" Then
+            '                Dead = CBool(DeadStr)
+            '            End If
+
+
+            '            StatusLabel.Text = "checking AT Details for " + ATRS
+
+            '            Dim SBLSAT As S_BLSAT = New S_BLSAT With {
+            '                    .AT = AT,
+            '                    .ATRS = ATRS,
+            '                    .Description = Description,
+            '                    .Name = Name,
+            '                    .Sellorder = SellOrder,
+            '                    .Initiator = InitiatorRS,
+            '                    .InitiatorsCollateral = InitiatorCollateral,
+            '                    .ResponsersCollateral = ResponserCollateral,
+            '                    .BuySellAmount = BuySellAmount,
+            '                    .Responser = ResponserRS,
+            '                    .Balance = Balance,
+            '                    .Frozen = Frozen,
+            '                    .Running = Running,
+            '                    .Stopped = Stopped,
+            '                    .Finished = Finished,
+            '                    .Dead = Dead
+            '                }
+
+            '#End Region ' get AT Details
+
+            '#Region "get AT TXs"
+
+            '            StatusLabel.Text = "Get AT TX for: " + SAT.ATRS
+            '            Application.DoEvents()
+
+            '            Dim BLSTXs As List(Of S_BLSAT_TX) = GetAccountTXList(SAT.AT)
+
+            '            SBLSAT.AT_TXList = New List(Of S_BLSAT_TX)(BLSTXs.ToArray)
+            '            SBLSAT.Status = GetCurrentBLSATStatus(BLSTXs)
+            '            SBLSAT.XItem = GetCurrentBLSATXItem(BLSTXs)
+            '            SBLSAT.XAmount = GetCurrentBLSATXAmount(BLSTXs)
+
+            '            'T_BLSAT_TX_List.AddRange(BLSTXs.ToArray)
+            '#End Region
+
+            '#Region "Convert AT TXs to Orders"
+            '            SBLSAT.AT_OrderList = ConvertTXs2Orders(SBLSAT)
+
+            '            'For Each Order As S_Order In SBLSAT.AT_OrderList
+            '            '    Order = Order
+            '            'Next
+
+            '#End Region
+
+            '            BLSList.Add(SBLSAT)
+
+#End Region
+
+        Next
+
+        StillRun = True
+        While StillRun
+            StillRun = False
+
+            Threading.Thread.Sleep(100)
+
+            LVTestMulti.Items.Clear()
+
+            Dim Test As List(Of S_APIRequest) = New List(Of S_APIRequest)(APIRequestList.ToArray)
+
+            For Each APIRequest As S_APIRequest In Test
+
+                StatusLabel.Text = APIRequest.Status + " " + APIRequest.Command
+
+                With LVTestMulti.Items.Add(APIRequest.Node) 'Node
+                    .SubItems.Add(APIRequest.Command) 'Command
+
+                    If Not IsNothing(APIRequest.RequestThread) Then
+                        .SubItems.Add(APIRequest.RequestThread.ManagedThreadId.ToString) 'ThreadID
+                    Else
+                        .SubItems.Add("no Thread")
+                    End If
+
+                    .SubItems.Add(APIRequest.Status) 'Status
+                    If APIRequest.Status = "Ready" Then
+                        .SubItems.Add(APIRequest.Result.ToString) 'Result
+                    Else
+                        .SubItems.Add("no Result")
+                    End If
+                End With
+
+                LVTestMulti.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
+
+                Application.DoEvents()
+
+                If APIRequest.Status <> "Ready" Then
+                    StillRun = True
+                    Exit For
+                End If
+
+            Next
+
+        End While
+
+
+        For Each APIRequest As S_APIRequest In APIRequestList
+            BLSList.Add(DirectCast(APIRequest.Result, S_BLSAT))
+        Next
+
+        Dim TestMultiExit As S_APIRequest = New S_APIRequest
+        TestMultiExit.Command = "Exit()"
+        APIRequestList.Add(TestMultiExit)
+
+
+        Dim NodesStr As String = PrimaryNode + ";"
+        NodeList.Remove(PrimaryNode)
+        CoBxNode.Items.Clear()
+
+        For Each Nod As String In NodeList
+            CoBxNode.Items.Add(Nod)
+            NodesStr += Nod + ";"
+        Next
+
+        CoBxNode.SelectedItem = PrimaryNode
+
+        NodesStr = NodesStr.Remove(NodesStr.Length - 1)
+
+        INISetValue(Application.StartupPath + "/Settings.ini", "Basic", "Nodes", NodesStr)
 
         Return True
 
@@ -2584,7 +2752,6 @@ Public Class PFPForm
         Dim CoBxTickVal As Integer = DirectCast(input(1), Integer)
 
         Dim Xitem As String = DirectCast(input(2), String)
-        Dim BSR As ClsBurstAPI = New ClsBurstAPI(DirectCast(input(3), String)) ' With {.C_Node = DirectCast(input(3), String)}
 
         Dim T_OrderList As List(Of S_Order) = New List(Of S_Order)
 
@@ -2592,8 +2759,6 @@ Public Class PFPForm
 
             Dim T_Order As S_Order = New S_Order
             T_Order = HisOrder
-
-            Dim Status As String = "CLOSED"
 
             If HisOrder.Status = "CLOSED" Then
                 T_OrderList.Add(T_Order)
@@ -3046,7 +3211,7 @@ Public Class PFPForm
     Function ConvertTXs2Order(ByVal BLSAT As S_BLSAT, ByVal TXList As List(Of S_BLSAT_TX)) As S_Order
 
         Dim NuOrder As S_Order = New S_Order
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text) ' With {.C_Node = CoBxNode.Text}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode)
         Dim FirstTX As S_BLSAT_TX = New S_BLSAT_TX
 
         If TXList.Count > 0 Then
@@ -3224,7 +3389,7 @@ Public Class PFPForm
 
     Function GetAccountTXList(ByVal ATID As String) As List(Of S_BLSAT_TX)
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text) ' With {.C_Node = CoBxNode.Text}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode)
 
         Dim ATTXs As List(Of List(Of String)) = BCR.GetAccountTransactions(ATID)
         Dim BLSTXs As List(Of S_BLSAT_TX) = New List(Of S_BLSAT_TX)
@@ -3239,7 +3404,10 @@ Public Class PFPForm
             Dim TX_FeeNQT As String = BCR.BetweenFromList(ATTX, "<feeNQT>", "</feeNQT>")
             Dim TX_Transaction As String = BCR.BetweenFromList(ATTX, "<transaction>", "</transaction>")
 
-            StatusLabel.Text = "checking AT TX: " + TX_Transaction
+            'StatusLabel.Text = "checking AT TX: " + TX_Transaction
+
+            MultiInvoker(StatusLabel, "Text", "checking AT TX: " + TX_Transaction)
+
 
             Dim TX_Attachment As String = BCR.BetweenFromList(ATTX, "<attachment>", "</attachment>")
             If TX_Attachment.Trim = "" Then
@@ -3363,7 +3531,7 @@ Public Class PFPForm
     End Function
 
     Function SendBillingInfos(ByVal Recipient As String, ByVal Message As String, Optional ByVal Encrypt As Boolean = True)
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text)
         Dim TX As String = BCR.SendMessage(Recipient, Message,, Encrypt)
         Return TX
     End Function
@@ -3515,7 +3683,7 @@ Public Class PFPForm
 #Region "Checking UTX/TX"
     Function CheckForUTX(Optional ByVal SenderRS As String = "", Optional ByVal RecipientRS As String = "", Optional ByVal SearchAttachment As String = "") As Boolean
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text) ' With {.C_Node = CoBxNode.Text}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode)
 
         Dim T_UTXList As List(Of List(Of String)) = BCR.GetUnconfirmedTransactions()
 
@@ -3651,7 +3819,7 @@ Public Class PFPForm
     End Function
 
     Function CheckBillingInfosAlreadySend(ByVal Order As S_Order) As String
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text)
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text)
 
         Dim T_UTXList As List(Of List(Of String)) = BCR.GetUnconfirmedTransactions()
         T_UTXList.Reverse()
@@ -3662,6 +3830,7 @@ Public Class PFPForm
             Dim Sender As String = BCR.BetweenFromList(UTX, "<senderRS>", "</senderRS>")
             Dim Recipient As String = BCR.BetweenFromList(UTX, "<recipientRS>", "</recipientRS>")
 
+
             If Sender = Order.Seller And Recipient = Order.Buyer Then
 
                 Dim Data As String = BCR.BetweenFromList(UTX, "<data>", "</data>")
@@ -3670,7 +3839,13 @@ Public Class PFPForm
                 If Data.Trim = "" Or Nonce.Trim = "" Then
                     'no
                 Else
-                    Dim DecryptedMsg As String = BCR.DecryptFrom(Order.Buyer, Data, Nonce)
+
+                    Dim VSAcc As String = Order.Buyer
+                    If TBSNOAddress.Text.Trim = VSAcc Then
+                        VSAcc = Order.Seller
+                    End If
+
+                    Dim DecryptedMsg As String = BCR.DecryptFrom(VSAcc, Data, Nonce)
 
                     If DecryptedMsg.Contains("<at>") And DecryptedMsg.Contains("<tx>") Then
 
@@ -3694,7 +3869,14 @@ Public Class PFPForm
                 If Data.Trim = "" Or Nonce.Trim = "" Then
                     'no
                 Else
-                    Dim DecryptedMsg As String = BCR.DecryptFrom(Order.Seller, Data, Nonce)
+
+                    Dim VSAcc As String = Order.Seller
+                    If TBSNOAddress.Text.Trim = VSAcc Then
+                        VSAcc = Order.Buyer
+                    End If
+
+
+                    Dim DecryptedMsg As String = BCR.DecryptFrom(VSAcc, Data, Nonce)
 
                     If DecryptedMsg.Contains("<at>") And DecryptedMsg.Contains("<tx>") Then
 
@@ -3738,10 +3920,8 @@ Public Class PFPForm
                     If DCAT = Order.AT And DCTransaction = Order.FirstTransaction Then
                         Return DecryptedMsg
                     End If
-                Else
-                    Dim Out As out = New out(Application.StartupPath)
-                    Out.ErrorLog2File(DecryptedMsg)
-
+                ElseIf DecryptedMsg.Contains(Application.ProductName + "-error") Then
+                    Return Application.ProductName + "-error in CheckBillingInfosAlreadySend(3): -> " + DecryptedMsg
                 End If
 
             ElseIf Sender = Order.Buyer And Recipient = Order.Seller Then
@@ -3756,9 +3936,8 @@ Public Class PFPForm
                     If DCAT = Order.AT And DCTransaction = Order.FirstTransaction Then
                         Return DecryptedMsg
                     End If
-                Else
-                    Dim Out As out = New out(Application.StartupPath)
-                    Out.ErrorLog2File(DecryptedMsg)
+                ElseIf DecryptedMsg.Contains(Application.ProductName + "-error") Then
+                    Return Application.ProductName + "-error in CheckBillingInfosAlreadySend(4): -> " + DecryptedMsg
                 End If
 
             End If
@@ -3771,7 +3950,7 @@ Public Class PFPForm
 
     Function CheckPaymentAlreadySend(ByVal Order As S_Order) As String
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBSNOPassPhrase.Text)
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBSNOPassPhrase.Text)
 
         Dim T_UTXList As List(Of List(Of String)) = BCR.GetUnconfirmedTransactions()
         T_UTXList.Reverse()
@@ -4273,6 +4452,295 @@ Public Class PFPForm
 
     End Sub
 
+    ''' <summary>
+    ''' The Thread who coordinates (loadbalance) the API Request subthreads
+    ''' </summary>
+    Sub GetThread()
+
+        Dim NuNodeList As List(Of String) = New List(Of String)(NodeList.ToArray)
+
+        Dim WExitCom As Boolean = True
+        While WExitCom
+
+            For i As Integer = 0 To APIRequestList.Count - 1
+                Dim Request As S_APIRequest = APIRequestList(i)
+
+                If Request.Command = "Exit()" Then
+                    Exit While
+                End If
+
+                If Request.Status = "Wait..." Then
+
+                    If NuNodeList.Count > 0 Then
+                        Request.Node = NuNodeList(0)
+                    Else
+                        NuNodeList.Add(PrimaryNode)
+                        Continue For
+                    End If
+
+                    Request.RequestThread = New Threading.Thread(AddressOf SubGetThread)
+                    Request.Status = "Requesting..."
+                    Request.RequestThread.Start({i, Request})
+
+                    APIRequestList(i) = Request
+
+                ElseIf Request.Status = "Not Ready..." Then
+
+                    NuNodeList.Remove(Request.Node)
+                    NodeList.Remove(Request.Node)
+                    NodeList.Add(Request.Node)
+
+                    If NuNodeList.Count > 0 Then
+                        Request.Node = NuNodeList(0)
+                    End If
+
+                    Request.RequestThread = New Threading.Thread(AddressOf SubGetThread)
+                    Request.Status = "Requesting..."
+                    Request.RequestThread.Start({i, Request})
+
+                    APIRequestList(i) = Request
+
+                ElseIf Request.Status = "Requesting..." Then
+                    NuNodeList.Remove(Request.Node)
+                ElseIf Request.Status = "Ready" Then
+                    NuNodeList.Add(Request.Node)
+                End If
+
+            Next
+
+        End While
+
+
+        Dim DelIdx As Integer = -1
+        For i As Integer = 0 To APIRequestList.Count - 1
+
+            Dim Request As S_APIRequest = APIRequestList(i)
+
+            If Request.Command = "Exit()" Then
+                DelIdx = i
+            Else
+                If Request.RequestThread.IsAlive Then
+                    Request.RequestThread.Abort()
+                End If
+
+            End If
+        Next
+
+        If DelIdx <> -1 Then
+            APIRequestList.RemoveAt(DelIdx)
+        End If
+
+
+    End Sub
+
+    ''' <summary>
+    ''' The SubThread who process the request
+    ''' </summary>
+    ''' <param name="Input">The input to work with Input(0) = List-Index; Input(1) = APIRequest</param>
+    Sub SubGetThread(ByVal Input As Object)
+
+        Dim Index As Integer = DirectCast(Input(0), Integer)
+        Dim Request As S_APIRequest = DirectCast(Input(1), S_APIRequest)
+
+        Dim Command As String = Request.Command
+
+        Dim Parameter As String = Between(Command,,, GetType(String))
+        Command = Command.Replace(Parameter, "")
+        Dim ParameterList As List(Of String) = New List(Of String)
+
+        If Parameter.Contains(",") Then
+            ParameterList.AddRange(Parameter.Split(","))
+        Else
+            ParameterList.Add(Parameter)
+        End If
+
+        Select Case Command
+            Case "GetDetails()"
+
+                Dim BurstAPI As ClsBurstAPI = New ClsBurstAPI(Request.Node)
+                Dim ATStrList As List(Of String) = BurstAPI.GetATDetails(ParameterList(0))
+
+                If Not ATStrList.Count = 0 Then
+
+#Region "get AT details"
+
+                    Dim AT As String = BurstAPI.BetweenFromList(ATStrList, "<at>", "</at>")
+                    Dim ATRS As String = BurstAPI.BetweenFromList(ATStrList, "<atRS>", "</atRS>")
+                    Dim Creator As String = BurstAPI.BetweenFromList(ATStrList, "<creator>", "</creator>")
+                    Dim CreatorRS As String = BurstAPI.BetweenFromList(ATStrList, "<creatorRS>", "</creatorRS>")
+                    Dim Name As String = BurstAPI.BetweenFromList(ATStrList, "<name>", "</name>")
+                    Dim Description As String = BurstAPI.BetweenFromList(ATStrList, "<description>", "</description>")
+
+                    Dim Balance As String = BurstAPI.BetweenFromList(ATStrList, "<balanceNQT>", "</balanceNQT>")
+                    If Balance = "" Then
+                        Balance = "0"
+                    End If
+
+                    Dim BalDbl As Double = BurstAPI.Planck2Dbl(CULng(Balance))
+
+                    Dim MachineData As String = BurstAPI.BetweenFromList(ATStrList, "<machineData>", "</machineData>")
+
+                    Dim MachineDataULongList As List(Of ULong) = BurstAPI.DataStr2ULngList(MachineData)
+
+                    '0 = Address Initiator = null
+                    '1 = Address Responder = null
+
+                    '2 = Long InitiatorsCollateral 
+                    '3 = Long RespondersCollateral
+                    '4 = Long BuySellAmount
+
+                    '5 = Boolean SellOrder = False
+
+                    Dim Initiator As ULong = 0
+                    Dim InitiatorRS As String = ""
+                    Dim Responser As ULong = 0
+                    Dim ResponserRS As String = ""
+
+                    Dim InitiatorCollateral As Double = 0.0
+                    Dim ResponserCollateral As Double = 0.0
+
+                    Dim BuySellAmount As Double = 0.0
+
+                    Dim SellOrder As Boolean = False
+
+                    If MachineDataULongList.Count > 0 Then
+                        Initiator = MachineDataULongList(0)
+
+                        If Initiator = CULng(0) Then
+                            'InitiatorRS = ""
+                        Else
+                            InitiatorRS = BurstAPI.BetweenFromList(BurstAPI.RSConvert(Initiator.ToString), "<accountRS>", "</accountRS>")
+                        End If
+
+                        Responser = MachineDataULongList(1)
+
+                        If Responser = CULng(0) Then
+                            ResponserRS = ""
+                        Else
+                            ResponserRS = BurstAPI.BetweenFromList(BurstAPI.RSConvert(Responser.ToString), "<accountRS>", "</accountRS>")
+                        End If
+
+                        InitiatorCollateral = BurstAPI.Planck2Dbl(MachineDataULongList(2))
+                        ResponserCollateral = BurstAPI.Planck2Dbl(MachineDataULongList(3))
+
+                        BuySellAmount = BurstAPI.Planck2Dbl(MachineDataULongList(4))
+
+                        SellOrder = False
+
+                        If MachineDataULongList(7) = CULng(1) Then
+                            SellOrder = True
+                        End If
+
+                    End If
+
+
+
+                    Dim Frozen As Boolean = False
+                    Dim FrozenStr As String = BurstAPI.BetweenFromList(ATStrList, "<frozen>", "</frozen>")
+
+                    If Not FrozenStr = "" Then
+                        Frozen = CBool(FrozenStr)
+                    End If
+
+
+                    Dim Running As Boolean = False
+                    Dim RunningStr As String = BurstAPI.BetweenFromList(ATStrList, "<running>", "</running>")
+
+                    If Not RunningStr = "" Then
+                        Running = CBool(RunningStr)
+                    End If
+
+
+                    Dim Stopped As Boolean = False
+                    Dim StoppedStr As String = BurstAPI.BetweenFromList(ATStrList, "<stopped>", "</stopped>")
+
+                    If Not StoppedStr = "" Then
+                        Stopped = CBool(StoppedStr)
+                    End If
+
+
+
+                    Dim Finished As Boolean = False
+                    Dim FinishedStr As String = BurstAPI.BetweenFromList(ATStrList, "<finished>", "</finished>")
+
+                    If Not FinishedStr = "" Then
+                        Finished = CBool(FinishedStr)
+                    End If
+
+
+                    Dim Dead As Boolean = False
+                    Dim DeadStr As String = BurstAPI.BetweenFromList(ATStrList, "<dead>", "</dead>")
+
+                    If Not DeadStr = "" Then
+                        Dead = CBool(DeadStr)
+                    End If
+
+
+                    'StatusLabel.Text = "checking AT Details for " + ATRS
+
+
+                    Dim SBLSAT As PFPForm.S_BLSAT = New PFPForm.S_BLSAT With {
+                        .AT = AT,
+                        .ATRS = ATRS,
+                        .Creator = CreatorRS,
+                        .Description = Description,
+                        .Name = Name,
+                        .Sellorder = SellOrder,
+                        .Initiator = InitiatorRS,
+                        .InitiatorsCollateral = InitiatorCollateral,
+                        .ResponsersCollateral = ResponserCollateral,
+                        .BuySellAmount = BuySellAmount,
+                        .Responser = ResponserRS,
+                        .Balance = Balance,
+                        .Frozen = Frozen,
+                        .Running = Running,
+                        .Stopped = Stopped,
+                        .Finished = Finished,
+                        .Dead = Dead
+                    }
+
+
+#End Region
+
+#Region "get AT TXs"
+
+                    'StatusLabel.Text = "Get AT TX for: " + SAT.ATRS
+                    'Application.DoEvents()
+
+                    Dim BLSTXs As List(Of S_BLSAT_TX) = GetAccountTXList(ParameterList(0))
+
+                    SBLSAT.AT_TXList = New List(Of PFPForm.S_BLSAT_TX)(BLSTXs.ToArray)
+                    SBLSAT.Status = GetCurrentBLSATStatus(BLSTXs)
+                    SBLSAT.XItem = GetCurrentBLSATXItem(BLSTXs)
+                    SBLSAT.XAmount = GetCurrentBLSATXAmount(BLSTXs)
+
+                    'T_BLSAT_TX_List.AddRange(BLSTXs.ToArray)
+#End Region
+
+#Region "Convert AT TXs to Orders"
+                    SBLSAT.AT_OrderList = ConvertTXs2Orders(SBLSAT)
+
+                    'For Each Order As S_Order In SBLSAT.AT_OrderList
+                    '    Order = Order
+                    'Next
+
+#End Region
+
+                    Request.Result = SBLSAT
+                    Request.Status = "Ready"
+
+                Else
+                    Request.Status = "Not Ready..."
+                End If
+
+                APIRequestList(Index) = Request
+
+            Case Else
+
+        End Select
+
+    End Sub
+
 #End Region
 
 #Region "Multiinvoker"
@@ -4332,7 +4800,7 @@ Public Class PFPForm
 
     Private Sub BtTestCreate_Click(sender As Object, e As EventArgs) Handles BtTestCreate.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBTestCreatePP.Text)
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBTestCreatePP.Text)
 
         Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
 
@@ -4355,7 +4823,7 @@ Public Class PFPForm
 
     Private Sub BtTestAccept_Click(sender As Object, e As EventArgs) Handles BtTestAccept.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBTestAcceptPP.Text)
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBTestAcceptPP.Text)
 
         Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
 
@@ -4372,7 +4840,7 @@ Public Class PFPForm
 
     Private Sub BtTestFinish_Click(sender As Object, e As EventArgs) Handles BtTestFinish.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBTestFinishPP.Text)
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBTestFinishPP.Text)
 
         Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
 
@@ -4389,7 +4857,7 @@ Public Class PFPForm
 
     Private Sub BtTestInject_Click(sender As Object, e As EventArgs) Handles BtTestInject.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text, TBTestInjectPP.Text)
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode, TBTestInjectPP.Text)
 
         Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
 
@@ -4409,7 +4877,7 @@ Public Class PFPForm
 
     Private Sub BtTestConvert_Click(sender As Object, e As EventArgs) Handles BtTestConvert.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text) ' With {.C_Node = CoBxNode.Text}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode)
 
 
         Try
@@ -4423,7 +4891,7 @@ Public Class PFPForm
 
     Private Sub BtTestConvert2_Click(sender As Object, e As EventArgs) Handles BtTestConvert2.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text) ' With {.C_Node = CoBxNode.Text}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode)
 
 
         Try
@@ -4436,7 +4904,7 @@ Public Class PFPForm
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
-        Dim BCR As ClsBurstAPI = New ClsBurstAPI(CoBxNode.Text) ' With {.C_Node = CoBxNode.Text}
+        Dim BCR As ClsBurstAPI = New ClsBurstAPI(PrimaryNode)
 
 
         Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.String2ULng(TBTestConvert.Text.Trim)})
@@ -4467,6 +4935,7 @@ Public Class PFPForm
 
             Else
                 CoBxNode.SelectedItem = olditem
+                PrimaryNode = CoBxNode.SelectedItem
             End If
         End If
 
@@ -4532,8 +5001,6 @@ Public Class PFPForm
         Dim k As List(Of List(Of String)) = PPAPI.GetTransactionList("pom")
 
 
-
-
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -4567,7 +5034,48 @@ Public Class PFPForm
 
     End Sub
 
+    Private Sub BtTestMultiGetDetails_Click(sender As Object, e As EventArgs) Handles BtTestMultiGetDetails.Click
 
+        Dim TestMulti As S_APIRequest = New S_APIRequest
+
+        TestMulti.Command = "GetDetails(5527904978073323480)"
+        TestMulti.Status = "Wait..."
+
+        APIRequestList.Add(TestMulti)
+
+        Dim GetThr As Threading.Thread = New Threading.Thread(AddressOf GetThread)
+        GetThr.Start()
+
+    End Sub
+
+    Private Sub BtTestMultiRefresh_Click(sender As Object, e As EventArgs) Handles BtTestMultiRefresh.Click
+
+        LVTestMulti.Items.Clear()
+
+        For Each test As S_APIRequest In APIRequestList
+
+            With LVTestMulti.Items.Add(test.Node) 'Node
+                .SubItems.Add(test.Command) 'Command
+                .SubItems.Add(test.RequestThread.ManagedThreadId.ToString) 'ThreadID
+                .SubItems.Add(test.Status) 'Status
+                If test.Status = "ready" Then
+                    .SubItems.Add(test.Result.ToString) 'Result
+                End If
+            End With
+
+        Next
+
+    End Sub
+
+    Private Sub BtTestExit_Click(sender As Object, e As EventArgs) Handles BtTestExit.Click
+
+        Dim TestMulti As S_APIRequest = New S_APIRequest
+
+        TestMulti.Command = "Exit()"
+
+        APIRequestList.Add(TestMulti)
+
+    End Sub
 
 #End Region
 

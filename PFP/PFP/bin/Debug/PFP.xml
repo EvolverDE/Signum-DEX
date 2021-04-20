@@ -73,6 +73,17 @@ PFP
  <returns>Vorzugsweise einen String, andernfalls den index der Spalte</returns>
  <remarks></remarks>
 </member>
+<member name="M:PFP.PFPForm.GetThread">
+ <summary>
+ The Thread who coordinates (loadbalance) the API Request subthreads
+ </summary>
+</member>
+<member name="M:PFP.PFPForm.SubGetThread(System.Object)">
+ <summary>
+ The SubThread who process the request
+ </summary>
+ <param name="Input">The input to work with Input(0) = List-Index; Input(1) = APIRequest</param>
+</member>
 <member name="T:PFP.ListViewItemExtremeSorter">
  <summary>
  Beispiel Standard:

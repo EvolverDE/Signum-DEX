@@ -40,8 +40,6 @@ Partial Class PFPForm
         Me.BtSell = New System.Windows.Forms.Button()
         Me.LVOpenChannels = New System.Windows.Forms.ListView()
         Me.ColumnHeader9 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ColumnHeader10 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ColumnHeader11 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader34 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Label3 = New System.Windows.Forms.Label()
         Me.BtSNOSetOrder = New System.Windows.Forms.Button()
@@ -105,6 +103,15 @@ Partial Class PFPForm
         Me.ColumnHeader16 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabPage3 = New System.Windows.Forms.TabPage()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.BtTestMultiRefresh = New System.Windows.Forms.Button()
+        Me.BtTestExit = New System.Windows.Forms.Button()
+        Me.BtTestMultiGetDetails = New System.Windows.Forms.Button()
+        Me.LVTestMulti = New System.Windows.Forms.ListView()
+        Me.ColumnHeader2 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader3 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader4 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader5 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader6 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Label25 = New System.Windows.Forms.Label()
         Me.Label24 = New System.Windows.Forms.Label()
         Me.Label23 = New System.Windows.Forms.Label()
@@ -369,7 +376,7 @@ Partial Class PFPForm
         'LVOpenChannels
         '
         Me.LVOpenChannels.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.LVOpenChannels.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader9, Me.ColumnHeader10, Me.ColumnHeader11, Me.ColumnHeader34})
+        Me.LVOpenChannels.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader9, Me.ColumnHeader34})
         Me.LVOpenChannels.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LVOpenChannels.ForeColor = System.Drawing.Color.White
         Me.LVOpenChannels.FullRowSelect = True
@@ -387,16 +394,6 @@ Partial Class PFPForm
         '
         Me.ColumnHeader9.Text = "AT"
         Me.ColumnHeader9.Width = 114
-        '
-        'ColumnHeader10
-        '
-        Me.ColumnHeader10.Text = "Name"
-        Me.ColumnHeader10.Width = 67
-        '
-        'ColumnHeader11
-        '
-        Me.ColumnHeader11.Text = "Description"
-        Me.ColumnHeader11.Width = 71
         '
         'ColumnHeader34
         '
@@ -1187,6 +1184,10 @@ Partial Class PFPForm
         '
         'GroupBox4
         '
+        Me.GroupBox4.Controls.Add(Me.BtTestMultiRefresh)
+        Me.GroupBox4.Controls.Add(Me.BtTestExit)
+        Me.GroupBox4.Controls.Add(Me.BtTestMultiGetDetails)
+        Me.GroupBox4.Controls.Add(Me.LVTestMulti)
         Me.GroupBox4.Controls.Add(Me.Label25)
         Me.GroupBox4.Controls.Add(Me.Label24)
         Me.GroupBox4.Controls.Add(Me.Label23)
@@ -1220,6 +1221,70 @@ Partial Class PFPForm
         Me.GroupBox4.TabIndex = 9
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Testing"
+        '
+        'BtTestMultiRefresh
+        '
+        Me.BtTestMultiRefresh.ForeColor = System.Drawing.Color.Black
+        Me.BtTestMultiRefresh.Location = New System.Drawing.Point(664, 230)
+        Me.BtTestMultiRefresh.Name = "BtTestMultiRefresh"
+        Me.BtTestMultiRefresh.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestMultiRefresh.TabIndex = 31
+        Me.BtTestMultiRefresh.Text = "Refresh"
+        Me.BtTestMultiRefresh.UseVisualStyleBackColor = True
+        '
+        'BtTestExit
+        '
+        Me.BtTestExit.ForeColor = System.Drawing.Color.Black
+        Me.BtTestExit.Location = New System.Drawing.Point(745, 230)
+        Me.BtTestExit.Name = "BtTestExit"
+        Me.BtTestExit.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestExit.TabIndex = 30
+        Me.BtTestExit.Text = "Exit"
+        Me.BtTestExit.UseVisualStyleBackColor = True
+        '
+        'BtTestMultiGetDetails
+        '
+        Me.BtTestMultiGetDetails.ForeColor = System.Drawing.Color.Black
+        Me.BtTestMultiGetDetails.Location = New System.Drawing.Point(583, 230)
+        Me.BtTestMultiGetDetails.Name = "BtTestMultiGetDetails"
+        Me.BtTestMultiGetDetails.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestMultiGetDetails.TabIndex = 29
+        Me.BtTestMultiGetDetails.Text = "GetDetails"
+        Me.BtTestMultiGetDetails.UseVisualStyleBackColor = True
+        '
+        'LVTestMulti
+        '
+        Me.LVTestMulti.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader2, Me.ColumnHeader3, Me.ColumnHeader4, Me.ColumnHeader5, Me.ColumnHeader6})
+        Me.LVTestMulti.FullRowSelect = True
+        Me.LVTestMulti.GridLines = True
+        Me.LVTestMulti.HideSelection = False
+        Me.LVTestMulti.Location = New System.Drawing.Point(583, 259)
+        Me.LVTestMulti.MultiSelect = False
+        Me.LVTestMulti.Name = "LVTestMulti"
+        Me.LVTestMulti.Size = New System.Drawing.Size(996, 108)
+        Me.LVTestMulti.TabIndex = 28
+        Me.LVTestMulti.UseCompatibleStateImageBehavior = False
+        Me.LVTestMulti.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader2
+        '
+        Me.ColumnHeader2.Text = "Node"
+        '
+        'ColumnHeader3
+        '
+        Me.ColumnHeader3.Text = "Command"
+        '
+        'ColumnHeader4
+        '
+        Me.ColumnHeader4.Text = "ThreadID"
+        '
+        'ColumnHeader5
+        '
+        Me.ColumnHeader5.Text = "Status"
+        '
+        'ColumnHeader6
+        '
+        Me.ColumnHeader6.Text = "Result"
         '
         'Label25
         '
@@ -1387,7 +1452,7 @@ Partial Class PFPForm
         Me.ListBox1.FormattingEnabled = True
         Me.ListBox1.Location = New System.Drawing.Point(7, 259)
         Me.ListBox1.Name = "ListBox1"
-        Me.ListBox1.Size = New System.Drawing.Size(1572, 108)
+        Me.ListBox1.Size = New System.Drawing.Size(570, 108)
         Me.ListBox1.TabIndex = 8
         '
         'Button1
@@ -1544,9 +1609,9 @@ Partial Class PFPForm
         Me.Label19.AutoSize = True
         Me.Label19.Location = New System.Drawing.Point(6, 190)
         Me.Label19.Name = "Label19"
-        Me.Label19.Size = New System.Drawing.Size(121, 13)
+        Me.Label19.Size = New System.Drawing.Size(93, 13)
         Me.Label19.TabIndex = 11
-        Me.Label19.Text = "API-Node (POST/GET):"
+        Me.Label19.Text = "Primary-API-Node:"
         '
         'Label6
         '
@@ -1872,8 +1937,6 @@ Partial Class PFPForm
     Friend WithEvents BtSell As Button
     Friend WithEvents LVOpenChannels As ListView
     Friend WithEvents ColumnHeader9 As ColumnHeader
-    Friend WithEvents ColumnHeader10 As ColumnHeader
-    Friend WithEvents ColumnHeader11 As ColumnHeader
     Friend WithEvents Label3 As Label
     Friend WithEvents BtSNOSetOrder As Button
     Friend WithEvents GroupBox1 As GroupBox
@@ -1991,4 +2054,13 @@ Partial Class PFPForm
     Friend WithEvents Label22 As Label
     Friend WithEvents Label21 As Label
     Friend WithEvents TBTestResponder As TextBox
+    Friend WithEvents BtTestMultiGetDetails As Button
+    Friend WithEvents LVTestMulti As ListView
+    Friend WithEvents ColumnHeader2 As ColumnHeader
+    Friend WithEvents ColumnHeader3 As ColumnHeader
+    Friend WithEvents ColumnHeader4 As ColumnHeader
+    Friend WithEvents ColumnHeader5 As ColumnHeader
+    Friend WithEvents ColumnHeader6 As ColumnHeader
+    Friend WithEvents BtTestExit As Button
+    Friend WithEvents BtTestMultiRefresh As Button
 End Class
