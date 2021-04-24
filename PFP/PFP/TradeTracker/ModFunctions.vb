@@ -15,18 +15,39 @@
             Dim Dat As Date = DateValueList(i)(0)
             Dim Vali As Double = DateValueList(i)(1)
 
+            Dim High As Double = Vali
+            Dim Low As Double = 0.0
+
             If i = 0 Then
                 Candle.OpenDate = Dat
                 Candle.CloseDate = Dat
 
                 Candle.OpenValue = Vali
                 Candle.CloseValue = Vali
+
+                Candle.MaxValue = Vali
+                Candle.MinValue = Vali
+
             Else
                 Candle.OpenValue = CandleList.Item(CandleList.Count - 1).CloseValue
                 Candle.CloseDate = Dat
 
                 Candle.OpenDate = CandleList.Item(CandleList.Count - 1).CloseDate
                 Candle.CloseValue = Vali
+
+                If DateValueList(i).Count = 4 Then
+                    Candle.MaxValue = DateValueList(i)(2)
+                    Candle.MinValue = DateValueList(i)(3)
+                Else
+                    If Candle.OpenValue > Candle.CloseValue Then
+                        Candle.MaxValue = Candle.OpenValue
+                        Candle.MinValue = Candle.CloseValue
+                    Else
+                        Candle.MaxValue = Candle.CloseValue
+                        Candle.MinValue = Candle.OpenValue
+                    End If
+                End If
+
             End If
 
             CandleList.Add(Candle)

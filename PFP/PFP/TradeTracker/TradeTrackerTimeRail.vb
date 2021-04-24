@@ -189,6 +189,7 @@ Public Class TradeTrackerTimeRail
                 Dim MinValue As Double = GF.MinValue
                 Dim MaxValue As Double = GF.MaxValue
 
+
                 Dim MiddleValue As Double = (MinValue + MaxValue) / 2
 
 
@@ -221,7 +222,7 @@ Public Class TradeTrackerTimeRail
 
 
                 Catch ex As Exception
-                    'TBot.StatusLabel3.Text = "TradeTrackerTimeRail/Extra: " + ex.Message
+
                 End Try
 
 
@@ -238,16 +239,24 @@ Public Class TradeTrackerTimeRail
                     Dim X As Integer = Time2Pixel(0, CInt(Me.Width), TR_StartDate, TR_EndDate, Piece.OpenDate)
                     Dim X2 As Integer = Time2Pixel(0, CInt(Me.Width), TR_StartDate, TR_EndDate, Piece.CloseDate)
 
+
+
                     Dim Y As Integer = GraphValue2Pixel(0, CInt(Me.Height) - 3, MinValue, MaxValue, Piece.OpenValue) + 1
                     Dim Y2 As Integer = GraphValue2Pixel(0, CInt(Me.Height) - 3, MinValue, MaxValue, Piece.CloseValue) + 1
+
 
                     Dim YM As Integer = GraphValue2Pixel(0, CInt(Me.Height) - 3, MinValue, MaxValue, MiddleValue) + 1
                     Dim YZ As Integer = GraphValue2Pixel(0, CInt(Me.Height) - 3, MinValue, MaxValue, 0.0) + 1
 
-
-
                     Select Case Art
                         Case E_GraphArt.Candle
+
+#Region "Candlewick"
+                            Dim XMid As Integer = (X2 - X) * 0.5 + X
+                            Dim YMax As Integer = GraphValue2Pixel(0, CInt(Me.Height) - 3, MinValue, MaxValue, Piece.MaxValue) + 1
+                            Dim YMin As Integer = GraphValue2Pixel(0, CInt(Me.Height) - 3, MinValue, MaxValue, Piece.MinValue) + 1
+                            GFX_Graphics.DrawLine(Pens.Gray, XMid, YMax, XMid, YMin)
+#End Region
 
                             If Y2 > Y Then
                                 GFX_Graphics.FillRectangle(Brushes.Crimson, X + 1, Y, X2 - X - 1, Y2 - Y + 1)
@@ -532,17 +541,24 @@ Public Class TradeTrackerTimeRail
     Public Shared Function Time2Pixel(ByVal StartX As Integer, ByVal EndWidth As Integer, ByVal StartDate As Date, ByVal EndDate As Date, ByVal SetDate As Date) As Integer
 
         Dim StartEndTimeSpan As TimeSpan = EndDate - StartDate
+
+        If StartEndTimeSpan.TotalMilliseconds = 0.0 Then
+            Return 0
+        End If
+
         Dim StartSetTimeSpan As TimeSpan = SetDate - StartDate
+
+        If StartSetTimeSpan.TotalMilliseconds = 0.0 Then
+            Return 0
+        End If
 
         Dim EndX As Integer = StartX + EndWidth
 
         Dim XFactor As Double = EndX / StartEndTimeSpan.TotalMilliseconds
         XFactor *= StartSetTimeSpan.TotalMilliseconds
-        Try
-            Return CInt(XFactor)
-        Catch ex As Exception
-            Return 0
-        End Try
+
+        Return CInt(XFactor)
+
 
     End Function
 

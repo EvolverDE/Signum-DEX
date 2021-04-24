@@ -12,67 +12,23 @@ Public Class ClsBurstAPI
     'injectResponder: 6956773156128522497
 
     Public Const _ReferenceTX As String = "5527904978073323480" ' "2758976048878098469" ' "4449312026944639919" '15288802811961789572" '16765061203337282908 '15223937934525417316 '15288802811961789572
-
-    'CreateOrder method address: 224685783a1b4991 HEX ; 2469808197076732305 DEC -1286274751219789663
-    'AcceptOrder method address: 416d0b4b4963b686 HEX ; 4714436802908501638 DEC
-    'FinishOrder method address: 2b6059b8fdd0d9eb HEX ; 3125596792462301675 DEC
-
-    ReadOnly _ReferenceCreateOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(716726961670769723), 0)
-    ReadOnly _ReferenceAcceptOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(4714436802908501638), 0)
-    ReadOnly _ReferenceFinishOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(3125596792462301675), 0)
-    ReadOnly _ReferenceInjectResponder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(6956773156128522497), 0)
-
-    Dim RekursivRest As List(Of Object) = New List(Of Object)
-
-    ReadOnly _ReferenceCreationBytes As String
-    ReadOnly _ReferenceMachineCode As String
+    Public ReadOnly Property ReferenceCreateOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(716726961670769723), 0)
+    Public ReadOnly Property ReferenceAcceptOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(4714436802908501638), 0)
+    Public ReadOnly Property ReferenceFinishOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(3125596792462301675), 0)
+    Public ReadOnly Property ReferenceInjectResponder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(6956773156128522497), 0)
 
     Private ReadOnly Property C_ReferenceCreationBytes As String
-        Get
-            Return _ReferenceCreationBytes
-        End Get
-    End Property
-
     ReadOnly Property C_ReferenceMachineCode As String
-        Get
-            Return _ReferenceMachineCode
-        End Get
-    End Property
-
-    Public ReadOnly Property ReferenceCreateOrder As ULong
-        Get
-            Return _ReferenceCreateOrder
-        End Get
-    End Property
-
-    Public ReadOnly Property ReferenceAcceptOrder As ULong
-        Get
-            Return _ReferenceAcceptOrder
-        End Get
-    End Property
-
-    Public ReadOnly Property ReferenceFinishOrder As ULong
-        Get
-            Return _ReferenceFinishOrder
-        End Get
-    End Property
-
-    Public ReadOnly Property ReferenceInjectResponder As ULong
-        Get
-            Return _ReferenceInjectResponder
-        End Get
-    End Property
-
-    Property C_Node() As String = "http://nivbox.co.uk:6876/burst"
 
 
+    Property C_Node As String = "http://nivbox.co.uk:6876/burst"
 
-    Property C_PassPhrase() As String = ""
-    Property C_AccountID() As String
-    Property C_Address() As String
+    Property C_PassPhrase As String = ""
+    Property C_AccountID As String
+    Property C_Address As String
 
 
-    Property C_UTXList() As List(Of List(Of String)) = New List(Of List(Of String))
+    Property C_UTXList As List(Of List(Of String)) = New List(Of List(Of String))
 
 
     Sub New(Optional ByVal Node As String = "", Optional ByVal PassPhrase As String = "", Optional ByVal Account As String = "", Optional ByVal ReferenceTX As String = _ReferenceTX)
@@ -91,10 +47,10 @@ Public Class ClsBurstAPI
 
 
         Dim ReferenceTXDetails = GetTransaction(ReferenceTX)
-        _ReferenceCreationBytes = BetweenFromList(ReferenceTXDetails, "<creationBytes>", "</creationBytes>")
+        C_ReferenceCreationBytes = BetweenFromList(ReferenceTXDetails, "<creationBytes>", "</creationBytes>")
 
         Dim ReferenceATDetails = GetATDetails(ReferenceTX)
-        _ReferenceMachineCode = BetweenFromList(ReferenceATDetails, "<machineCode>", "</machineCode>")
+        C_ReferenceMachineCode = BetweenFromList(ReferenceATDetails, "<machineCode>", "</machineCode>")
 
     End Sub
 
@@ -182,6 +138,8 @@ Public Class ClsBurstAPI
     Public Function IsAT(ByVal AccountID As String) As Boolean
 
         Dim Out As out = New out(Application.StartupPath)
+
+
 
         Dim Response As String = BurstRequest("requestType=getAccount&account=" + AccountID)
 
@@ -903,8 +861,6 @@ Public Class ClsBurstAPI
 
                         Case entry(0) = "sender"
 
-
-
                             'Dim T_TX = GetATDetails(entry(1))
                             'Dim IsAT As String = BetweenFromList(T_TX, "<machineCode>", "</machineCode>")
 
@@ -1014,7 +970,7 @@ Public Class ClsBurstAPI
 
                                 End Select
 
-                                AttMsg += "</attachment>"
+                                'AttMsg += "</attachment>"
 
                                 Dim T_Sum As Double = CDbl(T_AmountNQT) - CDbl(MesULng(1))
 
@@ -1045,7 +1001,7 @@ Public Class ClsBurstAPI
 
                                 End Select
 
-                                AttMsg += "</attachment>"
+
 
                             Case ReferenceFinishOrder
                                 TXEntry(0) = "<type>ResponseOrder</type>"
@@ -1053,6 +1009,8 @@ Public Class ClsBurstAPI
                                 TXEntry(0) = "<type>ResponseOrder</type>"
 
                         End Select
+
+                        AttMsg += "</attachment>"
 
                         TXEntry(MSgIdx) = AttMsg
 
@@ -1217,6 +1175,23 @@ Public Class ClsBurstAPI
         Return New List(Of String)
 
     End Function
+    'Public Function GetATBasics(ByVal ATID As String) As List(Of String)
+
+    '    Dim ATDetails As List(Of String) = GetATDetails(ATID)
+
+    '    Dim MachineCode As String = BetweenFromList(ATDetails, "<machineCode>", "</machineCode>")
+
+    '    If C_ReferenceMachineCode.Trim = MachineCode.Trim Then
+    '        ATDetails.Add("<refMachineCode>True</refMachineCode>")
+    '        Return ATDetails
+    '    Else
+    '        ATDetails.Add("<refMachineCode>False</refMachineCode>")
+    '        Return ATDetails
+    '    End If
+
+    '    Return New List(Of String)
+
+    'End Function
 
     Public Function GetATDetails(ByVal ATId As String) As List(Of String)
 
@@ -1270,6 +1245,16 @@ Public Class ClsBurstAPI
                 Case "machineCode"
                     ATDetailList.Add("<machineCode>" + Entry(1) + "</machineCode>")
 
+                    If Not IsNothing(C_ReferenceMachineCode) Then
+                        If C_ReferenceMachineCode.Trim = Entry(1).Trim Then
+                            ATDetailList.Add("<referenceMachineCode>True</referenceMachineCode>")
+                        Else
+                            ATDetailList.Add("<referenceMachineCode>False</referenceMachineCode>")
+                        End If
+                    Else
+                        ATDetailList.Add("<referenceMachineCode>False</referenceMachineCode>")
+                    End If
+
                 Case "machineData"
                     ATDetailList.Add("<machineData>" + Entry(1) + "</machineData>")
 
@@ -1308,6 +1293,14 @@ Public Class ClsBurstAPI
         Return ATDetailList
 
     End Function
+
+#End Region 'Get
+
+#Region "Get Advance"
+
+
+
+
 
 #End Region
 
@@ -1659,8 +1652,7 @@ Public Class ClsBurstAPI
 
     End Function
 
-#End Region
-
+#End Region 'Send
 
 #Region "Send Advance"
 
@@ -1908,9 +1900,10 @@ Public Class ClsBurstAPI
 
 #End Region
 
-#End Region
+#End Region 'Blockchain Communication
 
-#Region "Converts"
+
+#Region "Convert tools"
 
     Public Function ULng2String(ByVal Lng As ULong) As String
 
@@ -2416,6 +2409,8 @@ Public Class ClsBurstAPI
 
     End Function
 
+
+    Private Property RekursivRest() As List(Of Object) = New List(Of Object)
 
     Function JSONRecursive(ByVal Input As String) As List(Of Object)
 

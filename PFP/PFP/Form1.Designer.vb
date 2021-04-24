@@ -103,8 +103,44 @@ Partial Class PFPForm
         Me.ColumnHeader16 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabPage3 = New System.Windows.Forms.TabPage()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
-        Me.BtTestMultiRefresh = New System.Windows.Forms.Button()
-        Me.BtTestExit = New System.Windows.Forms.Button()
+        Me.TestTabControl = New System.Windows.Forms.TabControl()
+        Me.TabPage6 = New System.Windows.Forms.TabPage()
+        Me.TestGrpBoxConvertings = New System.Windows.Forms.GroupBox()
+        Me.TBTestConvert = New System.Windows.Forms.TextBox()
+        Me.BtTestConvert = New System.Windows.Forms.Button()
+        Me.BtTestConvert2 = New System.Windows.Forms.Button()
+        Me.BtTestDatStr2ULngList = New System.Windows.Forms.Button()
+        Me.TabPage7 = New System.Windows.Forms.TabPage()
+        Me.TestGrpBoxINITests = New System.Windows.Forms.GroupBox()
+        Me.TBTestSetTXINI = New System.Windows.Forms.TextBox()
+        Me.BtTestSetTXINI = New System.Windows.Forms.Button()
+        Me.BtTestGetTXINI = New System.Windows.Forms.Button()
+        Me.BtTestDelTXINI = New System.Windows.Forms.Button()
+        Me.TBTestGetTXINI = New System.Windows.Forms.TextBox()
+        Me.TBTestDelTXINI = New System.Windows.Forms.TextBox()
+        Me.TabPage8 = New System.Windows.Forms.TabPage()
+        Me.TestGrpBoxPayPaltests = New System.Windows.Forms.GroupBox()
+        Me.BtTestPPAPI = New System.Windows.Forms.Button()
+        Me.BtTestCreatePPOrder = New System.Windows.Forms.Button()
+        Me.TabPage9 = New System.Windows.Forms.TabPage()
+        Me.TestGrpBxATCom = New System.Windows.Forms.GroupBox()
+        Me.Label25 = New System.Windows.Forms.Label()
+        Me.BtTestCreate = New System.Windows.Forms.Button()
+        Me.BtTestAccept = New System.Windows.Forms.Button()
+        Me.BtTestFinish = New System.Windows.Forms.Button()
+        Me.ListBox1 = New System.Windows.Forms.ListBox()
+        Me.BtTestInject = New System.Windows.Forms.Button()
+        Me.TBTestCreatePP = New System.Windows.Forms.TextBox()
+        Me.TBTestAcceptPP = New System.Windows.Forms.TextBox()
+        Me.Label24 = New System.Windows.Forms.Label()
+        Me.TBTestFinishPP = New System.Windows.Forms.TextBox()
+        Me.Label23 = New System.Windows.Forms.Label()
+        Me.TBTestInjectPP = New System.Windows.Forms.TextBox()
+        Me.Label22 = New System.Windows.Forms.Label()
+        Me.TBTestResponder = New System.Windows.Forms.TextBox()
+        Me.Label21 = New System.Windows.Forms.Label()
+        Me.TabPage10 = New System.Windows.Forms.TabPage()
+        Me.TestGrpBoxMultithreadings = New System.Windows.Forms.GroupBox()
         Me.BtTestMultiGetDetails = New System.Windows.Forms.Button()
         Me.LVTestMulti = New System.Windows.Forms.ListView()
         Me.ColumnHeader2 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -112,33 +148,10 @@ Partial Class PFPForm
         Me.ColumnHeader4 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader5 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader6 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.Label25 = New System.Windows.Forms.Label()
-        Me.Label24 = New System.Windows.Forms.Label()
-        Me.Label23 = New System.Windows.Forms.Label()
-        Me.Label22 = New System.Windows.Forms.Label()
-        Me.Label21 = New System.Windows.Forms.Label()
-        Me.TBTestResponder = New System.Windows.Forms.TextBox()
-        Me.TBTestInjectPP = New System.Windows.Forms.TextBox()
-        Me.TBTestFinishPP = New System.Windows.Forms.TextBox()
-        Me.TBTestAcceptPP = New System.Windows.Forms.TextBox()
-        Me.TBTestCreatePP = New System.Windows.Forms.TextBox()
-        Me.BtTestInject = New System.Windows.Forms.Button()
-        Me.TBTestDelTXINI = New System.Windows.Forms.TextBox()
-        Me.TBTestGetTXINI = New System.Windows.Forms.TextBox()
-        Me.TBTestSetTXINI = New System.Windows.Forms.TextBox()
-        Me.BtTestDelTXINI = New System.Windows.Forms.Button()
-        Me.BtTestGetTXINI = New System.Windows.Forms.Button()
-        Me.BtTestSetTXINI = New System.Windows.Forms.Button()
-        Me.Button3 = New System.Windows.Forms.Button()
-        Me.BtTestPPAPI = New System.Windows.Forms.Button()
-        Me.ListBox1 = New System.Windows.Forms.ListBox()
-        Me.Button1 = New System.Windows.Forms.Button()
-        Me.BtTestConvert2 = New System.Windows.Forms.Button()
-        Me.BtTestConvert = New System.Windows.Forms.Button()
-        Me.TBTestConvert = New System.Windows.Forms.TextBox()
-        Me.BtTestFinish = New System.Windows.Forms.Button()
-        Me.BtTestAccept = New System.Windows.Forms.Button()
-        Me.BtTestCreate = New System.Windows.Forms.Button()
+        Me.BtTestExit = New System.Windows.Forms.Button()
+        Me.BtTestMultiRefresh = New System.Windows.Forms.Button()
+        Me.BtTestGetAt = New System.Windows.Forms.Button()
+        Me.TestBar = New System.Windows.Forms.ProgressBar()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.RBUseXItemSettings = New System.Windows.Forms.RadioButton()
         Me.RBUsePaymentInfo = New System.Windows.Forms.RadioButton()
@@ -238,6 +251,17 @@ Partial Class PFPForm
         Me.SplitContainer17.SuspendLayout()
         Me.TabPage3.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
+        Me.TestTabControl.SuspendLayout()
+        Me.TabPage6.SuspendLayout()
+        Me.TestGrpBoxConvertings.SuspendLayout()
+        Me.TabPage7.SuspendLayout()
+        Me.TestGrpBoxINITests.SuspendLayout()
+        Me.TabPage8.SuspendLayout()
+        Me.TestGrpBoxPayPaltests.SuspendLayout()
+        Me.TabPage9.SuspendLayout()
+        Me.TestGrpBxATCom.SuspendLayout()
+        Me.TabPage10.SuspendLayout()
+        Me.TestGrpBoxMultithreadings.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
         Me.GrpBxSeller.SuspendLayout()
         Me.TabControl2.SuspendLayout()
@@ -1184,37 +1208,7 @@ Partial Class PFPForm
         '
         'GroupBox4
         '
-        Me.GroupBox4.Controls.Add(Me.BtTestMultiRefresh)
-        Me.GroupBox4.Controls.Add(Me.BtTestExit)
-        Me.GroupBox4.Controls.Add(Me.BtTestMultiGetDetails)
-        Me.GroupBox4.Controls.Add(Me.LVTestMulti)
-        Me.GroupBox4.Controls.Add(Me.Label25)
-        Me.GroupBox4.Controls.Add(Me.Label24)
-        Me.GroupBox4.Controls.Add(Me.Label23)
-        Me.GroupBox4.Controls.Add(Me.Label22)
-        Me.GroupBox4.Controls.Add(Me.Label21)
-        Me.GroupBox4.Controls.Add(Me.TBTestResponder)
-        Me.GroupBox4.Controls.Add(Me.TBTestInjectPP)
-        Me.GroupBox4.Controls.Add(Me.TBTestFinishPP)
-        Me.GroupBox4.Controls.Add(Me.TBTestAcceptPP)
-        Me.GroupBox4.Controls.Add(Me.TBTestCreatePP)
-        Me.GroupBox4.Controls.Add(Me.BtTestInject)
-        Me.GroupBox4.Controls.Add(Me.TBTestDelTXINI)
-        Me.GroupBox4.Controls.Add(Me.TBTestGetTXINI)
-        Me.GroupBox4.Controls.Add(Me.TBTestSetTXINI)
-        Me.GroupBox4.Controls.Add(Me.BtTestDelTXINI)
-        Me.GroupBox4.Controls.Add(Me.BtTestGetTXINI)
-        Me.GroupBox4.Controls.Add(Me.BtTestSetTXINI)
-        Me.GroupBox4.Controls.Add(Me.Button3)
-        Me.GroupBox4.Controls.Add(Me.BtTestPPAPI)
-        Me.GroupBox4.Controls.Add(Me.ListBox1)
-        Me.GroupBox4.Controls.Add(Me.Button1)
-        Me.GroupBox4.Controls.Add(Me.BtTestConvert2)
-        Me.GroupBox4.Controls.Add(Me.BtTestConvert)
-        Me.GroupBox4.Controls.Add(Me.TBTestConvert)
-        Me.GroupBox4.Controls.Add(Me.BtTestFinish)
-        Me.GroupBox4.Controls.Add(Me.BtTestAccept)
-        Me.GroupBox4.Controls.Add(Me.BtTestCreate)
+        Me.GroupBox4.Controls.Add(Me.TestTabControl)
         Me.GroupBox4.Location = New System.Drawing.Point(8, 276)
         Me.GroupBox4.Name = "GroupBox4"
         Me.GroupBox4.Size = New System.Drawing.Size(1585, 389)
@@ -1222,30 +1216,396 @@ Partial Class PFPForm
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Testing"
         '
-        'BtTestMultiRefresh
+        'TestTabControl
         '
-        Me.BtTestMultiRefresh.ForeColor = System.Drawing.Color.Black
-        Me.BtTestMultiRefresh.Location = New System.Drawing.Point(664, 230)
-        Me.BtTestMultiRefresh.Name = "BtTestMultiRefresh"
-        Me.BtTestMultiRefresh.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestMultiRefresh.TabIndex = 31
-        Me.BtTestMultiRefresh.Text = "Refresh"
-        Me.BtTestMultiRefresh.UseVisualStyleBackColor = True
+        Me.TestTabControl.Controls.Add(Me.TabPage6)
+        Me.TestTabControl.Controls.Add(Me.TabPage7)
+        Me.TestTabControl.Controls.Add(Me.TabPage8)
+        Me.TestTabControl.Controls.Add(Me.TabPage9)
+        Me.TestTabControl.Controls.Add(Me.TabPage10)
+        Me.TestTabControl.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TestTabControl.Location = New System.Drawing.Point(3, 16)
+        Me.TestTabControl.Name = "TestTabControl"
+        Me.TestTabControl.SelectedIndex = 0
+        Me.TestTabControl.Size = New System.Drawing.Size(1579, 370)
+        Me.TestTabControl.TabIndex = 39
         '
-        'BtTestExit
+        'TabPage6
         '
-        Me.BtTestExit.ForeColor = System.Drawing.Color.Black
-        Me.BtTestExit.Location = New System.Drawing.Point(745, 230)
-        Me.BtTestExit.Name = "BtTestExit"
-        Me.BtTestExit.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestExit.TabIndex = 30
-        Me.BtTestExit.Text = "Exit"
-        Me.BtTestExit.UseVisualStyleBackColor = True
+        Me.TabPage6.Controls.Add(Me.TestGrpBoxConvertings)
+        Me.TabPage6.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage6.Name = "TabPage6"
+        Me.TabPage6.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage6.Size = New System.Drawing.Size(1571, 344)
+        Me.TabPage6.TabIndex = 0
+        Me.TabPage6.Text = "Convertings"
+        Me.TabPage6.UseVisualStyleBackColor = True
+        '
+        'TestGrpBoxConvertings
+        '
+        Me.TestGrpBoxConvertings.Controls.Add(Me.TBTestConvert)
+        Me.TestGrpBoxConvertings.Controls.Add(Me.BtTestConvert)
+        Me.TestGrpBoxConvertings.Controls.Add(Me.BtTestConvert2)
+        Me.TestGrpBoxConvertings.Controls.Add(Me.BtTestDatStr2ULngList)
+        Me.TestGrpBoxConvertings.Location = New System.Drawing.Point(6, 6)
+        Me.TestGrpBoxConvertings.Name = "TestGrpBoxConvertings"
+        Me.TestGrpBoxConvertings.Size = New System.Drawing.Size(302, 80)
+        Me.TestGrpBoxConvertings.TabIndex = 35
+        Me.TestGrpBoxConvertings.TabStop = False
+        Me.TestGrpBoxConvertings.Text = "Convertings"
+        '
+        'TBTestConvert
+        '
+        Me.TBTestConvert.Location = New System.Drawing.Point(6, 19)
+        Me.TBTestConvert.Name = "TBTestConvert"
+        Me.TBTestConvert.Size = New System.Drawing.Size(288, 20)
+        Me.TBTestConvert.TabIndex = 3
+        '
+        'BtTestConvert
+        '
+        Me.BtTestConvert.ForeColor = System.Drawing.Color.Black
+        Me.BtTestConvert.Location = New System.Drawing.Point(116, 45)
+        Me.BtTestConvert.Name = "BtTestConvert"
+        Me.BtTestConvert.Size = New System.Drawing.Size(86, 23)
+        Me.BtTestConvert.TabIndex = 4
+        Me.BtTestConvert.Text = "String2ULong"
+        Me.BtTestConvert.UseVisualStyleBackColor = True
+        '
+        'BtTestConvert2
+        '
+        Me.BtTestConvert2.ForeColor = System.Drawing.Color.Black
+        Me.BtTestConvert2.Location = New System.Drawing.Point(208, 45)
+        Me.BtTestConvert2.Name = "BtTestConvert2"
+        Me.BtTestConvert2.Size = New System.Drawing.Size(86, 23)
+        Me.BtTestConvert2.TabIndex = 5
+        Me.BtTestConvert2.Text = "ULong2String"
+        Me.BtTestConvert2.UseVisualStyleBackColor = True
+        '
+        'BtTestDatStr2ULngList
+        '
+        Me.BtTestDatStr2ULngList.ForeColor = System.Drawing.Color.Black
+        Me.BtTestDatStr2ULngList.Location = New System.Drawing.Point(6, 45)
+        Me.BtTestDatStr2ULngList.Name = "BtTestDatStr2ULngList"
+        Me.BtTestDatStr2ULngList.Size = New System.Drawing.Size(104, 23)
+        Me.BtTestDatStr2ULngList.TabIndex = 6
+        Me.BtTestDatStr2ULngList.Text = "DataStr2ULngList"
+        Me.BtTestDatStr2ULngList.UseVisualStyleBackColor = True
+        '
+        'TabPage7
+        '
+        Me.TabPage7.Controls.Add(Me.TestGrpBoxINITests)
+        Me.TabPage7.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage7.Name = "TabPage7"
+        Me.TabPage7.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage7.Size = New System.Drawing.Size(1571, 344)
+        Me.TabPage7.TabIndex = 1
+        Me.TabPage7.Text = "INI-Tools-Tests"
+        Me.TabPage7.UseVisualStyleBackColor = True
+        '
+        'TestGrpBoxINITests
+        '
+        Me.TestGrpBoxINITests.Controls.Add(Me.TBTestSetTXINI)
+        Me.TestGrpBoxINITests.Controls.Add(Me.BtTestSetTXINI)
+        Me.TestGrpBoxINITests.Controls.Add(Me.BtTestGetTXINI)
+        Me.TestGrpBoxINITests.Controls.Add(Me.BtTestDelTXINI)
+        Me.TestGrpBoxINITests.Controls.Add(Me.TBTestGetTXINI)
+        Me.TestGrpBoxINITests.Controls.Add(Me.TBTestDelTXINI)
+        Me.TestGrpBoxINITests.Location = New System.Drawing.Point(6, 6)
+        Me.TestGrpBoxINITests.Name = "TestGrpBoxINITests"
+        Me.TestGrpBoxINITests.Size = New System.Drawing.Size(316, 85)
+        Me.TestGrpBoxINITests.TabIndex = 37
+        Me.TestGrpBoxINITests.TabStop = False
+        Me.TestGrpBoxINITests.Text = "INI-Tools-Tests"
+        '
+        'TBTestSetTXINI
+        '
+        Me.TBTestSetTXINI.Location = New System.Drawing.Point(6, 19)
+        Me.TBTestSetTXINI.Name = "TBTestSetTXINI"
+        Me.TBTestSetTXINI.Size = New System.Drawing.Size(97, 20)
+        Me.TBTestSetTXINI.TabIndex = 14
+        '
+        'BtTestSetTXINI
+        '
+        Me.BtTestSetTXINI.ForeColor = System.Drawing.Color.Black
+        Me.BtTestSetTXINI.Location = New System.Drawing.Point(6, 46)
+        Me.BtTestSetTXINI.Name = "BtTestSetTXINI"
+        Me.BtTestSetTXINI.Size = New System.Drawing.Size(97, 23)
+        Me.BtTestSetTXINI.TabIndex = 11
+        Me.BtTestSetTXINI.Text = "Set TX in INI"
+        Me.BtTestSetTXINI.UseVisualStyleBackColor = True
+        '
+        'BtTestGetTXINI
+        '
+        Me.BtTestGetTXINI.ForeColor = System.Drawing.Color.Black
+        Me.BtTestGetTXINI.Location = New System.Drawing.Point(109, 46)
+        Me.BtTestGetTXINI.Name = "BtTestGetTXINI"
+        Me.BtTestGetTXINI.Size = New System.Drawing.Size(97, 23)
+        Me.BtTestGetTXINI.TabIndex = 12
+        Me.BtTestGetTXINI.Text = "Get TX from INI"
+        Me.BtTestGetTXINI.UseVisualStyleBackColor = True
+        '
+        'BtTestDelTXINI
+        '
+        Me.BtTestDelTXINI.ForeColor = System.Drawing.Color.Black
+        Me.BtTestDelTXINI.Location = New System.Drawing.Point(212, 46)
+        Me.BtTestDelTXINI.Name = "BtTestDelTXINI"
+        Me.BtTestDelTXINI.Size = New System.Drawing.Size(97, 23)
+        Me.BtTestDelTXINI.TabIndex = 13
+        Me.BtTestDelTXINI.Text = "Del TX from INI"
+        Me.BtTestDelTXINI.UseVisualStyleBackColor = True
+        '
+        'TBTestGetTXINI
+        '
+        Me.TBTestGetTXINI.Location = New System.Drawing.Point(109, 19)
+        Me.TBTestGetTXINI.Name = "TBTestGetTXINI"
+        Me.TBTestGetTXINI.Size = New System.Drawing.Size(97, 20)
+        Me.TBTestGetTXINI.TabIndex = 15
+        '
+        'TBTestDelTXINI
+        '
+        Me.TBTestDelTXINI.Location = New System.Drawing.Point(212, 19)
+        Me.TBTestDelTXINI.Name = "TBTestDelTXINI"
+        Me.TBTestDelTXINI.Size = New System.Drawing.Size(97, 20)
+        Me.TBTestDelTXINI.TabIndex = 16
+        '
+        'TabPage8
+        '
+        Me.TabPage8.Controls.Add(Me.TestGrpBoxPayPaltests)
+        Me.TabPage8.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage8.Name = "TabPage8"
+        Me.TabPage8.Size = New System.Drawing.Size(1571, 344)
+        Me.TabPage8.TabIndex = 2
+        Me.TabPage8.Text = "PayPal-Tests"
+        Me.TabPage8.UseVisualStyleBackColor = True
+        '
+        'TestGrpBoxPayPaltests
+        '
+        Me.TestGrpBoxPayPaltests.Controls.Add(Me.BtTestPPAPI)
+        Me.TestGrpBoxPayPaltests.Controls.Add(Me.BtTestCreatePPOrder)
+        Me.TestGrpBoxPayPaltests.Location = New System.Drawing.Point(3, 3)
+        Me.TestGrpBoxPayPaltests.Name = "TestGrpBoxPayPaltests"
+        Me.TestGrpBoxPayPaltests.Size = New System.Drawing.Size(150, 82)
+        Me.TestGrpBoxPayPaltests.TabIndex = 36
+        Me.TestGrpBoxPayPaltests.TabStop = False
+        Me.TestGrpBoxPayPaltests.Text = "PayPal-Tests"
+        '
+        'BtTestPPAPI
+        '
+        Me.BtTestPPAPI.ForeColor = System.Drawing.Color.Black
+        Me.BtTestPPAPI.Location = New System.Drawing.Point(14, 19)
+        Me.BtTestPPAPI.Name = "BtTestPPAPI"
+        Me.BtTestPPAPI.Size = New System.Drawing.Size(118, 23)
+        Me.BtTestPPAPI.TabIndex = 9
+        Me.BtTestPPAPI.Text = "PPAPIGetPayments"
+        Me.BtTestPPAPI.UseVisualStyleBackColor = True
+        '
+        'BtTestCreatePPOrder
+        '
+        Me.BtTestCreatePPOrder.ForeColor = System.Drawing.Color.Black
+        Me.BtTestCreatePPOrder.Location = New System.Drawing.Point(14, 48)
+        Me.BtTestCreatePPOrder.Name = "BtTestCreatePPOrder"
+        Me.BtTestCreatePPOrder.Size = New System.Drawing.Size(118, 23)
+        Me.BtTestCreatePPOrder.TabIndex = 10
+        Me.BtTestCreatePPOrder.Text = "Create PayPalOrder"
+        Me.BtTestCreatePPOrder.UseVisualStyleBackColor = True
+        '
+        'TabPage9
+        '
+        Me.TabPage9.Controls.Add(Me.TestGrpBxATCom)
+        Me.TabPage9.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage9.Name = "TabPage9"
+        Me.TabPage9.Size = New System.Drawing.Size(1571, 344)
+        Me.TabPage9.TabIndex = 3
+        Me.TabPage9.Text = "AT Communication"
+        Me.TabPage9.UseVisualStyleBackColor = True
+        '
+        'TestGrpBxATCom
+        '
+        Me.TestGrpBxATCom.Controls.Add(Me.Label25)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestCreate)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestAccept)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestFinish)
+        Me.TestGrpBxATCom.Controls.Add(Me.ListBox1)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestInject)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestCreatePP)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestAcceptPP)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label24)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestFinishPP)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label23)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestInjectPP)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label22)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestResponder)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label21)
+        Me.TestGrpBxATCom.Location = New System.Drawing.Point(3, 3)
+        Me.TestGrpBxATCom.Name = "TestGrpBxATCom"
+        Me.TestGrpBxATCom.Size = New System.Drawing.Size(367, 241)
+        Me.TestGrpBxATCom.TabIndex = 34
+        Me.TestGrpBxATCom.TabStop = False
+        Me.TestGrpBxATCom.Text = "AT Communication"
+        '
+        'Label25
+        '
+        Me.Label25.AutoSize = True
+        Me.Label25.ForeColor = System.Drawing.Color.Black
+        Me.Label25.Location = New System.Drawing.Point(249, 16)
+        Me.Label25.Name = "Label25"
+        Me.Label25.Size = New System.Drawing.Size(94, 13)
+        Me.Label25.TabIndex = 27
+        Me.Label25.Text = "TestResponderID:"
+        '
+        'BtTestCreate
+        '
+        Me.BtTestCreate.ForeColor = System.Drawing.Color.Black
+        Me.BtTestCreate.Location = New System.Drawing.Point(8, 97)
+        Me.BtTestCreate.Name = "BtTestCreate"
+        Me.BtTestCreate.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestCreate.TabIndex = 0
+        Me.BtTestCreate.Text = "create"
+        Me.BtTestCreate.UseVisualStyleBackColor = True
+        '
+        'BtTestAccept
+        '
+        Me.BtTestAccept.ForeColor = System.Drawing.Color.Black
+        Me.BtTestAccept.Location = New System.Drawing.Point(89, 97)
+        Me.BtTestAccept.Name = "BtTestAccept"
+        Me.BtTestAccept.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestAccept.TabIndex = 1
+        Me.BtTestAccept.Text = "accept"
+        Me.BtTestAccept.UseVisualStyleBackColor = True
+        '
+        'BtTestFinish
+        '
+        Me.BtTestFinish.ForeColor = System.Drawing.Color.Black
+        Me.BtTestFinish.Location = New System.Drawing.Point(170, 97)
+        Me.BtTestFinish.Name = "BtTestFinish"
+        Me.BtTestFinish.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestFinish.TabIndex = 2
+        Me.BtTestFinish.Text = "finish"
+        Me.BtTestFinish.UseVisualStyleBackColor = True
+        '
+        'ListBox1
+        '
+        Me.ListBox1.FormattingEnabled = True
+        Me.ListBox1.Location = New System.Drawing.Point(9, 122)
+        Me.ListBox1.Name = "ListBox1"
+        Me.ListBox1.Size = New System.Drawing.Size(348, 108)
+        Me.ListBox1.TabIndex = 8
+        '
+        'BtTestInject
+        '
+        Me.BtTestInject.ForeColor = System.Drawing.Color.Black
+        Me.BtTestInject.Location = New System.Drawing.Point(252, 97)
+        Me.BtTestInject.Name = "BtTestInject"
+        Me.BtTestInject.Size = New System.Drawing.Size(105, 23)
+        Me.BtTestInject.TabIndex = 17
+        Me.BtTestInject.Text = "injectResponder"
+        Me.BtTestInject.UseVisualStyleBackColor = True
+        '
+        'TBTestCreatePP
+        '
+        Me.TBTestCreatePP.Location = New System.Drawing.Point(8, 71)
+        Me.TBTestCreatePP.Name = "TBTestCreatePP"
+        Me.TBTestCreatePP.Size = New System.Drawing.Size(75, 20)
+        Me.TBTestCreatePP.TabIndex = 18
+        '
+        'TBTestAcceptPP
+        '
+        Me.TBTestAcceptPP.Location = New System.Drawing.Point(89, 71)
+        Me.TBTestAcceptPP.Name = "TBTestAcceptPP"
+        Me.TBTestAcceptPP.Size = New System.Drawing.Size(75, 20)
+        Me.TBTestAcceptPP.TabIndex = 19
+        '
+        'Label24
+        '
+        Me.Label24.AutoSize = True
+        Me.Label24.ForeColor = System.Drawing.Color.Black
+        Me.Label24.Location = New System.Drawing.Point(249, 55)
+        Me.Label24.Name = "Label24"
+        Me.Label24.Size = New System.Drawing.Size(66, 13)
+        Me.Label24.TabIndex = 26
+        Me.Label24.Text = "PassPhrase:"
+        '
+        'TBTestFinishPP
+        '
+        Me.TBTestFinishPP.Location = New System.Drawing.Point(170, 71)
+        Me.TBTestFinishPP.Name = "TBTestFinishPP"
+        Me.TBTestFinishPP.Size = New System.Drawing.Size(75, 20)
+        Me.TBTestFinishPP.TabIndex = 20
+        '
+        'Label23
+        '
+        Me.Label23.AutoSize = True
+        Me.Label23.ForeColor = System.Drawing.Color.Black
+        Me.Label23.Location = New System.Drawing.Point(167, 55)
+        Me.Label23.Name = "Label23"
+        Me.Label23.Size = New System.Drawing.Size(66, 13)
+        Me.Label23.TabIndex = 25
+        Me.Label23.Text = "PassPhrase:"
+        '
+        'TBTestInjectPP
+        '
+        Me.TBTestInjectPP.Location = New System.Drawing.Point(252, 71)
+        Me.TBTestInjectPP.Name = "TBTestInjectPP"
+        Me.TBTestInjectPP.Size = New System.Drawing.Size(105, 20)
+        Me.TBTestInjectPP.TabIndex = 21
+        '
+        'Label22
+        '
+        Me.Label22.AutoSize = True
+        Me.Label22.ForeColor = System.Drawing.Color.Black
+        Me.Label22.Location = New System.Drawing.Point(86, 55)
+        Me.Label22.Name = "Label22"
+        Me.Label22.Size = New System.Drawing.Size(66, 13)
+        Me.Label22.TabIndex = 24
+        Me.Label22.Text = "PassPhrase:"
+        '
+        'TBTestResponder
+        '
+        Me.TBTestResponder.Location = New System.Drawing.Point(252, 32)
+        Me.TBTestResponder.Name = "TBTestResponder"
+        Me.TBTestResponder.Size = New System.Drawing.Size(105, 20)
+        Me.TBTestResponder.TabIndex = 22
+        '
+        'Label21
+        '
+        Me.Label21.AutoSize = True
+        Me.Label21.ForeColor = System.Drawing.Color.Black
+        Me.Label21.Location = New System.Drawing.Point(6, 55)
+        Me.Label21.Name = "Label21"
+        Me.Label21.Size = New System.Drawing.Size(66, 13)
+        Me.Label21.TabIndex = 23
+        Me.Label21.Text = "PassPhrase:"
+        '
+        'TabPage10
+        '
+        Me.TabPage10.Controls.Add(Me.TestGrpBoxMultithreadings)
+        Me.TabPage10.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage10.Name = "TabPage10"
+        Me.TabPage10.Size = New System.Drawing.Size(1571, 344)
+        Me.TabPage10.TabIndex = 4
+        Me.TabPage10.Text = "Multithreading-Tests"
+        Me.TabPage10.UseVisualStyleBackColor = True
+        '
+        'TestGrpBoxMultithreadings
+        '
+        Me.TestGrpBoxMultithreadings.Controls.Add(Me.BtTestMultiGetDetails)
+        Me.TestGrpBoxMultithreadings.Controls.Add(Me.LVTestMulti)
+        Me.TestGrpBoxMultithreadings.Controls.Add(Me.BtTestExit)
+        Me.TestGrpBoxMultithreadings.Controls.Add(Me.BtTestMultiRefresh)
+        Me.TestGrpBoxMultithreadings.Controls.Add(Me.BtTestGetAt)
+        Me.TestGrpBoxMultithreadings.Controls.Add(Me.TestBar)
+        Me.TestGrpBoxMultithreadings.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TestGrpBoxMultithreadings.Location = New System.Drawing.Point(0, 0)
+        Me.TestGrpBoxMultithreadings.Name = "TestGrpBoxMultithreadings"
+        Me.TestGrpBoxMultithreadings.Size = New System.Drawing.Size(1571, 344)
+        Me.TestGrpBoxMultithreadings.TabIndex = 38
+        Me.TestGrpBoxMultithreadings.TabStop = False
+        Me.TestGrpBoxMultithreadings.Text = "Multithreading-Tests"
         '
         'BtTestMultiGetDetails
         '
         Me.BtTestMultiGetDetails.ForeColor = System.Drawing.Color.Black
-        Me.BtTestMultiGetDetails.Location = New System.Drawing.Point(583, 230)
+        Me.BtTestMultiGetDetails.Location = New System.Drawing.Point(6, 19)
         Me.BtTestMultiGetDetails.Name = "BtTestMultiGetDetails"
         Me.BtTestMultiGetDetails.Size = New System.Drawing.Size(75, 23)
         Me.BtTestMultiGetDetails.TabIndex = 29
@@ -1258,10 +1618,10 @@ Partial Class PFPForm
         Me.LVTestMulti.FullRowSelect = True
         Me.LVTestMulti.GridLines = True
         Me.LVTestMulti.HideSelection = False
-        Me.LVTestMulti.Location = New System.Drawing.Point(583, 259)
+        Me.LVTestMulti.Location = New System.Drawing.Point(6, 77)
         Me.LVTestMulti.MultiSelect = False
         Me.LVTestMulti.Name = "LVTestMulti"
-        Me.LVTestMulti.Size = New System.Drawing.Size(996, 108)
+        Me.LVTestMulti.Size = New System.Drawing.Size(1559, 263)
         Me.LVTestMulti.TabIndex = 28
         Me.LVTestMulti.UseCompatibleStateImageBehavior = False
         Me.LVTestMulti.View = System.Windows.Forms.View.Details
@@ -1286,241 +1646,42 @@ Partial Class PFPForm
         '
         Me.ColumnHeader6.Text = "Result"
         '
-        'Label25
+        'BtTestExit
         '
-        Me.Label25.AutoSize = True
-        Me.Label25.Location = New System.Drawing.Point(247, 114)
-        Me.Label25.Name = "Label25"
-        Me.Label25.Size = New System.Drawing.Size(94, 13)
-        Me.Label25.TabIndex = 27
-        Me.Label25.Text = "TestResponderID:"
+        Me.BtTestExit.ForeColor = System.Drawing.Color.Black
+        Me.BtTestExit.Location = New System.Drawing.Point(168, 19)
+        Me.BtTestExit.Name = "BtTestExit"
+        Me.BtTestExit.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestExit.TabIndex = 30
+        Me.BtTestExit.Text = "Exit"
+        Me.BtTestExit.UseVisualStyleBackColor = True
         '
-        'Label24
+        'BtTestMultiRefresh
         '
-        Me.Label24.AutoSize = True
-        Me.Label24.Location = New System.Drawing.Point(247, 153)
-        Me.Label24.Name = "Label24"
-        Me.Label24.Size = New System.Drawing.Size(66, 13)
-        Me.Label24.TabIndex = 26
-        Me.Label24.Text = "PassPhrase:"
+        Me.BtTestMultiRefresh.ForeColor = System.Drawing.Color.Black
+        Me.BtTestMultiRefresh.Location = New System.Drawing.Point(87, 19)
+        Me.BtTestMultiRefresh.Name = "BtTestMultiRefresh"
+        Me.BtTestMultiRefresh.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestMultiRefresh.TabIndex = 31
+        Me.BtTestMultiRefresh.Text = "Refresh"
+        Me.BtTestMultiRefresh.UseVisualStyleBackColor = True
         '
-        'Label23
+        'BtTestGetAt
         '
-        Me.Label23.AutoSize = True
-        Me.Label23.Location = New System.Drawing.Point(165, 153)
-        Me.Label23.Name = "Label23"
-        Me.Label23.Size = New System.Drawing.Size(66, 13)
-        Me.Label23.TabIndex = 25
-        Me.Label23.Text = "PassPhrase:"
+        Me.BtTestGetAt.ForeColor = System.Drawing.Color.Black
+        Me.BtTestGetAt.Location = New System.Drawing.Point(249, 19)
+        Me.BtTestGetAt.Name = "BtTestGetAt"
+        Me.BtTestGetAt.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestGetAt.TabIndex = 32
+        Me.BtTestGetAt.Text = "Get AT"
+        Me.BtTestGetAt.UseVisualStyleBackColor = True
         '
-        'Label22
+        'TestBar
         '
-        Me.Label22.AutoSize = True
-        Me.Label22.Location = New System.Drawing.Point(84, 153)
-        Me.Label22.Name = "Label22"
-        Me.Label22.Size = New System.Drawing.Size(66, 13)
-        Me.Label22.TabIndex = 24
-        Me.Label22.Text = "PassPhrase:"
-        '
-        'Label21
-        '
-        Me.Label21.AutoSize = True
-        Me.Label21.Location = New System.Drawing.Point(4, 153)
-        Me.Label21.Name = "Label21"
-        Me.Label21.Size = New System.Drawing.Size(66, 13)
-        Me.Label21.TabIndex = 23
-        Me.Label21.Text = "PassPhrase:"
-        '
-        'TBTestResponder
-        '
-        Me.TBTestResponder.Location = New System.Drawing.Point(250, 130)
-        Me.TBTestResponder.Name = "TBTestResponder"
-        Me.TBTestResponder.Size = New System.Drawing.Size(105, 20)
-        Me.TBTestResponder.TabIndex = 22
-        '
-        'TBTestInjectPP
-        '
-        Me.TBTestInjectPP.Location = New System.Drawing.Point(250, 169)
-        Me.TBTestInjectPP.Name = "TBTestInjectPP"
-        Me.TBTestInjectPP.Size = New System.Drawing.Size(105, 20)
-        Me.TBTestInjectPP.TabIndex = 21
-        '
-        'TBTestFinishPP
-        '
-        Me.TBTestFinishPP.Location = New System.Drawing.Point(168, 169)
-        Me.TBTestFinishPP.Name = "TBTestFinishPP"
-        Me.TBTestFinishPP.Size = New System.Drawing.Size(75, 20)
-        Me.TBTestFinishPP.TabIndex = 20
-        '
-        'TBTestAcceptPP
-        '
-        Me.TBTestAcceptPP.Location = New System.Drawing.Point(87, 169)
-        Me.TBTestAcceptPP.Name = "TBTestAcceptPP"
-        Me.TBTestAcceptPP.Size = New System.Drawing.Size(75, 20)
-        Me.TBTestAcceptPP.TabIndex = 19
-        '
-        'TBTestCreatePP
-        '
-        Me.TBTestCreatePP.Location = New System.Drawing.Point(6, 169)
-        Me.TBTestCreatePP.Name = "TBTestCreatePP"
-        Me.TBTestCreatePP.Size = New System.Drawing.Size(75, 20)
-        Me.TBTestCreatePP.TabIndex = 18
-        '
-        'BtTestInject
-        '
-        Me.BtTestInject.ForeColor = System.Drawing.Color.Black
-        Me.BtTestInject.Location = New System.Drawing.Point(250, 195)
-        Me.BtTestInject.Name = "BtTestInject"
-        Me.BtTestInject.Size = New System.Drawing.Size(105, 23)
-        Me.BtTestInject.TabIndex = 17
-        Me.BtTestInject.Text = "injectResponder"
-        Me.BtTestInject.UseVisualStyleBackColor = True
-        '
-        'TBTestDelTXINI
-        '
-        Me.TBTestDelTXINI.Location = New System.Drawing.Point(864, 47)
-        Me.TBTestDelTXINI.Name = "TBTestDelTXINI"
-        Me.TBTestDelTXINI.Size = New System.Drawing.Size(97, 20)
-        Me.TBTestDelTXINI.TabIndex = 16
-        '
-        'TBTestGetTXINI
-        '
-        Me.TBTestGetTXINI.Location = New System.Drawing.Point(761, 47)
-        Me.TBTestGetTXINI.Name = "TBTestGetTXINI"
-        Me.TBTestGetTXINI.Size = New System.Drawing.Size(97, 20)
-        Me.TBTestGetTXINI.TabIndex = 15
-        '
-        'TBTestSetTXINI
-        '
-        Me.TBTestSetTXINI.Location = New System.Drawing.Point(658, 47)
-        Me.TBTestSetTXINI.Name = "TBTestSetTXINI"
-        Me.TBTestSetTXINI.Size = New System.Drawing.Size(97, 20)
-        Me.TBTestSetTXINI.TabIndex = 14
-        '
-        'BtTestDelTXINI
-        '
-        Me.BtTestDelTXINI.ForeColor = System.Drawing.Color.Black
-        Me.BtTestDelTXINI.Location = New System.Drawing.Point(864, 74)
-        Me.BtTestDelTXINI.Name = "BtTestDelTXINI"
-        Me.BtTestDelTXINI.Size = New System.Drawing.Size(97, 23)
-        Me.BtTestDelTXINI.TabIndex = 13
-        Me.BtTestDelTXINI.Text = "Del TX from INI"
-        Me.BtTestDelTXINI.UseVisualStyleBackColor = True
-        '
-        'BtTestGetTXINI
-        '
-        Me.BtTestGetTXINI.ForeColor = System.Drawing.Color.Black
-        Me.BtTestGetTXINI.Location = New System.Drawing.Point(761, 74)
-        Me.BtTestGetTXINI.Name = "BtTestGetTXINI"
-        Me.BtTestGetTXINI.Size = New System.Drawing.Size(97, 23)
-        Me.BtTestGetTXINI.TabIndex = 12
-        Me.BtTestGetTXINI.Text = "Get TX from INI"
-        Me.BtTestGetTXINI.UseVisualStyleBackColor = True
-        '
-        'BtTestSetTXINI
-        '
-        Me.BtTestSetTXINI.ForeColor = System.Drawing.Color.Black
-        Me.BtTestSetTXINI.Location = New System.Drawing.Point(658, 74)
-        Me.BtTestSetTXINI.Name = "BtTestSetTXINI"
-        Me.BtTestSetTXINI.Size = New System.Drawing.Size(97, 23)
-        Me.BtTestSetTXINI.TabIndex = 11
-        Me.BtTestSetTXINI.Text = "Set TX in INI"
-        Me.BtTestSetTXINI.UseVisualStyleBackColor = True
-        '
-        'Button3
-        '
-        Me.Button3.ForeColor = System.Drawing.Color.Black
-        Me.Button3.Location = New System.Drawing.Point(459, 48)
-        Me.Button3.Name = "Button3"
-        Me.Button3.Size = New System.Drawing.Size(118, 23)
-        Me.Button3.TabIndex = 10
-        Me.Button3.Text = "Button3"
-        Me.Button3.UseVisualStyleBackColor = True
-        '
-        'BtTestPPAPI
-        '
-        Me.BtTestPPAPI.ForeColor = System.Drawing.Color.Black
-        Me.BtTestPPAPI.Location = New System.Drawing.Point(459, 19)
-        Me.BtTestPPAPI.Name = "BtTestPPAPI"
-        Me.BtTestPPAPI.Size = New System.Drawing.Size(118, 23)
-        Me.BtTestPPAPI.TabIndex = 9
-        Me.BtTestPPAPI.Text = "PPAPIGetPayments"
-        Me.BtTestPPAPI.UseVisualStyleBackColor = True
-        '
-        'ListBox1
-        '
-        Me.ListBox1.FormattingEnabled = True
-        Me.ListBox1.Location = New System.Drawing.Point(7, 259)
-        Me.ListBox1.Name = "ListBox1"
-        Me.ListBox1.Size = New System.Drawing.Size(570, 108)
-        Me.ListBox1.TabIndex = 8
-        '
-        'Button1
-        '
-        Me.Button1.ForeColor = System.Drawing.Color.Black
-        Me.Button1.Location = New System.Drawing.Point(6, 45)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(104, 23)
-        Me.Button1.TabIndex = 6
-        Me.Button1.Text = "DataStr2ULngList"
-        Me.Button1.UseVisualStyleBackColor = True
-        '
-        'BtTestConvert2
-        '
-        Me.BtTestConvert2.ForeColor = System.Drawing.Color.Black
-        Me.BtTestConvert2.Location = New System.Drawing.Point(208, 45)
-        Me.BtTestConvert2.Name = "BtTestConvert2"
-        Me.BtTestConvert2.Size = New System.Drawing.Size(86, 23)
-        Me.BtTestConvert2.TabIndex = 5
-        Me.BtTestConvert2.Text = "ULong2String"
-        Me.BtTestConvert2.UseVisualStyleBackColor = True
-        '
-        'BtTestConvert
-        '
-        Me.BtTestConvert.ForeColor = System.Drawing.Color.Black
-        Me.BtTestConvert.Location = New System.Drawing.Point(116, 45)
-        Me.BtTestConvert.Name = "BtTestConvert"
-        Me.BtTestConvert.Size = New System.Drawing.Size(86, 23)
-        Me.BtTestConvert.TabIndex = 4
-        Me.BtTestConvert.Text = "String2ULong"
-        Me.BtTestConvert.UseVisualStyleBackColor = True
-        '
-        'TBTestConvert
-        '
-        Me.TBTestConvert.Location = New System.Drawing.Point(6, 19)
-        Me.TBTestConvert.Name = "TBTestConvert"
-        Me.TBTestConvert.Size = New System.Drawing.Size(408, 20)
-        Me.TBTestConvert.TabIndex = 3
-        '
-        'BtTestFinish
-        '
-        Me.BtTestFinish.ForeColor = System.Drawing.Color.Black
-        Me.BtTestFinish.Location = New System.Drawing.Point(168, 195)
-        Me.BtTestFinish.Name = "BtTestFinish"
-        Me.BtTestFinish.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestFinish.TabIndex = 2
-        Me.BtTestFinish.Text = "finish"
-        Me.BtTestFinish.UseVisualStyleBackColor = True
-        '
-        'BtTestAccept
-        '
-        Me.BtTestAccept.ForeColor = System.Drawing.Color.Black
-        Me.BtTestAccept.Location = New System.Drawing.Point(87, 195)
-        Me.BtTestAccept.Name = "BtTestAccept"
-        Me.BtTestAccept.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestAccept.TabIndex = 1
-        Me.BtTestAccept.Text = "accept"
-        Me.BtTestAccept.UseVisualStyleBackColor = True
-        '
-        'BtTestCreate
-        '
-        Me.BtTestCreate.ForeColor = System.Drawing.Color.Black
-        Me.BtTestCreate.Location = New System.Drawing.Point(6, 195)
-        Me.BtTestCreate.Name = "BtTestCreate"
-        Me.BtTestCreate.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestCreate.TabIndex = 0
-        Me.BtTestCreate.Text = "create"
-        Me.BtTestCreate.UseVisualStyleBackColor = True
+        Me.TestBar.Location = New System.Drawing.Point(6, 48)
+        Me.TestBar.Name = "TestBar"
+        Me.TestBar.Size = New System.Drawing.Size(318, 23)
+        Me.TestBar.TabIndex = 33
         '
         'GroupBox3
         '
@@ -1904,7 +2065,20 @@ Partial Class PFPForm
         Me.SplitContainer17.ResumeLayout(False)
         Me.TabPage3.ResumeLayout(False)
         Me.GroupBox4.ResumeLayout(False)
-        Me.GroupBox4.PerformLayout()
+        Me.TestTabControl.ResumeLayout(False)
+        Me.TabPage6.ResumeLayout(False)
+        Me.TestGrpBoxConvertings.ResumeLayout(False)
+        Me.TestGrpBoxConvertings.PerformLayout()
+        Me.TabPage7.ResumeLayout(False)
+        Me.TestGrpBoxINITests.ResumeLayout(False)
+        Me.TestGrpBoxINITests.PerformLayout()
+        Me.TabPage8.ResumeLayout(False)
+        Me.TestGrpBoxPayPaltests.ResumeLayout(False)
+        Me.TabPage9.ResumeLayout(False)
+        Me.TestGrpBxATCom.ResumeLayout(False)
+        Me.TestGrpBxATCom.PerformLayout()
+        Me.TabPage10.ResumeLayout(False)
+        Me.TestGrpBoxMultithreadings.ResumeLayout(False)
         Me.GroupBox3.ResumeLayout(False)
         Me.GroupBox3.PerformLayout()
         Me.GrpBxSeller.ResumeLayout(False)
@@ -2024,7 +2198,7 @@ Partial Class PFPForm
     Friend WithEvents BtTestConvert As Button
     Friend WithEvents TBTestConvert As TextBox
     Friend WithEvents BtTestConvert2 As Button
-    Friend WithEvents Button1 As Button
+    Friend WithEvents BtTestDatStr2ULngList As Button
     Friend WithEvents BtCheckPayPalBiz As Button
     Friend WithEvents CoBxNode As ComboBox
     Friend WithEvents CoBxRefresh As ComboBox
@@ -2033,7 +2207,7 @@ Partial Class PFPForm
     Friend WithEvents Label20 As Label
     Friend WithEvents ListBox1 As ListBox
     Friend WithEvents BtTestPPAPI As Button
-    Friend WithEvents Button3 As Button
+    Friend WithEvents BtTestCreatePPOrder As Button
     Friend WithEvents ChBxCheckXItemTX As CheckBox
     Friend WithEvents BtTestSetTXINI As Button
     Friend WithEvents BtTestDelTXINI As Button
@@ -2063,4 +2237,17 @@ Partial Class PFPForm
     Friend WithEvents ColumnHeader6 As ColumnHeader
     Friend WithEvents BtTestExit As Button
     Friend WithEvents BtTestMultiRefresh As Button
+    Friend WithEvents BtTestGetAt As Button
+    Friend WithEvents TestBar As ProgressBar
+    Friend WithEvents TestGrpBoxMultithreadings As GroupBox
+    Friend WithEvents TestGrpBoxINITests As GroupBox
+    Friend WithEvents TestGrpBoxPayPaltests As GroupBox
+    Friend WithEvents TestGrpBoxConvertings As GroupBox
+    Friend WithEvents TestGrpBxATCom As GroupBox
+    Friend WithEvents TestTabControl As TabControl
+    Friend WithEvents TabPage6 As TabPage
+    Friend WithEvents TabPage7 As TabPage
+    Friend WithEvents TabPage8 As TabPage
+    Friend WithEvents TabPage9 As TabPage
+    Friend WithEvents TabPage10 As TabPage
 End Class

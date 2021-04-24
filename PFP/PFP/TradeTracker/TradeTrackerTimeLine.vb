@@ -198,18 +198,23 @@ Public Class TradeTrackerTimeLine
     Public Shared Function Time2Pixel(ByVal StartX As Integer, ByVal EndWidth As Integer, ByVal StartDate As Date, ByVal EndDate As Date, ByVal SetDate As Date) As Integer
 
         Dim StartEndTimeSpan As TimeSpan = EndDate - StartDate
+
+        If StartEndTimeSpan.TotalMilliseconds = 0.0 Then
+            Return 0
+        End If
+
         Dim StartSetTimeSpan As TimeSpan = SetDate - StartDate
+
+        If StartSetTimeSpan.TotalMilliseconds = 0.0 Then
+            Return 0
+        End If
 
         Dim EndX As Integer = StartX + EndWidth
 
         Dim XFactor As Double = EndX / StartEndTimeSpan.TotalMilliseconds
         XFactor *= StartSetTimeSpan.TotalMilliseconds
-        Try
-            Return CInt(XFactor)
-        Catch ex As Exception
-            Return 0
-        End Try
 
+        Return CInt(XFactor)
 
     End Function
 

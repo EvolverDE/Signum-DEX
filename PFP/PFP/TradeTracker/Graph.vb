@@ -27,6 +27,10 @@ Public Class Graph
 
         Dim OpenValue As Double
         Dim CloseValue As Double
+
+        Dim MinValue As Double
+        Dim MaxValue As Double
+
     End Structure
 
     Public Structure S_Graph
