@@ -25,7 +25,6 @@ C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\bin\Debug\PFP.application
 C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\bin\Debug\PFP.exe
 C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\bin\Debug\PFP.pdb
 C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\bin\Debug\PFP.xml
-C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.vbprojAssemblyReference.cache
 C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.PFPForm.resources
 C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.FrmManual.resources
 C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.Resources.resources
@@ -61,3 +60,4 @@ C:\temper\testings\PFP\PFP\obj\Debug\PFP.application
 C:\temper\testings\PFP\PFP\obj\Debug\PFP.exe
 C:\temper\testings\PFP\PFP\obj\Debug\PFP.xml
 C:\temper\testings\PFP\PFP\obj\Debug\PFP.pdb
+C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.vbprojAssemblyReference.cache

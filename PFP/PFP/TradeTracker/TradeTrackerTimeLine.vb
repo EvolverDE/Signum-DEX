@@ -6,17 +6,13 @@ Public Class TradeTrackerTimeLine
 
     Inherits System.Windows.Forms.UserControl
 
-    'Dim TL_BorderWidth As Single = 1
-    Dim TL_Zoom As Int64 = 200000
 
-    Public Shared TL_StartDate As Date = Now
-    Public Shared TL_EndDate As Date = Now
-    Public Shared TL_Multiplikator As Single = 32768
+    Private Property TL_Zoom As Int64 = -300000
 
-    Dim Dater As Date = CDate("01.01.2000")
-    Dim DaterPlus As Date = Dater
+    Private Property TL_StartDate As Date = Now
+    Private Property TL_EndDate As Date = Now
+    Private Property TL_TimeStickList As List(Of Date) = New List(Of Date)
 
-    Dim TimerInterval As Integer
 
     <Description("Wird bei dem angegebenen Intervall entsprechend ausgeführt")>
     Public Event TimerTick(sender As Object)
@@ -36,7 +32,6 @@ Public Class TradeTrackerTimeLine
         End Set
     End Property
 
-
     <DefaultValue(False), Description("Legt fest, ob der timer aktiv sein soll")>
     Public Property TradeTrackTimerEnable() As Boolean
         Get
@@ -50,8 +45,7 @@ Public Class TradeTrackerTimeLine
         End Set
     End Property
 
-
-    <DefaultValue(90000), Description("Zoom in n-Fach für den sichtbaren Bereich in der TimeLine")>
+    <DefaultValue(200000), Description("Zoom in n-Fach für den sichtbaren Bereich in der TimeLine")>
     Public Property Zoom() As Int64
         Get
             Return TL_Zoom
@@ -64,13 +58,12 @@ Public Class TradeTrackerTimeLine
         End Set
     End Property
 
-    <Description("Enddatum der aktuellen Ansicht der TimeLine")>
+    <Description("Startdatum der aktuellen Ansicht der TimeLine")>
     Public ReadOnly Property SkalaStartDate() As Date
         Get
             Return TL_StartDate
         End Get
     End Property
-
 
     <Description("Enddatum der aktuellen Ansicht der TimeLine")>
     Public ReadOnly Property SkalaEndDate() As Date
@@ -79,93 +72,231 @@ Public Class TradeTrackerTimeLine
         End Get
     End Property
 
+    <Description("Einzelne Zeitpfosten der aktuellen Ansicht der TimeLine")>
+    Public ReadOnly Property TimeSticks() As List(Of Date)
+        Get
+            Return TL_TimeStickList
+        End Get
+    End Property
+
 
     Protected Overrides Sub OnPaint(ByVal pe As System.Windows.Forms.PaintEventArgs)
         MyBase.OnPaint(pe)
-        Try
 
-            Dim GFX_Graphics As System.Drawing.Graphics
-            GFX_Graphics = pe.Graphics
+        Dim GFX_Graphics As System.Drawing.Graphics
+        GFX_Graphics = pe.Graphics
 
-            GFX_Graphics.Clear(Color.White)
+        GFX_Graphics.Clear(Color.White)
+        Dim GFX_TimeLineY As Single = CSng(Me.Size.Height / 4)
+        GFX_Graphics.DrawLine(New Pen(Color.Black, 1), 0, GFX_TimeLineY, Me.Width, GFX_TimeLineY)
 
-            'Dim BorderDrawingPen As New System.Drawing.Pen(System.Drawing.Color.Black, TL_BorderWidth)
-            'Dim GFX_Font As Font = New Font("Arial", 10, FontStyle.Bold)
+        Dim TS As TimeSpan = New TimeSpan
+        TS = TL_EndDate - TL_StartDate
 
-            Dim rectBorder As System.Drawing.Rectangle
-            rectBorder.X = 0
-            rectBorder.Y = 0
-            rectBorder.Height = Me.Height - 1
-            rectBorder.Width = Me.Width - 1
-            Dim GFX_TimeLineY As Single = CSng(Me.Size.Height / 4)
+        GFX_Graphics.DrawImage(GetViewRangeBMP(TS), New Point(0, 0))
+
+        NuDraw(GFX_Graphics, TS)
 
 
-            GFX_Graphics.DrawLine(New Pen(Color.Black, 1), 0, GFX_TimeLineY, Me.Width, GFX_TimeLineY)
+        Dim rectBorder As System.Drawing.Rectangle
+        rectBorder.X = 0
+        rectBorder.Y = 0
+        rectBorder.Height = Me.Height - 1
+        rectBorder.Width = Me.Width - 1
 
+        GFX_Graphics.DrawRectangle(Pens.Black, rectBorder)
 
-            Dim startdat As String = TL_StartDate.ToShortDateString + " " + TL_StartDate.ToLongTimeString
-            Dim enddat As String = TL_EndDate.ToShortDateString + " " + TL_EndDate.ToLongTimeString
+        DoubleBuffered = True
 
-            Dim daterstr As String = Dater.ToShortDateString + " " + Dater.ToLongTimeString
-            Dim daterPstr As String = DaterPlus.ToShortDateString + " " + DaterPlus.ToLongTimeString
-
-            Dim TS As TimeSpan = New TimeSpan
-
-            TS = TL_EndDate - TL_StartDate
-
-            Select Case TS.TotalMilliseconds / 1000
-                Case Is < 1
-                    GFX_Graphics.DrawString("View Range: " + CStr(Math.Round(TS.TotalMilliseconds, 2)) + " Milliseconds", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
-                Case 1 To 60
-                    GFX_Graphics.DrawString("View Range: " + CStr(Math.Round(TS.TotalSeconds, 2)) + " Seconds", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
-                Case 60 To 60 * 60
-                    GFX_Graphics.DrawString("View Range: " + CStr(Math.Round(TS.TotalMinutes, 2)) + " Minutes", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
-                Case 60 * 60 To 60 * 60 * 24
-                    GFX_Graphics.DrawString("View Range: " + CStr(Math.Round(TS.TotalHours, 2)) + " Hours", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
-                Case 60 * 60 * 24 * 7 To 60 * 60 * 24 * 7 * 4
-                    GFX_Graphics.DrawString("View Range: " + CStr(Math.Round(TS.TotalDays, 2)) + " Days", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
-            'Case 60 * 60 * 24 * 7 * 4 To 60 * 60 * 24 * 7 * 4 * 12
-            '    GFX_Graphics.DrawString("View Range: " + CStr(Math.Round(TS.TotalDays / 7, 2)) + " Weeks", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
-
-                Case Is > 60 * 60 * 24 * 7 * 4
-                    GFX_Graphics.DrawString("View Range: " + CStr(Math.Round(TS.TotalDays / 7, 2)) + " Weeks", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
-                Case Else
-                    GFX_Graphics.DrawString("View Range: " + CStr(Math.Round(TS.TotalDays)) + " Days", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
-
-            End Select
-
-            'GFX_Graphics.DrawString("DBM: " + DoubleBuffered.ToString, GFX_Font, Brushes.Black, 0, 0 + 15)
-            'GFX_Graphics.DrawString("EndDate : " + enddat, GFX_Font, Brushes.Black,0, 0 + 30)
-            'GFX_Graphics.DrawString("Dater : " + daterstr + " DaterPlus: " + daterPstr, GFX_Font, Brushes.Black, 0, 0 + 45)
-
-            'SuspendLayout()
-
-            NuDraw(GFX_Graphics)
-
-            'ResumeLayout()
-
-            'DrawTimeLine(TL_Modus, GFX_Graphics, TL_BereichSekunden, TL_Offset)
-            GFX_Graphics.DrawRectangle(Pens.Black, rectBorder)
-            DoubleBuffered = True
-            'Select Case ZehnSeks * 10
-            '    Case Is < 60
-            '        GFX_Graphics.DrawString("Skala: " + CStr(ZehnSeks * 10).ToString + " Sek. Bereich: " + BereichSekunden.ToString + " Sek. Aktualisierung: " + Math.Round(TradeTrackTimer.Interval / 1000, 2).ToString + " Sek.", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
-            '    Case 60 To 3599
-            '        GFX_Graphics.DrawString("Skala: " + CStr(ZehnSeks * 10 / 60).ToString + " Min. Bereich: " + CStr(Math.Round(BereichSekunden / 60, 2)) + " Min. Aktualisierung: " + Math.Round(TradeTrackTimer.Interval / 1000, 2).ToString + " Sek.", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
-            '    Case 3600 To 74700
-            '        GFX_Graphics.DrawString("Skala: " + CStr(ZehnSeks * 10 / 60 / 60).ToString + " Std. Bereich: " + CStr(Math.Round(BereichSekunden / 60 / 60, 2)) + " Std. Aktualisierung: " + Math.Round(TradeTrackTimer.Interval / 1000, 2).ToString + " Sek.", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
-            '    Case Else
-            '        GFX_Graphics.DrawString("Skala: " + CStr(ZehnSeks * 10 / 60 / 60 / 24).ToString + " Tag(e) Bereich: " + CStr(Math.Round(BereichSekunden / 60 / 60 / 24, 2)) + " Tag(e) Aktualisierung: " + Math.Round(TradeTrackTimer.Interval / 1000, 2).ToString + " Sek.", New Font("Arial", 10, FontStyle.Bold), Brushes.Black, New Point(0, 0))
-            'End Select
-
-            'BorderDrawingPen.Dispose()
-            'GFX_Font.Dispose()
-
-
-        Catch ex As Exception
-            'TBot.StatusLabel3.Text = "TradeTrackerTimeLine: " + ex.Message
-        End Try
     End Sub
+
+
+
+    Private Property Tigger As Ticks = Ticks.Zero
+
+
+    Function GetViewRangeBMP(ByVal TS As TimeSpan) As Bitmap
+        Dim BMP As Bitmap = New Bitmap(100, 100)
+        Dim GFX As Graphics = Graphics.FromImage(BMP)
+        Dim DFont As Font = New Font("Arial", 10, FontStyle.Bold)
+
+        Select Case TS.TotalMilliseconds / 1000
+            Case Is < 1
+
+                Tigger = Ticks.Zero
+
+
+                Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalMilliseconds, 2)) + " Milliseconds"
+                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+
+                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
+                GFX = Graphics.FromImage(BMP)
+
+                GFX.Clear(Color.White)
+                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+
+            Case 1 To 60 '1 sec to 1 min
+
+                Select Case TS.TotalMilliseconds / 1000
+                    Case 1 To 2
+                        Tigger = Ticks.OneSec
+                    Case 2 To 5
+                        Tigger = Ticks.OneSec
+                    Case 5 To 10
+                        Tigger = Ticks.OneSec
+                    Case 10 To 15
+                        Tigger = Ticks.TwoSec
+                    Case 15 To 30
+                        Tigger = Ticks.FiveSec
+                    Case 30 To 60
+                        Tigger = Ticks.TenSec
+                End Select
+
+                Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalSeconds, 2)) + " Seconds"
+                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+
+                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
+                GFX = Graphics.FromImage(BMP)
+
+                GFX.Clear(Color.White)
+                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+
+            Case 60 To 60 * 60 '1 min to 1 hour
+
+                Select Case TS.TotalMilliseconds / 1000
+                    Case 60 To 60 * 2
+                        Tigger = Ticks.FifteenSec
+                    Case 60 * 2 To 60 * 5
+                        Tigger = Ticks.ThirtySec
+                    Case 60 * 5 To 60 * 10
+                        Tigger = Ticks.OneMin
+                    Case 60 * 10 To 60 * 15
+                        Tigger = Ticks.TwoMin
+                    Case 60 * 15 To 60 * 30
+                        Tigger = Ticks.FiveMin
+                    Case 60 * 30 To 60 * 60
+                        Tigger = Ticks.TenMin
+                End Select
+
+
+
+                Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalMinutes, 2)) + " Minutes"
+                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+
+                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
+                GFX = Graphics.FromImage(BMP)
+
+                GFX.Clear(Color.White)
+                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+
+            Case 60 * 60 To 60 * 60 * 24 '1 hour to 1 day
+
+                Select Case TS.TotalMilliseconds / 1000
+                    Case 60 * 60 To 60 * 60 * 2 '1 hour to 2 hour
+                        Tigger = Ticks.FifteenMin
+                    Case 60 * 60 * 2 To 60 * 60 * 6 '2 hour to 6 hour
+                        Tigger = Ticks.ThirtyMin
+                    Case 60 * 60 * 6 To 60 * 60 * 12 '6 hour to 12 hour
+                        Tigger = Ticks.OneHour
+                    Case 60 * 60 * 12 To 60 * 60 * 24 '12 hour to 24 hour
+                        Tigger = Ticks.TwoHour
+                End Select
+
+                Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalHours, 2)) + " Hours"
+                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+
+                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
+                GFX = Graphics.FromImage(BMP)
+
+                GFX.Clear(Color.White)
+                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+
+
+            Case 60 * 60 * 24 To 60 * 60 * 24 * 7 '1 day to 1 week
+
+                Select Case TS.TotalMilliseconds / 1000
+                    Case 60 * 60 * 24 To 60 * 60 * 24 * 3 '1 day to 3 day
+                        Tigger = Ticks.SixHour
+                    Case 60 * 60 * 24 * 3 To 60 * 60 * 24 * 4 '3 day to 4 day
+                        Tigger = Ticks.TwelveHour
+                    Case 60 * 60 * 24 * 4 To 60 * 60 * 24 * 7  '4 day to 1 week
+                        Tigger = Ticks.TwelveHour
+                End Select
+
+                Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalDays, 2)) + " Days"
+                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+
+                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
+                GFX = Graphics.FromImage(BMP)
+
+                GFX.Clear(Color.White)
+                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+
+
+            Case 60 * 60 * 24 * 7 To 60 * 60 * 24 * 7 * 4 '1 week to 1 month
+
+                Tigger = Ticks.FiveDay
+
+                Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalDays, 2)) + " Days"
+                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+
+                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
+                GFX = Graphics.FromImage(BMP)
+
+                GFX.Clear(Color.White)
+                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+
+            Case Is > 60 * 60 * 24 * 7 * 4 'over 1 month
+
+                Select Case TS.TotalDays
+                    Case 30 To 45
+                        Tigger = Ticks.FiveDay
+                    Case 45 To 30 * 5
+                        Tigger = Ticks.TwoWeek
+                    Case 30 * 5 To 30 * 12
+                        Tigger = Ticks.OneMonth
+                    Case 30 * 12 To 30 * 12 * 6
+                        Tigger = Ticks.SixMonth
+                    Case 30 * 12 * 6 To 30 * 12 * 10
+                        Tigger = Ticks.OneYear
+                    Case 30 * 12 * 10 To 30 * 12 * 20
+                        Tigger = Ticks.TwoYear
+                    Case 30 * 12 * 20 To 30 * 12 * 50
+                        Tigger = Ticks.FiveYear
+                    Case > 30 * 12 * 50
+                        Tigger = Ticks.TenYear
+
+                End Select
+
+                Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalDays / 7, 2)) + " Weeks"
+                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+
+                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
+                GFX = Graphics.FromImage(BMP)
+
+                GFX.Clear(Color.White)
+                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+
+            Case Else
+
+                Tigger = Ticks.TwoDay
+
+                Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalDays)) + " error"
+                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+
+                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
+                GFX = Graphics.FromImage(BMP)
+
+                GFX.Clear(Color.White)
+                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+
+        End Select
+
+        Return BMP
+
+    End Function
+
+
 
     Public Shared Function DateUSToGer(datum As String, Optional ByVal PlusTage As Integer = 0) As String
 
@@ -222,23 +353,8 @@ Public Class TradeTrackerTimeLine
         Return EndDate - StartDate
     End Function
 
-    Dim TL_ScaleStartDate As Date = CDate("01.01.2000")
-    Dim TL_ScaleEndDate As Date = CDate("01.01.2000")
+    Private Sub NuDraw(ByRef GFX_Graphics As Graphics, ByVal TS As TimeSpan)
 
-    Private Sub NuDraw(ByRef GFX_Graphics As Graphics)
-
-        If Dater.ToShortDateString = "01.01.2000" Then
-            Dater = Now
-        End If
-
-        Dim XFactor As Integer = 1000
-        'Select Case XFactor.ToString.Length
-        '    Case 2
-        '        XFactor *= 100
-        '    Case 3
-        '        XFactor *= 10
-        '    Case Else
-        'End Select
 
         Dim TimeMarkPen As System.Drawing.Pen
         TimeMarkPen = New Pen(Color.Black)
@@ -246,219 +362,666 @@ Public Class TradeTrackerTimeLine
         Dim TimeMarkMiddlePen As System.Drawing.Pen
         TimeMarkMiddlePen = New Pen(Color.Red)
 
-        Dim DatMulti As Single = CSng(CSng(XFactor) * TL_Zoom)
 
-        'Dim a = 0
-        'Dim b = Me.Width
+        If TL_Zoom < 0 Then
+            TL_Zoom *= -1
+            TL_StartDate = TL_StartDate.AddMilliseconds(-TL_Zoom)
+            TL_EndDate = Now
+            TL_Zoom = 6000
+        End If
 
-        'TL_ScaleStartDate = Now.AddMilliseconds(-DatMulti)
-        'TL_ScaleEndDate = Now.AddMilliseconds(DatMulti)
 
-        'DaterPlus = Dater.AddMilliseconds(DatMulti)
-        'If DaterPlus < TL_ScaleStartDate Then
-        '    Dater = Now
-        'End If
-
-        Dim ts = TimeSpan(TL_ScaleStartDate, TL_ScaleEndDate)
-
-        TL_StartDate = TL_ScaleStartDate
-        TL_EndDate = TL_ScaleEndDate
 
         Dim YMiddlePoint As Double = 0 + (Me.Height / 3)
-
-        'YMiddlePoint -= 10
 
         Dim e = CInt(YMiddlePoint * 0.5)
         Dim f = CInt(YMiddlePoint * 1.5)
 
         Dim fo = New Font("Arial", 10, FontStyle.Bold)
 
-        Dim LastMarkDate As Date
 
-        For i As Integer = -50 To 50
+        'GFX_Graphics.DrawString(TL_StartDate.ToLongTimeString, fo, Brushes.Black, 0, 20)
+        'GFX_Graphics.DrawString(TL_Zoom.ToString + "/" + TL_EndDate.ToLongTimeString, fo, Brushes.Black, Me.Width - 100, 20)
 
-            Dim Multi As Double = i * XFactor
 
-            Dim z = Dater.AddMilliseconds(Multi * TL_Multiplikator)
-            Dim SkalaMarkX As Integer = Time2Pixel(0, Me.Width, TL_ScaleStartDate, TL_ScaleEndDate, z)
+        Dim Wait As Boolean = GetTimeSticks(Tigger)
+
+        For Each TimeStick As Date In TimeSticks
+
+            Dim SkalaMarkX As Integer = Time2Pixel(0, Me.Width, TL_StartDate, TL_EndDate, TimeStick)
 
             GFX_Graphics.DrawLine(TimeMarkPen, SkalaMarkX, CInt(e * 2.5), SkalaMarkX, CInt(f / 2))
-            GFX_Graphics.DrawString(DateUSToGer(DateUSToGer(z.ToShortDateString)), fo, Brushes.Black, SkalaMarkX - 25, f)
+            GFX_Graphics.DrawString(DateUSToGer(DateUSToGer(TimeStick.ToShortDateString)), fo, Brushes.Black, SkalaMarkX - 25, f)
+            GFX_Graphics.DrawString(TimeStick.ToLongTimeString, fo, Brushes.Black, SkalaMarkX - 25, f + 15)
 
-            Select Case ts.TotalSeconds
-                Case Is < 60 * 10
-                    GFX_Graphics.DrawString(z.ToLongTimeString, fo, Brushes.Black, SkalaMarkX - 25, f + 15)
-                Case 60 * 10 To 60 * 60 * 24 * 7
-                    GFX_Graphics.DrawString(z.ToShortTimeString, fo, Brushes.Black, SkalaMarkX - 15, f + 15)
-                Case Else
-                    GFX_Graphics.DrawString(z.ToShortTimeString, fo, Brushes.Black, SkalaMarkX - 15, f + 15)
-            End Select
+        Next
 
-            If i = 20 Then
-                LastMarkDate = z
+        Dim SkalaMiddleMarkX As Integer = Time2Pixel(0, Me.Width, TL_StartDate, TL_EndDate, Now)
+        GFX_Graphics.DrawLine(TimeMarkMiddlePen, SkalaMiddleMarkX, e, SkalaMiddleMarkX, f)
+
+
+    End Sub
+
+    Enum Ticks
+        Zero = 0
+
+        OneSec = 1
+        TwoSec = 2
+        FiveSec = 5
+        TenSec = 10
+        FifteenSec = 15
+        ThirtySec = 30
+
+        OneMin = 60
+        TwoMin = 120
+        FiveMin = 300
+        TenMin = 600
+        FifteenMin = 900
+        ThirtyMin = 1800
+
+        OneHour = 3600
+        TwoHour = 7200
+        ThreeHour = 10800
+        FiveHour = 18000
+        SixHour = 21600
+        TwelveHour = 43200
+
+        OneDay = 86400
+        TwoDay = 172800
+        FiveDay = 432000
+
+        OneWeek = 604800
+        TwoWeek = 1209600
+
+        OneMonth = 2419200
+        ThreeMonth = 7257600
+        SixMonth = 14515200
+
+        OneYear = 29030400
+        TwoYear = 58060800
+        FiveYear = 145152000
+        TenYear = 290304000
+
+    End Enum
+
+    Function GetTimeSticks(Optional ByVal RasterTicks As Ticks = Ticks.Zero) As Boolean
+
+        Dim T_TimeWidth_Count As List(Of Double) = GetTimeWidth()
+        Dim T_TimeWidth As Double = T_TimeWidth_Count(0)
+        Dim T_Cnt As Integer = CInt(T_TimeWidth_Count(1))
+
+        Dim T_Time As Date = SkalaEndDate
+
+        If Not RasterTicks = Ticks.Zero Then
+            T_Time = GetCorrectTime(SkalaEndDate, RasterTicks)
+        End If
+
+
+
+        TimeSticks.Clear()
+
+
+        If Not T_TimeWidth = 0 Then
+
+            If TimeSticks.Count = 0 Then
+                For i As Integer = 0 To 10
+                    Select Case RasterTicks
+                        Case Ticks.Zero
+                            TimeSticks.Add(T_Time.AddMilliseconds(-(i * T_TimeWidth)))
+
+                        Case Ticks.OneSec
+                            TimeSticks.Add(T_Time.AddSeconds(-i))
+                        Case Ticks.TwoSec
+                            TimeSticks.Add(T_Time.AddSeconds(-(i * 2)))
+                        Case Ticks.FiveSec
+                            TimeSticks.Add(T_Time.AddSeconds(-(i * 5)))
+                        Case Ticks.TenSec
+                            TimeSticks.Add(T_Time.AddSeconds(-(i * 10)))
+                        Case Ticks.FifteenSec
+                            TimeSticks.Add(T_Time.AddSeconds(-(i * 15)))
+                        Case Ticks.ThirtySec
+                            TimeSticks.Add(T_Time.AddSeconds(-(i * 30)))
+
+                        Case Ticks.OneMin
+                            TimeSticks.Add(T_Time.AddMinutes(-i))
+                        Case Ticks.TwoMin
+                            TimeSticks.Add(T_Time.AddMinutes(-(i * 2)))
+                        Case Ticks.FiveMin
+                            TimeSticks.Add(T_Time.AddMinutes(-(i * 5)))
+                        Case Ticks.TenMin
+                            TimeSticks.Add(T_Time.AddMinutes(-(i * 10)))
+                        Case Ticks.FifteenMin
+                            TimeSticks.Add(T_Time.AddMinutes(-(i * 15)))
+                        Case Ticks.ThirtyMin
+                            TimeSticks.Add(T_Time.AddMinutes(-(i * 30)))
+
+                        Case Ticks.OneHour
+                            TimeSticks.Add(T_Time.AddHours(-(i)))
+                        Case Ticks.TwoHour
+                            TimeSticks.Add(T_Time.AddHours(-(i * 2)))
+                        Case Ticks.ThreeHour
+                            TimeSticks.Add(T_Time.AddHours(-(i * 3)))
+                        Case Ticks.SixHour
+                            TimeSticks.Add(T_Time.AddHours(-(i * 6)))
+                        Case Ticks.TwelveHour
+                            TimeSticks.Add(T_Time.AddHours(-(i * 12)))
+
+                        Case Ticks.OneDay
+                            TimeSticks.Add(T_Time.AddDays(-(i)))
+                        Case Ticks.TwoDay
+                            TimeSticks.Add(T_Time.AddDays(-(i * 2)))
+                        Case Ticks.FiveDay
+                            TimeSticks.Add(T_Time.AddDays(-(i * 5)))
+
+                        Case Ticks.OneWeek
+                            TimeSticks.Add(T_Time.AddDays(-(i * 7)))
+                        Case Ticks.TwoWeek
+                            TimeSticks.Add(T_Time.AddDays(-(i * 14)))
+
+                        Case Ticks.OneMonth
+                            TimeSticks.Add(T_Time.AddMonths(-(i)))
+                        Case Ticks.ThreeMonth
+                            TimeSticks.Add(T_Time.AddMonths(-(i * 3)))
+                        Case Ticks.SixMonth
+                            TimeSticks.Add(T_Time.AddMonths(-(i * 6)))
+
+                        Case Ticks.OneYear
+                            TimeSticks.Add(T_Time.AddYears(-(i)))
+                        Case Ticks.TwoYear
+                            TimeSticks.Add(T_Time.AddYears(-(i * 2)))
+                        Case Ticks.FiveYear
+                            TimeSticks.Add(T_Time.AddYears(-(i * 5)))
+                        Case Ticks.TenYear
+                            TimeSticks.Add(T_Time.AddYears(-(i * 10)))
+
+                        Case Else
+                            TimeSticks.Add(T_Time.AddMilliseconds(-(i * T_TimeWidth)))
+                    End Select
+
+                Next
+
+                'Else
+
+                '    ClearTimeSticks()
+
+                '    If Not TimeSticks.Count = T_Cnt Then
+
+                '        Dim FirstTimeStick As Date = TimeSticks(0)
+                '        Dim LastTimeStick As Date = TimeSticks(TimeSticks.Count - 1)
+
+                '        Dim NuFirstTimeStick As Date = FirstTimeStick.AddMilliseconds(-T_TimeWidth)
+                '        Dim NuLastTimeStick As Date = LastTimeStick.AddMilliseconds(T_TimeWidth)
+
+
+                '        If NuFirstTimeStick > SkalaStartDate Then
+                '            TimeSticks.Insert(0, NuFirstTimeStick)
+                '        End If
+
+                '        If NuLastTimeStick < SkalaEndDate Then
+                '            TimeSticks.Add(NuLastTimeStick)
+                '        End If
+
+
+                '        TimeSticks.Sort()
+
+                '    End If
+
+            End If
+
+        End If
+
+        Return True
+
+    End Function
+
+
+    Function GetCorrectTime(ByVal Time As Date, ByVal Tick As Ticks) As Date
+
+        Select Case Tick
+            Case Ticks.Zero
+                Return Time
+
+            Case Ticks.OneSec
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":" + Time.Minute.ToString + ":" + Time.Second.ToString)
+
+            Case Ticks.TwoSec
+
+                Dim Second As Integer = Time.Second
+
+                While Second Mod 2 <> 0
+                    Second -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":" + Time.Minute.ToString + ":" + Second.ToString)
+
+
+            Case Ticks.FiveSec
+
+                Dim Second As Integer = Time.Second
+
+                While Second Mod 5 <> 0
+                    Second -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":" + Time.Minute.ToString + ":" + Second.ToString)
+
+            Case Ticks.TenSec
+
+                Dim Second As Integer = Time.Second
+
+                While Second Mod 10 <> 0
+                    Second -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":" + Time.Minute.ToString + ":" + Second.ToString)
+
+            Case Ticks.FifteenSec
+
+                Dim Second As Integer = Time.Second
+
+                While Second Mod 15 <> 0
+                    Second -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":" + Time.Minute.ToString + ":" + Second.ToString)
+
+            Case Ticks.ThirtySec
+
+                Dim Second As Integer = Time.Second
+
+                While Second Mod 30 <> 0
+                    Second -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":" + Time.Minute.ToString + ":" + Second.ToString)
+
+
+            Case Ticks.OneMin
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":" + Time.Minute.ToString + ":00")
+            Case Ticks.TwoMin
+
+                Dim Minute As Integer = Time.Minute
+
+                While Minute Mod 2 <> 0
+                    Minute -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":" + Minute.ToString + ":00")
+
+            Case Ticks.FiveMin
+
+                Dim Minute As Integer = Time.Minute
+
+                While Minute Mod 5 <> 0
+                    Minute -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":" + Minute.ToString + ":00")
+
+            Case Ticks.TenMin
+
+                Dim Minute As Integer = Time.Minute
+
+                While Minute Mod 10 <> 0
+                    Minute -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":" + Minute.ToString + ":00")
+
+            Case Ticks.FifteenMin
+
+                Dim Minute As Integer = Time.Minute
+
+                While Minute Mod 15 <> 0
+                    Minute -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":" + Minute.ToString + ":00")
+
+            Case Ticks.ThirtyMin
+
+                Dim Minute As Integer = Time.Minute
+
+                While Minute Mod 30 <> 0
+                    Minute -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":" + Minute.ToString + ":00")
+
+            Case Ticks.OneHour
+
+                Return CDate(Time.ToShortDateString + " " + Time.Hour.ToString + ":00:00")
+
+            Case Ticks.TwoHour
+
+                Dim Hour As Integer = Time.Hour
+
+                While Hour Mod 2 <> 0
+                    Hour -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Hour.ToString + ":00:00")
+
+            Case Ticks.ThreeHour
+
+                Dim Hour As Integer = Time.Hour
+
+                While Hour Mod 3 <> 0
+                    Hour -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Hour.ToString + ":00:00")
+
+            Case Ticks.SixHour
+
+                Dim Hour As Integer = Time.Hour
+
+                While Hour Mod 6 <> 0
+                    Hour -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Hour.ToString + ":00:00")
+
+            Case Ticks.TwelveHour
+
+                Dim Hour As Integer = Time.Hour
+
+                While Hour Mod 12 <> 0
+                    Hour -= 1
+                End While
+
+                Return CDate(Time.ToShortDateString + " " + Hour.ToString + ":00:00")
+
+            Case Ticks.OneDay
+                Return CDate(Time.ToShortDateString + " 00:00:00")
+
+            Case Ticks.TwoDay
+
+                Dim Day As Integer = Time.Day
+
+                While Day Mod 2 <> 0
+                    Day -= 1
+                End While
+
+                If Day = 0 Then Day = 1
+
+                Return CDate(Day.ToString + "." + Time.Month.ToString + "." + Time.Year.ToString + " 00:00:00")
+
+            Case Ticks.FiveDay
+
+                Dim Day As Integer = Time.Day
+
+                While Day Mod 5 <> 0
+                    Day -= 1
+                End While
+
+                If Day = 0 Then Day = 1
+
+                Return CDate(Day.ToString + "." + Time.Month.ToString + "." + Time.Year.ToString + " 00:00:00")
+
+            Case Ticks.OneWeek
+
+                Dim Day As Integer = Time.Day
+
+                While Day Mod 7 <> 0
+                    Day -= 1
+                End While
+
+                If Day = 0 Then Day = 1
+
+                Return CDate(Day.ToString + "." + Time.Month.ToString + "." + Time.Year.ToString + " 00:00:00")
+
+            Case Ticks.TwoWeek
+
+                Dim Day As Integer = Time.Day
+
+                While Day Mod 14 <> 0
+                    Day -= 1
+                End While
+
+                If Day = 0 Then Day = 1
+
+                Return CDate(Day.ToString + "." + Time.Month.ToString + "." + Time.Year.ToString + " 00:00:00")
+
+            Case Ticks.OneMonth
+                Return CDate("01." + Time.Month.ToString + "." + Time.Year.ToString + " 00:00:00")
+            Case Ticks.ThreeMonth
+
+                Dim Month As Integer = Time.Month
+
+                While Month Mod 3 <> 0
+                    Month -= 1
+                End While
+
+                If Month = 0 Then Month = 1
+
+                Return CDate("01." + Month.ToString + "." + Time.Year.ToString + " 00:00:00")
+
+            Case Ticks.SixMonth
+
+                Dim Month As Integer = Time.Month
+
+                While Month Mod 6 <> 0
+                    Month -= 1
+                End While
+
+                If Month = 0 Then Month = 1
+
+                Return CDate("01." + Month.ToString + "." + Time.Year.ToString + " 00:00:00")
+
+            Case Ticks.OneYear
+                Return CDate("01.01." + Time.Year.ToString + " 00:00:00")
+
+            Case Ticks.TwoYear
+
+                Dim Year As Integer = Time.Year
+
+                While Year Mod 2 <> 0
+                    Year -= 1
+                End While
+
+                If Year = 0 Then Year = 1
+
+                Return CDate("01.01." + Year.ToString + " 00:00:00")
+
+            Case Ticks.FiveYear
+
+                Dim Year As Integer = Time.Year
+
+                While Year Mod 5 <> 0
+                    Year -= 1
+                End While
+
+                If Year = 0 Then Year = 1
+
+                Return CDate("01.01." + Year.ToString + " 00:00:00")
+
+            Case Ticks.TenYear
+
+                Dim Year As Integer = Time.Year
+
+                While Year Mod 10 <> 0
+                    Year -= 1
+                End While
+
+                If Year = 0 Then Year = 1
+
+                Return CDate("01.01." + Year.ToString + " 00:00:00")
+
+        End Select
+
+
+
+    End Function
+
+
+
+    Sub ClearTimeSticks()
+
+        Dim DelIdx As Integer = -1
+        For i As Integer = 0 To TimeSticks.Count - 1
+            Dim TimeStick As Date = TimeSticks(i)
+
+            If TimeStick < SkalaStartDate Or TimeStick > SkalaEndDate Then
+                DelIdx = i
+                Exit For
             End If
 
         Next
 
-
-        If LastMarkDate < Now.AddMilliseconds((TL_ScaleEndDate - Now).TotalMilliseconds) Then
-            Dater = Now
+        If DelIdx <> -1 Then
+            TimeSticks.RemoveAt(DelIdx)
         End If
-
-
-        Dim SkalaMiddleMarkX As Integer = Time2Pixel(0, Me.Width, TL_ScaleStartDate, TL_ScaleEndDate, Now)
-        GFX_Graphics.DrawLine(TimeMarkMiddlePen, SkalaMiddleMarkX, e, SkalaMiddleMarkX, f)
-
-        If MouseDownFlag Then
-
-            Dim TimeMarkMiddlePen2 As System.Drawing.Pen
-            TimeMarkMiddlePen2 = New Pen(Color.Blue, 3)
-
-            'Dim ts2 As TimeSpan = TL_ScaleEndDate - TL_ScaleStartDate
-
-            Dim SkalaMiddleScrollMarkX As Integer = Time2Pixel(0, Me.Width, TL_ScaleStartDate, TL_ScaleEndDate, DragDropTime)
-            GFX_Graphics.DrawLine(TimeMarkMiddlePen2, SkalaMiddleScrollMarkX, e, SkalaMiddleScrollMarkX, f)
-
-        End If
-
 
     End Sub
 
-    Dim DragDropTime As Date
+    Function GetTimeWidth() As List(Of Double)
+
+        Dim TS As TimeSpan = New TimeSpan
+        TS = TL_EndDate - TL_StartDate
+
+        Select Case TS.TotalMilliseconds / 1000
+            Case Is < 1
+                Return {TS.TotalMilliseconds / 2, 2}.ToList
+            Case 1 To 60
+                Return {TS.TotalMilliseconds / 6, 6}.ToList
+            Case 60 To 60 * 60
+                Return {TS.TotalMilliseconds / 4, 4}.ToList
+            Case 60 * 60 To 60 * 60 * 24
+                Return {TS.TotalMilliseconds / 12, 12}.ToList
+            Case 60 * 60 * 24 * 7 To 60 * 60 * 24 * 7 * 4
+                Return {TS.TotalMilliseconds / 7, 7}.ToList
+            Case Is > 60 * 60 * 24 * 7 * 4
+                Return {TS.TotalMilliseconds / 4, 4}.ToList
+            Case Else
+                Return {TS.TotalMilliseconds / 12, 12}.ToList
+        End Select
+
+    End Function
 
 
-    Private Sub TradeTrackerTimeLine_MouseHover(sender As Object, e As MouseEventArgs) Handles Me.MouseWheel
+    Function GetTimeWidth(ByVal TS As TimeSpan) As List(Of Double)
 
-        Dim Multiplikator As Single = 0
+        Dim MS As Double = TS.TotalMilliseconds
 
-        Select Case TL_Zoom
-            Case 8 To 60 - 1
-                Multiplikator = 1
+        Select Case MS / 1000
+            Case Is < 1
 
-            Case 60 To 500 - 1
-                Multiplikator = 2
+                Dim T_Span As Double = MS / 2
 
-            Case 500 To 4000 - 1
-                Multiplikator = 3
+                Return New List(Of Double)({T_Span, T_Span * 2})
+            Case 1 To 60
 
-            Case 4000 To 30000 - 1
-                Multiplikator = 4
+                Dim T_Span As Double = MS / 6
+                Dim T_List As List(Of Double) = New List(Of Double)
 
-            Case 30000 To 250000 - 1
-                Multiplikator = 5
+                For i As Integer = 1 To 6
+                    T_List.Add(i * T_Span)
+                Next
 
-            Case 250000 To 2000000 - 1
-                Multiplikator = 6
+                Return T_List
 
-            Case 2000000 To 17000000 - 1
-                Multiplikator = 7
+            Case 60 To 60 * 60
 
-            Case 17000000 To 130000000 - 1
-                Multiplikator = 8
+                Dim T_Span As Double = MS / 4
+                Dim T_List As List(Of Double) = New List(Of Double)
 
-            Case 130000000 To 1000000000
-                Multiplikator = 9
+                For i As Integer = 1 To 4
+                    T_List.Add(i * T_Span)
+                Next
 
-            Case > 1000000000
-                Multiplikator = 10
+                Return T_List
+
+            Case 60 * 60 To 60 * 60 * 24
+
+                Dim T_Span As Double = MS / 12
+                Dim T_List As List(Of Double) = New List(Of Double)
+
+                For i As Integer = 1 To 12
+                    T_List.Add(i * T_Span)
+                Next
+
+                Return T_List
+
+            Case 60 * 60 * 24 * 7 To 60 * 60 * 24 * 7 * 4
+
+                Dim T_Span As Double = MS / 7
+                Dim T_List As List(Of Double) = New List(Of Double)
+
+                For i As Integer = 1 To 7
+                    T_List.Add(i * T_Span)
+                Next
+
+                Return T_List
+
+            Case Is > 60 * 60 * 24 * 7 * 4
+
+                Dim T_Span As Double = MS / 4
+                Dim T_List As List(Of Double) = New List(Of Double)
+
+                For i As Integer = 1 To 4
+                    T_List.Add(i * T_Span)
+                Next
+
+                Return T_List
+
+            Case Else
+
+                Dim T_Span As Double = MS / 12
+                Dim T_List As List(Of Double) = New List(Of Double)
+
+                For i As Integer = 1 To 12
+                    T_List.Add(i * T_Span)
+                Next
+
+                Return T_List
 
         End Select
 
-        If Multiplikator = 0 Then
-            Multiplikator = 1
-            TL_Multiplikator = 1
+    End Function
+
+
+
+    Private Sub TradeTrackerTimeLine_MouseWheel(sender As Object, e As MouseEventArgs) Handles Me.MouseWheel
+
+        Dim TS As TimeSpan = New TimeSpan
+        TS = TL_EndDate - TL_StartDate
+
+        If TS.TotalMilliseconds < 1 Then
+            TL_Zoom = 0
         Else
-            TL_Multiplikator = CSng(8 ^ Multiplikator)
+            TL_Zoom = CLng(TS.TotalMilliseconds * 0.02)
         End If
 
         Select Case e.Delta
-            Case 120
+            Case 120 'reinzoomen
 
-                TL_Zoom -= CInt((10 ^ Multiplikator) / 10)
+                TL_StartDate = TL_StartDate.AddMilliseconds(TL_Zoom)
+                TL_EndDate = TL_EndDate.AddMilliseconds(-TL_Zoom)
+
+
+            Case -120 'rauszoomen
+
                 If TL_Zoom < 1 Then
-                    TL_Zoom = 1
+                    TL_Zoom = 50
                 End If
 
-
-
-                'TL_ScaleStartDate = TL_ScaleStartDate.AddMilliseconds(-(XOffset * TL_Zoom))
-                'TL_ScaleEndDate = TL_ScaleEndDate.AddMilliseconds((XOffset * TL_Zoom))
-
-            Case -120
-
-                If Multiplikator = 10 Then
-
-                Else
-                    TL_Zoom += CInt((10 ^ Multiplikator) / 10)
-
-
+                If TL_Zoom > 2000000000000 Then
+                    TL_Zoom = 0
                 End If
 
-                'Case 240
-                '    TL_Zoom -= CSng(10 ^ Multiplikator)
-                '    If TL_Zoom < 1 Then TL_Zoom = 1
-                'Case -240
-                '    TL_Zoom += CSng(10 ^ Multiplikator)
-                'Case Else
-
-                'Case 360
-                '    TL_Zoom -= 100
-                '    If TL_Zoom < 1 Then TL_Zoom = 1
-                'Case -360
-                '    TL_Zoom += 100
-
-                'Case 480
-                '    TL_Zoom -= 1000
-                '    If TL_Zoom < 1 Then TL_Zoom = 1
-                'Case -480
-                '    TL_Zoom += 1000
-
-                'Case 600
-                '    TL_Zoom -= 10000
-                '    If TL_Zoom < 1 Then TL_Zoom = 1
-                'Case -600
-                '    TL_Zoom += 10000
-
-                'Case 720
-                '    TL_Zoom -= 100000
-                '    If TL_Zoom < 1 Then TL_Zoom = 1
-                'Case -720
-                '    TL_Zoom += 100000
-
-                'Case 840
-                '    TL_Zoom -= 7
-                '    If TL_Zoom < 1 Then TL_Zoom = 1
-                'Case -840
-                '    TL_Zoom += 7
-
-                'Case 960
-                '    TL_Zoom -= 8
-                '    If TL_Zoom < 1 Then TL_Zoom = 1
-                'Case -960
-                '    TL_Zoom += 8
-
-                'Case 1080
-                '    Multiplikator -= 9
-                'Case -1080
-                '    Multiplikator += 9
+                TL_StartDate = TL_StartDate.AddMilliseconds(-TL_Zoom)
+                TL_EndDate = TL_EndDate.AddMilliseconds(TL_Zoom)
 
         End Select
 
-
-
-
-
-        Dater = Now
         Me.Invalidate()
 
     End Sub
 
-    Dim MouseDownFlag As Boolean = False
-    Dim Rast1 As Date
-    Dim Rast2 As Date
+    Private Property MouseDownFlag As Boolean = False
 
     Dim mouseXrast As Integer = 0
-    Dim mouseYrast As Integer = 0
 
 
     Private Sub TradeTrackerTimeLine_MouseDown(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
@@ -468,19 +1031,9 @@ Public Class TradeTrackerTimeLine
             old_Timerinterval = TradeTrackTimer.Interval
             TradeTrackTimer.Interval = 10
 
-            DragDropTime = Now
-
-            If MouseDownFlag Then
-
-            Else
-
+            If Not MouseDownFlag Then
                 MouseDownFlag = True
-                Rast1 = Now
-                Rast2 = Now
-
                 mouseXrast = e.X
-                mouseYrast = e.Y
-
             End If
 
         End If
@@ -501,32 +1054,25 @@ Public Class TradeTrackerTimeLine
 
     End Sub
 
-    Dim XOffset As Integer = 0
+    Private Property XOffset As Integer = 0
 
     Dim old_Timerinterval As Integer
     Private Sub TradeTrackerTimeLine_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
 
         If MouseDownFlag Then
 
-            Dim XFactor As Integer = 1000
-            'Select Case XFactor.ToString.Length
-            '    Case 2
-            '        XFactor *= 100
-            '    Case 3
-            '        XFactor *= 10
-            '    Case Else
-
-            'End Select
+            Dim TX As Double = CDbl(TL_Zoom * 0.15)
 
             If e.X > mouseXrast Then
-                XOffset += mouseXrast - e.X
+                TL_StartDate = TL_StartDate.AddMilliseconds(-(TX))
+                TL_EndDate = TL_EndDate.AddMilliseconds(-(TX))
             Else
-                XOffset -= e.X - mouseXrast
+                TL_StartDate = TL_StartDate.AddMilliseconds((TX * 0.9))
+                TL_EndDate = TL_EndDate.AddMilliseconds((TX * 0.9))
             End If
 
             mouseXrast = e.X
-            'TL_ScaleStartDate = Rast1.AddMilliseconds(-(XFactor * TL_Zoom) + XDiff)
-            'TL_ScaleEndDate = Rast2.AddMilliseconds((XFactor * TL_Zoom) + XDiff)
+
         Else
             TradeTrackTimer.Interval = CInt(TradeTrackTimerInterval)
         End If
@@ -538,41 +1084,16 @@ Public Class TradeTrackerTimeLine
 
         RaiseEvent TimerTick(Me.GetType)
 
-        Dim XFactor As Integer = 1000
-        'Select Case XFactor.ToString.Length
-        '    Case 2
-        '        XFactor *= 100
-        '    Case 3
-        '        XFactor *= 10
-        '    Case Else
-
-        'End Select
-
         If MouseDownFlag Then
-
-            TL_ScaleStartDate = Rast1.AddMilliseconds(-(XFactor * TL_Zoom))
-            TL_ScaleEndDate = Rast2.AddMilliseconds((XFactor * TL_Zoom))
-
-            'TL_ScaleStartDate = TL_ScaleStartDate.AddMilliseconds((XOffset * TL_Zoom))
-            'TL_ScaleEndDate = TL_ScaleEndDate.AddMilliseconds((XOffset * TL_Zoom))
 
         Else
 
-            If TL_ScaleStartDate.ToShortDateString = "01.01.2000" Then TL_ScaleStartDate = Now.AddMilliseconds(-(XFactor * TL_Zoom))
-            If TL_ScaleEndDate.ToShortDateString = "01.01.2000" Then TL_ScaleEndDate = Now.AddMilliseconds((XFactor * TL_Zoom))
-
-            TL_ScaleStartDate = Now.AddMilliseconds(-(XFactor * TL_Zoom))
-            TL_ScaleEndDate = Now.AddMilliseconds((XFactor * TL_Zoom))
-
-            'TL_ScaleStartDate = TL_ScaleStartDate.AddMilliseconds((XOffset * TL_Zoom))
-            'TL_ScaleEndDate = TL_ScaleEndDate.AddMilliseconds((XOffset * TL_Zoom))
-
+            TL_StartDate = TL_StartDate.AddMilliseconds(110)
+            TL_EndDate = TL_EndDate.AddMilliseconds(110)
         End If
 
-        TL_ScaleStartDate = TL_ScaleStartDate.AddMilliseconds((XOffset * TL_Zoom))
-        TL_ScaleEndDate = TL_ScaleEndDate.AddMilliseconds((XOffset * TL_Zoom))
-
         Me.Invalidate()
+
     End Sub
 
 End Class
