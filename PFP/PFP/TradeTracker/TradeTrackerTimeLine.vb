@@ -7,7 +7,7 @@ Public Class TradeTrackerTimeLine
     Inherits System.Windows.Forms.UserControl
 
 
-    Private Property TL_Zoom As Int64 = -300000
+    Private Property TL_Zoom As Int64 = -150000000
 
     Private Property TL_StartDate As Date = Now
     Private Property TL_EndDate As Date = Now
@@ -367,7 +367,7 @@ Public Class TradeTrackerTimeLine
             TL_Zoom *= -1
             TL_StartDate = TL_StartDate.AddMilliseconds(-TL_Zoom)
             TL_EndDate = Now
-            TL_Zoom = 6000
+            TL_Zoom = 3000000
         End If
 
 
@@ -464,7 +464,7 @@ Public Class TradeTrackerTimeLine
         If Not T_TimeWidth = 0 Then
 
             If TimeSticks.Count = 0 Then
-                For i As Integer = 0 To 10
+                For i As Integer = 0 To 20
                     Select Case RasterTicks
                         Case Ticks.Zero
                             TimeSticks.Add(T_Time.AddMilliseconds(-(i * T_TimeWidth)))

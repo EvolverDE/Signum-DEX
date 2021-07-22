@@ -59,6 +59,7 @@ Partial Class FrmManual
         Me.SplitContainer14 = New System.Windows.Forms.SplitContainer()
         Me.LabExample6 = New System.Windows.Forms.Label()
         Me.PictureBox6 = New System.Windows.Forms.PictureBox()
+        Me.SplitContainer15 = New System.Windows.Forms.SplitContainer()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
@@ -125,6 +126,9 @@ Partial Class FrmManual
         Me.SplitContainer14.Panel2.SuspendLayout()
         Me.SplitContainer14.SuspendLayout()
         CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.SplitContainer15, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer15.Panel1.SuspendLayout()
+        Me.SplitContainer15.SuspendLayout()
         Me.SuspendLayout()
         '
         'TabControl1
@@ -162,7 +166,7 @@ Partial Class FrmManual
         'TabPage2
         '
         Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.TabPage2.Controls.Add(Me.SplitContainer1)
+        Me.TabPage2.Controls.Add(Me.SplitContainer15)
         Me.TabPage2.Location = New System.Drawing.Point(4, 22)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
@@ -175,7 +179,7 @@ Partial Class FrmManual
         Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
         Me.SplitContainer1.IsSplitterFixed = True
-        Me.SplitContainer1.Location = New System.Drawing.Point(3, 3)
+        Me.SplitContainer1.Location = New System.Drawing.Point(0, 0)
         Me.SplitContainer1.Name = "SplitContainer1"
         Me.SplitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal
         '
@@ -186,8 +190,8 @@ Partial Class FrmManual
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.SplitContainer2)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1017, 584)
-        Me.SplitContainer1.SplitterDistance = 553
+        Me.SplitContainer1.Size = New System.Drawing.Size(1017, 282)
+        Me.SplitContainer1.SplitterDistance = 250
         Me.SplitContainer1.TabIndex = 1
         '
         'LabFirstSteps
@@ -195,7 +199,7 @@ Partial Class FrmManual
         Me.LabFirstSteps.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabFirstSteps.Location = New System.Drawing.Point(0, 0)
         Me.LabFirstSteps.Name = "LabFirstSteps"
-        Me.LabFirstSteps.Size = New System.Drawing.Size(1017, 553)
+        Me.LabFirstSteps.Size = New System.Drawing.Size(1017, 250)
         Me.LabFirstSteps.TabIndex = 0
         Me.LabFirstSteps.Text = "Loading..."
         '
@@ -215,7 +219,7 @@ Partial Class FrmManual
         'SplitContainer2.Panel2
         '
         Me.SplitContainer2.Panel2.Controls.Add(Me.btManualSetPassPhrase)
-        Me.SplitContainer2.Size = New System.Drawing.Size(1017, 27)
+        Me.SplitContainer2.Size = New System.Drawing.Size(1017, 28)
         Me.SplitContainer2.SplitterDistance = 872
         Me.SplitContainer2.TabIndex = 0
         '
@@ -242,7 +246,7 @@ Partial Class FrmManual
         Me.btManualSetPassPhrase.Dock = System.Windows.Forms.DockStyle.Fill
         Me.btManualSetPassPhrase.Location = New System.Drawing.Point(0, 0)
         Me.btManualSetPassPhrase.Name = "btManualSetPassPhrase"
-        Me.btManualSetPassPhrase.Size = New System.Drawing.Size(141, 27)
+        Me.btManualSetPassPhrase.Size = New System.Drawing.Size(141, 28)
         Me.btManualSetPassPhrase.TabIndex = 0
         Me.btManualSetPassPhrase.Text = "Check/Set PassPhrase"
         Me.btManualSetPassPhrase.UseVisualStyleBackColor = False
@@ -623,6 +627,21 @@ Partial Class FrmManual
         Me.PictureBox6.TabIndex = 0
         Me.PictureBox6.TabStop = False
         '
+        'SplitContainer15
+        '
+        Me.SplitContainer15.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer15.IsSplitterFixed = True
+        Me.SplitContainer15.Location = New System.Drawing.Point(3, 3)
+        Me.SplitContainer15.Name = "SplitContainer15"
+        Me.SplitContainer15.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer15.Panel1
+        '
+        Me.SplitContainer15.Panel1.Controls.Add(Me.SplitContainer1)
+        Me.SplitContainer15.Size = New System.Drawing.Size(1017, 584)
+        Me.SplitContainer15.SplitterDistance = 282
+        Me.SplitContainer15.TabIndex = 2
+        '
         'FrmManual
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -702,6 +721,9 @@ Partial Class FrmManual
         CType(Me.SplitContainer14, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer14.ResumeLayout(False)
         CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer15.Panel1.ResumeLayout(False)
+        CType(Me.SplitContainer15, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer15.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -742,4 +764,5 @@ Partial Class FrmManual
     Friend WithEvents SplitContainer14 As SplitContainer
     Friend WithEvents LabExample6 As Label
     Private WithEvents PictureBox6 As PictureBox
+    Friend WithEvents SplitContainer15 As SplitContainer
 End Class

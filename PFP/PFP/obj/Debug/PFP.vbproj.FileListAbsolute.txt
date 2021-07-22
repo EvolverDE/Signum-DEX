@@ -45,10 +45,11 @@ C:\temper\testings\PFP\PFP\bin\Debug\PFP.application
 C:\temper\testings\PFP\PFP\bin\Debug\PFP.exe
 C:\temper\testings\PFP\PFP\bin\Debug\PFP.pdb
 C:\temper\testings\PFP\PFP\bin\Debug\PFP.xml
-C:\temper\testings\PFP\PFP\obj\Debug\PFP.vbprojAssemblyReference.cache
 C:\temper\testings\PFP\PFP\obj\Debug\PFP.PFPForm.resources
 C:\temper\testings\PFP\PFP\obj\Debug\PFP.FrmManual.resources
 C:\temper\testings\PFP\PFP\obj\Debug\PFP.Resources.resources
+C:\temper\testings\PFP\PFP\obj\Debug\PFP.FrmDevelope.resources
+C:\temper\testings\PFP\PFP\obj\Debug\PFP.FrmGeneralSettings.resources
 C:\temper\testings\PFP\PFP\obj\Debug\PFP.TradeTrackerSlot.resources
 C:\temper\testings\PFP\PFP\obj\Debug\PFP.TradeTrackerTestForm.resources
 C:\temper\testings\PFP\PFP\obj\Debug\PFP.TradeTrackerTimeLine.resources
@@ -60,4 +61,9 @@ C:\temper\testings\PFP\PFP\obj\Debug\PFP.application
 C:\temper\testings\PFP\PFP\obj\Debug\PFP.exe
 C:\temper\testings\PFP\PFP\obj\Debug\PFP.xml
 C:\temper\testings\PFP\PFP\obj\Debug\PFP.pdb
+C:\temper\testings\PFP\PFP\obj\Debug\PFP.FrmMyOrderSettings.resources
 C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.vbprojAssemblyReference.cache
+C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.FrmDevelope.resources
+C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.FrmGeneralSettings.resources
+C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.FrmMyOrderSettings.resources
+C:\temper\testings\PFP\PFP\obj\Debug\PFP.vbprojAssemblyReference.cache

@@ -11,9 +11,9 @@ Imports System.Runtime.InteropServices
 
 <Assembly: AssemblyTitle("PFP")>
 <Assembly: AssemblyDescription("Decentral PayPal Gateway")>
-<Assembly: AssemblyCompany("The Burstcoin Community")>
+<Assembly: AssemblyCompany("The Burstcoin/Signum Community")>
 <Assembly: AssemblyProduct("PFP")>
-<Assembly: AssemblyCopyright("Copyright ©  2020 The Burstcoin Community")>
+<Assembly: AssemblyCopyright("Copyright ©  2020 The Burstcoin/Signum Community")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(True)>

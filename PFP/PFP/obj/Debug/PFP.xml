@@ -62,17 +62,6 @@ PFP
   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="M:PFP.PFPForm.GetLVColNameFromSubItem(System.Windows.Forms.ListView@,System.String,System.Windows.Forms.ListViewItem,System.Int32)">
- <summary>
- Von einer ListView das subitem aus dem item lesen
- </summary>
- <param name="LV">Die ListView, aus der gelesen werden soll</param>
- <param name="ColName">Der Spaltenname, aus dem gelesen werden soll</param>
- <param name="LVItem">Die Zeile bzw. das item aus dem gelesen werden soll</param>
- <param name="index">Alternativ das item an index stelle in der ListView</param>
- <returns>Vorzugsweise einen String, andernfalls den index der Spalte</returns>
- <remarks></remarks>
-</member>
 <member name="M:PFP.PFPForm.GetThread">
  <summary>
  The Thread who coordinates (loadbalance) the API Request subthreads
@@ -135,37 +124,13 @@ PFP
  <returns>-1, 0 oder 1 (gemäß Vergleich)</returns>
  <remarks></remarks>
 </member>
-<member name="M:PFP.BurstNET.GenerateMasterKeys">
+<member name="M:PFP.ClsSignumNET.GenerateMasterKeys">
  <summary>
  Generates the Masterkeys from PassPhrase 0=PublicKey; 1=SignKey; 2=AgreementKey
  </summary>
  <returns>List of Masterkeys</returns>
 </member>
-<member name="M:PFP.BurstNET.Keygen(System.Byte[])">
- <summary>
- Generates the Masterkeys from KeyHash
- </summary>
- <param name="KeyHash">The 32 Byte hashed PassPhrase</param>
- <returns>Array of Masterkeys</returns>
-</member>
-<member name="M:PFP.BurstNET.GenerateSignature(System.String,System.String)">
- <summary>
- Generates the Signature of the MessageHEX
- </summary>
- <param name="MessageHEX">Message as HEX String</param>
- <param name="PrivateKey">The Private Key to Sign with</param>
- <returns>Signature in HEX String</returns>
-</member>
-<member name="M:PFP.BurstNET.VerifySignature(System.String,System.String,System.String)">
- <summary>
- Verify the Signature of the UnsignedMessageHEX String
- </summary>
- <param name="Signature">The Signature as HEX String</param>
- <param name="UnsignedMessageHex">The Unsigned Message as HEX String</param>
- <param name="PublicKey">The Public Key as HEX String</param>
- <returns></returns>
-</member>
-<member name="M:PFP.BurstNET.EncryptMessage(System.String,System.String,System.String)">
+<member name="M:PFP.ClsSignumNET.EncryptMessage(System.String,System.String,System.String)">
  <summary>
  Encrypts Message from Parameters 0=Data; 1=Nonce
  </summary>
@@ -174,7 +139,7 @@ PFP
  <param name="SenderAgreementKeyHex"></param>
  <returns></returns>
 </member>
-<member name="M:PFP.BurstNET.EncryptData(System.Byte[],System.String,System.String)">
+<member name="M:PFP.ClsSignumNET.EncryptData(System.Byte[],System.String,System.String)">
  <summary>
  Encrypt Data from Parameters 0=Data; 1=Nonce
  </summary>
@@ -183,13 +148,54 @@ PFP
  <param name="SenderAgreementKeyHex"></param>
  <returns></returns>
 </member>
-<member name="M:PFP.Curve25519.Clamp(System.Byte[]@)">
+<member name="M:PFP.ModCrypto.GetMasterKeys(System.String)">
+ <summary>
+ Generates the Masterkeys from PassPhrase 0=PublicKey; 1=SignKey; 2=AgreementKey
+ </summary>
+ <returns>List of Masterkeys</returns>
+</member>
+<member name="M:PFP.ModCrypto.Keygen(System.Byte[])">
+ <summary>
+ Generates the Masterkeys from KeyHash
+ </summary>
+ <param name="KeyHash">The 32 Byte hashed PassPhrase</param>
+ <returns>Array of Masterkeys</returns>
+</member>
+<member name="M:PFP.ModCrypto.GenerateSignature(System.String,System.String)">
+ <summary>
+ Generates the Signature of the MessageHEX
+ </summary>
+ <param name="MessageHEX">Message as HEX String</param>
+ <param name="PrivateKey">The Private Key to Sign with</param>
+ <returns>Signature in HEX String</returns>
+</member>
+<member name="M:PFP.ModCrypto.VerifySignature(System.String,System.String,System.String)">
+ <summary>
+ Verify the Signature of the UnsignedMessageHEX String
+ </summary>
+ <param name="Signature">The Signature as HEX String</param>
+ <param name="UnsignedMessageHex">The Unsigned Message as HEX String</param>
+ <param name="PublicKey">The Public Key as HEX String</param>
+ <returns></returns>
+</member>
+<member name="M:PFP.ModJSON.Between(System.String,System.String,System.String,System.Object,System.Boolean)">
+ <summary>
+ Einen String aus einem Bereich auslesen
+ </summary>
+ <param name="input">Der String, aus dem ein Bereich ausgelesen werden soll</param>
+ <param name="startchar">die Startmarkierung ab der gelesen werden soll</param>
+ <param name="endchar">die Endmarkierung bis der gelesen werden soll</param>
+ <param name="GetTyp">Der Typ der Rückgabewert zurückgegeben werden soll (z.b. GetType(Double))</param>
+ <returns>Vorzugsweise ein Double , andernfalls z.b. ein Integer</returns>
+ <remarks></remarks>
+</member>
+<member name="M:PFP.ClsCurve25519.Clamp(System.Byte[]@)">
  <summary>
  Private key clamping
  </summary>
  <param name="AgreementKey">[in] 32 random bytes, [out] your private key for key agreement</param>
 </member>
-<member name="M:PFP.Curve25519.KeyGen(System.Byte[]@,System.Byte[]@,System.Byte[]@)">
+<member name="M:PFP.ClsCurve25519.KeyGen(System.Byte[]@,System.Byte[]@,System.Byte[]@)">
  <summary>
  Key-Pair generation * WARNING: if s is not NULL, this function has data-dependent timing 
  </summary>
@@ -197,7 +203,7 @@ PFP
  <param name="SignKey">[out] your private key for signing</param>
  <param name="AgreementKey">[in] 32 random bytes, [out] your private key for key agreement</param>
 </member>
-<member name="M:PFP.Curve25519.GetSharedSecret(System.Byte[]@,System.Byte[],System.Byte[])">
+<member name="M:PFP.ClsCurve25519.GetSharedSecret(System.Byte[]@,System.Byte[],System.Byte[])">
  <summary>
  Key agreement
  </summary>
@@ -205,12 +211,12 @@ PFP
  <param name="AgreementKey">[in]  your private key for key agreement</param>
  <param name="PublicKey">[in] peer's public key</param>
 </member>
-<member name="T:PFP.Curve25519.Long10">
+<member name="T:PFP.ClsCurve25519.Long10">
  <summary>
  Using this class instead of long[10] to avoid bounds checks. 
  </summary>
 </member>
-<member name="M:PFP.Curve25519.Copy32(System.Byte[]@,System.Byte[])">
+<member name="M:PFP.ClsCurve25519.Copy32(System.Byte[]@,System.Byte[])">
  <summary>
  Copies 32 Bytes from Input to Output
  </summary>
@@ -235,15 +241,26 @@ PFP
  <param name="PublicKey">public key</param>
  <returns>signature public key</returns>
 </member>
-<member name="M:PFP.GZip.Compress(System.Byte[])">
+<member name="M:PFP.ClsGZip.Compress(System.Byte[])">
  <summary>
  Receives bytes, returns compressed bytes.
  </summary>
 </member>
-<member name="M:PFP.GZip.Inflate(System.Byte[])">
+<member name="M:PFP.ClsGZip.Inflate(System.Byte[])">
  <summary>
  Receives bytes, returns decompressed bytes.
  </summary>
+</member>
+<member name="M:PFP.ModGlobalFunctions.GetLVColNameFromSubItem(System.Windows.Forms.ListView@,System.String,System.Windows.Forms.ListViewItem,System.Int32)">
+ <summary>
+ Von einer ListView das subitem aus dem item lesen
+ </summary>
+ <param name="LV">Die ListView, aus der gelesen werden soll</param>
+ <param name="ColName">Der Spaltenname, aus dem gelesen werden soll</param>
+ <param name="LVItem">Die Zeile bzw. das item aus dem gelesen werden soll</param>
+ <param name="index">Alternativ das item an index stelle in der ListView</param>
+ <returns>Vorzugsweise einen String, andernfalls den index der Spalte</returns>
+ <remarks></remarks>
 </member>
 <member name="M:PFP.ModFunctions.DateIntToCandle(System.Collections.Generic.List{System.Object})">
  <summary>

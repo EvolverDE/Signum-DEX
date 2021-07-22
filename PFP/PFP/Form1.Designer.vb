@@ -23,6 +23,9 @@ Partial Class PFPForm
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
+        Dim TreeNode1 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("Default Settings")
+        Dim TreeNode2 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("MyOrders Settings")
+        Dim TreeNode3 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("Develope")
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(PFPForm))
         Me.BlockTimer = New System.Windows.Forms.Timer(Me.components)
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
@@ -44,9 +47,11 @@ Partial Class PFPForm
         Me.Label3 = New System.Windows.Forms.Label()
         Me.BtSNOSetOrder = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.LabColPercentage = New System.Windows.Forms.Label()
+        Me.TBarCollateralPercent = New System.Windows.Forms.TrackBar()
         Me.Label18 = New System.Windows.Forms.Label()
         Me.LabXItem = New System.Windows.Forms.Label()
-        Me.Label17 = New System.Windows.Forms.Label()
+        Me.LabDealAmount = New System.Windows.Forms.Label()
         Me.Label16 = New System.Windows.Forms.Label()
         Me.NUDSNOTXFee = New System.Windows.Forms.NumericUpDown()
         Me.NUDSNOItemAmount = New System.Windows.Forms.NumericUpDown()
@@ -102,84 +107,13 @@ Partial Class PFPForm
         Me.LVMyClosedOrders = New System.Windows.Forms.ListView()
         Me.ColumnHeader16 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabPage3 = New System.Windows.Forms.TabPage()
-        Me.GroupBox4 = New System.Windows.Forms.GroupBox()
-        Me.TestTabControl = New System.Windows.Forms.TabControl()
-        Me.TabPage6 = New System.Windows.Forms.TabPage()
-        Me.TestGrpBoxConvertings = New System.Windows.Forms.GroupBox()
-        Me.TBTestConvert = New System.Windows.Forms.TextBox()
-        Me.BtTestConvert = New System.Windows.Forms.Button()
-        Me.BtTestConvert2 = New System.Windows.Forms.Button()
-        Me.BtTestDatStr2ULngList = New System.Windows.Forms.Button()
-        Me.TabPage7 = New System.Windows.Forms.TabPage()
-        Me.TestGrpBoxINITests = New System.Windows.Forms.GroupBox()
-        Me.TBTestSetTXINI = New System.Windows.Forms.TextBox()
-        Me.BtTestSetTXINI = New System.Windows.Forms.Button()
-        Me.BtTestGetTXINI = New System.Windows.Forms.Button()
-        Me.BtTestDelTXINI = New System.Windows.Forms.Button()
-        Me.TBTestGetTXINI = New System.Windows.Forms.TextBox()
-        Me.TBTestDelTXINI = New System.Windows.Forms.TextBox()
-        Me.TabPage8 = New System.Windows.Forms.TabPage()
-        Me.TestGrpBoxPayPaltests = New System.Windows.Forms.GroupBox()
-        Me.BtTestPPAPI = New System.Windows.Forms.Button()
-        Me.BtTestCreatePPOrder = New System.Windows.Forms.Button()
-        Me.TabPage9 = New System.Windows.Forms.TabPage()
-        Me.TestGrpBxATCom = New System.Windows.Forms.GroupBox()
-        Me.Label25 = New System.Windows.Forms.Label()
-        Me.BtTestCreate = New System.Windows.Forms.Button()
-        Me.BtTestAccept = New System.Windows.Forms.Button()
-        Me.BtTestFinish = New System.Windows.Forms.Button()
-        Me.ListBox1 = New System.Windows.Forms.ListBox()
-        Me.BtTestInject = New System.Windows.Forms.Button()
-        Me.TBTestCreatePP = New System.Windows.Forms.TextBox()
-        Me.TBTestAcceptPP = New System.Windows.Forms.TextBox()
-        Me.Label24 = New System.Windows.Forms.Label()
-        Me.TBTestFinishPP = New System.Windows.Forms.TextBox()
-        Me.Label23 = New System.Windows.Forms.Label()
-        Me.TBTestInjectPP = New System.Windows.Forms.TextBox()
-        Me.Label22 = New System.Windows.Forms.Label()
-        Me.TBTestResponder = New System.Windows.Forms.TextBox()
-        Me.Label21 = New System.Windows.Forms.Label()
-        Me.TabPage10 = New System.Windows.Forms.TabPage()
-        Me.TestGrpBoxMultithreadings = New System.Windows.Forms.GroupBox()
-        Me.BtTestMultiGetDetails = New System.Windows.Forms.Button()
-        Me.LVTestMulti = New System.Windows.Forms.ListView()
-        Me.ColumnHeader2 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ColumnHeader3 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ColumnHeader4 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ColumnHeader5 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ColumnHeader6 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.BtTestExit = New System.Windows.Forms.Button()
-        Me.BtTestMultiRefresh = New System.Windows.Forms.Button()
-        Me.BtTestGetAt = New System.Windows.Forms.Button()
-        Me.TestBar = New System.Windows.Forms.ProgressBar()
-        Me.GroupBox3 = New System.Windows.Forms.GroupBox()
-        Me.RBUseXItemSettings = New System.Windows.Forms.RadioButton()
-        Me.RBUsePaymentInfo = New System.Windows.Forms.RadioButton()
-        Me.ChBxCheckXItemTX = New System.Windows.Forms.CheckBox()
-        Me.Label20 = New System.Windows.Forms.Label()
-        Me.CoBxNode = New System.Windows.Forms.ComboBox()
-        Me.CoBxRefresh = New System.Windows.Forms.ComboBox()
-        Me.Label19 = New System.Windows.Forms.Label()
-        Me.Label6 = New System.Windows.Forms.Label()
-        Me.BtSaveSettings = New System.Windows.Forms.Button()
-        Me.ChBxAutoSendPaymentInfo = New System.Windows.Forms.CheckBox()
-        Me.TBPaymentInfo = New System.Windows.Forms.TextBox()
-        Me.GrpBxSeller = New System.Windows.Forms.GroupBox()
-        Me.TabControl2 = New System.Windows.Forms.TabControl()
-        Me.TabPage4 = New System.Windows.Forms.TabPage()
-        Me.RBPayPalOrder = New System.Windows.Forms.RadioButton()
-        Me.RBPayPalEMail = New System.Windows.Forms.RadioButton()
-        Me.TBPayPalEMail = New System.Windows.Forms.TextBox()
-        Me.TabPage5 = New System.Windows.Forms.TabPage()
-        Me.BtCheckPayPalBiz = New System.Windows.Forms.Button()
-        Me.Label13 = New System.Windows.Forms.Label()
-        Me.TBPayPalAPISecret = New System.Windows.Forms.TextBox()
-        Me.Label14 = New System.Windows.Forms.Label()
-        Me.TBPayPalAPIUser = New System.Windows.Forms.TextBox()
+        Me.SCSettings = New System.Windows.Forms.SplitContainer()
+        Me.TVSettings = New System.Windows.Forms.TreeView()
         Me.SplitContainer12 = New System.Windows.Forms.SplitContainer()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.StatusStrip1.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
+        CType(Me.TBarCollateralPercent, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NUDSNOTXFee, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NUDSNOItemAmount, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NUDSNOCollateral, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -250,23 +184,9 @@ Partial Class PFPForm
         Me.SplitContainer17.Panel1.SuspendLayout()
         Me.SplitContainer17.SuspendLayout()
         Me.TabPage3.SuspendLayout()
-        Me.GroupBox4.SuspendLayout()
-        Me.TestTabControl.SuspendLayout()
-        Me.TabPage6.SuspendLayout()
-        Me.TestGrpBoxConvertings.SuspendLayout()
-        Me.TabPage7.SuspendLayout()
-        Me.TestGrpBoxINITests.SuspendLayout()
-        Me.TabPage8.SuspendLayout()
-        Me.TestGrpBoxPayPaltests.SuspendLayout()
-        Me.TabPage9.SuspendLayout()
-        Me.TestGrpBxATCom.SuspendLayout()
-        Me.TabPage10.SuspendLayout()
-        Me.TestGrpBoxMultithreadings.SuspendLayout()
-        Me.GroupBox3.SuspendLayout()
-        Me.GrpBxSeller.SuspendLayout()
-        Me.TabControl2.SuspendLayout()
-        Me.TabPage4.SuspendLayout()
-        Me.TabPage5.SuspendLayout()
+        CType(Me.SCSettings, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SCSettings.Panel1.SuspendLayout()
+        Me.SCSettings.SuspendLayout()
         CType(Me.SplitContainer12, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer12.Panel1.SuspendLayout()
         Me.SplitContainer12.Panel2.SuspendLayout()
@@ -284,7 +204,7 @@ Partial Class PFPForm
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.StatusBar, Me.StatusBlockLabel, Me.StatusFeeLabel})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 739)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(1604, 22)
+        Me.StatusStrip1.Size = New System.Drawing.Size(1717, 22)
         Me.StatusStrip1.TabIndex = 1
         Me.StatusStrip1.Text = "StatusStrip1"
         '
@@ -292,7 +212,7 @@ Partial Class PFPForm
         '
         Me.StatusLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.StatusLabel.Name = "StatusLabel"
-        Me.StatusLabel.Size = New System.Drawing.Size(1528, 17)
+        Me.StatusLabel.Size = New System.Drawing.Size(1641, 17)
         Me.StatusLabel.Spring = True
         Me.StatusLabel.Text = " "
         Me.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -328,7 +248,7 @@ Partial Class PFPForm
         Me.LVSellorders.Name = "LVSellorders"
         Me.LVSellorders.RightToLeft = System.Windows.Forms.RightToLeft.Yes
         Me.LVSellorders.RightToLeftLayout = True
-        Me.LVSellorders.Size = New System.Drawing.Size(792, 202)
+        Me.LVSellorders.Size = New System.Drawing.Size(848, 202)
         Me.LVSellorders.TabIndex = 2
         Me.LVSellorders.UseCompatibleStateImageBehavior = False
         Me.LVSellorders.View = System.Windows.Forms.View.Details
@@ -358,7 +278,7 @@ Partial Class PFPForm
         Me.LVBuyorders.Location = New System.Drawing.Point(0, 0)
         Me.LVBuyorders.MultiSelect = False
         Me.LVBuyorders.Name = "LVBuyorders"
-        Me.LVBuyorders.Size = New System.Drawing.Size(784, 202)
+        Me.LVBuyorders.Size = New System.Drawing.Size(841, 202)
         Me.LVBuyorders.TabIndex = 5
         Me.LVBuyorders.UseCompatibleStateImageBehavior = False
         Me.LVBuyorders.View = System.Windows.Forms.View.Details
@@ -409,7 +329,7 @@ Partial Class PFPForm
         Me.LVOpenChannels.Location = New System.Drawing.Point(0, 0)
         Me.LVOpenChannels.MultiSelect = False
         Me.LVOpenChannels.Name = "LVOpenChannels"
-        Me.LVOpenChannels.Size = New System.Drawing.Size(365, 146)
+        Me.LVOpenChannels.Size = New System.Drawing.Size(365, 86)
         Me.LVOpenChannels.TabIndex = 9
         Me.LVOpenChannels.UseCompatibleStateImageBehavior = False
         Me.LVOpenChannels.View = System.Windows.Forms.View.Details
@@ -435,7 +355,7 @@ Partial Class PFPForm
         'BtSNOSetOrder
         '
         Me.BtSNOSetOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.BtSNOSetOrder.Location = New System.Drawing.Point(124, 171)
+        Me.BtSNOSetOrder.Location = New System.Drawing.Point(124, 225)
         Me.BtSNOSetOrder.Name = "BtSNOSetOrder"
         Me.BtSNOSetOrder.Size = New System.Drawing.Size(82, 23)
         Me.BtSNOSetOrder.TabIndex = 11
@@ -444,9 +364,11 @@ Partial Class PFPForm
         '
         'GroupBox1
         '
+        Me.GroupBox1.Controls.Add(Me.LabColPercentage)
+        Me.GroupBox1.Controls.Add(Me.TBarCollateralPercent)
         Me.GroupBox1.Controls.Add(Me.Label18)
         Me.GroupBox1.Controls.Add(Me.LabXItem)
-        Me.GroupBox1.Controls.Add(Me.Label17)
+        Me.GroupBox1.Controls.Add(Me.LabDealAmount)
         Me.GroupBox1.Controls.Add(Me.Label16)
         Me.GroupBox1.Controls.Add(Me.NUDSNOTXFee)
         Me.GroupBox1.Controls.Add(Me.NUDSNOItemAmount)
@@ -463,51 +385,71 @@ Partial Class PFPForm
         Me.GroupBox1.ForeColor = System.Drawing.Color.White
         Me.GroupBox1.Location = New System.Drawing.Point(0, 0)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(365, 196)
+        Me.GroupBox1.Size = New System.Drawing.Size(365, 256)
         Me.GroupBox1.TabIndex = 12
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Set New Order"
         '
+        'LabColPercentage
+        '
+        Me.LabColPercentage.AutoSize = True
+        Me.LabColPercentage.Location = New System.Drawing.Point(8, 149)
+        Me.LabColPercentage.Name = "LabColPercentage"
+        Me.LabColPercentage.Size = New System.Drawing.Size(34, 13)
+        Me.LabColPercentage.TabIndex = 33
+        Me.LabColPercentage.Text = "30 %"
+        '
+        'TBarCollateralPercent
+        '
+        Me.TBarCollateralPercent.Cursor = System.Windows.Forms.Cursors.Default
+        Me.TBarCollateralPercent.Location = New System.Drawing.Point(93, 92)
+        Me.TBarCollateralPercent.Maximum = 11
+        Me.TBarCollateralPercent.Name = "TBarCollateralPercent"
+        Me.TBarCollateralPercent.Size = New System.Drawing.Size(266, 45)
+        Me.TBarCollateralPercent.TabIndex = 32
+        Me.TBarCollateralPercent.TickStyle = System.Windows.Forms.TickStyle.Both
+        Me.TBarCollateralPercent.Value = 1
+        '
         'Label18
         '
         Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(212, 150)
+        Me.Label18.Location = New System.Drawing.Point(212, 204)
         Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(111, 13)
+        Me.Label18.Size = New System.Drawing.Size(115, 13)
         Me.Label18.TabIndex = 31
-        Me.Label18.Text = "BURST (0.0=auto)"
+        Me.Label18.Text = "SIGNA (0.0 = auto)"
         '
         'LabXItem
         '
         Me.LabXItem.AutoSize = True
-        Me.LabXItem.Location = New System.Drawing.Point(212, 122)
+        Me.LabXItem.Location = New System.Drawing.Point(212, 176)
         Me.LabXItem.Name = "LabXItem"
         Me.LabXItem.Size = New System.Drawing.Size(39, 13)
         Me.LabXItem.TabIndex = 30
         Me.LabXItem.Text = "XItem"
         '
-        'Label17
+        'LabDealAmount
         '
-        Me.Label17.AutoSize = True
-        Me.Label17.Location = New System.Drawing.Point(212, 70)
-        Me.Label17.Name = "Label17"
-        Me.Label17.Size = New System.Drawing.Size(49, 13)
-        Me.Label17.TabIndex = 29
-        Me.Label17.Text = "BURST"
+        Me.LabDealAmount.AutoSize = True
+        Me.LabDealAmount.Location = New System.Drawing.Point(212, 70)
+        Me.LabDealAmount.Name = "LabDealAmount"
+        Me.LabDealAmount.Size = New System.Drawing.Size(147, 13)
+        Me.LabDealAmount.TabIndex = 29
+        Me.LabDealAmount.Text = "SIGNA (Max 100 on 0 %)"
         '
         'Label16
         '
         Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(212, 96)
+        Me.Label16.Location = New System.Drawing.Point(212, 149)
         Me.Label16.Name = "Label16"
-        Me.Label16.Size = New System.Drawing.Size(151, 13)
+        Me.Label16.Size = New System.Drawing.Size(147, 13)
         Me.Label16.TabIndex = 28
-        Me.Label16.Text = "+ 1 BURST handling fees"
+        Me.Label16.Text = "+ 1 SIGNA handling fees"
         '
         'NUDSNOTXFee
         '
         Me.NUDSNOTXFee.DecimalPlaces = 8
-        Me.NUDSNOTXFee.Location = New System.Drawing.Point(93, 146)
+        Me.NUDSNOTXFee.Location = New System.Drawing.Point(93, 200)
         Me.NUDSNOTXFee.Maximum = New Decimal(New Integer() {-1, -1, -1, 0})
         Me.NUDSNOTXFee.Name = "NUDSNOTXFee"
         Me.NUDSNOTXFee.Size = New System.Drawing.Size(113, 20)
@@ -516,7 +458,7 @@ Partial Class PFPForm
         'NUDSNOItemAmount
         '
         Me.NUDSNOItemAmount.DecimalPlaces = 8
-        Me.NUDSNOItemAmount.Location = New System.Drawing.Point(93, 118)
+        Me.NUDSNOItemAmount.Location = New System.Drawing.Point(93, 172)
         Me.NUDSNOItemAmount.Maximum = New Decimal(New Integer() {-1, -1, -1, 0})
         Me.NUDSNOItemAmount.Name = "NUDSNOItemAmount"
         Me.NUDSNOItemAmount.Size = New System.Drawing.Size(113, 20)
@@ -525,7 +467,8 @@ Partial Class PFPForm
         'NUDSNOCollateral
         '
         Me.NUDSNOCollateral.DecimalPlaces = 8
-        Me.NUDSNOCollateral.Location = New System.Drawing.Point(93, 92)
+        Me.NUDSNOCollateral.Increment = New Decimal(New Integer() {5, 0, 0, 131072})
+        Me.NUDSNOCollateral.Location = New System.Drawing.Point(93, 146)
         Me.NUDSNOCollateral.Maximum = New Decimal(New Integer() {-1, -1, -1, 0})
         Me.NUDSNOCollateral.Name = "NUDSNOCollateral"
         Me.NUDSNOCollateral.Size = New System.Drawing.Size(113, 20)
@@ -543,7 +486,7 @@ Partial Class PFPForm
         'BtSNOSetCurFee
         '
         Me.BtSNOSetCurFee.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.BtSNOSetCurFee.Location = New System.Drawing.Point(331, 143)
+        Me.BtSNOSetCurFee.Location = New System.Drawing.Point(331, 197)
         Me.BtSNOSetCurFee.Name = "BtSNOSetCurFee"
         Me.BtSNOSetCurFee.Size = New System.Drawing.Size(32, 23)
         Me.BtSNOSetCurFee.TabIndex = 23
@@ -563,7 +506,7 @@ Partial Class PFPForm
         'Label7
         '
         Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(6, 148)
+        Me.Label7.Location = New System.Drawing.Point(6, 202)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(52, 13)
         Me.Label7.TabIndex = 16
@@ -572,7 +515,7 @@ Partial Class PFPForm
         'LabXitemAmount
         '
         Me.LabXitemAmount.AutoSize = True
-        Me.LabXitemAmount.Location = New System.Drawing.Point(6, 120)
+        Me.LabXitemAmount.Location = New System.Drawing.Point(6, 174)
         Me.LabXitemAmount.Name = "LabXitemAmount"
         Me.LabXitemAmount.Size = New System.Drawing.Size(81, 13)
         Me.LabXitemAmount.TabIndex = 15
@@ -685,7 +628,7 @@ Partial Class PFPForm
         '
         Me.CoBxMarket.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CoBxMarket.FormattingEnabled = True
-        Me.CoBxMarket.Items.AddRange(New Object() {"AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD", "BTC"})
+        Me.CoBxMarket.Items.AddRange(New Object() {"AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"})
         Me.CoBxMarket.Location = New System.Drawing.Point(55, 3)
         Me.CoBxMarket.Name = "CoBxMarket"
         Me.CoBxMarket.Size = New System.Drawing.Size(97, 21)
@@ -717,7 +660,7 @@ Partial Class PFPForm
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.SplitContainer6)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1590, 678)
+        Me.SplitContainer1.Size = New System.Drawing.Size(1703, 678)
         Me.SplitContainer1.SplitterDistance = 408
         Me.SplitContainer1.TabIndex = 14
         '
@@ -737,8 +680,8 @@ Partial Class PFPForm
         'SplitContainer2.Panel2
         '
         Me.SplitContainer2.Panel2.Controls.Add(Me.SplitContainer3)
-        Me.SplitContainer2.Size = New System.Drawing.Size(1590, 408)
-        Me.SplitContainer2.SplitterDistance = 1219
+        Me.SplitContainer2.Size = New System.Drawing.Size(1703, 408)
+        Me.SplitContainer2.SplitterDistance = 1332
         Me.SplitContainer2.TabIndex = 14
         '
         'SplitContainer3
@@ -761,7 +704,7 @@ Partial Class PFPForm
         '
         Me.SplitContainer3.Panel2.Controls.Add(Me.GroupBox1)
         Me.SplitContainer3.Size = New System.Drawing.Size(367, 408)
-        Me.SplitContainer3.SplitterDistance = 206
+        Me.SplitContainer3.SplitterDistance = 146
         Me.SplitContainer3.TabIndex = 13
         '
         'SplitContainer4
@@ -780,7 +723,7 @@ Partial Class PFPForm
         'SplitContainer4.Panel2
         '
         Me.SplitContainer4.Panel2.Controls.Add(Me.SplitContainer5)
-        Me.SplitContainer4.Size = New System.Drawing.Size(365, 204)
+        Me.SplitContainer4.Size = New System.Drawing.Size(365, 144)
         Me.SplitContainer4.SplitterDistance = 25
         Me.SplitContainer4.TabIndex = 0
         '
@@ -800,8 +743,8 @@ Partial Class PFPForm
         'SplitContainer5.Panel2
         '
         Me.SplitContainer5.Panel2.Controls.Add(Me.BtCreateNewAT)
-        Me.SplitContainer5.Size = New System.Drawing.Size(365, 175)
-        Me.SplitContainer5.SplitterDistance = 146
+        Me.SplitContainer5.Size = New System.Drawing.Size(365, 115)
+        Me.SplitContainer5.SplitterDistance = 86
         Me.SplitContainer5.TabIndex = 0
         '
         'SplitContainer6
@@ -819,8 +762,8 @@ Partial Class PFPForm
         'SplitContainer6.Panel2
         '
         Me.SplitContainer6.Panel2.Controls.Add(Me.SplitContainer10)
-        Me.SplitContainer6.Size = New System.Drawing.Size(1588, 264)
-        Me.SplitContainer6.SplitterDistance = 796
+        Me.SplitContainer6.Size = New System.Drawing.Size(1701, 264)
+        Me.SplitContainer6.SplitterDistance = 852
         Me.SplitContainer6.TabIndex = 9
         '
         'SplitContainer7
@@ -840,7 +783,7 @@ Partial Class PFPForm
         'SplitContainer7.Panel2
         '
         Me.SplitContainer7.Panel2.Controls.Add(Me.SplitContainer8)
-        Me.SplitContainer7.Size = New System.Drawing.Size(792, 260)
+        Me.SplitContainer7.Size = New System.Drawing.Size(848, 260)
         Me.SplitContainer7.SplitterDistance = 25
         Me.SplitContainer7.TabIndex = 0
         '
@@ -860,7 +803,7 @@ Partial Class PFPForm
         'SplitContainer8.Panel2
         '
         Me.SplitContainer8.Panel2.Controls.Add(Me.SplitContainer9)
-        Me.SplitContainer8.Size = New System.Drawing.Size(792, 231)
+        Me.SplitContainer8.Size = New System.Drawing.Size(848, 231)
         Me.SplitContainer8.SplitterDistance = 202
         Me.SplitContainer8.TabIndex = 0
         '
@@ -874,8 +817,8 @@ Partial Class PFPForm
         'SplitContainer9.Panel2
         '
         Me.SplitContainer9.Panel2.Controls.Add(Me.BtBuy)
-        Me.SplitContainer9.Size = New System.Drawing.Size(792, 25)
-        Me.SplitContainer9.SplitterDistance = 706
+        Me.SplitContainer9.Size = New System.Drawing.Size(848, 25)
+        Me.SplitContainer9.SplitterDistance = 762
         Me.SplitContainer9.TabIndex = 0
         '
         'SplitContainer10
@@ -895,7 +838,7 @@ Partial Class PFPForm
         'SplitContainer10.Panel2
         '
         Me.SplitContainer10.Panel2.Controls.Add(Me.SplitContainer11)
-        Me.SplitContainer10.Size = New System.Drawing.Size(784, 260)
+        Me.SplitContainer10.Size = New System.Drawing.Size(841, 260)
         Me.SplitContainer10.SplitterDistance = 25
         Me.SplitContainer10.TabIndex = 0
         '
@@ -915,7 +858,7 @@ Partial Class PFPForm
         'SplitContainer11.Panel2
         '
         Me.SplitContainer11.Panel2.Controls.Add(Me.BtSell)
-        Me.SplitContainer11.Size = New System.Drawing.Size(784, 231)
+        Me.SplitContainer11.Size = New System.Drawing.Size(841, 231)
         Me.SplitContainer11.SplitterDistance = 202
         Me.SplitContainer11.TabIndex = 0
         '
@@ -929,7 +872,7 @@ Partial Class PFPForm
         Me.TabControl1.Location = New System.Drawing.Point(0, 0)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
-        Me.TabControl1.Size = New System.Drawing.Size(1604, 710)
+        Me.TabControl1.Size = New System.Drawing.Size(1717, 710)
         Me.TabControl1.TabIndex = 15
         '
         'TabPage1
@@ -939,7 +882,7 @@ Partial Class PFPForm
         Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(1596, 684)
+        Me.TabPage1.Size = New System.Drawing.Size(1709, 684)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Marketdetails"
         '
@@ -949,7 +892,7 @@ Partial Class PFPForm
         Me.TabPage2.Location = New System.Drawing.Point(4, 22)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(1596, 684)
+        Me.TabPage2.Size = New System.Drawing.Size(1709, 684)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "MyOrders"
         Me.TabPage2.UseVisualStyleBackColor = True
@@ -971,7 +914,7 @@ Partial Class PFPForm
         'SplitContainer13.Panel2
         '
         Me.SplitContainer13.Panel2.Controls.Add(Me.SplitContainer15)
-        Me.SplitContainer13.Size = New System.Drawing.Size(1590, 678)
+        Me.SplitContainer13.Size = New System.Drawing.Size(1703, 678)
         Me.SplitContainer13.SplitterDistance = 305
         Me.SplitContainer13.TabIndex = 5
         '
@@ -991,7 +934,7 @@ Partial Class PFPForm
         'SplitContainer14.Panel2
         '
         Me.SplitContainer14.Panel2.Controls.Add(Me.SplitContainer16)
-        Me.SplitContainer14.Size = New System.Drawing.Size(1588, 303)
+        Me.SplitContainer14.Size = New System.Drawing.Size(1701, 303)
         Me.SplitContainer14.SplitterDistance = 25
         Me.SplitContainer14.TabIndex = 0
         '
@@ -1026,7 +969,7 @@ Partial Class PFPForm
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtReCreatePayPalOrder)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtPayOrder)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtExecuteOrder)
-        Me.SplitContainer16.Size = New System.Drawing.Size(1588, 274)
+        Me.SplitContainer16.Size = New System.Drawing.Size(1701, 274)
         Me.SplitContainer16.SplitterDistance = 191
         Me.SplitContainer16.TabIndex = 0
         '
@@ -1042,7 +985,7 @@ Partial Class PFPForm
         Me.LVMyOpenOrders.Location = New System.Drawing.Point(0, 0)
         Me.LVMyOpenOrders.MultiSelect = False
         Me.LVMyOpenOrders.Name = "LVMyOpenOrders"
-        Me.LVMyOpenOrders.Size = New System.Drawing.Size(1588, 191)
+        Me.LVMyOpenOrders.Size = New System.Drawing.Size(1701, 191)
         Me.LVMyOpenOrders.TabIndex = 0
         Me.LVMyOpenOrders.UseCompatibleStateImageBehavior = False
         Me.LVMyOpenOrders.View = System.Windows.Forms.View.Details
@@ -1143,7 +1086,7 @@ Partial Class PFPForm
         'SplitContainer15.Panel2
         '
         Me.SplitContainer15.Panel2.Controls.Add(Me.SplitContainer17)
-        Me.SplitContainer15.Size = New System.Drawing.Size(1588, 367)
+        Me.SplitContainer15.Size = New System.Drawing.Size(1701, 367)
         Me.SplitContainer15.SplitterDistance = 25
         Me.SplitContainer15.TabIndex = 0
         '
@@ -1168,7 +1111,7 @@ Partial Class PFPForm
         'SplitContainer17.Panel1
         '
         Me.SplitContainer17.Panel1.Controls.Add(Me.LVMyClosedOrders)
-        Me.SplitContainer17.Size = New System.Drawing.Size(1588, 338)
+        Me.SplitContainer17.Size = New System.Drawing.Size(1701, 338)
         Me.SplitContainer17.SplitterDistance = 307
         Me.SplitContainer17.TabIndex = 0
         '
@@ -1184,7 +1127,7 @@ Partial Class PFPForm
         Me.LVMyClosedOrders.Location = New System.Drawing.Point(0, 0)
         Me.LVMyClosedOrders.MultiSelect = False
         Me.LVMyClosedOrders.Name = "LVMyClosedOrders"
-        Me.LVMyClosedOrders.Size = New System.Drawing.Size(1588, 307)
+        Me.LVMyClosedOrders.Size = New System.Drawing.Size(1701, 307)
         Me.LVMyClosedOrders.TabIndex = 3
         Me.LVMyClosedOrders.UseCompatibleStateImageBehavior = False
         Me.LVMyClosedOrders.View = System.Windows.Forms.View.Details
@@ -1196,742 +1139,44 @@ Partial Class PFPForm
         'TabPage3
         '
         Me.TabPage3.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.TabPage3.Controls.Add(Me.GroupBox4)
-        Me.TabPage3.Controls.Add(Me.GroupBox3)
-        Me.TabPage3.Controls.Add(Me.GrpBxSeller)
+        Me.TabPage3.Controls.Add(Me.SCSettings)
         Me.TabPage3.ForeColor = System.Drawing.Color.White
         Me.TabPage3.Location = New System.Drawing.Point(4, 22)
         Me.TabPage3.Name = "TabPage3"
-        Me.TabPage3.Size = New System.Drawing.Size(1596, 684)
+        Me.TabPage3.Size = New System.Drawing.Size(1709, 684)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "Settings"
         '
-        'GroupBox4
-        '
-        Me.GroupBox4.Controls.Add(Me.TestTabControl)
-        Me.GroupBox4.Location = New System.Drawing.Point(8, 276)
-        Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(1585, 389)
-        Me.GroupBox4.TabIndex = 9
-        Me.GroupBox4.TabStop = False
-        Me.GroupBox4.Text = "Testing"
-        '
-        'TestTabControl
-        '
-        Me.TestTabControl.Controls.Add(Me.TabPage6)
-        Me.TestTabControl.Controls.Add(Me.TabPage7)
-        Me.TestTabControl.Controls.Add(Me.TabPage8)
-        Me.TestTabControl.Controls.Add(Me.TabPage9)
-        Me.TestTabControl.Controls.Add(Me.TabPage10)
-        Me.TestTabControl.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TestTabControl.Location = New System.Drawing.Point(3, 16)
-        Me.TestTabControl.Name = "TestTabControl"
-        Me.TestTabControl.SelectedIndex = 0
-        Me.TestTabControl.Size = New System.Drawing.Size(1579, 370)
-        Me.TestTabControl.TabIndex = 39
-        '
-        'TabPage6
-        '
-        Me.TabPage6.Controls.Add(Me.TestGrpBoxConvertings)
-        Me.TabPage6.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage6.Name = "TabPage6"
-        Me.TabPage6.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage6.Size = New System.Drawing.Size(1571, 344)
-        Me.TabPage6.TabIndex = 0
-        Me.TabPage6.Text = "Convertings"
-        Me.TabPage6.UseVisualStyleBackColor = True
-        '
-        'TestGrpBoxConvertings
-        '
-        Me.TestGrpBoxConvertings.Controls.Add(Me.TBTestConvert)
-        Me.TestGrpBoxConvertings.Controls.Add(Me.BtTestConvert)
-        Me.TestGrpBoxConvertings.Controls.Add(Me.BtTestConvert2)
-        Me.TestGrpBoxConvertings.Controls.Add(Me.BtTestDatStr2ULngList)
-        Me.TestGrpBoxConvertings.Location = New System.Drawing.Point(6, 6)
-        Me.TestGrpBoxConvertings.Name = "TestGrpBoxConvertings"
-        Me.TestGrpBoxConvertings.Size = New System.Drawing.Size(302, 80)
-        Me.TestGrpBoxConvertings.TabIndex = 35
-        Me.TestGrpBoxConvertings.TabStop = False
-        Me.TestGrpBoxConvertings.Text = "Convertings"
-        '
-        'TBTestConvert
-        '
-        Me.TBTestConvert.Location = New System.Drawing.Point(6, 19)
-        Me.TBTestConvert.Name = "TBTestConvert"
-        Me.TBTestConvert.Size = New System.Drawing.Size(288, 20)
-        Me.TBTestConvert.TabIndex = 3
-        '
-        'BtTestConvert
-        '
-        Me.BtTestConvert.ForeColor = System.Drawing.Color.Black
-        Me.BtTestConvert.Location = New System.Drawing.Point(116, 45)
-        Me.BtTestConvert.Name = "BtTestConvert"
-        Me.BtTestConvert.Size = New System.Drawing.Size(86, 23)
-        Me.BtTestConvert.TabIndex = 4
-        Me.BtTestConvert.Text = "String2ULong"
-        Me.BtTestConvert.UseVisualStyleBackColor = True
-        '
-        'BtTestConvert2
-        '
-        Me.BtTestConvert2.ForeColor = System.Drawing.Color.Black
-        Me.BtTestConvert2.Location = New System.Drawing.Point(208, 45)
-        Me.BtTestConvert2.Name = "BtTestConvert2"
-        Me.BtTestConvert2.Size = New System.Drawing.Size(86, 23)
-        Me.BtTestConvert2.TabIndex = 5
-        Me.BtTestConvert2.Text = "ULong2String"
-        Me.BtTestConvert2.UseVisualStyleBackColor = True
-        '
-        'BtTestDatStr2ULngList
-        '
-        Me.BtTestDatStr2ULngList.ForeColor = System.Drawing.Color.Black
-        Me.BtTestDatStr2ULngList.Location = New System.Drawing.Point(6, 45)
-        Me.BtTestDatStr2ULngList.Name = "BtTestDatStr2ULngList"
-        Me.BtTestDatStr2ULngList.Size = New System.Drawing.Size(104, 23)
-        Me.BtTestDatStr2ULngList.TabIndex = 6
-        Me.BtTestDatStr2ULngList.Text = "DataStr2ULngList"
-        Me.BtTestDatStr2ULngList.UseVisualStyleBackColor = True
-        '
-        'TabPage7
-        '
-        Me.TabPage7.Controls.Add(Me.TestGrpBoxINITests)
-        Me.TabPage7.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage7.Name = "TabPage7"
-        Me.TabPage7.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage7.Size = New System.Drawing.Size(1571, 344)
-        Me.TabPage7.TabIndex = 1
-        Me.TabPage7.Text = "INI-Tools-Tests"
-        Me.TabPage7.UseVisualStyleBackColor = True
-        '
-        'TestGrpBoxINITests
-        '
-        Me.TestGrpBoxINITests.Controls.Add(Me.TBTestSetTXINI)
-        Me.TestGrpBoxINITests.Controls.Add(Me.BtTestSetTXINI)
-        Me.TestGrpBoxINITests.Controls.Add(Me.BtTestGetTXINI)
-        Me.TestGrpBoxINITests.Controls.Add(Me.BtTestDelTXINI)
-        Me.TestGrpBoxINITests.Controls.Add(Me.TBTestGetTXINI)
-        Me.TestGrpBoxINITests.Controls.Add(Me.TBTestDelTXINI)
-        Me.TestGrpBoxINITests.Location = New System.Drawing.Point(6, 6)
-        Me.TestGrpBoxINITests.Name = "TestGrpBoxINITests"
-        Me.TestGrpBoxINITests.Size = New System.Drawing.Size(316, 85)
-        Me.TestGrpBoxINITests.TabIndex = 37
-        Me.TestGrpBoxINITests.TabStop = False
-        Me.TestGrpBoxINITests.Text = "INI-Tools-Tests"
-        '
-        'TBTestSetTXINI
-        '
-        Me.TBTestSetTXINI.Location = New System.Drawing.Point(6, 19)
-        Me.TBTestSetTXINI.Name = "TBTestSetTXINI"
-        Me.TBTestSetTXINI.Size = New System.Drawing.Size(97, 20)
-        Me.TBTestSetTXINI.TabIndex = 14
-        '
-        'BtTestSetTXINI
-        '
-        Me.BtTestSetTXINI.ForeColor = System.Drawing.Color.Black
-        Me.BtTestSetTXINI.Location = New System.Drawing.Point(6, 46)
-        Me.BtTestSetTXINI.Name = "BtTestSetTXINI"
-        Me.BtTestSetTXINI.Size = New System.Drawing.Size(97, 23)
-        Me.BtTestSetTXINI.TabIndex = 11
-        Me.BtTestSetTXINI.Text = "Set TX in INI"
-        Me.BtTestSetTXINI.UseVisualStyleBackColor = True
-        '
-        'BtTestGetTXINI
-        '
-        Me.BtTestGetTXINI.ForeColor = System.Drawing.Color.Black
-        Me.BtTestGetTXINI.Location = New System.Drawing.Point(109, 46)
-        Me.BtTestGetTXINI.Name = "BtTestGetTXINI"
-        Me.BtTestGetTXINI.Size = New System.Drawing.Size(97, 23)
-        Me.BtTestGetTXINI.TabIndex = 12
-        Me.BtTestGetTXINI.Text = "Get TX from INI"
-        Me.BtTestGetTXINI.UseVisualStyleBackColor = True
-        '
-        'BtTestDelTXINI
-        '
-        Me.BtTestDelTXINI.ForeColor = System.Drawing.Color.Black
-        Me.BtTestDelTXINI.Location = New System.Drawing.Point(212, 46)
-        Me.BtTestDelTXINI.Name = "BtTestDelTXINI"
-        Me.BtTestDelTXINI.Size = New System.Drawing.Size(97, 23)
-        Me.BtTestDelTXINI.TabIndex = 13
-        Me.BtTestDelTXINI.Text = "Del TX from INI"
-        Me.BtTestDelTXINI.UseVisualStyleBackColor = True
-        '
-        'TBTestGetTXINI
-        '
-        Me.TBTestGetTXINI.Location = New System.Drawing.Point(109, 19)
-        Me.TBTestGetTXINI.Name = "TBTestGetTXINI"
-        Me.TBTestGetTXINI.Size = New System.Drawing.Size(97, 20)
-        Me.TBTestGetTXINI.TabIndex = 15
-        '
-        'TBTestDelTXINI
-        '
-        Me.TBTestDelTXINI.Location = New System.Drawing.Point(212, 19)
-        Me.TBTestDelTXINI.Name = "TBTestDelTXINI"
-        Me.TBTestDelTXINI.Size = New System.Drawing.Size(97, 20)
-        Me.TBTestDelTXINI.TabIndex = 16
-        '
-        'TabPage8
-        '
-        Me.TabPage8.Controls.Add(Me.TestGrpBoxPayPaltests)
-        Me.TabPage8.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage8.Name = "TabPage8"
-        Me.TabPage8.Size = New System.Drawing.Size(1571, 344)
-        Me.TabPage8.TabIndex = 2
-        Me.TabPage8.Text = "PayPal-Tests"
-        Me.TabPage8.UseVisualStyleBackColor = True
-        '
-        'TestGrpBoxPayPaltests
-        '
-        Me.TestGrpBoxPayPaltests.Controls.Add(Me.BtTestPPAPI)
-        Me.TestGrpBoxPayPaltests.Controls.Add(Me.BtTestCreatePPOrder)
-        Me.TestGrpBoxPayPaltests.Location = New System.Drawing.Point(3, 3)
-        Me.TestGrpBoxPayPaltests.Name = "TestGrpBoxPayPaltests"
-        Me.TestGrpBoxPayPaltests.Size = New System.Drawing.Size(150, 82)
-        Me.TestGrpBoxPayPaltests.TabIndex = 36
-        Me.TestGrpBoxPayPaltests.TabStop = False
-        Me.TestGrpBoxPayPaltests.Text = "PayPal-Tests"
-        '
-        'BtTestPPAPI
-        '
-        Me.BtTestPPAPI.ForeColor = System.Drawing.Color.Black
-        Me.BtTestPPAPI.Location = New System.Drawing.Point(14, 19)
-        Me.BtTestPPAPI.Name = "BtTestPPAPI"
-        Me.BtTestPPAPI.Size = New System.Drawing.Size(118, 23)
-        Me.BtTestPPAPI.TabIndex = 9
-        Me.BtTestPPAPI.Text = "PPAPIGetPayments"
-        Me.BtTestPPAPI.UseVisualStyleBackColor = True
-        '
-        'BtTestCreatePPOrder
-        '
-        Me.BtTestCreatePPOrder.ForeColor = System.Drawing.Color.Black
-        Me.BtTestCreatePPOrder.Location = New System.Drawing.Point(14, 48)
-        Me.BtTestCreatePPOrder.Name = "BtTestCreatePPOrder"
-        Me.BtTestCreatePPOrder.Size = New System.Drawing.Size(118, 23)
-        Me.BtTestCreatePPOrder.TabIndex = 10
-        Me.BtTestCreatePPOrder.Text = "Create PayPalOrder"
-        Me.BtTestCreatePPOrder.UseVisualStyleBackColor = True
-        '
-        'TabPage9
-        '
-        Me.TabPage9.Controls.Add(Me.TestGrpBxATCom)
-        Me.TabPage9.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage9.Name = "TabPage9"
-        Me.TabPage9.Size = New System.Drawing.Size(1571, 344)
-        Me.TabPage9.TabIndex = 3
-        Me.TabPage9.Text = "AT Communication"
-        Me.TabPage9.UseVisualStyleBackColor = True
-        '
-        'TestGrpBxATCom
-        '
-        Me.TestGrpBxATCom.Controls.Add(Me.Label25)
-        Me.TestGrpBxATCom.Controls.Add(Me.BtTestCreate)
-        Me.TestGrpBxATCom.Controls.Add(Me.BtTestAccept)
-        Me.TestGrpBxATCom.Controls.Add(Me.BtTestFinish)
-        Me.TestGrpBxATCom.Controls.Add(Me.ListBox1)
-        Me.TestGrpBxATCom.Controls.Add(Me.BtTestInject)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestCreatePP)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestAcceptPP)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label24)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestFinishPP)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label23)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestInjectPP)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label22)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestResponder)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label21)
-        Me.TestGrpBxATCom.Location = New System.Drawing.Point(3, 3)
-        Me.TestGrpBxATCom.Name = "TestGrpBxATCom"
-        Me.TestGrpBxATCom.Size = New System.Drawing.Size(367, 241)
-        Me.TestGrpBxATCom.TabIndex = 34
-        Me.TestGrpBxATCom.TabStop = False
-        Me.TestGrpBxATCom.Text = "AT Communication"
-        '
-        'Label25
-        '
-        Me.Label25.AutoSize = True
-        Me.Label25.ForeColor = System.Drawing.Color.Black
-        Me.Label25.Location = New System.Drawing.Point(249, 16)
-        Me.Label25.Name = "Label25"
-        Me.Label25.Size = New System.Drawing.Size(94, 13)
-        Me.Label25.TabIndex = 27
-        Me.Label25.Text = "TestResponderID:"
-        '
-        'BtTestCreate
-        '
-        Me.BtTestCreate.ForeColor = System.Drawing.Color.Black
-        Me.BtTestCreate.Location = New System.Drawing.Point(8, 97)
-        Me.BtTestCreate.Name = "BtTestCreate"
-        Me.BtTestCreate.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestCreate.TabIndex = 0
-        Me.BtTestCreate.Text = "create"
-        Me.BtTestCreate.UseVisualStyleBackColor = True
-        '
-        'BtTestAccept
-        '
-        Me.BtTestAccept.ForeColor = System.Drawing.Color.Black
-        Me.BtTestAccept.Location = New System.Drawing.Point(89, 97)
-        Me.BtTestAccept.Name = "BtTestAccept"
-        Me.BtTestAccept.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestAccept.TabIndex = 1
-        Me.BtTestAccept.Text = "accept"
-        Me.BtTestAccept.UseVisualStyleBackColor = True
-        '
-        'BtTestFinish
-        '
-        Me.BtTestFinish.ForeColor = System.Drawing.Color.Black
-        Me.BtTestFinish.Location = New System.Drawing.Point(170, 97)
-        Me.BtTestFinish.Name = "BtTestFinish"
-        Me.BtTestFinish.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestFinish.TabIndex = 2
-        Me.BtTestFinish.Text = "finish"
-        Me.BtTestFinish.UseVisualStyleBackColor = True
-        '
-        'ListBox1
-        '
-        Me.ListBox1.FormattingEnabled = True
-        Me.ListBox1.Location = New System.Drawing.Point(9, 122)
-        Me.ListBox1.Name = "ListBox1"
-        Me.ListBox1.Size = New System.Drawing.Size(348, 108)
-        Me.ListBox1.TabIndex = 8
-        '
-        'BtTestInject
-        '
-        Me.BtTestInject.ForeColor = System.Drawing.Color.Black
-        Me.BtTestInject.Location = New System.Drawing.Point(252, 97)
-        Me.BtTestInject.Name = "BtTestInject"
-        Me.BtTestInject.Size = New System.Drawing.Size(105, 23)
-        Me.BtTestInject.TabIndex = 17
-        Me.BtTestInject.Text = "injectResponder"
-        Me.BtTestInject.UseVisualStyleBackColor = True
-        '
-        'TBTestCreatePP
-        '
-        Me.TBTestCreatePP.Location = New System.Drawing.Point(8, 71)
-        Me.TBTestCreatePP.Name = "TBTestCreatePP"
-        Me.TBTestCreatePP.Size = New System.Drawing.Size(75, 20)
-        Me.TBTestCreatePP.TabIndex = 18
-        '
-        'TBTestAcceptPP
-        '
-        Me.TBTestAcceptPP.Location = New System.Drawing.Point(89, 71)
-        Me.TBTestAcceptPP.Name = "TBTestAcceptPP"
-        Me.TBTestAcceptPP.Size = New System.Drawing.Size(75, 20)
-        Me.TBTestAcceptPP.TabIndex = 19
-        '
-        'Label24
-        '
-        Me.Label24.AutoSize = True
-        Me.Label24.ForeColor = System.Drawing.Color.Black
-        Me.Label24.Location = New System.Drawing.Point(249, 55)
-        Me.Label24.Name = "Label24"
-        Me.Label24.Size = New System.Drawing.Size(66, 13)
-        Me.Label24.TabIndex = 26
-        Me.Label24.Text = "PassPhrase:"
-        '
-        'TBTestFinishPP
-        '
-        Me.TBTestFinishPP.Location = New System.Drawing.Point(170, 71)
-        Me.TBTestFinishPP.Name = "TBTestFinishPP"
-        Me.TBTestFinishPP.Size = New System.Drawing.Size(75, 20)
-        Me.TBTestFinishPP.TabIndex = 20
-        '
-        'Label23
-        '
-        Me.Label23.AutoSize = True
-        Me.Label23.ForeColor = System.Drawing.Color.Black
-        Me.Label23.Location = New System.Drawing.Point(167, 55)
-        Me.Label23.Name = "Label23"
-        Me.Label23.Size = New System.Drawing.Size(66, 13)
-        Me.Label23.TabIndex = 25
-        Me.Label23.Text = "PassPhrase:"
-        '
-        'TBTestInjectPP
-        '
-        Me.TBTestInjectPP.Location = New System.Drawing.Point(252, 71)
-        Me.TBTestInjectPP.Name = "TBTestInjectPP"
-        Me.TBTestInjectPP.Size = New System.Drawing.Size(105, 20)
-        Me.TBTestInjectPP.TabIndex = 21
-        '
-        'Label22
-        '
-        Me.Label22.AutoSize = True
-        Me.Label22.ForeColor = System.Drawing.Color.Black
-        Me.Label22.Location = New System.Drawing.Point(86, 55)
-        Me.Label22.Name = "Label22"
-        Me.Label22.Size = New System.Drawing.Size(66, 13)
-        Me.Label22.TabIndex = 24
-        Me.Label22.Text = "PassPhrase:"
-        '
-        'TBTestResponder
-        '
-        Me.TBTestResponder.Location = New System.Drawing.Point(252, 32)
-        Me.TBTestResponder.Name = "TBTestResponder"
-        Me.TBTestResponder.Size = New System.Drawing.Size(105, 20)
-        Me.TBTestResponder.TabIndex = 22
-        '
-        'Label21
-        '
-        Me.Label21.AutoSize = True
-        Me.Label21.ForeColor = System.Drawing.Color.Black
-        Me.Label21.Location = New System.Drawing.Point(6, 55)
-        Me.Label21.Name = "Label21"
-        Me.Label21.Size = New System.Drawing.Size(66, 13)
-        Me.Label21.TabIndex = 23
-        Me.Label21.Text = "PassPhrase:"
-        '
-        'TabPage10
-        '
-        Me.TabPage10.Controls.Add(Me.TestGrpBoxMultithreadings)
-        Me.TabPage10.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage10.Name = "TabPage10"
-        Me.TabPage10.Size = New System.Drawing.Size(1571, 344)
-        Me.TabPage10.TabIndex = 4
-        Me.TabPage10.Text = "Multithreading-Tests"
-        Me.TabPage10.UseVisualStyleBackColor = True
-        '
-        'TestGrpBoxMultithreadings
-        '
-        Me.TestGrpBoxMultithreadings.Controls.Add(Me.BtTestMultiGetDetails)
-        Me.TestGrpBoxMultithreadings.Controls.Add(Me.LVTestMulti)
-        Me.TestGrpBoxMultithreadings.Controls.Add(Me.BtTestExit)
-        Me.TestGrpBoxMultithreadings.Controls.Add(Me.BtTestMultiRefresh)
-        Me.TestGrpBoxMultithreadings.Controls.Add(Me.BtTestGetAt)
-        Me.TestGrpBoxMultithreadings.Controls.Add(Me.TestBar)
-        Me.TestGrpBoxMultithreadings.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TestGrpBoxMultithreadings.Location = New System.Drawing.Point(0, 0)
-        Me.TestGrpBoxMultithreadings.Name = "TestGrpBoxMultithreadings"
-        Me.TestGrpBoxMultithreadings.Size = New System.Drawing.Size(1571, 344)
-        Me.TestGrpBoxMultithreadings.TabIndex = 38
-        Me.TestGrpBoxMultithreadings.TabStop = False
-        Me.TestGrpBoxMultithreadings.Text = "Multithreading-Tests"
-        '
-        'BtTestMultiGetDetails
-        '
-        Me.BtTestMultiGetDetails.ForeColor = System.Drawing.Color.Black
-        Me.BtTestMultiGetDetails.Location = New System.Drawing.Point(6, 19)
-        Me.BtTestMultiGetDetails.Name = "BtTestMultiGetDetails"
-        Me.BtTestMultiGetDetails.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestMultiGetDetails.TabIndex = 29
-        Me.BtTestMultiGetDetails.Text = "GetDetails"
-        Me.BtTestMultiGetDetails.UseVisualStyleBackColor = True
-        '
-        'LVTestMulti
-        '
-        Me.LVTestMulti.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader2, Me.ColumnHeader3, Me.ColumnHeader4, Me.ColumnHeader5, Me.ColumnHeader6})
-        Me.LVTestMulti.FullRowSelect = True
-        Me.LVTestMulti.GridLines = True
-        Me.LVTestMulti.HideSelection = False
-        Me.LVTestMulti.Location = New System.Drawing.Point(6, 77)
-        Me.LVTestMulti.MultiSelect = False
-        Me.LVTestMulti.Name = "LVTestMulti"
-        Me.LVTestMulti.Size = New System.Drawing.Size(1559, 263)
-        Me.LVTestMulti.TabIndex = 28
-        Me.LVTestMulti.UseCompatibleStateImageBehavior = False
-        Me.LVTestMulti.View = System.Windows.Forms.View.Details
-        '
-        'ColumnHeader2
-        '
-        Me.ColumnHeader2.Text = "Node"
-        '
-        'ColumnHeader3
-        '
-        Me.ColumnHeader3.Text = "Command"
-        '
-        'ColumnHeader4
-        '
-        Me.ColumnHeader4.Text = "ThreadID"
-        '
-        'ColumnHeader5
-        '
-        Me.ColumnHeader5.Text = "Status"
-        '
-        'ColumnHeader6
-        '
-        Me.ColumnHeader6.Text = "Result"
-        '
-        'BtTestExit
-        '
-        Me.BtTestExit.ForeColor = System.Drawing.Color.Black
-        Me.BtTestExit.Location = New System.Drawing.Point(168, 19)
-        Me.BtTestExit.Name = "BtTestExit"
-        Me.BtTestExit.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestExit.TabIndex = 30
-        Me.BtTestExit.Text = "Exit"
-        Me.BtTestExit.UseVisualStyleBackColor = True
-        '
-        'BtTestMultiRefresh
-        '
-        Me.BtTestMultiRefresh.ForeColor = System.Drawing.Color.Black
-        Me.BtTestMultiRefresh.Location = New System.Drawing.Point(87, 19)
-        Me.BtTestMultiRefresh.Name = "BtTestMultiRefresh"
-        Me.BtTestMultiRefresh.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestMultiRefresh.TabIndex = 31
-        Me.BtTestMultiRefresh.Text = "Refresh"
-        Me.BtTestMultiRefresh.UseVisualStyleBackColor = True
-        '
-        'BtTestGetAt
-        '
-        Me.BtTestGetAt.ForeColor = System.Drawing.Color.Black
-        Me.BtTestGetAt.Location = New System.Drawing.Point(249, 19)
-        Me.BtTestGetAt.Name = "BtTestGetAt"
-        Me.BtTestGetAt.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestGetAt.TabIndex = 32
-        Me.BtTestGetAt.Text = "Get AT"
-        Me.BtTestGetAt.UseVisualStyleBackColor = True
-        '
-        'TestBar
-        '
-        Me.TestBar.Location = New System.Drawing.Point(6, 48)
-        Me.TestBar.Name = "TestBar"
-        Me.TestBar.Size = New System.Drawing.Size(318, 23)
-        Me.TestBar.TabIndex = 33
-        '
-        'GroupBox3
-        '
-        Me.GroupBox3.Controls.Add(Me.RBUseXItemSettings)
-        Me.GroupBox3.Controls.Add(Me.RBUsePaymentInfo)
-        Me.GroupBox3.Controls.Add(Me.ChBxCheckXItemTX)
-        Me.GroupBox3.Controls.Add(Me.Label20)
-        Me.GroupBox3.Controls.Add(Me.CoBxNode)
-        Me.GroupBox3.Controls.Add(Me.CoBxRefresh)
-        Me.GroupBox3.Controls.Add(Me.Label19)
-        Me.GroupBox3.Controls.Add(Me.Label6)
-        Me.GroupBox3.Controls.Add(Me.BtSaveSettings)
-        Me.GroupBox3.Controls.Add(Me.ChBxAutoSendPaymentInfo)
-        Me.GroupBox3.Controls.Add(Me.TBPaymentInfo)
-        Me.GroupBox3.ForeColor = System.Drawing.Color.White
-        Me.GroupBox3.Location = New System.Drawing.Point(8, 13)
-        Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(341, 257)
-        Me.GroupBox3.TabIndex = 8
-        Me.GroupBox3.TabStop = False
-        Me.GroupBox3.Text = "General Settings"
-        '
-        'RBUseXItemSettings
-        '
-        Me.RBUseXItemSettings.AutoSize = True
-        Me.RBUseXItemSettings.Location = New System.Drawing.Point(28, 65)
-        Me.RBUseXItemSettings.Name = "RBUseXItemSettings"
-        Me.RBUseXItemSettings.Size = New System.Drawing.Size(115, 17)
-        Me.RBUseXItemSettings.TabIndex = 18
-        Me.RBUseXItemSettings.TabStop = True
-        Me.RBUseXItemSettings.Text = "Use XItem Settings"
-        Me.RBUseXItemSettings.UseVisualStyleBackColor = True
-        '
-        'RBUsePaymentInfo
-        '
-        Me.RBUsePaymentInfo.AutoSize = True
-        Me.RBUsePaymentInfo.Location = New System.Drawing.Point(28, 42)
-        Me.RBUsePaymentInfo.Name = "RBUsePaymentInfo"
-        Me.RBUsePaymentInfo.Size = New System.Drawing.Size(112, 17)
-        Me.RBUsePaymentInfo.TabIndex = 17
-        Me.RBUsePaymentInfo.TabStop = True
-        Me.RBUsePaymentInfo.Text = "Use Payment Info:"
-        Me.RBUsePaymentInfo.UseVisualStyleBackColor = True
-        '
-        'ChBxCheckXItemTX
-        '
-        Me.ChBxCheckXItemTX.AutoSize = True
-        Me.ChBxCheckXItemTX.Location = New System.Drawing.Point(6, 137)
-        Me.ChBxCheckXItemTX.Name = "ChBxCheckXItemTX"
-        Me.ChBxCheckXItemTX.Size = New System.Drawing.Size(270, 17)
-        Me.ChBxCheckXItemTX.TabIndex = 16
-        Me.ChBxCheckXItemTX.Text = "automatically check XItem transaction and finish AT"
-        Me.ChBxCheckXItemTX.UseVisualStyleBackColor = True
-        '
-        'Label20
-        '
-        Me.Label20.AutoSize = True
-        Me.Label20.Location = New System.Drawing.Point(202, 163)
-        Me.Label20.Name = "Label20"
-        Me.Label20.Size = New System.Drawing.Size(44, 13)
-        Me.Label20.TabIndex = 14
-        Me.Label20.Text = "Minutes"
-        '
-        'CoBxNode
-        '
-        Me.CoBxNode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.CoBxNode.FormattingEnabled = True
-        Me.CoBxNode.Items.AddRange(New Object() {"http://nivbox.co.uk:6876/burst", "https://testnet.burstcoin.network:6876/burst", "https://testnet-2.burst-alliance.org:6876/burst", "https://wallet.testnet.burstscan.net/burst", "https://wallet.dev.burst-test.net/burst", "http://localhost:6876/burst"})
-        Me.CoBxNode.Location = New System.Drawing.Point(133, 187)
-        Me.CoBxNode.Name = "CoBxNode"
-        Me.CoBxNode.Size = New System.Drawing.Size(192, 21)
-        Me.CoBxNode.TabIndex = 13
-        '
-        'CoBxRefresh
-        '
-        Me.CoBxRefresh.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.CoBxRefresh.FormattingEnabled = True
-        Me.CoBxRefresh.Items.AddRange(New Object() {"1", "4", "10"})
-        Me.CoBxRefresh.Location = New System.Drawing.Point(133, 160)
-        Me.CoBxRefresh.Name = "CoBxRefresh"
-        Me.CoBxRefresh.Size = New System.Drawing.Size(63, 21)
-        Me.CoBxRefresh.TabIndex = 12
-        '
-        'Label19
-        '
-        Me.Label19.AutoSize = True
-        Me.Label19.Location = New System.Drawing.Point(6, 190)
-        Me.Label19.Name = "Label19"
-        Me.Label19.Size = New System.Drawing.Size(93, 13)
-        Me.Label19.TabIndex = 11
-        Me.Label19.Text = "Primary-API-Node:"
-        '
-        'Label6
-        '
-        Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(6, 163)
-        Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(65, 13)
-        Me.Label6.TabIndex = 10
-        Me.Label6.Text = "Refreshrate:"
-        '
-        'BtSaveSettings
-        '
-        Me.BtSaveSettings.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.BtSaveSettings.Location = New System.Drawing.Point(6, 227)
-        Me.BtSaveSettings.Name = "BtSaveSettings"
-        Me.BtSaveSettings.Size = New System.Drawing.Size(134, 23)
-        Me.BtSaveSettings.TabIndex = 9
-        Me.BtSaveSettings.Text = "save settings"
-        Me.BtSaveSettings.UseVisualStyleBackColor = False
-        '
-        'ChBxAutoSendPaymentInfo
-        '
-        Me.ChBxAutoSendPaymentInfo.AutoSize = True
-        Me.ChBxAutoSendPaymentInfo.Location = New System.Drawing.Point(6, 19)
-        Me.ChBxAutoSendPaymentInfo.Name = "ChBxAutoSendPaymentInfo"
-        Me.ChBxAutoSendPaymentInfo.Size = New System.Drawing.Size(319, 17)
-        Me.ChBxAutoSendPaymentInfo.TabIndex = 4
-        Me.ChBxAutoSendPaymentInfo.Text = "automatically send encrypted payment information to the buyer"
-        Me.ChBxAutoSendPaymentInfo.UseVisualStyleBackColor = True
-        '
-        'TBPaymentInfo
-        '
-        Me.TBPaymentInfo.Enabled = False
-        Me.TBPaymentInfo.Location = New System.Drawing.Point(146, 41)
-        Me.TBPaymentInfo.Name = "TBPaymentInfo"
-        Me.TBPaymentInfo.Size = New System.Drawing.Size(179, 20)
-        Me.TBPaymentInfo.TabIndex = 7
-        '
-        'GrpBxSeller
-        '
-        Me.GrpBxSeller.Controls.Add(Me.TabControl2)
-        Me.GrpBxSeller.ForeColor = System.Drawing.Color.White
-        Me.GrpBxSeller.Location = New System.Drawing.Point(355, 13)
-        Me.GrpBxSeller.Name = "GrpBxSeller"
-        Me.GrpBxSeller.Size = New System.Drawing.Size(405, 257)
-        Me.GrpBxSeller.TabIndex = 0
-        Me.GrpBxSeller.TabStop = False
-        Me.GrpBxSeller.Text = "PayPal Settings (Sandbox)"
-        '
-        'TabControl2
-        '
-        Me.TabControl2.Controls.Add(Me.TabPage4)
-        Me.TabControl2.Controls.Add(Me.TabPage5)
-        Me.TabControl2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TabControl2.Location = New System.Drawing.Point(3, 16)
-        Me.TabControl2.Name = "TabControl2"
-        Me.TabControl2.SelectedIndex = 0
-        Me.TabControl2.Size = New System.Drawing.Size(399, 238)
-        Me.TabControl2.TabIndex = 6
-        '
-        'TabPage4
-        '
-        Me.TabPage4.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.TabPage4.Controls.Add(Me.RBPayPalOrder)
-        Me.TabPage4.Controls.Add(Me.RBPayPalEMail)
-        Me.TabPage4.Controls.Add(Me.TBPayPalEMail)
-        Me.TabPage4.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage4.Name = "TabPage4"
-        Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage4.Size = New System.Drawing.Size(391, 212)
-        Me.TabPage4.TabIndex = 0
-        Me.TabPage4.Text = "Payment informations"
-        '
-        'RBPayPalOrder
-        '
-        Me.RBPayPalOrder.AutoSize = True
-        Me.RBPayPalOrder.Location = New System.Drawing.Point(5, 32)
-        Me.RBPayPalOrder.Name = "RBPayPalOrder"
-        Me.RBPayPalOrder.Size = New System.Drawing.Size(243, 17)
-        Me.RBPayPalOrder.TabIndex = 12
-        Me.RBPayPalOrder.Text = "create a PayPal Order (need PayPal Business)"
-        Me.RBPayPalOrder.UseVisualStyleBackColor = True
-        '
-        'RBPayPalEMail
-        '
-        Me.RBPayPalEMail.AutoSize = True
-        Me.RBPayPalEMail.Checked = True
-        Me.RBPayPalEMail.Location = New System.Drawing.Point(5, 7)
-        Me.RBPayPalEMail.Name = "RBPayPalEMail"
-        Me.RBPayPalEMail.Size = New System.Drawing.Size(93, 17)
-        Me.RBPayPalEMail.TabIndex = 10
-        Me.RBPayPalEMail.TabStop = True
-        Me.RBPayPalEMail.Text = "PayPal E-Mail:"
-        Me.RBPayPalEMail.UseVisualStyleBackColor = True
-        '
-        'TBPayPalEMail
-        '
-        Me.TBPayPalEMail.Location = New System.Drawing.Point(104, 6)
-        Me.TBPayPalEMail.Name = "TBPayPalEMail"
-        Me.TBPayPalEMail.Size = New System.Drawing.Size(262, 20)
-        Me.TBPayPalEMail.TabIndex = 7
-        '
-        'TabPage5
-        '
-        Me.TabPage5.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.TabPage5.Controls.Add(Me.BtCheckPayPalBiz)
-        Me.TabPage5.Controls.Add(Me.Label13)
-        Me.TabPage5.Controls.Add(Me.TBPayPalAPISecret)
-        Me.TabPage5.Controls.Add(Me.Label14)
-        Me.TabPage5.Controls.Add(Me.TBPayPalAPIUser)
-        Me.TabPage5.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage5.Name = "TabPage5"
-        Me.TabPage5.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage5.Size = New System.Drawing.Size(391, 212)
-        Me.TabPage5.TabIndex = 1
-        Me.TabPage5.Text = "Business API"
-        '
-        'BtCheckPayPalBiz
-        '
-        Me.BtCheckPayPalBiz.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.BtCheckPayPalBiz.Location = New System.Drawing.Point(76, 58)
-        Me.BtCheckPayPalBiz.Name = "BtCheckPayPalBiz"
-        Me.BtCheckPayPalBiz.Size = New System.Drawing.Size(75, 23)
-        Me.BtCheckPayPalBiz.TabIndex = 4
-        Me.BtCheckPayPalBiz.Text = "check"
-        Me.BtCheckPayPalBiz.UseVisualStyleBackColor = False
-        '
-        'Label13
-        '
-        Me.Label13.AutoSize = True
-        Me.Label13.Location = New System.Drawing.Point(9, 9)
-        Me.Label13.Name = "Label13"
-        Me.Label13.Size = New System.Drawing.Size(52, 13)
-        Me.Label13.TabIndex = 0
-        Me.Label13.Text = "API-User:"
-        '
-        'TBPayPalAPISecret
-        '
-        Me.TBPayPalAPISecret.Location = New System.Drawing.Point(76, 32)
-        Me.TBPayPalAPISecret.Name = "TBPayPalAPISecret"
-        Me.TBPayPalAPISecret.PasswordChar = Global.Microsoft.VisualBasic.ChrW(35)
-        Me.TBPayPalAPISecret.Size = New System.Drawing.Size(296, 20)
-        Me.TBPayPalAPISecret.TabIndex = 3
-        '
-        'Label14
-        '
-        Me.Label14.AutoSize = True
-        Me.Label14.Location = New System.Drawing.Point(9, 35)
-        Me.Label14.Name = "Label14"
-        Me.Label14.Size = New System.Drawing.Size(61, 13)
-        Me.Label14.TabIndex = 1
-        Me.Label14.Text = "API-Secret:"
-        '
-        'TBPayPalAPIUser
-        '
-        Me.TBPayPalAPIUser.Location = New System.Drawing.Point(76, 6)
-        Me.TBPayPalAPIUser.Name = "TBPayPalAPIUser"
-        Me.TBPayPalAPIUser.Size = New System.Drawing.Size(296, 20)
-        Me.TBPayPalAPIUser.TabIndex = 2
+        'SCSettings
+        '
+        Me.SCSettings.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SCSettings.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SCSettings.Location = New System.Drawing.Point(0, 0)
+        Me.SCSettings.Name = "SCSettings"
+        '
+        'SCSettings.Panel1
+        '
+        Me.SCSettings.Panel1.Controls.Add(Me.TVSettings)
+        Me.SCSettings.Size = New System.Drawing.Size(1709, 684)
+        Me.SCSettings.SplitterDistance = 226
+        Me.SCSettings.TabIndex = 10
+        '
+        'TVSettings
+        '
+        Me.TVSettings.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.TVSettings.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TVSettings.ForeColor = System.Drawing.Color.White
+        Me.TVSettings.Location = New System.Drawing.Point(0, 0)
+        Me.TVSettings.Name = "TVSettings"
+        TreeNode1.Name = "Defaults"
+        TreeNode1.Text = "Default Settings"
+        TreeNode2.Name = "MyOrderssettings"
+        TreeNode2.Text = "MyOrders Settings"
+        TreeNode3.Name = "Developements"
+        TreeNode3.Text = "Develope"
+        Me.TVSettings.Nodes.AddRange(New System.Windows.Forms.TreeNode() {TreeNode1, TreeNode2, TreeNode3})
+        Me.TVSettings.Size = New System.Drawing.Size(226, 684)
+        Me.TVSettings.TabIndex = 0
         '
         'SplitContainer12
         '
@@ -1958,7 +1203,7 @@ Partial Class PFPForm
         '
         Me.SplitContainer12.Panel2.BackColor = System.Drawing.SystemColors.Control
         Me.SplitContainer12.Panel2.Controls.Add(Me.TabControl1)
-        Me.SplitContainer12.Size = New System.Drawing.Size(1604, 739)
+        Me.SplitContainer12.Size = New System.Drawing.Size(1717, 739)
         Me.SplitContainer12.SplitterDistance = 25
         Me.SplitContainer12.TabIndex = 15
         '
@@ -1975,7 +1220,7 @@ Partial Class PFPForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1604, 761)
+        Me.ClientSize = New System.Drawing.Size(1717, 761)
         Me.Controls.Add(Me.SplitContainer12)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -1987,6 +1232,7 @@ Partial Class PFPForm
         Me.StatusStrip1.PerformLayout()
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
+        CType(Me.TBarCollateralPercent, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NUDSNOTXFee, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NUDSNOItemAmount, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NUDSNOCollateral, System.ComponentModel.ISupportInitialize).EndInit()
@@ -2064,29 +1310,9 @@ Partial Class PFPForm
         CType(Me.SplitContainer17, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer17.ResumeLayout(False)
         Me.TabPage3.ResumeLayout(False)
-        Me.GroupBox4.ResumeLayout(False)
-        Me.TestTabControl.ResumeLayout(False)
-        Me.TabPage6.ResumeLayout(False)
-        Me.TestGrpBoxConvertings.ResumeLayout(False)
-        Me.TestGrpBoxConvertings.PerformLayout()
-        Me.TabPage7.ResumeLayout(False)
-        Me.TestGrpBoxINITests.ResumeLayout(False)
-        Me.TestGrpBoxINITests.PerformLayout()
-        Me.TabPage8.ResumeLayout(False)
-        Me.TestGrpBoxPayPaltests.ResumeLayout(False)
-        Me.TabPage9.ResumeLayout(False)
-        Me.TestGrpBxATCom.ResumeLayout(False)
-        Me.TestGrpBxATCom.PerformLayout()
-        Me.TabPage10.ResumeLayout(False)
-        Me.TestGrpBoxMultithreadings.ResumeLayout(False)
-        Me.GroupBox3.ResumeLayout(False)
-        Me.GroupBox3.PerformLayout()
-        Me.GrpBxSeller.ResumeLayout(False)
-        Me.TabControl2.ResumeLayout(False)
-        Me.TabPage4.ResumeLayout(False)
-        Me.TabPage4.PerformLayout()
-        Me.TabPage5.ResumeLayout(False)
-        Me.TabPage5.PerformLayout()
+        Me.SCSettings.Panel1.ResumeLayout(False)
+        CType(Me.SCSettings, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SCSettings.ResumeLayout(False)
         Me.SplitContainer12.Panel1.ResumeLayout(False)
         Me.SplitContainer12.Panel1.PerformLayout()
         Me.SplitContainer12.Panel2.ResumeLayout(False)
@@ -2159,95 +1385,25 @@ Partial Class PFPForm
     Friend WithEvents SplitContainer17 As SplitContainer
     Friend WithEvents ColumnHeader34 As ColumnHeader
     Friend WithEvents TabPage3 As TabPage
-    Friend WithEvents GrpBxSeller As GroupBox
-    Friend WithEvents ChBxAutoSendPaymentInfo As CheckBox
-    Friend WithEvents TBPayPalAPISecret As TextBox
-    Friend WithEvents TBPayPalAPIUser As TextBox
-    Friend WithEvents Label14 As Label
-    Friend WithEvents Label13 As Label
-    Friend WithEvents TBPaymentInfo As TextBox
-    Friend WithEvents GroupBox3 As GroupBox
-    Friend WithEvents TabControl2 As TabControl
-    Friend WithEvents TabPage4 As TabPage
-    Friend WithEvents RBPayPalEMail As RadioButton
-    Friend WithEvents TBPayPalEMail As TextBox
-    Friend WithEvents TabPage5 As TabPage
     Friend WithEvents ColumnHeader41 As ColumnHeader
-    Friend WithEvents RBPayPalOrder As RadioButton
     Friend WithEvents BtPayOrder As Button
     Friend WithEvents TBManuMsg As TextBox
     Friend WithEvents Label15 As Label
     Friend WithEvents BtReCreatePayPalOrder As Button
     Friend WithEvents BtSendMsg As Button
     Friend WithEvents ChBxEncMsg As CheckBox
-    Friend WithEvents BtSaveSettings As Button
     Friend WithEvents NUDSNOAmount As NumericUpDown
     Friend WithEvents NUDSNOCollateral As NumericUpDown
     Friend WithEvents NUDSNOItemAmount As NumericUpDown
     Friend WithEvents NUDSNOTXFee As NumericUpDown
-    Friend WithEvents GroupBox4 As GroupBox
-    Friend WithEvents BtTestCreate As Button
-    Friend WithEvents BtTestFinish As Button
-    Friend WithEvents BtTestAccept As Button
     Friend WithEvents ColumnHeader16 As ColumnHeader
     Friend WithEvents ColumnHeader18 As ColumnHeader
     Friend WithEvents Label16 As Label
     Friend WithEvents LabXItem As Label
-    Friend WithEvents Label17 As Label
+    Friend WithEvents LabDealAmount As Label
     Friend WithEvents Label18 As Label
-    Friend WithEvents BtTestConvert As Button
-    Friend WithEvents TBTestConvert As TextBox
-    Friend WithEvents BtTestConvert2 As Button
-    Friend WithEvents BtTestDatStr2ULngList As Button
-    Friend WithEvents BtCheckPayPalBiz As Button
-    Friend WithEvents CoBxNode As ComboBox
-    Friend WithEvents CoBxRefresh As ComboBox
-    Friend WithEvents Label19 As Label
-    Friend WithEvents Label6 As Label
-    Friend WithEvents Label20 As Label
-    Friend WithEvents ListBox1 As ListBox
-    Friend WithEvents BtTestPPAPI As Button
-    Friend WithEvents BtTestCreatePPOrder As Button
-    Friend WithEvents ChBxCheckXItemTX As CheckBox
-    Friend WithEvents BtTestSetTXINI As Button
-    Friend WithEvents BtTestDelTXINI As Button
-    Friend WithEvents BtTestGetTXINI As Button
-    Friend WithEvents TBTestDelTXINI As TextBox
-    Friend WithEvents TBTestGetTXINI As TextBox
-    Friend WithEvents TBTestSetTXINI As TextBox
-    Friend WithEvents RBUseXItemSettings As RadioButton
-    Friend WithEvents RBUsePaymentInfo As RadioButton
-    Friend WithEvents BtTestInject As Button
-    Friend WithEvents TBTestInjectPP As TextBox
-    Friend WithEvents TBTestFinishPP As TextBox
-    Friend WithEvents TBTestAcceptPP As TextBox
-    Friend WithEvents TBTestCreatePP As TextBox
-    Friend WithEvents Label25 As Label
-    Friend WithEvents Label24 As Label
-    Friend WithEvents Label23 As Label
-    Friend WithEvents Label22 As Label
-    Friend WithEvents Label21 As Label
-    Friend WithEvents TBTestResponder As TextBox
-    Friend WithEvents BtTestMultiGetDetails As Button
-    Friend WithEvents LVTestMulti As ListView
-    Friend WithEvents ColumnHeader2 As ColumnHeader
-    Friend WithEvents ColumnHeader3 As ColumnHeader
-    Friend WithEvents ColumnHeader4 As ColumnHeader
-    Friend WithEvents ColumnHeader5 As ColumnHeader
-    Friend WithEvents ColumnHeader6 As ColumnHeader
-    Friend WithEvents BtTestExit As Button
-    Friend WithEvents BtTestMultiRefresh As Button
-    Friend WithEvents BtTestGetAt As Button
-    Friend WithEvents TestBar As ProgressBar
-    Friend WithEvents TestGrpBoxMultithreadings As GroupBox
-    Friend WithEvents TestGrpBoxINITests As GroupBox
-    Friend WithEvents TestGrpBoxPayPaltests As GroupBox
-    Friend WithEvents TestGrpBoxConvertings As GroupBox
-    Friend WithEvents TestGrpBxATCom As GroupBox
-    Friend WithEvents TestTabControl As TabControl
-    Friend WithEvents TabPage6 As TabPage
-    Friend WithEvents TabPage7 As TabPage
-    Friend WithEvents TabPage8 As TabPage
-    Friend WithEvents TabPage9 As TabPage
-    Friend WithEvents TabPage10 As TabPage
+    Friend WithEvents TBarCollateralPercent As TrackBar
+    Friend WithEvents LabColPercentage As Label
+    Friend WithEvents SCSettings As SplitContainer
+    Friend WithEvents TVSettings As TreeView
 End Class

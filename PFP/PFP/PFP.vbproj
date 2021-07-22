@@ -66,7 +66,7 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>019A05A879400EB0A179FC2A3CF1FE289832438E</ManifestCertificateThumbprint>
@@ -137,19 +137,47 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Tools\AES.vb" />
-    <Compile Include="Tools\BurstNET.vb" />
-    <Compile Include="Tools\ClsBurstAPI.vb" />
-    <Compile Include="Tools\ClsPayPal.vb" />
-    <Compile Include="Tools\ClsPayPalManager.vb" />
-    <Compile Include="Tools\CSV.vb" />
-    <Compile Include="Tools\Curve25519.vb" />
-    <Compile Include="Tools\EC-KCDSA.vb" />
-    <Compile Include="Tools\GZip.vb" />
-    <Compile Include="Tools\ModGlobal.vb" />
-    <Compile Include="Tools\modINITools.vb" />
-    <Compile Include="Tools\msgs.vb" />
-    <Compile Include="Tools\out.vb" />
+    <Compile Include="Source\Classes\Crypto\ClsColloquialWords.vb" />
+    <Compile Include="SubForms\FrmDevelope.Designer.vb">
+      <DependentUpon>FrmDevelope.vb</DependentUpon>
+    </Compile>
+    <Compile Include="SubForms\FrmDevelope.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SubForms\FrmGeneralSettings.Designer.vb">
+      <DependentUpon>FrmGeneralSettings.vb</DependentUpon>
+    </Compile>
+    <Compile Include="SubForms\FrmGeneralSettings.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SubForms\FrmMyOrderSettings.Designer.vb">
+      <DependentUpon>FrmMyOrderSettings.vb</DependentUpon>
+    </Compile>
+    <Compile Include="SubForms\FrmMyOrderSettings.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\Classes\ClsJSON.vb" />
+    <Compile Include="Source\Classes\ClsOrderSettings.vb" />
+    <Compile Include="Source\Classes\Crypto\ClsAES.vb" />
+    <Compile Include="Source\Classes\TCP_Communications\ClsDEXNET.vb" />
+    <Compile Include="Source\Classes\Crypto\ClsReedSolomon.vb" />
+    <Compile Include="Source\Classes\Signum\ClsSignumNET.vb" />
+    <Compile Include="Source\Classes\Signum\ClsSignumAPI.vb" />
+    <Compile Include="Source\Classes\ClsPayPal.vb" />
+    <Compile Include="Source\Classes\ClsPayPalManager.vb" />
+    <Compile Include="Source\Modules\ModConverts.vb" />
+    <Compile Include="Source\Modules\ModCrypto.vb" />
+    <Compile Include="Source\Modules\ModCSV.vb" />
+    <Compile Include="Source\Modules\ModJSON.vb" />
+    <Compile Include="Source\Namespaces\NSpCSV.vb" />
+    <Compile Include="Source\Classes\Crypto\ClsCurve25519.vb" />
+    <Compile Include="Source\Classes\Crypto\ClsEC-KCDSA.vb" />
+    <Compile Include="Source\Classes\ClsGZip.vb" />
+    <Compile Include="Source\Modules\ModGlobalFunctions.vb" />
+    <Compile Include="Source\Modules\ModINITools.vb" />
+    <Compile Include="Source\Classes\ClsMsgs.vb" />
+    <Compile Include="Source\Classes\ClsOut.vb" />
+    <Compile Include="Source\Classes\TCP_Communications\ClsTCPAPI.vb" />
     <Compile Include="TradeTracker\Graph.vb" />
     <Compile Include="TradeTracker\ModFunctions.vb" />
     <Compile Include="TradeTracker\TradeTrackerSlot.Designer.vb">
@@ -192,6 +220,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="obj\Debug\PFP.Form1.resources" />
     <EmbeddedResource Include="obj\Debug\PFP.Resources.resources" />
+    <EmbeddedResource Include="SubForms\FrmDevelope.resx">
+      <DependentUpon>FrmDevelope.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SubForms\FrmGeneralSettings.resx">
+      <DependentUpon>FrmGeneralSettings.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SubForms\FrmMyOrderSettings.resx">
+      <DependentUpon>FrmMyOrderSettings.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TradeTracker\TradeTrackerSlot.resx">
       <DependentUpon>TradeTrackerSlot.vb</DependentUpon>
     </EmbeddedResource>
@@ -231,6 +268,7 @@
     <Content Include="bin\Debug\PFP.exe" />
     <Content Include="bin\Debug\PFP.pdb" />
     <Content Include="bin\Debug\PFP.xml" />
+    <Content Include="logo.ico" />
     <Content Include="obj\Debug\TempPE\My Project.Resources.Designer.vb.dll" />
     <Content Include="obj\Debug\PFP.exe" />
     <Content Include="obj\Debug\PFP.pdb" />

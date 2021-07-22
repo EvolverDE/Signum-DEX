@@ -135,20 +135,20 @@ PFP
  <returns>-1, 0 oder 1 (gemäß Vergleich)</returns>
  <remarks></remarks>
 </member>
-<member name="M:PFP.BurstNET.GenerateMasterKeys">
+<member name="M:PFP.SignumNET.GenerateMasterKeys">
  <summary>
  Generates the Masterkeys from PassPhrase 0=PublicKey; 1=SignKey; 2=AgreementKey
  </summary>
  <returns>List of Masterkeys</returns>
 </member>
-<member name="M:PFP.BurstNET.Keygen(System.Byte[])">
+<member name="M:PFP.SignumNET.Keygen(System.Byte[])">
  <summary>
  Generates the Masterkeys from KeyHash
  </summary>
  <param name="KeyHash">The 32 Byte hashed PassPhrase</param>
  <returns>Array of Masterkeys</returns>
 </member>
-<member name="M:PFP.BurstNET.GenerateSignature(System.String,System.String)">
+<member name="M:PFP.SignumNET.GenerateSignature(System.String,System.String)">
  <summary>
  Generates the Signature of the MessageHEX
  </summary>
@@ -156,7 +156,7 @@ PFP
  <param name="PrivateKey">The Private Key to Sign with</param>
  <returns>Signature in HEX String</returns>
 </member>
-<member name="M:PFP.BurstNET.VerifySignature(System.String,System.String,System.String)">
+<member name="M:PFP.SignumNET.VerifySignature(System.String,System.String,System.String)">
  <summary>
  Verify the Signature of the UnsignedMessageHEX String
  </summary>
@@ -165,7 +165,7 @@ PFP
  <param name="PublicKey">The Public Key as HEX String</param>
  <returns></returns>
 </member>
-<member name="M:PFP.BurstNET.EncryptMessage(System.String,System.String,System.String)">
+<member name="M:PFP.SignumNET.EncryptMessage(System.String,System.String,System.String)">
  <summary>
  Encrypts Message from Parameters 0=Data; 1=Nonce
  </summary>
@@ -174,7 +174,7 @@ PFP
  <param name="SenderAgreementKeyHex"></param>
  <returns></returns>
 </member>
-<member name="M:PFP.BurstNET.EncryptData(System.Byte[],System.String,System.String)">
+<member name="M:PFP.SignumNET.EncryptData(System.Byte[],System.String,System.String)">
  <summary>
  Encrypt Data from Parameters 0=Data; 1=Nonce
  </summary>
