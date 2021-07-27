@@ -25,6 +25,7 @@ Public Class PFPForm
     Property CoBxChartSelectedItem As String = ""
     Property CoBxTickSelectedItem As String = ""
 
+    Property InfoOut As Boolean = GetINISetting(E_Setting.InfoOut, True)
 
 
     Function GetPaymentInfoFromOrderSettings(ByVal TX As String, Optional ByVal Quantity As Double = 0.0, Optional ByVal XAmount As Double = 0.0, Optional ByVal Market As String = "") As String
@@ -308,6 +309,11 @@ Public Class PFPForm
     Property Shutdown As Boolean = False
     Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
 
+        If InfoOut Then
+            Dim IOut As ClsOut = New ClsOut(Application.StartupPath)
+            IOut.Info2File(Application.ProductName + "-info from Form1_FormClosing(): -> app close")
+        End If
+
         'If ChBxTCPAPI.Checked Then
         Dim Wait As Boolean = TCPAPI.StopAPIServer()
         If Not IsNothing(DEXNET) Then
@@ -455,7 +461,7 @@ Public Class PFPForm
         End If
 
 
-        InitiateDEXNET()
+        'InitiateDEXNET()
 
         PrimaryNode = GetINISetting(E_Setting.DefaultNode, "http://nivbox.co.uk:6876/burst")
 
@@ -484,7 +490,7 @@ Public Class PFPForm
         Dim GetThr As Threading.Thread = New Threading.Thread(AddressOf GetThread)
         GetThr.Start()
 
-        SplitContainer2.Panel1.Visible = False
+        'SplitContainer2.Panel1.Visible = False
 
         ResetLVColumns()
 
@@ -605,6 +611,20 @@ Public Class PFPForm
 
                 Application.DoEvents()
 
+                If Not IsNothing(DEXNET) Then
+
+                    Dim Peers As List(Of ClsDEXNET.S_Peer) = DEXNET.GetPeers()
+
+                    'TODO: first start skip
+                    If Peers.Count = 0 Then
+                        DEXNET.StopServer()
+                        InitiateDEXNET()
+                    End If
+
+                Else
+                    InitiateDEXNET()
+                End If
+
                 Wait = Loading()
                 Wait = SetInLVs()
 
@@ -636,9 +656,7 @@ Public Class PFPForm
                 Dim ViewThread As Threading.Thread = New Threading.Thread(AddressOf LoadHistory)
                 ViewThread.Start(New List(Of Object)({CoBxChartVal, CoBxTickVal, CurrentMarket}))
 
-                'SplitContainer1.Visible = True
-                'SplitContainer2.Panel1.Visible = True
-                'SplitContainer12.Enabled = True
+
                 TTTL.TradeTrackTimer.Enabled = True
                 BlockTimer.Enabled = True
 
@@ -655,12 +673,6 @@ Public Class PFPForm
 
     End Sub
 
-    Private Sub Form1_ResizeBegin(sender As Object, e As EventArgs) Handles MyBase.ResizeBegin
-        'SplitContainer12.Visible = False
-    End Sub
-    Private Sub Form1_ResizeEnd(sender As Object, e As EventArgs) Handles MyBase.ResizeEnd
-        'SplitContainer12.Visible = True
-    End Sub
 
     Property ForceReload As Boolean = False
     Private Sub CoBxMarket_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CoBxMarket.SelectedIndexChanged, CoBxMarket.DropDownClosed
@@ -736,7 +748,6 @@ Public Class PFPForm
         End If
 
     End Sub
-
     Private Sub TBarCollateralPercent_Scroll(sender As Object, e As EventArgs) Handles TBarCollateralPercent.Scroll
 
         If TBarCollateralPercent.Value = 0 Then
@@ -768,7 +779,6 @@ Public Class PFPForm
         End If
 
     End Sub
-
     Private Sub NUDSNOCollateral_ValueChanged(sender As Object, e As EventArgs) Handles NUDSNOCollateral.ValueChanged
 
         Dim T_Amount As Decimal = NUDSNOAmount.Value
@@ -788,7 +798,6 @@ Public Class PFPForm
         'TBarCollateralPercent.Value = T_Percentage / 10
 
     End Sub
-
     Private Sub NUDSNOAmount_ValueChanged(sender As Object, e As EventArgs) Handles NUDSNOAmount.ValueChanged
 
 
@@ -982,6 +991,12 @@ Public Class PFPForm
 
                 End If
 
+            Else
+                ClsMsgs.MBox("All Payment Channels are in Use.", "No free Payment Channel found",,, ClsMsgs.Status.Information)
+                BtSNOSetOrder.Text = "Set Order"
+                BtSNOSetOrder.Enabled = True
+                Exit Sub
+
             End If
 
         Catch ex As Exception
@@ -998,10 +1013,6 @@ Public Class PFPForm
     End Sub
 
 
-
-    Private Sub LVSellorders_MouseDown(sender As Object, e As MouseEventArgs) Handles LVSellorders.MouseDown
-        'BtBuy.Text = "Buy"
-    End Sub
     Private Sub LVSellorders_MouseUp(sender As Object, e As MouseEventArgs) Handles LVSellorders.MouseUp
         BtBuy.Text = "Buy"
         LVSellorders.ContextMenuStrip = Nothing
@@ -1045,26 +1056,6 @@ Public Class PFPForm
             End If
 
         End If
-    End Sub
-
-    'Private Sub LVSellorders_Click(sender As Object, e As EventArgs) Handles LVSellorders.Click
-
-    '    If LVSellorders.SelectedItems.Count > 0 Then
-
-    '        Dim Order As S_BLSAT = DirectCast(LVSellorders.SelectedItems(0).Tag, S_BLSAT)
-
-    '        If Order.Initiator = TBSNOAddress.Text Then
-    '            BtBuy.Text = "cancel"
-    '        Else
-    '            BtBuy.Text = "Buy"
-    '        End If
-
-    '    End If
-
-    'End Sub
-
-    Private Sub LVBuyorders_MouseDown(sender As Object, e As MouseEventArgs) Handles LVBuyorders.MouseDown
-        'BtSell.Text = "Sell"
     End Sub
     Private Sub LVBuyorders_MouseUp(sender As Object, e As MouseEventArgs) Handles LVBuyorders.MouseUp
         BtSell.Text = "Sell"
@@ -1110,21 +1101,7 @@ Public Class PFPForm
 
         End If
     End Sub
-    'Private Sub LVBuyorders_Click(sender As Object, e As EventArgs) Handles LVBuyorders.Click
 
-    '    If LVBuyorders.SelectedItems.Count > 0 Then
-
-    '        Dim Order As S_BLSAT = DirectCast(LVBuyorders.SelectedItems(0).Tag, S_BLSAT)
-
-    '        If Order.Initiator = TBSNOAddress.Text Then
-    '            BtSell.Text = "cancel"
-    '        Else
-    '            BtSell.Text = "Sell"
-    '        End If
-
-    '    End If
-
-    'End Sub
 
     Private Sub BtBuy_Click(sender As Object, e As EventArgs) Handles BtBuy.Click
 
@@ -2129,7 +2106,7 @@ Public Class PFPForm
             LVMyOpenOrders.Visible = True
             LVMyClosedOrders.Visible = True
 
-            SplitContainer2.Panel1.Visible = True
+            'SplitContainer2.Panel1.Visible = True
 
         Catch ex As Exception
             Dim Out As ClsOut = New ClsOut(Application.StartupPath)
@@ -3924,16 +3901,21 @@ Public Class PFPForm
 
         Try
 
-            If GetINISetting(E_Setting.DEXNETEnable, False) Then
+            If GetINISetting(E_Setting.DEXNETEnable, True) Then
 
                 If IsNothing(DEXNET) Then
-                    DEXNET = New ClsDEXNET(GetINISetting(E_Setting.DEXNETServerPort, 8131), True)
+                    DEXNET = New ClsDEXNET(GetINISetting(E_Setting.DEXNETServerPort, 8131), GetINISetting(E_Setting.DEXNETShowStatus, False))
                     DEXNET.DEXNET_AgreeKeyHEX = T_AgreementKeyHEX
+                Else
+                    If DEXNET.DEXNETClose = True Then
+                        DEXNET = New ClsDEXNET(GetINISetting(E_Setting.DEXNETServerPort, 8131), GetINISetting(E_Setting.DEXNETShowStatus, False))
+                        DEXNET.DEXNET_AgreeKeyHEX = T_AgreementKeyHEX
+                    End If
                 End If
+
 
                 Dim DEXNETNodesString As String = GetINISetting(E_Setting.DEXNETNodes, "burstcoin.online:8131")
                 Dim DEXNETMyHost As String = GetINISetting(E_Setting.DEXNETMyHost, "")
-
 
 
                 Dim DEXNETNodes As List(Of String) = New List(Of String)
@@ -5588,11 +5570,19 @@ Public Class PFPForm
 
                 For i As Integer = 0 To Cnt - 1
 
-                    If APIRequestList.Count < Cnt Then
+                    If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
                         Continue While
                     End If
 
-                    Dim Request As S_APIRequest = APIRequestList(i)
+                    Dim Request As S_APIRequest = New S_APIRequest
+
+                    Try
+                        Request = APIRequestList(i)
+                    Catch ex As Exception
+                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                        Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While1): -> " + ex.Message)
+                    End Try
+
 
                     If Request.Command = "Exit()" Then
                         Exit While
@@ -5609,11 +5599,17 @@ Public Class PFPForm
 
                             NuNodeList.RemoveAt(0)
 
-                            If APIRequestList.Count < Cnt Then
+                            If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
                                 Continue While
                             End If
 
-                            APIRequestList(i) = Request
+                            Try
+                                APIRequestList(i) = Request
+                            Catch ex As Exception
+                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While2): -> " + ex.Message)
+                            End Try
+
                             Continue For
 
                         End If
@@ -5631,13 +5627,18 @@ Public Class PFPForm
                         Request.RequestThread = New Threading.Thread(AddressOf SubGetThread)
                         Request.Status = "Requesting..."
 
-                        If APIRequestList.Count < Cnt Then
+                        If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
                             Continue While
                         End If
 
                         Request.RequestThread.Start({i, Request})
 
-                        APIRequestList(i) = Request
+                        Try
+                            APIRequestList(i) = Request
+                        Catch ex As Exception
+                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                            Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While3): -> " + ex.Message)
+                        End Try
 
                     ElseIf Request.Status = "Requesting..." Then
                         'loadbalancing
@@ -5652,11 +5653,17 @@ Public Class PFPForm
                             If Node = Request.Node Then
                                 founded = True
 
-                                If APIRequestList.Count < Cnt Then
+                                If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
                                     Continue While
                                 End If
 
-                                APIRequestList(i) = Request
+                                Try
+                                    APIRequestList(i) = Request
+                                Catch ex As Exception
+                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                    Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While4): -> " + ex.Message)
+                                End Try
+
                                 Exit For
                             End If
                         Next
@@ -5678,6 +5685,11 @@ Public Class PFPForm
             End Try
 
         End While
+
+        If InfoOut Then
+            Dim IOut As ClsOut = New ClsOut(Application.StartupPath)
+            IOut.Info2File(Application.ProductName + "-info from GetThread(): -> end while")
+        End If
 
         Try
 
@@ -6099,6 +6111,18 @@ Public Class PFPForm
         End Try
 
     End Function
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles BtChartGFXOnOff.Click
+
+        If TTTL.TradeTrackTimer.Enabled Then
+            TTTL.TradeTrackTimer.Enabled = False
+            SplitContainer2.Panel1.Visible = False
+        Else
+            SplitContainer2.Panel1.Visible = True
+            TTTL.TradeTrackTimer.Enabled = True
+        End If
+
+    End Sub
 
 #End Region
 

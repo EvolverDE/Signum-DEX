@@ -32,7 +32,7 @@
 
 
         'TBTestATID.Text = ClsSignumAPI._ReferenceTX.ToString
-        ChBxTestDEXNETEnable.Checked = GetINISetting(E_Setting.DEXNETEnable, False)
+        ChBxTestDEXNETEnable.Checked = GetINISetting(E_Setting.DEXNETEnable, True)
         ChBxTestDEXNETShowStatus.Checked = GetINISetting(E_Setting.DEXNETShowStatus, False)
 
         Dim PPAPI As ClsPayPal = New ClsPayPal
@@ -750,6 +750,18 @@
 #Region "Test"
     Sub test()
 
+    End Sub
+
+    Private Sub ClearEntryToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ClearEntryToolStripMenuItem.Click
+
+        If LiBoDEXNETStatus.SelectedItems.Count > 0 Then
+            LiBoDEXNETStatus.Items.Remove(LiBoDEXNETStatus.SelectedItem)
+        End If
+
+    End Sub
+
+    Private Sub ClearAllToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ClearAllToolStripMenuItem.Click
+        LiBoDEXNETStatus.Items.Clear()
     End Sub
 
 #End Region

@@ -85,9 +85,10 @@ Module ModINITools
         AutoSignalTransactions = 300
         AutoInfoTransactions = 301
         'Develope
-        TCPAPIShowStatus = 400
-        DEXNETEnable = 401
-        DEXNETShowStatus = 402
+        InfoOut = 400
+        TCPAPIShowStatus = 401
+        DEXNETEnable = 402
+        DEXNETShowStatus = 403
 
     End Enum
 

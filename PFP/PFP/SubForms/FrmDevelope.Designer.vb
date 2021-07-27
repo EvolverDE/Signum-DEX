@@ -87,6 +87,8 @@ Partial Class FrmDevelope
         Me.LiBoPayPalComs = New System.Windows.Forms.ListBox()
         Me.TabPage9 = New System.Windows.Forms.TabPage()
         Me.TestGrpBxATCom = New System.Windows.Forms.GroupBox()
+        Me.Label35 = New System.Windows.Forms.Label()
+        Me.TBTestATComCollateral = New System.Windows.Forms.TextBox()
         Me.Label34 = New System.Windows.Forms.Label()
         Me.TBTestATComTempSecretKey = New System.Windows.Forms.TextBox()
         Me.BtTestATComConvertTempSecretKey = New System.Windows.Forms.Button()
@@ -179,8 +181,9 @@ Partial Class FrmDevelope
         Me.Label29 = New System.Windows.Forms.Label()
         Me.TBTestMyPublicKey = New System.Windows.Forms.TextBox()
         Me.Label28 = New System.Windows.Forms.Label()
-        Me.Label35 = New System.Windows.Forms.Label()
-        Me.TBTestATComCollateral = New System.Windows.Forms.TextBox()
+        Me.CMSTestLiBoDEXNETStatus = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.ClearEntryToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ClearAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.TestTabControl.SuspendLayout()
         Me.TabPage6.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
@@ -244,6 +247,7 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel1.SuspendLayout()
         Me.SplitContainer11.Panel2.SuspendLayout()
         Me.SplitContainer11.SuspendLayout()
+        Me.CMSTestLiBoDEXNETStatus.SuspendLayout()
         Me.SuspendLayout()
         '
         'TestTabControl
@@ -915,6 +919,23 @@ Partial Class FrmDevelope
         Me.TestGrpBxATCom.TabStop = False
         Me.TestGrpBxATCom.Text = "AT Communication"
         '
+        'Label35
+        '
+        Me.Label35.AutoSize = True
+        Me.Label35.ForeColor = System.Drawing.Color.Black
+        Me.Label35.Location = New System.Drawing.Point(6, 94)
+        Me.Label35.Name = "Label35"
+        Me.Label35.Size = New System.Drawing.Size(53, 13)
+        Me.Label35.TabIndex = 50
+        Me.Label35.Text = "Collateral:"
+        '
+        'TBTestATComCollateral
+        '
+        Me.TBTestATComCollateral.Location = New System.Drawing.Point(9, 110)
+        Me.TBTestATComCollateral.Name = "TBTestATComCollateral"
+        Me.TBTestATComCollateral.Size = New System.Drawing.Size(73, 20)
+        Me.TBTestATComCollateral.TabIndex = 49
+        '
         'Label34
         '
         Me.Label34.AutoSize = True
@@ -1548,6 +1569,7 @@ Partial Class FrmDevelope
         '
         'LiBoDEXNETStatus
         '
+        Me.LiBoDEXNETStatus.ContextMenuStrip = Me.CMSTestLiBoDEXNETStatus
         Me.LiBoDEXNETStatus.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LiBoDEXNETStatus.FormattingEnabled = True
         Me.LiBoDEXNETStatus.Location = New System.Drawing.Point(0, 0)
@@ -1832,22 +1854,23 @@ Partial Class FrmDevelope
         Me.Label28.TabIndex = 0
         Me.Label28.Text = "My Public Key:"
         '
-        'Label35
+        'CMSTestLiBoDEXNETStatus
         '
-        Me.Label35.AutoSize = True
-        Me.Label35.ForeColor = System.Drawing.Color.Black
-        Me.Label35.Location = New System.Drawing.Point(6, 94)
-        Me.Label35.Name = "Label35"
-        Me.Label35.Size = New System.Drawing.Size(53, 13)
-        Me.Label35.TabIndex = 50
-        Me.Label35.Text = "Collateral:"
+        Me.CMSTestLiBoDEXNETStatus.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ClearEntryToolStripMenuItem, Me.ClearAllToolStripMenuItem})
+        Me.CMSTestLiBoDEXNETStatus.Name = "CMSTestLiBoDEXNETStatus"
+        Me.CMSTestLiBoDEXNETStatus.Size = New System.Drawing.Size(181, 70)
         '
-        'TBTestATComCollateral
+        'ClearEntryToolStripMenuItem
         '
-        Me.TBTestATComCollateral.Location = New System.Drawing.Point(9, 110)
-        Me.TBTestATComCollateral.Name = "TBTestATComCollateral"
-        Me.TBTestATComCollateral.Size = New System.Drawing.Size(73, 20)
-        Me.TBTestATComCollateral.TabIndex = 49
+        Me.ClearEntryToolStripMenuItem.Name = "ClearEntryToolStripMenuItem"
+        Me.ClearEntryToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.ClearEntryToolStripMenuItem.Text = "clear entry"
+        '
+        'ClearAllToolStripMenuItem
+        '
+        Me.ClearAllToolStripMenuItem.Name = "ClearAllToolStripMenuItem"
+        Me.ClearAllToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.ClearAllToolStripMenuItem.Text = "clear all"
         '
         'FrmDevelope
         '
@@ -1937,6 +1960,7 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer11, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer11.ResumeLayout(False)
+        Me.CMSTestLiBoDEXNETStatus.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -2097,4 +2121,7 @@ Partial Class FrmDevelope
     Friend WithEvents BtTestATComConvertTempSecretKey As Button
     Friend WithEvents Label35 As Label
     Friend WithEvents TBTestATComCollateral As TextBox
+    Friend WithEvents CMSTestLiBoDEXNETStatus As ContextMenuStrip
+    Friend WithEvents ClearEntryToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ClearAllToolStripMenuItem As ToolStripMenuItem
 End Class

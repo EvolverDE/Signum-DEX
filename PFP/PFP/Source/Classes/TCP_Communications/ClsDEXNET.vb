@@ -414,7 +414,7 @@ Public Class ClsDEXNET
             Catch ex As Exception
 
                 If ShowStatus Then
-                    StatusList.Add("Listen(Port:" + DEXNET_ServerPort.ToString + "): " + ex.Message)
+                    StatusList.Add("(" + Now.ToShortDateString + " " + Now.ToLongTimeString + ") Listen(Port:" + DEXNET_ServerPort.ToString + "): " + ex.Message)
                 End If
 
                 If Not DEXNETClose Then
@@ -502,7 +502,7 @@ Public Class ClsDEXNET
     Private Sub Refresher()
 
         While Not DEXNETClose
-
+            Application.DoEvents()
             Dim Wait As Boolean = ClearList()
             Wait = ProcessMessages()
             Wait = SendMessages()

@@ -110,6 +110,7 @@ Partial Class PFPForm
         Me.SCSettings = New System.Windows.Forms.SplitContainer()
         Me.TVSettings = New System.Windows.Forms.TreeView()
         Me.SplitContainer12 = New System.Windows.Forms.SplitContainer()
+        Me.BtChartGFXOnOff = New System.Windows.Forms.Button()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.StatusStrip1.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
@@ -1189,6 +1190,7 @@ Partial Class PFPForm
         '
         'SplitContainer12.Panel1
         '
+        Me.SplitContainer12.Panel1.Controls.Add(Me.BtChartGFXOnOff)
         Me.SplitContainer12.Panel1.Controls.Add(Me.BtCheckAddress)
         Me.SplitContainer12.Panel1.Controls.Add(Me.Label4)
         Me.SplitContainer12.Panel1.Controls.Add(Me.Label11)
@@ -1206,6 +1208,15 @@ Partial Class PFPForm
         Me.SplitContainer12.Size = New System.Drawing.Size(1717, 739)
         Me.SplitContainer12.SplitterDistance = 25
         Me.SplitContainer12.TabIndex = 15
+        '
+        'BtChartGFXOnOff
+        '
+        Me.BtChartGFXOnOff.Location = New System.Drawing.Point(1093, 1)
+        Me.BtChartGFXOnOff.Name = "BtChartGFXOnOff"
+        Me.BtChartGFXOnOff.Size = New System.Drawing.Size(99, 23)
+        Me.BtChartGFXOnOff.TabIndex = 32
+        Me.BtChartGFXOnOff.Text = "Chart GFX on/off"
+        Me.BtChartGFXOnOff.UseVisualStyleBackColor = True
         '
         'Label4
         '
@@ -1406,4 +1417,5 @@ Partial Class PFPForm
     Friend WithEvents LabColPercentage As Label
     Friend WithEvents SCSettings As SplitContainer
     Friend WithEvents TVSettings As TreeView
+    Friend WithEvents BtChartGFXOnOff As Button
 End Class
