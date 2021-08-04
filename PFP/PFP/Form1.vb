@@ -2863,7 +2863,7 @@ Public Class PFPForm
                                             Dim PPAPI As ClsPayPal = New ClsPayPal()
 
                                             AlreadySend = PPAPI.URL + "/checkoutnow?token=" + PayPalOrder '"https://www.sandbox.paypal.com/checkoutnow?token=" 
-                                            Process.Start(AlreadySend)
+                                            'Process.Start(AlreadySend)
                                         End If
 
                                     Else
