@@ -3914,7 +3914,7 @@ Public Class PFPForm
                 End If
 
 
-                Dim DEXNETNodesString As String = GetINISetting(E_Setting.DEXNETNodes, "burstcoin.online:8131")
+                Dim DEXNETNodesString As String = GetINISetting(E_Setting.DEXNETNodes, "signum.zone:8131")
                 Dim DEXNETMyHost As String = GetINISetting(E_Setting.DEXNETMyHost, "")
 
 
@@ -5570,11 +5570,12 @@ Public Class PFPForm
 
                 For i As Integer = 0 To Cnt - 1
 
+                    Dim Request As S_APIRequest = New S_APIRequest
+
                     If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
                         Continue While
                     End If
 
-                    Dim Request As S_APIRequest = New S_APIRequest
 
                     Try
                         Request = APIRequestList(i)
