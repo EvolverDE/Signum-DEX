@@ -12,3 +12,8 @@ In der Entwicklungsphase wird eine PFP.EXE-Datei zur Verfügung gestellt, die an
 Die Einstellungen werden mit Standard-Werten neben der PFP.EXE-Datei automatisch in einer Settings.ini-Datei erstellt. Neben dem Programm können auch dort direkt Änderungen vorgenommen werden.
 # Was bedeuten die anderen Dateien, die neben der PFP.EXE erstellt werden?
 Neben der Settings.ini werden noch weitere Dateien wie z.b. "cache.dat" und "cache2.dat" sowie mögliche .LOG-Dateien erstellt. Die cache.dat enthält informationen aller auf der Signum.network blockchain befindlichen Smart Contracts. Die chache2.dat enthält Zahlungsinformationen der eigenen Aufträge.
+
+# Hier ist eine kleine Funktionsübersicht
+- sichere Verbindung zu öffentlichen signa-nodes aufbauen dank integrierter EC-KCDSA und Curve19255 Lösungen
+- eine TCP API für externe Applikationen zur verfügung stellen
+- mit dem integriertem auf TCP basiertem DEXNET das Signa-Netzwerk um offchain-Lösungen erweitern um das Handels-Erlebnis zu verbessern
