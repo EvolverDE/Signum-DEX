@@ -7,7 +7,7 @@ PFP basiert auf den Smart Contracts der Signum.network Blockchain und unterstüt
 # Welche Vorraussetzungen braucht man?
 Da PFP auf dem .NET-Framework in der Version 4.6.1 basiert, ist ein Betriebssystem welches dieses ünterstützt ebenfalls Vorraussetzung.
 # Wie installiert man PFP?
-In der Entwicklungsphase wird eine PFP.EXE-Datei zur Verfügung gestellt, die an einen beliebigen Ort auf einer Festplatte verschoben und dort genutzt werden kann.
+In der Entwicklungsphase wird eine PFP.EXE-Datei unter https://github.com/EvolverDE/Signum/blob/master/PFP/PFP/bin/Debug/PFP.exe zur Verfügung gestellt, die an einen beliebigen Ort auf einer Festplatte verschoben und dort genutzt werden kann.
 # Welche Einstellungen müssen vorgenommen werden?
 Die Einstellungen werden mit Standard-Werten neben der PFP.EXE-Datei automatisch in einer Settings.ini-Datei erstellt. Neben dem Programm können auch dort direkt Änderungen vorgenommen werden.
 # Was bedeuten die anderen Dateien, die neben der PFP.EXE erstellt werden?
