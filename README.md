@@ -6,7 +6,7 @@ PFP soll einen einfachen Einstieg in die Krypto-Welt ermöglichen.
 PFP basiert auf den Smart Contracts der Signum.network Blockchain und unterstützt neben dessen Coin "Signa" alle verfügbaren Fiat-Währungen die PayPal auch unterstützt. Diese sind unter folgendem Link zu finden: https://developer.paypal.com/docs/api/reference/currency-codes/
 # Welche Vorraussetzungen braucht man?
 Da PFP auf dem .NET-Framework in der Version 4.6.1 basiert, ist ein Betriebssystem welches dieses ünterstützt ebenfalls Vorraussetzung.
-# Wie installiere ich PFP?
+# Wie installiert man PFP?
 In der Entwicklungsphase wird eine PFP.EXE-Datei zur Verfügung gestellt, die an einen beliebigen Ort auf einer Festplatte verschoben und dort genutzt werden kann.
 # Welche Einstellungen müssen vorgenommen werden?
 Die Einstellungen werden mit Standard-Werten neben der PFP.EXE-Datei automatisch in einer Settings.ini-Datei erstellt. Neben dem Programm können auch dort direkt Änderungen vorgenommen werden.
