@@ -22,4 +22,4 @@ Neben der Settings.ini werden noch weitere Dateien wie z.b. "cache.dat" und "cac
 
 # Bekannte Probleme
 - tote DEXNET-Peers können in der Liste der verbundenen Peers verbleiben (mögliche Lösung: einen Ping der wenn nicht nach einer bestimmten Zeit antwortet den Peer entfernt)
-- dauerschleife in der PayPal-Sandbox wenn man PayPal-Orders über PayPal bezahlen will
+- dauerschleife in der PayPal-Sandbox wenn man PayPal-Orders über die Sandbox bezahlen will
