@@ -81,10 +81,24 @@ Partial Class PFPForm
         Me.SplitContainer5 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer6 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer7 = New System.Windows.Forms.SplitContainer()
+        Me.CoBxSellFilterMaxOrders = New System.Windows.Forms.ComboBox()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.BtShowSellFilter = New System.Windows.Forms.Button()
         Me.SplitContainer8 = New System.Windows.Forms.SplitContainer()
+        Me.SplitContainerSellFilter = New System.Windows.Forms.SplitContainer()
+        Me.ChLBSellFilterMethods = New System.Windows.Forms.CheckedListBox()
+        Me.ChBxSellFilterShowAutofinish = New System.Windows.Forms.CheckBox()
+        Me.ChBxSellFilterShowAutoinfo = New System.Windows.Forms.CheckBox()
         Me.SplitContainer9 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer10 = New System.Windows.Forms.SplitContainer()
+        Me.CoBxBuyFilterMaxOrders = New System.Windows.Forms.ComboBox()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.BtShowBuyFilter = New System.Windows.Forms.Button()
         Me.SplitContainer11 = New System.Windows.Forms.SplitContainer()
+        Me.SplitContainerBuyFilter = New System.Windows.Forms.SplitContainer()
+        Me.ChBxBuyFilterShowAutofinish = New System.Windows.Forms.CheckBox()
+        Me.ChLBBuyFilterMethods = New System.Windows.Forms.CheckedListBox()
+        Me.ChBxBuyFilterShowAutoinfo = New System.Windows.Forms.CheckBox()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
@@ -151,6 +165,10 @@ Partial Class PFPForm
         Me.SplitContainer8.Panel1.SuspendLayout()
         Me.SplitContainer8.Panel2.SuspendLayout()
         Me.SplitContainer8.SuspendLayout()
+        CType(Me.SplitContainerSellFilter, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainerSellFilter.Panel1.SuspendLayout()
+        Me.SplitContainerSellFilter.Panel2.SuspendLayout()
+        Me.SplitContainerSellFilter.SuspendLayout()
         CType(Me.SplitContainer9, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer9.Panel2.SuspendLayout()
         Me.SplitContainer9.SuspendLayout()
@@ -162,6 +180,10 @@ Partial Class PFPForm
         Me.SplitContainer11.Panel1.SuspendLayout()
         Me.SplitContainer11.Panel2.SuspendLayout()
         Me.SplitContainer11.SuspendLayout()
+        CType(Me.SplitContainerBuyFilter, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainerBuyFilter.Panel1.SuspendLayout()
+        Me.SplitContainerBuyFilter.Panel2.SuspendLayout()
+        Me.SplitContainerBuyFilter.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
@@ -203,7 +225,7 @@ Partial Class PFPForm
         Me.StatusStrip1.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.StatusStrip1.ImageScalingSize = New System.Drawing.Size(24, 24)
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.StatusBar, Me.StatusBlockLabel, Me.StatusFeeLabel})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 739)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 803)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(1717, 22)
         Me.StatusStrip1.TabIndex = 1
@@ -249,7 +271,7 @@ Partial Class PFPForm
         Me.LVSellorders.Name = "LVSellorders"
         Me.LVSellorders.RightToLeft = System.Windows.Forms.RightToLeft.Yes
         Me.LVSellorders.RightToLeftLayout = True
-        Me.LVSellorders.Size = New System.Drawing.Size(848, 202)
+        Me.LVSellorders.Size = New System.Drawing.Size(848, 152)
         Me.LVSellorders.TabIndex = 2
         Me.LVSellorders.UseCompatibleStateImageBehavior = False
         Me.LVSellorders.View = System.Windows.Forms.View.Details
@@ -279,7 +301,7 @@ Partial Class PFPForm
         Me.LVBuyorders.Location = New System.Drawing.Point(0, 0)
         Me.LVBuyorders.MultiSelect = False
         Me.LVBuyorders.Name = "LVBuyorders"
-        Me.LVBuyorders.Size = New System.Drawing.Size(841, 202)
+        Me.LVBuyorders.Size = New System.Drawing.Size(841, 152)
         Me.LVBuyorders.TabIndex = 5
         Me.LVBuyorders.UseCompatibleStateImageBehavior = False
         Me.LVBuyorders.View = System.Windows.Forms.View.Details
@@ -330,7 +352,7 @@ Partial Class PFPForm
         Me.LVOpenChannels.Location = New System.Drawing.Point(0, 0)
         Me.LVOpenChannels.MultiSelect = False
         Me.LVOpenChannels.Name = "LVOpenChannels"
-        Me.LVOpenChannels.Size = New System.Drawing.Size(365, 86)
+        Me.LVOpenChannels.Size = New System.Drawing.Size(365, 124)
         Me.LVOpenChannels.TabIndex = 9
         Me.LVOpenChannels.UseCompatibleStateImageBehavior = False
         Me.LVOpenChannels.View = System.Windows.Forms.View.Details
@@ -661,8 +683,8 @@ Partial Class PFPForm
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.SplitContainer6)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1703, 678)
-        Me.SplitContainer1.SplitterDistance = 408
+        Me.SplitContainer1.Size = New System.Drawing.Size(1703, 742)
+        Me.SplitContainer1.SplitterDistance = 446
         Me.SplitContainer1.TabIndex = 14
         '
         'SplitContainer2
@@ -681,7 +703,7 @@ Partial Class PFPForm
         'SplitContainer2.Panel2
         '
         Me.SplitContainer2.Panel2.Controls.Add(Me.SplitContainer3)
-        Me.SplitContainer2.Size = New System.Drawing.Size(1703, 408)
+        Me.SplitContainer2.Size = New System.Drawing.Size(1703, 446)
         Me.SplitContainer2.SplitterDistance = 1332
         Me.SplitContainer2.TabIndex = 14
         '
@@ -704,8 +726,8 @@ Partial Class PFPForm
         'SplitContainer3.Panel2
         '
         Me.SplitContainer3.Panel2.Controls.Add(Me.GroupBox1)
-        Me.SplitContainer3.Size = New System.Drawing.Size(367, 408)
-        Me.SplitContainer3.SplitterDistance = 146
+        Me.SplitContainer3.Size = New System.Drawing.Size(367, 446)
+        Me.SplitContainer3.SplitterDistance = 184
         Me.SplitContainer3.TabIndex = 13
         '
         'SplitContainer4
@@ -724,7 +746,7 @@ Partial Class PFPForm
         'SplitContainer4.Panel2
         '
         Me.SplitContainer4.Panel2.Controls.Add(Me.SplitContainer5)
-        Me.SplitContainer4.Size = New System.Drawing.Size(365, 144)
+        Me.SplitContainer4.Size = New System.Drawing.Size(365, 182)
         Me.SplitContainer4.SplitterDistance = 25
         Me.SplitContainer4.TabIndex = 0
         '
@@ -744,8 +766,8 @@ Partial Class PFPForm
         'SplitContainer5.Panel2
         '
         Me.SplitContainer5.Panel2.Controls.Add(Me.BtCreateNewAT)
-        Me.SplitContainer5.Size = New System.Drawing.Size(365, 115)
-        Me.SplitContainer5.SplitterDistance = 86
+        Me.SplitContainer5.Size = New System.Drawing.Size(365, 153)
+        Me.SplitContainer5.SplitterDistance = 124
         Me.SplitContainer5.TabIndex = 0
         '
         'SplitContainer6
@@ -763,7 +785,7 @@ Partial Class PFPForm
         'SplitContainer6.Panel2
         '
         Me.SplitContainer6.Panel2.Controls.Add(Me.SplitContainer10)
-        Me.SplitContainer6.Size = New System.Drawing.Size(1701, 264)
+        Me.SplitContainer6.Size = New System.Drawing.Size(1701, 290)
         Me.SplitContainer6.SplitterDistance = 852
         Me.SplitContainer6.TabIndex = 9
         '
@@ -779,14 +801,46 @@ Partial Class PFPForm
         '
         'SplitContainer7.Panel1
         '
+        Me.SplitContainer7.Panel1.Controls.Add(Me.CoBxSellFilterMaxOrders)
+        Me.SplitContainer7.Panel1.Controls.Add(Me.Label6)
+        Me.SplitContainer7.Panel1.Controls.Add(Me.BtShowSellFilter)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Label1)
         '
         'SplitContainer7.Panel2
         '
         Me.SplitContainer7.Panel2.Controls.Add(Me.SplitContainer8)
-        Me.SplitContainer7.Size = New System.Drawing.Size(848, 260)
+        Me.SplitContainer7.Size = New System.Drawing.Size(848, 286)
         Me.SplitContainer7.SplitterDistance = 25
         Me.SplitContainer7.TabIndex = 0
+        '
+        'CoBxSellFilterMaxOrders
+        '
+        Me.CoBxSellFilterMaxOrders.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CoBxSellFilterMaxOrders.FormattingEnabled = True
+        Me.CoBxSellFilterMaxOrders.Items.AddRange(New Object() {"10", "20", "50", "100"})
+        Me.CoBxSellFilterMaxOrders.Location = New System.Drawing.Point(218, 3)
+        Me.CoBxSellFilterMaxOrders.Name = "CoBxSellFilterMaxOrders"
+        Me.CoBxSellFilterMaxOrders.Size = New System.Drawing.Size(47, 21)
+        Me.CoBxSellFilterMaxOrders.TabIndex = 9
+        '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.Location = New System.Drawing.Point(148, 7)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(64, 13)
+        Me.Label6.TabIndex = 9
+        Me.Label6.Text = "Max Orders:"
+        '
+        'BtShowSellFilter
+        '
+        Me.BtShowSellFilter.BackColor = System.Drawing.Color.Crimson
+        Me.BtShowSellFilter.Location = New System.Drawing.Point(68, 2)
+        Me.BtShowSellFilter.Name = "BtShowSellFilter"
+        Me.BtShowSellFilter.Size = New System.Drawing.Size(75, 23)
+        Me.BtShowSellFilter.TabIndex = 8
+        Me.BtShowSellFilter.Text = "show Filter"
+        Me.BtShowSellFilter.UseVisualStyleBackColor = False
         '
         'SplitContainer8
         '
@@ -799,14 +853,64 @@ Partial Class PFPForm
         '
         'SplitContainer8.Panel1
         '
-        Me.SplitContainer8.Panel1.Controls.Add(Me.LVSellorders)
+        Me.SplitContainer8.Panel1.Controls.Add(Me.SplitContainerSellFilter)
         '
         'SplitContainer8.Panel2
         '
         Me.SplitContainer8.Panel2.Controls.Add(Me.SplitContainer9)
-        Me.SplitContainer8.Size = New System.Drawing.Size(848, 231)
-        Me.SplitContainer8.SplitterDistance = 202
+        Me.SplitContainer8.Size = New System.Drawing.Size(848, 257)
+        Me.SplitContainer8.SplitterDistance = 228
         Me.SplitContainer8.TabIndex = 0
+        '
+        'SplitContainerSellFilter
+        '
+        Me.SplitContainerSellFilter.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainerSellFilter.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainerSellFilter.Name = "SplitContainerSellFilter"
+        Me.SplitContainerSellFilter.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainerSellFilter.Panel1
+        '
+        Me.SplitContainerSellFilter.Panel1.Controls.Add(Me.ChLBSellFilterMethods)
+        Me.SplitContainerSellFilter.Panel1.Controls.Add(Me.ChBxSellFilterShowAutofinish)
+        Me.SplitContainerSellFilter.Panel1.Controls.Add(Me.ChBxSellFilterShowAutoinfo)
+        '
+        'SplitContainerSellFilter.Panel2
+        '
+        Me.SplitContainerSellFilter.Panel2.Controls.Add(Me.LVSellorders)
+        Me.SplitContainerSellFilter.Size = New System.Drawing.Size(848, 228)
+        Me.SplitContainerSellFilter.SplitterDistance = 72
+        Me.SplitContainerSellFilter.TabIndex = 3
+        '
+        'ChLBSellFilterMethods
+        '
+        Me.ChLBSellFilterMethods.CheckOnClick = True
+        Me.ChLBSellFilterMethods.FormattingEnabled = True
+        Me.ChLBSellFilterMethods.Items.AddRange(New Object() {"Loading..."})
+        Me.ChLBSellFilterMethods.Location = New System.Drawing.Point(3, 3)
+        Me.ChLBSellFilterMethods.Name = "ChLBSellFilterMethods"
+        Me.ChLBSellFilterMethods.Size = New System.Drawing.Size(158, 64)
+        Me.ChLBSellFilterMethods.TabIndex = 8
+        '
+        'ChBxSellFilterShowAutofinish
+        '
+        Me.ChBxSellFilterShowAutofinish.AutoSize = True
+        Me.ChBxSellFilterShowAutofinish.Location = New System.Drawing.Point(167, 26)
+        Me.ChBxSellFilterShowAutofinish.Name = "ChBxSellFilterShowAutofinish"
+        Me.ChBxSellFilterShowAutofinish.Size = New System.Drawing.Size(145, 17)
+        Me.ChBxSellFilterShowAutofinish.TabIndex = 6
+        Me.ChBxSellFilterShowAutofinish.Text = "show only autofinish=true"
+        Me.ChBxSellFilterShowAutofinish.UseVisualStyleBackColor = True
+        '
+        'ChBxSellFilterShowAutoinfo
+        '
+        Me.ChBxSellFilterShowAutoinfo.AutoSize = True
+        Me.ChBxSellFilterShowAutoinfo.Location = New System.Drawing.Point(167, 3)
+        Me.ChBxSellFilterShowAutoinfo.Name = "ChBxSellFilterShowAutoinfo"
+        Me.ChBxSellFilterShowAutoinfo.Size = New System.Drawing.Size(138, 17)
+        Me.ChBxSellFilterShowAutoinfo.TabIndex = 5
+        Me.ChBxSellFilterShowAutoinfo.Text = "show only autoinfo=true"
+        Me.ChBxSellFilterShowAutoinfo.UseVisualStyleBackColor = True
         '
         'SplitContainer9
         '
@@ -834,14 +938,46 @@ Partial Class PFPForm
         '
         'SplitContainer10.Panel1
         '
+        Me.SplitContainer10.Panel1.Controls.Add(Me.CoBxBuyFilterMaxOrders)
+        Me.SplitContainer10.Panel1.Controls.Add(Me.Label13)
+        Me.SplitContainer10.Panel1.Controls.Add(Me.BtShowBuyFilter)
         Me.SplitContainer10.Panel1.Controls.Add(Me.Label2)
         '
         'SplitContainer10.Panel2
         '
         Me.SplitContainer10.Panel2.Controls.Add(Me.SplitContainer11)
-        Me.SplitContainer10.Size = New System.Drawing.Size(841, 260)
+        Me.SplitContainer10.Size = New System.Drawing.Size(841, 286)
         Me.SplitContainer10.SplitterDistance = 25
         Me.SplitContainer10.TabIndex = 0
+        '
+        'CoBxBuyFilterMaxOrders
+        '
+        Me.CoBxBuyFilterMaxOrders.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CoBxBuyFilterMaxOrders.FormattingEnabled = True
+        Me.CoBxBuyFilterMaxOrders.Items.AddRange(New Object() {"10", "20", "50", "100"})
+        Me.CoBxBuyFilterMaxOrders.Location = New System.Drawing.Point(217, 2)
+        Me.CoBxBuyFilterMaxOrders.Name = "CoBxBuyFilterMaxOrders"
+        Me.CoBxBuyFilterMaxOrders.Size = New System.Drawing.Size(47, 21)
+        Me.CoBxBuyFilterMaxOrders.TabIndex = 10
+        '
+        'Label13
+        '
+        Me.Label13.AutoSize = True
+        Me.Label13.Location = New System.Drawing.Point(147, 6)
+        Me.Label13.Name = "Label13"
+        Me.Label13.Size = New System.Drawing.Size(64, 13)
+        Me.Label13.TabIndex = 11
+        Me.Label13.Text = "Max Orders:"
+        '
+        'BtShowBuyFilter
+        '
+        Me.BtShowBuyFilter.BackColor = System.Drawing.Color.PaleGreen
+        Me.BtShowBuyFilter.Location = New System.Drawing.Point(66, 1)
+        Me.BtShowBuyFilter.Name = "BtShowBuyFilter"
+        Me.BtShowBuyFilter.Size = New System.Drawing.Size(75, 23)
+        Me.BtShowBuyFilter.TabIndex = 9
+        Me.BtShowBuyFilter.Text = "show Filter"
+        Me.BtShowBuyFilter.UseVisualStyleBackColor = False
         '
         'SplitContainer11
         '
@@ -854,14 +990,64 @@ Partial Class PFPForm
         '
         'SplitContainer11.Panel1
         '
-        Me.SplitContainer11.Panel1.Controls.Add(Me.LVBuyorders)
+        Me.SplitContainer11.Panel1.Controls.Add(Me.SplitContainerBuyFilter)
         '
         'SplitContainer11.Panel2
         '
         Me.SplitContainer11.Panel2.Controls.Add(Me.BtSell)
-        Me.SplitContainer11.Size = New System.Drawing.Size(841, 231)
-        Me.SplitContainer11.SplitterDistance = 202
+        Me.SplitContainer11.Size = New System.Drawing.Size(841, 257)
+        Me.SplitContainer11.SplitterDistance = 228
         Me.SplitContainer11.TabIndex = 0
+        '
+        'SplitContainerBuyFilter
+        '
+        Me.SplitContainerBuyFilter.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainerBuyFilter.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainerBuyFilter.Name = "SplitContainerBuyFilter"
+        Me.SplitContainerBuyFilter.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainerBuyFilter.Panel1
+        '
+        Me.SplitContainerBuyFilter.Panel1.Controls.Add(Me.ChBxBuyFilterShowAutofinish)
+        Me.SplitContainerBuyFilter.Panel1.Controls.Add(Me.ChLBBuyFilterMethods)
+        Me.SplitContainerBuyFilter.Panel1.Controls.Add(Me.ChBxBuyFilterShowAutoinfo)
+        '
+        'SplitContainerBuyFilter.Panel2
+        '
+        Me.SplitContainerBuyFilter.Panel2.Controls.Add(Me.LVBuyorders)
+        Me.SplitContainerBuyFilter.Size = New System.Drawing.Size(841, 228)
+        Me.SplitContainerBuyFilter.SplitterDistance = 72
+        Me.SplitContainerBuyFilter.TabIndex = 6
+        '
+        'ChBxBuyFilterShowAutofinish
+        '
+        Me.ChBxBuyFilterShowAutofinish.AutoSize = True
+        Me.ChBxBuyFilterShowAutofinish.Location = New System.Drawing.Point(167, 26)
+        Me.ChBxBuyFilterShowAutofinish.Name = "ChBxBuyFilterShowAutofinish"
+        Me.ChBxBuyFilterShowAutofinish.Size = New System.Drawing.Size(145, 17)
+        Me.ChBxBuyFilterShowAutofinish.TabIndex = 9
+        Me.ChBxBuyFilterShowAutofinish.Text = "show only autofinish=true"
+        Me.ChBxBuyFilterShowAutofinish.UseVisualStyleBackColor = True
+        '
+        'ChLBBuyFilterMethods
+        '
+        Me.ChLBBuyFilterMethods.CheckOnClick = True
+        Me.ChLBBuyFilterMethods.FormattingEnabled = True
+        Me.ChLBBuyFilterMethods.Items.AddRange(New Object() {"Loading..."})
+        Me.ChLBBuyFilterMethods.Location = New System.Drawing.Point(3, 3)
+        Me.ChLBBuyFilterMethods.Name = "ChLBBuyFilterMethods"
+        Me.ChLBBuyFilterMethods.Size = New System.Drawing.Size(158, 64)
+        Me.ChLBBuyFilterMethods.TabIndex = 9
+        '
+        'ChBxBuyFilterShowAutoinfo
+        '
+        Me.ChBxBuyFilterShowAutoinfo.AutoSize = True
+        Me.ChBxBuyFilterShowAutoinfo.Location = New System.Drawing.Point(167, 3)
+        Me.ChBxBuyFilterShowAutoinfo.Name = "ChBxBuyFilterShowAutoinfo"
+        Me.ChBxBuyFilterShowAutoinfo.Size = New System.Drawing.Size(138, 17)
+        Me.ChBxBuyFilterShowAutoinfo.TabIndex = 8
+        Me.ChBxBuyFilterShowAutoinfo.Text = "show only autoinfo=true"
+        Me.ChBxBuyFilterShowAutoinfo.UseVisualStyleBackColor = True
         '
         'TabControl1
         '
@@ -873,7 +1059,7 @@ Partial Class PFPForm
         Me.TabControl1.Location = New System.Drawing.Point(0, 0)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
-        Me.TabControl1.Size = New System.Drawing.Size(1717, 710)
+        Me.TabControl1.Size = New System.Drawing.Size(1717, 774)
         Me.TabControl1.TabIndex = 15
         '
         'TabPage1
@@ -883,7 +1069,7 @@ Partial Class PFPForm
         Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(1709, 684)
+        Me.TabPage1.Size = New System.Drawing.Size(1709, 748)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Marketdetails"
         '
@@ -893,7 +1079,7 @@ Partial Class PFPForm
         Me.TabPage2.Location = New System.Drawing.Point(4, 22)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(1709, 684)
+        Me.TabPage2.Size = New System.Drawing.Size(1709, 748)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "MyOrders"
         Me.TabPage2.UseVisualStyleBackColor = True
@@ -915,8 +1101,8 @@ Partial Class PFPForm
         'SplitContainer13.Panel2
         '
         Me.SplitContainer13.Panel2.Controls.Add(Me.SplitContainer15)
-        Me.SplitContainer13.Size = New System.Drawing.Size(1703, 678)
-        Me.SplitContainer13.SplitterDistance = 305
+        Me.SplitContainer13.Size = New System.Drawing.Size(1703, 742)
+        Me.SplitContainer13.SplitterDistance = 333
         Me.SplitContainer13.TabIndex = 5
         '
         'SplitContainer14
@@ -935,7 +1121,7 @@ Partial Class PFPForm
         'SplitContainer14.Panel2
         '
         Me.SplitContainer14.Panel2.Controls.Add(Me.SplitContainer16)
-        Me.SplitContainer14.Size = New System.Drawing.Size(1701, 303)
+        Me.SplitContainer14.Size = New System.Drawing.Size(1701, 331)
         Me.SplitContainer14.SplitterDistance = 25
         Me.SplitContainer14.TabIndex = 0
         '
@@ -970,8 +1156,8 @@ Partial Class PFPForm
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtReCreatePayPalOrder)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtPayOrder)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtExecuteOrder)
-        Me.SplitContainer16.Size = New System.Drawing.Size(1701, 274)
-        Me.SplitContainer16.SplitterDistance = 191
+        Me.SplitContainer16.Size = New System.Drawing.Size(1701, 302)
+        Me.SplitContainer16.SplitterDistance = 219
         Me.SplitContainer16.TabIndex = 0
         '
         'LVMyOpenOrders
@@ -986,7 +1172,7 @@ Partial Class PFPForm
         Me.LVMyOpenOrders.Location = New System.Drawing.Point(0, 0)
         Me.LVMyOpenOrders.MultiSelect = False
         Me.LVMyOpenOrders.Name = "LVMyOpenOrders"
-        Me.LVMyOpenOrders.Size = New System.Drawing.Size(1701, 191)
+        Me.LVMyOpenOrders.Size = New System.Drawing.Size(1701, 219)
         Me.LVMyOpenOrders.TabIndex = 0
         Me.LVMyOpenOrders.UseCompatibleStateImageBehavior = False
         Me.LVMyOpenOrders.View = System.Windows.Forms.View.Details
@@ -1087,7 +1273,7 @@ Partial Class PFPForm
         'SplitContainer15.Panel2
         '
         Me.SplitContainer15.Panel2.Controls.Add(Me.SplitContainer17)
-        Me.SplitContainer15.Size = New System.Drawing.Size(1701, 367)
+        Me.SplitContainer15.Size = New System.Drawing.Size(1701, 403)
         Me.SplitContainer15.SplitterDistance = 25
         Me.SplitContainer15.TabIndex = 0
         '
@@ -1112,8 +1298,8 @@ Partial Class PFPForm
         'SplitContainer17.Panel1
         '
         Me.SplitContainer17.Panel1.Controls.Add(Me.LVMyClosedOrders)
-        Me.SplitContainer17.Size = New System.Drawing.Size(1701, 338)
-        Me.SplitContainer17.SplitterDistance = 307
+        Me.SplitContainer17.Size = New System.Drawing.Size(1701, 374)
+        Me.SplitContainer17.SplitterDistance = 343
         Me.SplitContainer17.TabIndex = 0
         '
         'LVMyClosedOrders
@@ -1128,7 +1314,7 @@ Partial Class PFPForm
         Me.LVMyClosedOrders.Location = New System.Drawing.Point(0, 0)
         Me.LVMyClosedOrders.MultiSelect = False
         Me.LVMyClosedOrders.Name = "LVMyClosedOrders"
-        Me.LVMyClosedOrders.Size = New System.Drawing.Size(1701, 307)
+        Me.LVMyClosedOrders.Size = New System.Drawing.Size(1701, 343)
         Me.LVMyClosedOrders.TabIndex = 3
         Me.LVMyClosedOrders.UseCompatibleStateImageBehavior = False
         Me.LVMyClosedOrders.View = System.Windows.Forms.View.Details
@@ -1144,7 +1330,7 @@ Partial Class PFPForm
         Me.TabPage3.ForeColor = System.Drawing.Color.White
         Me.TabPage3.Location = New System.Drawing.Point(4, 22)
         Me.TabPage3.Name = "TabPage3"
-        Me.TabPage3.Size = New System.Drawing.Size(1709, 684)
+        Me.TabPage3.Size = New System.Drawing.Size(1709, 748)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "Settings"
         '
@@ -1158,7 +1344,7 @@ Partial Class PFPForm
         'SCSettings.Panel1
         '
         Me.SCSettings.Panel1.Controls.Add(Me.TVSettings)
-        Me.SCSettings.Size = New System.Drawing.Size(1709, 684)
+        Me.SCSettings.Size = New System.Drawing.Size(1709, 748)
         Me.SCSettings.SplitterDistance = 226
         Me.SCSettings.TabIndex = 10
         '
@@ -1176,7 +1362,7 @@ Partial Class PFPForm
         TreeNode3.Name = "Developements"
         TreeNode3.Text = "Develope"
         Me.TVSettings.Nodes.AddRange(New System.Windows.Forms.TreeNode() {TreeNode1, TreeNode2, TreeNode3})
-        Me.TVSettings.Size = New System.Drawing.Size(226, 684)
+        Me.TVSettings.Size = New System.Drawing.Size(226, 748)
         Me.TVSettings.TabIndex = 0
         '
         'SplitContainer12
@@ -1205,7 +1391,7 @@ Partial Class PFPForm
         '
         Me.SplitContainer12.Panel2.BackColor = System.Drawing.SystemColors.Control
         Me.SplitContainer12.Panel2.Controls.Add(Me.TabControl1)
-        Me.SplitContainer12.Size = New System.Drawing.Size(1717, 739)
+        Me.SplitContainer12.Size = New System.Drawing.Size(1717, 803)
         Me.SplitContainer12.SplitterDistance = 25
         Me.SplitContainer12.TabIndex = 15
         '
@@ -1231,7 +1417,8 @@ Partial Class PFPForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1717, 761)
+        Me.BackColor = System.Drawing.SystemColors.Control
+        Me.ClientSize = New System.Drawing.Size(1717, 825)
         Me.Controls.Add(Me.SplitContainer12)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -1283,6 +1470,11 @@ Partial Class PFPForm
         Me.SplitContainer8.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer8, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer8.ResumeLayout(False)
+        Me.SplitContainerSellFilter.Panel1.ResumeLayout(False)
+        Me.SplitContainerSellFilter.Panel1.PerformLayout()
+        Me.SplitContainerSellFilter.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainerSellFilter, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainerSellFilter.ResumeLayout(False)
         Me.SplitContainer9.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer9, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer9.ResumeLayout(False)
@@ -1295,6 +1487,11 @@ Partial Class PFPForm
         Me.SplitContainer11.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer11, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer11.ResumeLayout(False)
+        Me.SplitContainerBuyFilter.Panel1.ResumeLayout(False)
+        Me.SplitContainerBuyFilter.Panel1.PerformLayout()
+        Me.SplitContainerBuyFilter.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainerBuyFilter, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainerBuyFilter.ResumeLayout(False)
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
         Me.TabPage2.ResumeLayout(False)
@@ -1418,4 +1615,18 @@ Partial Class PFPForm
     Friend WithEvents SCSettings As SplitContainer
     Friend WithEvents TVSettings As TreeView
     Friend WithEvents BtChartGFXOnOff As Button
+    Friend WithEvents ChBxSellFilterShowAutofinish As CheckBox
+    Friend WithEvents ChBxSellFilterShowAutoinfo As CheckBox
+    Friend WithEvents ChBxBuyFilterShowAutofinish As CheckBox
+    Friend WithEvents ChBxBuyFilterShowAutoinfo As CheckBox
+    Friend WithEvents CoBxSellFilterMaxOrders As ComboBox
+    Friend WithEvents Label6 As Label
+    Friend WithEvents BtShowSellFilter As Button
+    Friend WithEvents SplitContainerSellFilter As SplitContainer
+    Friend WithEvents ChLBSellFilterMethods As CheckedListBox
+    Friend WithEvents CoBxBuyFilterMaxOrders As ComboBox
+    Friend WithEvents Label13 As Label
+    Friend WithEvents BtShowBuyFilter As Button
+    Friend WithEvents SplitContainerBuyFilter As SplitContainer
+    Friend WithEvents ChLBBuyFilterMethods As CheckedListBox
 End Class

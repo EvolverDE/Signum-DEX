@@ -60,6 +60,7 @@ Module ModINITools
 
 
     Public Enum E_Setting
+
         'Basic
         PassPhrase = 0
         LastMarketViewed = 1
@@ -76,28 +77,38 @@ Module ModINITools
         AutoCheckAndFinishAT = 101
         PaymentType = 102
         PaymentInfoText = 103
+        'Filter
+        ShowMaxSellOrders = 200
+        ShowMaxBuyOrders = 201
+        SellFilterAutoinfo = 202
+        BuyFilterAutoinfo = 203
+        SellFilterAutofinish = 204
+        BuyFilterAutofinish = 205
+        SellFilterMethods = 206
+        BuyFilterMethods = 207
         'PayPal
-        PayPalChoice = 200
-        PayPalEMail = 201
-        PayPalAPIUser = 202
-        PayPalAPISecret = 203
+        PayPalChoice = 300
+        PayPalEMail = 301
+        PayPalAPIUser = 302
+        PayPalAPISecret = 303
         'Temp
-        AutoSignalTransactions = 300
-        AutoInfoTransactions = 301
+        AutoSignalTransactions = 400
+        AutoInfoTransactions = 401
         'Develope
-        InfoOut = 400
-        TCPAPIShowStatus = 401
-        DEXNETEnable = 402
-        DEXNETShowStatus = 403
+        InfoOut = 500
+        TCPAPIShowStatus = 501
+        DEXNETEnable = 502
+        DEXNETShowStatus = 503
 
     End Enum
 
     Public Enum E_SettingSection
         Basics = 0
         Defaults = 1
-        PayPal = 2
-        Temp = 3
-        Develope = 4
+        Filter = 2
+        PayPal = 3
+        Temp = 4
+        Develope = 5
     End Enum
 
 
@@ -111,10 +122,12 @@ Module ModINITools
             Case 100 To 199
                 Section = E_SettingSection.Defaults
             Case 200 To 299
-                Section = E_SettingSection.PayPal
+                Section = E_SettingSection.Filter
             Case 300 To 399
-                Section = E_SettingSection.Temp
+                Section = E_SettingSection.PayPal
             Case 400 To 499
+                Section = E_SettingSection.Temp
+            Case 500 To 599
                 Section = E_SettingSection.Develope
             Case Else
                 Section = E_SettingSection.Basics

@@ -460,6 +460,21 @@ Public Class PFPForm
             NodeList.Add(Nodes)
         End If
 
+        SplitContainerSellFilter.Panel1Collapsed = True
+        SplitContainerBuyFilter.Panel1Collapsed = True
+
+        SetMethodFilter(ChLBSellFilterMethods, LoadMethodFilter(E_Setting.SellFilterMethods))
+        SetMethodFilter(ChLBbuyFilterMethods, LoadMethodFilter(E_Setting.BuyFilterMethods))
+
+        CoBxSellFilterMaxOrders.SelectedItem = GetINISetting(E_Setting.ShowMaxSellOrders, 10)
+        CoBxBuyFilterMaxOrders.SelectedItem = GetINISetting(E_Setting.ShowMaxBuyOrders, 10)
+
+        ChBxSellFilterShowAutoinfo.Checked = GetINISetting(E_Setting.SellFilterAutoinfo, False)
+        ChBxBuyFilterShowAutoinfo.Checked = GetINISetting(E_Setting.BuyFilterAutoinfo, False)
+
+        ChBxSellFilterShowAutofinish.Checked = GetINISetting(E_Setting.SellFilterAutofinish, False)
+        ChBxBuyFilterShowAutofinish.Checked = GetINISetting(E_Setting.BuyFilterAutofinish, False)
+
 
         'InitiateDEXNET()
 
@@ -1324,7 +1339,12 @@ Public Class PFPForm
     Private Sub LVMyOpenOrders_MouseUp(sender As Object, e As MouseEventArgs) Handles LVMyOpenOrders.MouseUp
         LVMyOpenOrders.ContextMenuStrip = Nothing
 
+        SplitContainer16.Panel2Collapsed = True
+
         If LVMyOpenOrders.SelectedItems.Count > 0 Then
+
+            SplitContainer16.Panel2Collapsed = False
+
             Dim LVi As ListViewItem = LVMyOpenOrders.SelectedItems(0)
 
             Dim Seller As String = GetLVColNameFromSubItem(LVMyOpenOrders, "Seller", LVi)
@@ -1668,13 +1688,21 @@ Public Class PFPForm
 
             Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
 
+            Dim ColBuyAmount As Double = BCR.Planck2Dbl(CULng(Between(Order.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
+            Dim Amount As Double = BCR.Planck2Dbl(CULng(Order.FirstTX.AmountNQT))
+            Dim Sum As Double = ColBuyAmount + Amount
 
-            Dim Amount As Double = BCR.Planck2Dbl(CULng(Between(Order.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
+            Dim PurchaseAmount As Double = ColBuyAmount
+
+            If Order.Type = "SellOrder" Then
+                PurchaseAmount = Amount
+            End If
+
             Dim XItem As String = Between(Order.Attachment, "<xItem>", "</xItem>", GetType(String))
             Dim XAmount As Double = BCR.Planck2Dbl(CULng(Between(Order.Attachment, "<xAmount>", "</xAmount>", GetType(String))))
-            Dim Sum As Double = Amount + BCR.Planck2Dbl(CULng(Order.FirstTX.AmountNQT))
 
-            Dim PayInfo As String = GetPaymentInfoFromOrderSettings(Order.FirstTransaction, Amount, XAmount, CurrentMarket)
+
+            Dim PayInfo As String = GetPaymentInfoFromOrderSettings(Order.FirstTransaction, PurchaseAmount, XAmount, CurrentMarket)
 
             If Not PayInfo.Trim = "" Then
 
@@ -1686,7 +1714,7 @@ Public Class PFPForm
                 End If
 
                 Dim T_MsgStr As String = "AT=" + Order.ATRS + " TX=" + Order.FirstTransaction + " " + Dbl2LVStr(Order.XAmount, Decimals) + " " + Order.XItem + " " + PayInfo
-                Dim TXr As String = SendBillingInfos(Order.FirstTX.Sender, T_MsgStr)
+                Dim TXr As String = SendBillingInfos(Order.BuyerID, T_MsgStr)
 
                 If TXr.Contains(Application.ProductName + "-error") Then
                     Dim out As ClsOut = New ClsOut(Application.StartupPath)
@@ -1932,8 +1960,8 @@ Public Class PFPForm
         LVSellorders.Columns.Clear()
         LVSellorders.Columns.Add("Price (" + CurrentMarket + ")")
         LVSellorders.Columns.Add("Amount (" + CurrentMarket + ")")
-        LVSellorders.Columns.Add("Total (SIGNA)")
-        LVSellorders.Columns.Add("Collateral (SIGNA)")
+        LVSellorders.Columns.Add("Total (Signa)")
+        LVSellorders.Columns.Add("Collateral (Signa)")
         LVSellorders.Columns.Add("Method")
         LVSellorders.Columns.Add("Autoinfo")
         LVSellorders.Columns.Add("Autofinish")
@@ -1948,10 +1976,10 @@ Public Class PFPForm
         With LVBuyorders.Columns.Add("Amount (" + CurrentMarket + ")")
             .TextAlign = HorizontalAlignment.Right
         End With
-        With LVBuyorders.Columns.Add("Total (SIGNA)")
+        With LVBuyorders.Columns.Add("Total (Signa)")
             .TextAlign = HorizontalAlignment.Right
         End With
-        With LVBuyorders.Columns.Add("Collateral (SIGNA)")
+        With LVBuyorders.Columns.Add("Collateral (Signa)")
             .TextAlign = HorizontalAlignment.Right
         End With
         LVBuyorders.Columns.Add("Method")
@@ -1973,6 +2001,7 @@ Public Class PFPForm
         LVMyOpenOrders.Columns.Add("XItem")
         LVMyOpenOrders.Columns.Add("XAmount")
         LVMyOpenOrders.Columns.Add("Quantity")
+        LVMyOpenOrders.Columns.Add("Collateral")
         LVMyOpenOrders.Columns.Add("Price")
         LVMyOpenOrders.Columns.Add("Status")
 
@@ -2001,13 +2030,14 @@ Public Class PFPForm
 
         Try
 
-            Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
-
 #Region "set LVs"
 
+            BuyOrderLVEList.Clear()
+            SellOrderLVEList.Clear()
+
             OpenChannelLVIList.Clear()
-            BuyOrderLVIList.Clear()
-            SellOrderLVIList.Clear()
+            'BuyOrderLVIList.Clear()
+            'SellOrderLVIList.Clear()
             MyOpenOrderLVIList.Clear()
             MyClosedOrderLVIList.Clear()
 
@@ -2025,29 +2055,19 @@ Public Class PFPForm
             BtSendMsg.Visible = False
             ChBxEncMsg.Visible = False
 
-
             LVOpenChannels.Visible = False
-            LVSellorders.Visible = False
-            LVBuyorders.Visible = False
+
             LVMyOpenOrders.Visible = False
             LVMyClosedOrders.Visible = False
 
-
+            SplitContainer16.Panel2Collapsed = True 'hide interaction-buttons
 
             LVOpenChannels.Items.Clear()
             For Each OpenChannel As ListViewItem In OpenChannelLVIList
                 MultiInvoker(LVOpenChannels, "Items", {"Add", OpenChannel})
             Next
 
-            LVBuyorders.Items.Clear()
-            For Each BuyOrder As ListViewItem In BuyOrderLVIList
-                MultiInvoker(LVBuyorders, "Items", {"Add", BuyOrder})
-            Next
-
-            LVSellorders.Items.Clear()
-            For Each OpeSellOrdernChannel As ListViewItem In SellOrderLVIList
-                MultiInvoker(LVSellorders, "Items", {"Add", OpeSellOrdernChannel})
-            Next
+            Wait = SetFitlteredPublicOrdersInLVs()
 
             LVMyOpenOrders.Items.Clear()
             For Each MyOpenOrder As ListViewItem In MyOpenOrderLVIList
@@ -2065,15 +2085,8 @@ Public Class PFPForm
 
             BroadcastMsgs.Clear()
 
-
             LVMyOpenOrders.ListViewItemSorter = New ListViewItemExtremeSorter(SortOrder.Ascending, 0)
             LVMyClosedOrders.ListViewItemSorter = New ListViewItemExtremeSorter(SortOrder.Ascending, 2)
-
-            LVSellorders.ListViewItemSorter = New ListViewItemExtremeSorter(SortOrder.Ascending, 0)
-            LVSellorders.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
-
-            LVBuyorders.ListViewItemSorter = New ListViewItemExtremeSorter(SortOrder.Descending, 0)
-            LVBuyorders.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
 
             LVOpenChannels.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
 
@@ -2101,8 +2114,7 @@ Public Class PFPForm
             StatusLabel.Text = ""
 
             LVOpenChannels.Visible = True
-            LVSellorders.Visible = True
-            LVBuyorders.Visible = True
+
             LVMyOpenOrders.Visible = True
             LVMyClosedOrders.Visible = True
 
@@ -2112,6 +2124,132 @@ Public Class PFPForm
             Dim Out As ClsOut = New ClsOut(Application.StartupPath)
             Out.ErrorLog2File(Application.ProductName + "-error in SetInLVs(): -> " + ex.Message)
         End Try
+
+        Return True
+
+    End Function
+
+
+    Function SetFitlteredPublicOrdersInLVs() As Boolean
+
+        LVSellorders.Visible = False
+        LVBuyorders.Visible = False
+
+        LVBuyorders.Items.Clear()
+
+        BuyOrderLVEList = BuyOrderLVEList.OrderBy(Function(T_PublicOrder As S_PublicOrdersListViewEntry) T_PublicOrder.Price).ToList
+
+        For i As Integer = 0 To BuyOrderLVEList.Count - 1
+
+            Dim BuyOrder As S_PublicOrdersListViewEntry = BuyOrderLVEList(i)
+
+            If i + 1 > GetINISetting(E_Setting.ShowMaxBuyOrders, 10) Then
+                Exit For
+            End If
+
+            If ChBxBuyFilterShowAutoinfo.Checked Then
+                If BuyOrder.AutoInfo.ToUpper.Trim <> ChBxBuyFilterShowAutoinfo.Checked.ToString.ToUpper.Trim And BuyOrder.AutoInfo.ToUpper.Trim <> "" Then
+                    Continue For
+                End If
+            End If
+
+            If ChBxBuyFilterShowAutofinish.Checked Then
+                If BuyOrder.AutoFinish.ToUpper.Trim <> ChBxBuyFilterShowAutofinish.Checked.ToString.ToUpper.Trim And BuyOrder.AutoFinish.ToUpper.Trim <> "" Then
+                    Continue For
+                End If
+            End If
+
+            Dim ValidBuyMethods As String = LoadMethodFilterFromINI(E_Setting.BuyFilterMethods)
+            If Not ValidBuyMethods.Contains(BuyOrder.Method) Or ValidBuyMethods.Trim = "" Then
+                Continue For
+            End If
+
+            Dim T_LVI As ListViewItem = New ListViewItem
+
+            T_LVI.Text = BuyOrder.Price 'price
+            T_LVI.SubItems.Add(BuyOrder.Amount) 'amount
+            T_LVI.SubItems.Add(BuyOrder.Total) 'total
+            T_LVI.SubItems.Add(BuyOrder.Collateral) 'collateral
+            T_LVI.SubItems.Add(BuyOrder.Method) 'payment method
+            T_LVI.SubItems.Add(BuyOrder.AutoInfo) 'autosend infotext
+            T_LVI.SubItems.Add(BuyOrder.AutoFinish) 'autocomplete at
+            T_LVI.SubItems.Add(BuyOrder.Seller_Buyer) 'buyer
+            T_LVI.SubItems.Add(BuyOrder.AT) 'at
+
+            T_LVI.BackColor = BuyOrder.Backcolor
+            T_LVI.Tag = BuyOrder.Tag
+
+            MultiInvoker(LVBuyorders, "Items", {"Add", T_LVI})
+
+        Next
+
+        'For Each BuyOrder As ListViewItem In BuyOrderLVIList
+        '    MultiInvoker(LVBuyorders, "Items", {"Add", BuyOrder})
+        'Next
+
+
+        LVSellorders.Items.Clear()
+
+        SellOrderLVEList = SellOrderLVEList.OrderBy(Function(T_PublicOrder As S_PublicOrdersListViewEntry) T_PublicOrder.Price).ToList
+        SellOrderLVEList.Reverse()
+
+        For i As Integer = 0 To SellOrderLVEList.Count - 1
+
+            Dim SellOrder As S_PublicOrdersListViewEntry = SellOrderLVEList(i)
+
+            If i + 1 > GetINISetting(E_Setting.ShowMaxSellOrders, 10) Then
+                Exit For
+            End If
+
+            If ChBxSellFilterShowAutoinfo.Checked Then
+                If SellOrder.AutoInfo.ToUpper.Trim <> ChBxSellFilterShowAutoinfo.Checked.ToString.ToUpper.Trim And SellOrder.AutoInfo.ToUpper.Trim <> "" Then
+                    Continue For
+                End If
+            End If
+
+            If ChBxSellFilterShowAutofinish.Checked Then
+                If SellOrder.AutoFinish.ToUpper.Trim <> ChBxSellFilterShowAutofinish.Checked.ToString.ToUpper.Trim And SellOrder.AutoFinish.ToUpper.Trim <> "" Then
+                    Continue For
+                End If
+            End If
+
+            Dim ValidSellMethods As String = LoadMethodFilterFromINI(E_Setting.SellFilterMethods)
+            If Not ValidSellMethods.Contains(SellOrder.Method) Or ValidSellMethods.Trim = "" Then
+                Continue For
+            End If
+
+            Dim T_LVI As ListViewItem = New ListViewItem
+
+            T_LVI.Text = SellOrder.Price 'price
+            T_LVI.SubItems.Add(SellOrder.Amount) 'amount
+            T_LVI.SubItems.Add(SellOrder.Total) 'total
+            T_LVI.SubItems.Add(SellOrder.Collateral) 'collateral
+            T_LVI.SubItems.Add(SellOrder.Method) 'payment method
+            T_LVI.SubItems.Add(SellOrder.AutoInfo) 'autosend infotext
+            T_LVI.SubItems.Add(SellOrder.AutoFinish) 'autocomplete at
+            T_LVI.SubItems.Add(SellOrder.Seller_Buyer) 'buyer
+            T_LVI.SubItems.Add(SellOrder.AT) 'at
+
+            T_LVI.BackColor = SellOrder.Backcolor
+            T_LVI.Tag = SellOrder.Tag
+
+            MultiInvoker(LVSellorders, "Items", {"Add", T_LVI})
+
+        Next
+
+        'For Each OpeSellOrdernChannel As ListViewItem In SellOrderLVIList
+        '   MultiInvoker(LVSellorders, "Items", {"Add", OpeSellOrdernChannel})
+        'Next
+
+
+        LVSellorders.ListViewItemSorter = New ListViewItemExtremeSorter(SortOrder.Ascending, 0)
+        LVSellorders.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
+
+        LVBuyorders.ListViewItemSorter = New ListViewItemExtremeSorter(SortOrder.Descending, 0)
+        LVBuyorders.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
+
+        LVSellorders.Visible = True
+        LVBuyorders.Visible = True
 
         Return True
 
@@ -2193,9 +2331,44 @@ Public Class PFPForm
 
     Property MTSAT2LVList As List(Of S_MultiThreadSetAT2LV) = New List(Of S_MultiThreadSetAT2LV)
 
+
+    Structure S_PublicOrdersListViewEntry
+        Dim Price As String
+        Dim Amount As String
+        Dim Total As String
+        Dim Collateral As String
+        Dim Backcolor As Color
+        Dim Method As String
+        Dim AutoInfo As String
+        Dim AutoFinish As String
+        Dim Seller_Buyer As String
+        Dim AT As String
+        Dim Tag As Object
+
+        Sub New(Optional ByVal P_Price As String = "", Optional ByVal P_Amount As String = "", Optional ByVal P_Total As String = "", Optional ByVal P_Collateral As String = "", Optional ByVal P_Method As String = "", Optional ByVal P_AutoInfo As String = "", Optional ByVal P_AutoFinish As String = "", Optional ByVal P_Seller_Buyer As String = "", Optional ByVal P_AT As String = "")
+
+            Price = P_Price
+            Amount = P_Amount
+            Total = P_Total
+            Collateral = P_Collateral
+            Backcolor = SystemColors.Control
+            Method = P_Method
+            AutoInfo = P_AutoInfo
+            AutoFinish = P_AutoFinish
+            Seller_Buyer = P_Seller_Buyer
+            AT = P_AT
+            Tag = Nothing
+
+        End Sub
+
+    End Structure
+
+    Property SellOrderLVEList As List(Of S_PublicOrdersListViewEntry) = New List(Of S_PublicOrdersListViewEntry)
+    Property BuyOrderLVEList As List(Of S_PublicOrdersListViewEntry) = New List(Of S_PublicOrdersListViewEntry)
+
     Property OpenChannelLVIList As List(Of ListViewItem) = New List(Of ListViewItem)
-    Property BuyOrderLVIList As List(Of ListViewItem) = New List(Of ListViewItem)
-    Property SellOrderLVIList As List(Of ListViewItem) = New List(Of ListViewItem)
+    'Property BuyOrderLVIList As List(Of ListViewItem) = New List(Of ListViewItem)
+    'Property SellOrderLVIList As List(Of ListViewItem) = New List(Of ListViewItem)
     Property MyOpenOrderLVIList As List(Of ListViewItem) = New List(Of ListViewItem)
     Property MyClosedOrderLVIList As List(Of ListViewItem) = New List(Of ListViewItem)
 
@@ -2277,11 +2450,19 @@ Public Class PFPForm
                                     If Order.Type = "SellOrder" Then
 
                                         T_LVI = New ListViewItem
+                                        Dim T_LVE As S_PublicOrdersListViewEntry = New S_PublicOrdersListViewEntry
 
-                                        T_LVI.Text = Dbl2LVStr(Order.Price, Decimals) 'price
-                                        T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'amount
-                                        T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'total
-                                        T_LVI.SubItems.Add(Dbl2LVStr(Order.Collateral)) 'collateral
+                                        'T_LVI.Text = Dbl2LVStr(Order.Price, Decimals) 'price
+                                        T_LVE.Price = Dbl2LVStr(Order.Price, Decimals) 'price
+
+                                        'T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'amount
+                                        T_LVE.Amount = Dbl2LVStr(Order.XAmount, Decimals)
+
+                                        'T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'total
+                                        T_LVE.Total = Dbl2LVStr(Order.Quantity)
+
+                                        'T_LVI.SubItems.Add(Dbl2LVStr(Order.Collateral)) 'collateral
+                                        T_LVE.Collateral = Dbl2LVStr(Order.Collateral)
 
                                         Dim T_SellerRS As String = Order.Seller
                                         If T_SellerRS = TBSNOAddress.Text Then
@@ -2303,7 +2484,9 @@ Public Class PFPForm
                                             End If
 
                                             T_SellerRS = "Me"
-                                            T_LVI.BackColor = Color.Magenta
+                                            'T_LVI.BackColor = Color.Magenta
+                                            T_LVE.Backcolor = Color.Magenta
+
                                         Else
 
 #Region "SellOrder-Info from DEXNET"
@@ -2359,23 +2542,46 @@ Public Class PFPForm
 #End Region
                                         End If
 
-                                        T_LVI.SubItems.Add(PayMet) 'payment method
-                                        T_LVI.SubItems.Add(Autosendinfotext) 'autosend infotext
-                                        T_LVI.SubItems.Add(AutocompleteAT) 'autocomplete at
-                                        T_LVI.SubItems.Add(T_SellerRS) 'seller
-                                        T_LVI.SubItems.Add(PFPAT.ATRS) 'at
-                                        T_LVI.Tag = PFPAT
+                                        'T_LVI.SubItems.Add(PayMet) 'payment method
+                                        T_LVE.Method = PayMet
 
-                                        SellOrderLVIList.Add(T_LVI)
+                                        'T_LVI.SubItems.Add(Autosendinfotext) 'autosend infotext
+                                        T_LVE.AutoInfo = Autosendinfotext
+
+                                        'T_LVI.SubItems.Add(AutocompleteAT) 'autocomplete at
+                                        T_LVE.AutoFinish = AutocompleteAT
+
+                                        'T_LVI.SubItems.Add(T_SellerRS) 'seller
+                                        T_LVE.Seller_Buyer = T_SellerRS
+
+                                        'T_LVI.SubItems.Add(PFPAT.ATRS) 'at
+                                        T_LVE.AT = PFPAT.ATRS
+
+                                        'T_LVI.Tag = PFPAT
+                                        T_LVE.Tag = PFPAT
+
+                                        'SellOrderLVIList.Add(T_LVI)
+                                        SellOrderLVEList.Add(T_LVE)
+
 
                                     Else 'BuyOrder
 
-                                        T_LVI = New ListViewItem
 
-                                        T_LVI.Text = Dbl2LVStr(Order.Price, Decimals) 'price
-                                        T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'amount
-                                        T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'total
-                                        T_LVI.SubItems.Add(Dbl2LVStr(Order.Collateral)) 'collateral
+                                        'T_LVI = New ListViewItem
+                                        Dim T_LVE As S_PublicOrdersListViewEntry = New S_PublicOrdersListViewEntry
+
+                                        'T_LVI.Text = Dbl2LVStr(Order.Price, Decimals) 'price
+                                        T_LVE.Price = Dbl2LVStr(Order.Price, Decimals) 'price
+
+                                        'T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'amount
+                                        T_LVE.Amount = Dbl2LVStr(Order.XAmount, Decimals) 'amount
+
+                                        'T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'total
+                                        T_LVE.Total = Dbl2LVStr(Order.Quantity) 'total
+
+                                        'T_LVI.SubItems.Add(Dbl2LVStr(Order.Collateral)) 'collateral
+                                        T_LVE.Collateral = Dbl2LVStr(Order.Collateral) 'collateral
+
 
                                         Dim T_BuyerRS As String = Order.Buyer
                                         If T_BuyerRS = TBSNOAddress.Text Then
@@ -2396,7 +2602,8 @@ Public Class PFPForm
                                             End If
 
                                             T_BuyerRS = "Me"
-                                            T_LVI.BackColor = Color.Magenta
+                                            'T_LVI.BackColor = Color.Magenta
+                                            T_LVE.Backcolor = Color.Magenta
                                         Else
 
 #Region "BuyOrder-Info from DEXNET"
@@ -2447,14 +2654,27 @@ Public Class PFPForm
                                         End If
 
 
-                                        T_LVI.SubItems.Add(PayMet) 'payment method
-                                        T_LVI.SubItems.Add(Autosendinfotext) 'autosend infotext
-                                        T_LVI.SubItems.Add(AutocompleteAT) 'autocomplete at
-                                        T_LVI.SubItems.Add(T_BuyerRS) 'buyer
-                                        T_LVI.SubItems.Add(PFPAT.ATRS) 'at
-                                        T_LVI.Tag = PFPAT
+                                        'T_LVI.SubItems.Add(PayMet) 'payment method
+                                        T_LVE.Method = PayMet
 
-                                        BuyOrderLVIList.Add(T_LVI)
+                                        'T_LVI.SubItems.Add(Autosendinfotext) 'autosend infotext
+                                        T_LVE.AutoInfo = Autosendinfotext
+
+                                        'T_LVI.SubItems.Add(AutocompleteAT) 'autocomplete at
+                                        T_LVE.AutoFinish = AutocompleteAT
+
+                                        'T_LVI.SubItems.Add(T_BuyerRS) 'buyer
+                                        T_LVE.Seller_Buyer = T_BuyerRS
+
+                                        'T_LVI.SubItems.Add(PFPAT.ATRS) 'at
+                                        T_LVE.AT = PFPAT.ATRS
+
+                                        'T_LVI.Tag = PFPAT
+                                        T_LVE.Tag = PFPAT
+
+                                        'BuyOrderLVIList.Add(T_LVI)
+                                        BuyOrderLVEList.Add(T_LVE)
+
 
                                     End If
 
@@ -2480,6 +2700,7 @@ Public Class PFPForm
                                     T_LVI.SubItems.Add(XItem) 'xitem
                                     T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'xamount
                                     T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'quantity
+                                    T_LVI.SubItems.Add(Dbl2LVStr(Order.Collateral)) 'collateral
                                     T_LVI.SubItems.Add(Dbl2LVStr(Order.Price, Decimals)) 'price
                                     T_LVI.SubItems.Add("OPEN") 'status
                                     T_LVI.Tag = Order
@@ -2503,6 +2724,7 @@ Public Class PFPForm
                                     T_LVI.SubItems.Add(XItem) 'xitem
                                     T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'xamount
                                     T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'quantity
+                                    T_LVI.SubItems.Add(Dbl2LVStr(Order.Collateral)) 'collateral
                                     T_LVI.SubItems.Add(Dbl2LVStr(Order.Price, Decimals)) 'price
                                     T_LVI.SubItems.Add("OPEN") 'status
                                     T_LVI.Tag = Order
@@ -2743,6 +2965,7 @@ Public Class PFPForm
                                 T_LVI.SubItems.Add(XItem) 'xitem
                                 T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'xamount
                                 T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'quantity
+                                T_LVI.SubItems.Add(Dbl2LVStr(Order.Collateral)) 'collateral
                                 T_LVI.SubItems.Add(Dbl2LVStr(Order.Price, Decimals)) 'price
                                 T_LVI.SubItems.Add(AlreadySend) 'status
                                 T_LVI.Tag = Order
@@ -2913,6 +3136,7 @@ Public Class PFPForm
                                 T_LVI.SubItems.Add(XItem) 'xitem
                                 T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'xamount
                                 T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'quantity
+                                T_LVI.SubItems.Add(Dbl2LVStr(Order.Collateral)) 'collateral
                                 T_LVI.SubItems.Add(Dbl2LVStr(Order.Price, Decimals)) 'price
                                 T_LVI.SubItems.Add(AlreadySend) 'status
                                 T_LVI.Tag = Order
@@ -3956,6 +4180,325 @@ Public Class PFPForm
 
     End Function
 
+    Property RelevantMsgsBuffer As List(Of S_RelevantMsg) = New List(Of S_RelevantMsg)
+
+    Sub SetDEXNETRelevantMsgsToLVs()
+
+        'TODO: change from LV to List(Of Listviewitem)
+
+        Dim RelMsgs As List(Of ClsDEXNET.S_RelevantMessage) = New List(Of ClsDEXNET.S_RelevantMessage)
+
+        If Not IsNothing(DEXNET) Then
+            RelMsgs = DEXNET.GetRelevantMsgs
+        End If
+
+#Region "Clean RelevantMsgBuffer"
+        Dim WExit As Boolean = False
+        While Not WExit
+            WExit = True
+
+            Dim Cnt As Integer = RelevantMsgsBuffer.Count
+            For i As Integer = 0 To Cnt - 1
+
+                If Cnt <> RelevantMsgsBuffer.Count Then
+                    Exit For
+                End If
+
+                Dim x As S_RelevantMsg = RelevantMsgsBuffer(i)
+
+                Dim Founded As Boolean = False
+
+                For ii As Integer = 0 To RelMsgs.Count - 1
+                    Dim y As ClsDEXNET.S_RelevantMessage = RelMsgs(ii)
+
+                    If y.RelevantMessage = x.RelevantMessage Then
+                        Founded = True
+                        Exit For
+                    End If
+
+                Next
+
+                If Not Founded Then
+                    WExit = False
+                    RelevantMsgsBuffer.RemoveAt(i)
+                End If
+
+            Next
+
+        End While
+
+#End Region
+
+#Region "Fill RelevantMsgBuffer"
+        For i As Integer = 0 To RelMsgs.Count - 1
+            Dim RelMsg As ClsDEXNET.S_RelevantMessage = RelMsgs(i)
+
+            If RelMsg.RelevantMessage = "" Then
+                Continue For
+            End If
+
+            Dim Founded As Boolean = False
+            For Each x As S_RelevantMsg In RelevantMsgsBuffer
+                If x.RelevantMessage = RelMsg.RelevantMessage Then
+                    Founded = True
+                    Exit For
+                End If
+            Next
+
+            If Not Founded Then
+                Dim T_RelevantMsgBuf As S_RelevantMsg = New S_RelevantMsg
+                T_RelevantMsgBuf.Setted = False
+                T_RelevantMsgBuf.RelevantMessage = RelMsg.RelevantMessage
+                RelevantMsgsBuffer.Add(T_RelevantMsgBuf)
+            End If
+
+        Next
+#End Region
+
+
+        For ii As Integer = 0 To RelevantMsgsBuffer.Count - 1
+            Dim RelMsg As S_RelevantMsg = RelevantMsgsBuffer(ii)
+
+            If RelMsg.Setted Then
+                Continue For
+            End If
+
+            If RelMsg.RelevantMessage.Contains("<ATID>") And RelMsg.RelevantMessage.Contains("<PublicKey>") And RelMsg.RelevantMessage.Contains("<PayType>") And RelMsg.RelevantMessage.Contains("<Autosendinfotext>") And RelMsg.RelevantMessage.Contains("<AutocompleteAT>") Then
+
+#Region "Refresh LVs"
+
+                Dim RM_ATID As String = Between(RelMsg.RelevantMessage, "<ATID>", "</ATID>", GetType(String))
+                Dim SigAPI As ClsSignumAPI = New ClsSignumAPI()
+                Dim ATIDRSList As List(Of String) = SigAPI.RSConvert(CULng(RM_ATID))
+                Dim RM_ATRS As String = BetweenFromList(ATIDRSList, "<accountRS>", "</accountRS>")
+
+                Dim RM_AccountPublicKey As String = Between(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>", GetType(String))
+                Dim RM_AccountPublicKeyList As List(Of String) = SigAPI.RSConvert(GetAccountID(RM_AccountPublicKey).ToString)
+                Dim RM_AccountRS As String = BetweenFromList(RM_AccountPublicKeyList, "<accountRS>", "</accountRS>")
+
+                Dim ForContinue As Boolean = False
+                For Each LVI As ListViewItem In LVSellorders.Items
+                    Dim LVI_ATRS As String = GetLVColNameFromSubItem(LVSellorders, "AT", LVI)
+                    Dim LVI_SellerRS As String = GetLVColNameFromSubItem(LVSellorders, "Seller", LVI)
+
+                    If RM_ATRS = LVI_ATRS And RM_AccountRS = LVI_SellerRS Then
+
+                        Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
+                        SetLVColName2SubItem(LVSellorders, LVI, "Method", PayMethod)
+
+                        Dim T_Autosendinfotext As String = Between(RelMsg.RelevantMessage, "<Autosendinfotext>", "</Autosendinfotext>", GetType(String))
+                        SetLVColName2SubItem(LVSellorders, LVI, "Autoinfo", T_Autosendinfotext)
+
+                        Dim T_AutocompleteAT As String = Between(RelMsg.RelevantMessage, "<AutocompleteAT>", "</AutocompleteAT>", GetType(String))
+                        SetLVColName2SubItem(LVSellorders, LVI, "Autofinish", T_AutocompleteAT)
+
+                        RelMsg.Setted = True
+                        RelevantMsgsBuffer(ii) = RelMsg
+
+                        ForContinue = True
+                        Exit For
+                    End If
+
+                Next
+
+                If ForContinue Then
+                    Continue For
+                End If
+
+                For Each LVI As ListViewItem In LVBuyorders.Items
+                    Dim LVI_ATRS As String = GetLVColNameFromSubItem(LVBuyorders, "AT", LVI)
+                    Dim LVI_BuyerRS As String = GetLVColNameFromSubItem(LVBuyorders, "Buyer", LVI)
+
+                    If RM_ATRS = LVI_ATRS And RM_AccountRS = LVI_BuyerRS Then
+
+                        Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
+                        SetLVColName2SubItem(LVBuyorders, LVI, "Method", PayMethod)
+
+                        Dim T_Autosendinfotext As String = Between(RelMsg.RelevantMessage, "<Autosendinfotext>", "</Autosendinfotext>", GetType(String))
+                        SetLVColName2SubItem(LVBuyorders, LVI, "Autoinfo", T_Autosendinfotext)
+
+                        Dim T_AutocompleteAT As String = Between(RelMsg.RelevantMessage, "<AutocompleteAT>", "</AutocompleteAT>", GetType(String))
+                        SetLVColName2SubItem(LVBuyorders, LVI, "Autofinish", T_AutocompleteAT)
+
+                        RelMsg.Setted = True
+                        RelevantMsgsBuffer(ii) = RelMsg
+
+                        ForContinue = True
+                        Exit For
+
+                    End If
+
+                Next
+
+                If ForContinue Then
+                    Continue For
+                End If
+
+                For Each LVI As ListViewItem In LVMyOpenOrders.Items
+
+                    Dim LVI_ATRS As String = GetLVColNameFromSubItem(LVMyOpenOrders, "AT", LVI)
+                    Dim LVI_Type As String = GetLVColNameFromSubItem(LVMyOpenOrders, "Type", LVI)
+                    Dim LVI_SellerRS As String = GetLVColNameFromSubItem(LVMyOpenOrders, "Seller", LVI)
+                    Dim LVI_BuyerRS As String = GetLVColNameFromSubItem(LVMyOpenOrders, "Buyer", LVI)
+
+
+                    If LVI_Type = "SellOrder" Then
+
+                        If RM_ATRS = LVI_ATRS And RM_AccountRS = LVI_SellerRS Then
+
+                            Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
+                            SetLVColName2SubItem(LVMyOpenOrders, LVI, "Method", PayMethod)
+
+                            Dim T_Autosendinfotext As String = Between(RelMsg.RelevantMessage, "<Autosendinfotext>", "</Autosendinfotext>", GetType(String))
+                            SetLVColName2SubItem(LVMyOpenOrders, LVI, "Autoinfo", T_Autosendinfotext)
+
+                            Dim T_AutocompleteAT As String = Between(RelMsg.RelevantMessage, "<AutocompleteAT>", "</AutocompleteAT>", GetType(String))
+                            SetLVColName2SubItem(LVMyOpenOrders, LVI, "Autofinish", T_AutocompleteAT)
+
+                            RelMsg.Setted = True
+                            RelevantMsgsBuffer(ii) = RelMsg
+
+                            Exit For
+
+                        End If
+
+                    Else
+
+                        If RM_ATRS = LVI_ATRS And RM_AccountRS = LVI_BuyerRS Then
+
+                            Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
+                            SetLVColName2SubItem(LVMyOpenOrders, LVI, "Method", PayMethod)
+
+                            Dim T_Autosendinfotext As String = Between(RelMsg.RelevantMessage, "<Autosendinfotext>", "</Autosendinfotext>", GetType(String))
+                            SetLVColName2SubItem(LVMyOpenOrders, LVI, "Autoinfo", T_Autosendinfotext)
+
+                            Dim T_AutocompleteAT As String = Between(RelMsg.RelevantMessage, "<AutocompleteAT>", "</AutocompleteAT>", GetType(String))
+                            SetLVColName2SubItem(LVMyOpenOrders, LVI, "Autofinish", T_AutocompleteAT)
+
+                            RelMsg.Setted = True
+                            RelevantMsgsBuffer(ii) = RelMsg
+
+                            Exit For
+
+                        End If
+
+                    End If
+
+
+
+                Next
+
+#End Region
+
+            ElseIf RelMsg.RelevantMessage.Contains("<ATID>") And RelMsg.RelevantMessage.Contains("<PublicKey>") And RelMsg.RelevantMessage.Contains("<Ask>") Then
+                Dim RM_ATID As String = Between(RelMsg.RelevantMessage, "<ATID>", "</ATID>", GetType(String))
+                Dim SigAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
+                Dim RM_AccountPublicKey As String = Between(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>", GetType(String))
+                Dim RM_AccountPublicKeyList As List(Of String) = SigAPI.RSConvert(GetAccountID(RM_AccountPublicKey).ToString)
+                Dim RM_AccountID As String = BetweenFromList(RM_AccountPublicKeyList, "<account>", "</account>")
+                Dim RM_AccIDULong As ULong = 0UL
+
+                Try
+                    RM_AccIDULong = CULng(RM_AccountID)
+                Catch ex As Exception
+                    'TODO: Error Out SetDEXNETRelevantMsgsToLVs(RM_AccointID)
+                End Try
+
+                'TODO:########################################
+                'TODO: Processing UnexpectedMsgs from DEXNET
+
+                Dim RM_Ask As String = Between(RelMsg.RelevantMessage, "<Ask>", "</Ask>", GetType(String))
+
+                If RM_Ask = "WTB" And Not RM_AccIDULong = 0 And Not RM_AccountPublicKey = "" Then
+
+                    For Each LVI As ListViewItem In LVMyOpenOrders.Items
+                        Dim MyOrder As S_Order = LVI.Tag
+
+                        Dim My_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(MyOrder.FirstTransaction)
+
+                        If My_OSList.Count <> 0 Then
+                            Dim My_OS As ClsOrderSettings = My_OSList(0)
+
+                            If My_OS.AutoSendInfotext Then
+
+                                If Not GetAutosignalTXFromINI(MyOrder.FirstTransaction) Then
+
+                                    If MyOrder.AT = RM_ATID Then
+
+                                        If MyOrder.Collateral = 0.0 Then
+
+                                            Dim ULngList As List(Of ULong) = New List(Of ULong)({SigAPI.ReferenceInjectResponder, RM_AccIDULong})
+                                            Dim MsgStr As String = SigAPI.ULngList2DataStr(ULngList)
+
+                                            Dim Response As String = SigAPI.SendMessage2BLSAT(RM_ATID, 1.0, ULngList)
+
+                                            If Response.Contains(Application.ProductName + "-error") Then
+                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs): -> " + vbCrLf + Response)
+                                            Else
+
+                                                Dim PayInfo As String = GetPaymentInfoFromOrderSettings(MyOrder.FirstTransaction, MyOrder.Quantity, MyOrder.XAmount, MyOrder.XItem)
+
+                                                Dim KnownAcc As String = SigAPI.GetAccountPublicKeyFromAccountID_RS(RM_AccountID)
+
+                                                If KnownAcc.Contains(Application.ProductName + "-error") Then
+                                                    'cant find account in blockchain, send message with pubkey to activate account
+
+                                                    If Not PayInfo.Trim = "" Then
+
+                                                        If PayInfo.Contains("PayPal-E-Mail=") Then
+                                                            Dim ColWords As ClsColloquialWords = New ClsColloquialWords
+                                                            Dim ColWordsString As String = ColWords.GenerateColloquialWords(MyOrder.FirstTransaction, True, "-", 5)
+
+                                                            PayInfo += " Reference/Note=" + ColWordsString
+                                                        End If
+
+                                                        Dim T_MsgStr As String = "Account activation" ' "AT=" + MyOrder.ATRS + " TX=" + MyOrder.FirstTransaction + " " + Dbl2LVStr(MyOrder.XAmount, Decimals) + " " + MyOrder.XItem + " " + PayInfo
+                                                        Dim TXr As String = SigAPI.SendMessage(RM_AccountID, T_MsgStr,, True,, RM_AccountPublicKey)
+
+                                                        If TXr.Contains(Application.ProductName + "-error") Then
+                                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                            out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs): -> " + vbCrLf + TXr)
+                                                        Else
+
+                                                        End If
+
+                                                    End If
+
+                                                End If
+
+                                            End If
+
+                                            RelMsg.Setted = True
+                                            RelevantMsgsBuffer(ii) = RelMsg
+                                        End If
+
+                                        Exit For
+
+                                    End If
+
+                                End If
+
+                            End If
+
+                        End If
+
+                    Next
+
+                Else
+
+                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                    Out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectedMsgs): -> ASK=" + RM_Ask + " ACCID=" + RM_AccIDULong.ToString + " Pubkey=" + RM_AccountPublicKey)
+
+                End If
+
+            End If
+
+        Next
+
+
+    End Sub
+
 #End Region
 
 
@@ -4450,9 +4993,9 @@ Public Class PFPForm
 
     End Function
 
-    Function SendBillingInfos(ByVal Recipient As String, ByVal Message As String, Optional ByVal Encrypt As Boolean = True)
+    Function SendBillingInfos(ByVal RecipientID As String, ByVal Message As String, Optional ByVal Encrypt As Boolean = True)
         Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-        Dim TX As String = BCR.SendMessage(Recipient, Message,, Encrypt)
+        Dim TX As String = BCR.SendMessage(RecipientID, Message,, Encrypt)
         Return TX
     End Function
 
@@ -5219,324 +5762,6 @@ Public Class PFPForm
         Dim RelevantMessage As String
     End Structure
 
-    Dim RelevantMsgsBuffer As List(Of S_RelevantMsg) = New List(Of S_RelevantMsg)
-
-    Sub SetDEXNETRelevantMsgsToLVs()
-
-
-        Dim RelMsgs As List(Of ClsDEXNET.S_RelevantMessage) = New List(Of ClsDEXNET.S_RelevantMessage)
-
-        If Not IsNothing(DEXNET) Then
-            RelMsgs = DEXNET.GetRelevantMsgs
-        End If
-
-#Region "Clean RelevantMsgBuffer"
-        Dim WExit As Boolean = False
-        While Not WExit
-            WExit = True
-
-            Dim Cnt As Integer = RelevantMsgsBuffer.Count
-            For i As Integer = 0 To Cnt - 1
-
-                If Cnt <> RelevantMsgsBuffer.Count Then
-                    Exit For
-                End If
-
-                Dim x As S_RelevantMsg = RelevantMsgsBuffer(i)
-
-                Dim Founded As Boolean = False
-
-                For ii As Integer = 0 To RelMsgs.Count - 1
-                    Dim y As ClsDEXNET.S_RelevantMessage = RelMsgs(ii)
-
-                    If y.RelevantMessage = x.RelevantMessage Then
-                        Founded = True
-                        Exit For
-                    End If
-
-                Next
-
-                If Not Founded Then
-                    WExit = False
-                    RelevantMsgsBuffer.RemoveAt(i)
-                End If
-
-            Next
-
-        End While
-
-#End Region
-
-#Region "Fill RelevantMsgBuffer"
-        For i As Integer = 0 To RelMsgs.Count - 1
-            Dim RelMsg As ClsDEXNET.S_RelevantMessage = RelMsgs(i)
-
-            If RelMsg.RelevantMessage = "" Then
-                Continue For
-            End If
-
-            Dim Founded As Boolean = False
-            For Each x As S_RelevantMsg In RelevantMsgsBuffer
-                If x.RelevantMessage = RelMsg.RelevantMessage Then
-                    Founded = True
-                    Exit For
-                End If
-            Next
-
-            If Not Founded Then
-                Dim T_RelevantMsgBuf As S_RelevantMsg = New S_RelevantMsg
-                T_RelevantMsgBuf.Setted = False
-                T_RelevantMsgBuf.RelevantMessage = RelMsg.RelevantMessage
-                RelevantMsgsBuffer.Add(T_RelevantMsgBuf)
-            End If
-
-        Next
-#End Region
-
-
-        For ii As Integer = 0 To RelevantMsgsBuffer.Count - 1
-            Dim RelMsg As S_RelevantMsg = RelevantMsgsBuffer(ii)
-
-            If RelMsg.Setted Then
-                Continue For
-            End If
-
-            If RelMsg.RelevantMessage.Contains("<ATID>") And RelMsg.RelevantMessage.Contains("<PublicKey>") And RelMsg.RelevantMessage.Contains("<PayType>") And RelMsg.RelevantMessage.Contains("<Autosendinfotext>") And RelMsg.RelevantMessage.Contains("<AutocompleteAT>") Then
-
-#Region "Refresh LVs"
-
-                Dim RM_ATID As String = Between(RelMsg.RelevantMessage, "<ATID>", "</ATID>", GetType(String))
-                Dim SigAPI As ClsSignumAPI = New ClsSignumAPI()
-                Dim ATIDRSList As List(Of String) = SigAPI.RSConvert(CULng(RM_ATID))
-                Dim RM_ATRS As String = BetweenFromList(ATIDRSList, "<accountRS>", "</accountRS>")
-
-                Dim RM_AccountPublicKey As String = Between(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>", GetType(String))
-                Dim RM_AccountPublicKeyList As List(Of String) = SigAPI.RSConvert(GetAccountID(RM_AccountPublicKey).ToString)
-                Dim RM_AccountRS As String = BetweenFromList(RM_AccountPublicKeyList, "<accountRS>", "</accountRS>")
-
-                Dim ForContinue As Boolean = False
-                For Each LVI As ListViewItem In LVSellorders.Items
-                    Dim LVI_ATRS As String = GetLVColNameFromSubItem(LVSellorders, "AT", LVI)
-                    Dim LVI_SellerRS As String = GetLVColNameFromSubItem(LVSellorders, "Seller", LVI)
-
-                    If RM_ATRS = LVI_ATRS And RM_AccountRS = LVI_SellerRS Then
-
-                        Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
-                        SetLVColName2SubItem(LVSellorders, LVI, "Method", PayMethod)
-
-                        Dim T_Autosendinfotext As String = Between(RelMsg.RelevantMessage, "<Autosendinfotext>", "</Autosendinfotext>", GetType(String))
-                        SetLVColName2SubItem(LVSellorders, LVI, "Autoinfo", T_Autosendinfotext)
-
-                        Dim T_AutocompleteAT As String = Between(RelMsg.RelevantMessage, "<AutocompleteAT>", "</AutocompleteAT>", GetType(String))
-                        SetLVColName2SubItem(LVSellorders, LVI, "Autofinish", T_AutocompleteAT)
-
-                        RelMsg.Setted = True
-                        RelevantMsgsBuffer(ii) = RelMsg
-
-                        ForContinue = True
-                        Exit For
-                    End If
-
-                Next
-
-                If ForContinue Then
-                    Continue For
-                End If
-
-                For Each LVI As ListViewItem In LVBuyorders.Items
-                    Dim LVI_ATRS As String = GetLVColNameFromSubItem(LVBuyorders, "AT", LVI)
-                    Dim LVI_BuyerRS As String = GetLVColNameFromSubItem(LVBuyorders, "Buyer", LVI)
-
-                    If RM_ATRS = LVI_ATRS And RM_AccountRS = LVI_BuyerRS Then
-
-                        Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
-                        SetLVColName2SubItem(LVBuyorders, LVI, "Method", PayMethod)
-
-                        Dim T_Autosendinfotext As String = Between(RelMsg.RelevantMessage, "<Autosendinfotext>", "</Autosendinfotext>", GetType(String))
-                        SetLVColName2SubItem(LVBuyorders, LVI, "Autoinfo", T_Autosendinfotext)
-
-                        Dim T_AutocompleteAT As String = Between(RelMsg.RelevantMessage, "<AutocompleteAT>", "</AutocompleteAT>", GetType(String))
-                        SetLVColName2SubItem(LVBuyorders, LVI, "Autofinish", T_AutocompleteAT)
-
-                        RelMsg.Setted = True
-                        RelevantMsgsBuffer(ii) = RelMsg
-
-                        ForContinue = True
-                        Exit For
-
-                    End If
-
-                Next
-
-                If ForContinue Then
-                    Continue For
-                End If
-
-                For Each LVI As ListViewItem In LVMyOpenOrders.Items
-
-                    Dim LVI_ATRS As String = GetLVColNameFromSubItem(LVMyOpenOrders, "AT", LVI)
-                    Dim LVI_Type As String = GetLVColNameFromSubItem(LVMyOpenOrders, "Type", LVI)
-                    Dim LVI_SellerRS As String = GetLVColNameFromSubItem(LVMyOpenOrders, "Seller", LVI)
-                    Dim LVI_BuyerRS As String = GetLVColNameFromSubItem(LVMyOpenOrders, "Buyer", LVI)
-
-
-                    If LVI_Type = "SellOrder" Then
-
-                        If RM_ATRS = LVI_ATRS And RM_AccountRS = LVI_SellerRS Then
-
-                            Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
-                            SetLVColName2SubItem(LVMyOpenOrders, LVI, "Method", PayMethod)
-
-                            Dim T_Autosendinfotext As String = Between(RelMsg.RelevantMessage, "<Autosendinfotext>", "</Autosendinfotext>", GetType(String))
-                            SetLVColName2SubItem(LVMyOpenOrders, LVI, "Autoinfo", T_Autosendinfotext)
-
-                            Dim T_AutocompleteAT As String = Between(RelMsg.RelevantMessage, "<AutocompleteAT>", "</AutocompleteAT>", GetType(String))
-                            SetLVColName2SubItem(LVMyOpenOrders, LVI, "Autofinish", T_AutocompleteAT)
-
-                            RelMsg.Setted = True
-                            RelevantMsgsBuffer(ii) = RelMsg
-
-                            Exit For
-
-                        End If
-
-                    Else
-
-                        If RM_ATRS = LVI_ATRS And RM_AccountRS = LVI_BuyerRS Then
-
-                            Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
-                            SetLVColName2SubItem(LVMyOpenOrders, LVI, "Method", PayMethod)
-
-                            Dim T_Autosendinfotext As String = Between(RelMsg.RelevantMessage, "<Autosendinfotext>", "</Autosendinfotext>", GetType(String))
-                            SetLVColName2SubItem(LVMyOpenOrders, LVI, "Autoinfo", T_Autosendinfotext)
-
-                            Dim T_AutocompleteAT As String = Between(RelMsg.RelevantMessage, "<AutocompleteAT>", "</AutocompleteAT>", GetType(String))
-                            SetLVColName2SubItem(LVMyOpenOrders, LVI, "Autofinish", T_AutocompleteAT)
-
-                            RelMsg.Setted = True
-                            RelevantMsgsBuffer(ii) = RelMsg
-
-                            Exit For
-
-                        End If
-
-                    End If
-
-
-
-                Next
-
-#End Region
-
-            ElseIf RelMsg.RelevantMessage.Contains("<ATID>") And RelMsg.RelevantMessage.Contains("<PublicKey>") And RelMsg.RelevantMessage.Contains("<Ask>") Then
-                Dim RM_ATID As String = Between(RelMsg.RelevantMessage, "<ATID>", "</ATID>", GetType(String))
-                Dim SigAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-                Dim RM_AccountPublicKey As String = Between(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>", GetType(String))
-                Dim RM_AccountPublicKeyList As List(Of String) = SigAPI.RSConvert(GetAccountID(RM_AccountPublicKey).ToString)
-                Dim RM_AccountID As String = BetweenFromList(RM_AccountPublicKeyList, "<account>", "</account>")
-                Dim RM_AccIDULong As ULong = 0UL
-
-                Try
-                    RM_AccIDULong = CULng(RM_AccountID)
-                Catch ex As Exception
-                    'TODO: Error Out SetDEXNETRelevantMsgsToLVs(RM_AccointID)
-                End Try
-
-                'TODO:########################################
-                'TODO: Processing UnexpectetMsgs from DEXNET
-
-                Dim RM_Ask As String = Between(RelMsg.RelevantMessage, "<Ask>", "</Ask>", GetType(String))
-
-                If RM_Ask = "WTB" And Not RM_AccIDULong = 0 And Not RM_AccountPublicKey = "" Then
-
-                    For Each LVI As ListViewItem In LVMyOpenOrders.Items
-                        Dim MyOrder As S_Order = LVI.Tag
-
-                        Dim My_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(MyOrder.FirstTransaction)
-
-                        If My_OSList.Count <> 0 Then
-                            Dim My_OS As ClsOrderSettings = My_OSList(0)
-
-                            If My_OS.AutoSendInfotext Then
-
-                                If Not GetAutosignalTXFromINI(MyOrder.FirstTransaction) Then
-
-                                    If MyOrder.AT = RM_ATID Then
-
-                                        If MyOrder.Collateral = 0.0 Then
-
-                                            Dim ULngList As List(Of ULong) = New List(Of ULong)({SigAPI.ReferenceInjectResponder, RM_AccIDULong})
-                                            Dim MsgStr As String = SigAPI.ULngList2DataStr(ULngList)
-
-                                            Dim Response As String = SigAPI.SendMessage2BLSAT(RM_ATID, 1.0, ULngList)
-
-                                            If Response.Contains(Application.ProductName + "-error") Then
-                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs): -> " + vbCrLf + Response)
-                                            Else
-
-                                                Dim PayInfo As String = GetPaymentInfoFromOrderSettings(MyOrder.FirstTransaction, MyOrder.Quantity, MyOrder.XAmount, MyOrder.XItem)
-
-                                                Dim KnownAcc As String = SigAPI.GetAccountPublicKeyFromAccountID_RS(RM_AccountID)
-
-                                                If KnownAcc.Contains(Application.ProductName + "-error") Then
-                                                    'cant find account in blockchain, send message with pubkey to activate account
-
-                                                    If Not PayInfo.Trim = "" Then
-
-                                                        If PayInfo.Contains("PayPal-E-Mail=") Then
-                                                            Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                                                            Dim ColWordsString As String = ColWords.GenerateColloquialWords(MyOrder.FirstTransaction, True, "-", 5)
-
-                                                            PayInfo += " Reference/Note=" + ColWordsString
-                                                        End If
-
-                                                        Dim T_MsgStr As String = "Account activation" ' "AT=" + MyOrder.ATRS + " TX=" + MyOrder.FirstTransaction + " " + Dbl2LVStr(MyOrder.XAmount, Decimals) + " " + MyOrder.XItem + " " + PayInfo
-                                                        Dim TXr As String = SigAPI.SendMessage(RM_AccountID, T_MsgStr,, True,, RM_AccountPublicKey)
-
-                                                        If TXr.Contains(Application.ProductName + "-error") Then
-                                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                            out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs): -> " + vbCrLf + TXr)
-                                                        Else
-
-                                                        End If
-
-                                                    End If
-
-                                                End If
-
-                                            End If
-
-                                            RelMsg.Setted = True
-                                            RelevantMsgsBuffer(ii) = RelMsg
-                                        End If
-
-                                        Exit For
-
-                                    End If
-
-                                End If
-
-                            End If
-
-                        End If
-
-                    Next
-
-                Else
-
-                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                    Out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectedMsgs): -> ASK=" + RM_Ask + " ACCID=" + RM_AccIDULong.ToString + " Pubkey=" + RM_AccountPublicKey)
-
-                End If
-
-            End If
-
-        Next
-
-
-    End Sub
-
     Sub GetNuBlock(ByVal Node As Object)
         Dim BCR As ClsSignumAPI = New ClsSignumAPI(Node)
         NuBlock = BCR.GetCurrentBlock
@@ -6129,7 +6354,184 @@ Public Class PFPForm
 
 #Region "Test"
 
+    Private Sub BtShowSellFilter_Click(sender As Object, e As EventArgs) Handles BtShowSellFilter.Click
 
+        If SplitContainerSellFilter.Panel1Collapsed = True Then
+
+            BtShowSellFilter.Text = "hide Filter"
+            SplitContainerSellFilter.Panel1Collapsed = False
+
+        Else
+            BtShowSellFilter.Text = "show Filter"
+            SplitContainerSellFilter.Panel1Collapsed = True
+
+        End If
+
+    End Sub
+    Private Sub BtShowBuyFilter_Click(sender As Object, e As EventArgs) Handles BtShowBuyFilter.Click
+
+        If SplitContainerBuyFilter.Panel1Collapsed = True Then
+
+            BtShowBuyFilter.Text = "hide Filter"
+            SplitContainerBuyFilter.Panel1Collapsed = False
+
+        Else
+            BtShowBuyFilter.Text = "show Filter"
+            SplitContainerBuyFilter.Panel1Collapsed = True
+
+        End If
+
+    End Sub
+
+    Private Sub ChBxFilter_CheckedChanged(sender As Object, e As EventArgs) Handles ChBxSellFilterShowAutoinfo.CheckedChanged, ChBxSellFilterShowAutofinish.CheckedChanged, ChBxBuyFilterShowAutoinfo.CheckedChanged, ChBxBuyFilterShowAutofinish.CheckedChanged
+
+        SetFitlteredPublicOrdersInLVs()
+
+        If Not IsNothing(sender) Then
+            Select Case sender.name
+                Case ChBxSellFilterShowAutoinfo.Name
+                    SetINISetting(E_Setting.SellFilterAutoinfo, ChBxSellFilterShowAutoinfo.Checked)
+
+                Case ChBxSellFilterShowAutofinish.Name
+                    SetINISetting(E_Setting.SellFilterAutofinish, ChBxSellFilterShowAutofinish.Checked)
+
+                Case ChBxBuyFilterShowAutoinfo.Name
+                    SetINISetting(E_Setting.BuyFilterAutoinfo, ChBxBuyFilterShowAutoinfo.Checked)
+
+                Case ChBxBuyFilterShowAutofinish.Name
+                    SetINISetting(E_Setting.BuyFilterAutofinish, ChBxBuyFilterShowAutofinish.Checked)
+                Case Else
+                    'do nothing
+            End Select
+        End If
+
+    End Sub
+
+    Private Sub ChLBSellFilterMethods_MouseUp(sender As Object, e As MouseEventArgs) Handles ChLBSellFilterMethods.MouseUp
+
+        Dim CheckedMethods As String = ""
+
+        For i As Integer = 0 To ChLBSellFilterMethods.Items.Count - 1
+
+            Dim Method As String = ChLBSellFilterMethods.Items(i)
+
+            If ChLBSellFilterMethods.GetItemChecked(i) Then
+                CheckedMethods += Method + ";"
+            End If
+
+        Next
+
+        If Not CheckedMethods.Trim = "" Then
+            CheckedMethods = CheckedMethods.Remove(CheckedMethods.Length - 1)
+        End If
+
+        SetINISetting(E_Setting.SellFilterMethods, CheckedMethods)
+
+        SetFitlteredPublicOrdersInLVs()
+
+    End Sub
+    Private Sub ChLBBuyFilterMethods_MouseUp(sender As Object, e As MouseEventArgs) Handles ChLBBuyFilterMethods.MouseUp
+
+        Dim CheckedMethods As String = ""
+
+        For i As Integer = 0 To ChLBBuyFilterMethods.Items.Count - 1
+
+            Dim Method As String = ChLBBuyFilterMethods.Items(i)
+
+            If ChLBBuyFilterMethods.GetItemChecked(i) Then
+                CheckedMethods += Method + ";"
+            End If
+
+        Next
+
+        If Not CheckedMethods.Trim = "" Then
+            CheckedMethods = CheckedMethods.Remove(CheckedMethods.Length - 1)
+        End If
+
+        SetINISetting(E_Setting.BuyFilterMethods, CheckedMethods)
+
+        SetFitlteredPublicOrdersInLVs()
+
+    End Sub
+
+
+
+    Sub SetMethodFilter(ByVal MethodFilterListBox As CheckedListBox, ByVal CheckedMethods As List(Of String))
+
+        MethodFilterListBox.Items.Clear()
+        MethodFilterListBox.Items.Add("Unknown")
+        MethodFilterListBox.Items.AddRange(ClsOrderSettings.GetPayTypes.ToArray)
+
+        For Each CheckedMethod As String In CheckedMethods
+
+            For i As Integer = 0 To MethodFilterListBox.Items.Count - 1
+                Dim MethodFilter As String = MethodFilterListBox.Items(i)
+                If MethodFilter = CheckedMethod Then
+                    MethodFilterListBox.SetItemChecked(i, True)
+                    Exit For
+                End If
+
+            Next
+
+        Next
+
+    End Sub
+
+    Private Function LoadMethodFilter(ByVal Setting As E_Setting) As List(Of String)
+
+        Dim RetList As List(Of String) = New List(Of String)
+
+        If Setting <> E_Setting.BuyFilterMethods And Setting <> E_Setting.SellFilterMethods Then
+            Return RetList
+        End If
+
+        Dim Methods As String = LoadMethodFilterFromINI(Setting)
+
+        RetList.AddRange(Methods.Split(";"))
+
+        Return RetList
+
+    End Function
+    Private Function LoadMethodFilterFromINI(ByVal Setting As E_Setting) As String
+
+        If Setting <> E_Setting.BuyFilterMethods And Setting <> E_Setting.SellFilterMethods Then
+            Return ""
+        End If
+
+        Dim DefaultMethodList As List(Of String) = New List(Of String)(ClsOrderSettings.GetPayTypes.ToArray)
+
+        Dim DefaultMethods As String = "Unknown;"
+        For Each DefMet As String In DefaultMethodList
+            DefaultMethods += DefMet + ";"
+        Next
+
+        DefaultMethods = DefaultMethods.Remove(DefaultMethods.Length - 1)
+
+        Dim Methods As String = GetINISetting(Setting, DefaultMethods)
+
+        Return Methods
+
+    End Function
+
+    Private Sub CoBxSellFilterMaxOrders_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CoBxSellFilterMaxOrders.SelectedIndexChanged, CoBxBuyFilterMaxOrders.SelectedIndexChanged
+
+        SetFitlteredPublicOrdersInLVs()
+
+        If Not IsNothing(sender) Then
+            Select Case sender.name
+                Case CoBxSellFilterMaxOrders.Name
+                    SetINISetting(E_Setting.ShowMaxSellOrders, CoBxSellFilterMaxOrders.SelectedItem)
+
+                Case CoBxBuyFilterMaxOrders.Name
+                    SetINISetting(E_Setting.ShowMaxBuyOrders, CoBxBuyFilterMaxOrders.SelectedItem)
+
+                Case Else
+                    'do nothing
+
+            End Select
+        End If
+
+    End Sub
 
 #End Region 'Test
 
