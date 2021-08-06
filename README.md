@@ -14,6 +14,12 @@ Die Einstellungen werden mit Standard-Werten neben der PFP.EXE-Datei automatisch
 Neben der Settings.ini werden noch weitere Dateien wie z.b. "cache.dat" und "cache2.dat" sowie mögliche .LOG-Dateien erstellt. Die cache.dat enthält informationen aller auf der Signum.network blockchain befindlichen Smart Contracts. Die chache2.dat enthält Zahlungsinformationen der eigenen Aufträge.
 
 # Hier ist eine kleine Funktionsübersicht
-- sichere Verbindung zu öffentlichen signa-nodes aufbauen dank integrierter EC-KCDSA und Curve19255 Lösungen
-- eine TCP API für externe Applikationen zur verfügung stellen
-- mit dem integriertem auf TCP basiertem DEXNET das Signa-Netzwerk um offchain-Lösungen erweitern um das Handels-Erlebnis zu verbessern
+- sichere Verbindung zu öffentlichen Signum-nodes aufbauen dank integrierter EC-KCDSA und Curve19255 Lösungen
+- Lastenausgleich auf externe Signum-Nodes beim Einholen der Smart Contract-Daten wie z.b. der Transaktionshistorie schaffen
+- wiederverwendbare payment-channels (smart contracts) für jedermann zur Verfügung stellen
+- eine TCP API für externe Applikationen (über Standardport 8130) zur verfügung stellen
+- mit dem integriertem auf TCP basiertem DEXNET (über Standardport 8131) das Signa-Netzwerk um offchain-Lösungen erweitern um das Handels-Erlebnis zu verbessern
+
+# Bekannte Probleme
+- tote DEXNET-nodes können in der Liste der vorhandenen Peers verbleiben (mögliche Lösung: einen Ping der wenn nicht nach einer bestimmten Zeit antwortet den Peer entfernt)
+- dauerschleife in der PayPal-Sandbox wenn man PayPal-Orders über PayPal bezahlen will
