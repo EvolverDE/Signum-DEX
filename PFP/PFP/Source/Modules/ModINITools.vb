@@ -86,6 +86,8 @@ Module ModINITools
         BuyFilterAutofinish = 205
         SellFilterMethods = 206
         BuyFilterMethods = 207
+        SellFilterPayable = 208
+        BuyFilterPayable = 209
         'PayPal
         PayPalChoice = 300
         PayPalEMail = 301

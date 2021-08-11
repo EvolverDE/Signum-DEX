@@ -20,8 +20,8 @@ Public Class ClsSignumAPI
 #End Region
 
     Public Const _ReferenceTX As String = "11566074467129414744"
-    Public ReadOnly Property _DeployFeeNQT As ULong = 154350000UL
-    Public ReadOnly Property _GasFeeNQT As ULong = 29400000UL
+    Public Const _DeployFeeNQT As ULong = 154350000UL
+    Public Const _GasFeeNQT As ULong = 29400000UL
 
     Public ReadOnly Property ReferenceCreateOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(716726961670769723L), 0)
     Public ReadOnly Property ReferenceAcceptOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(4714436802908501638L), 0)
@@ -1460,8 +1460,9 @@ Public Class ClsSignumAPI
             RecipientPublicKey = GetAccountPublicKeyFromAccountID_RS(RecipientID)
         End If
 
-        If RecipientPublicKey.Trim = "" Then
+        If RecipientPublicKey.Trim = "" Or RecipientPublicKey.Trim = "0000000000000000000000000000000000000000000000000000000000000000" Then
             Encrypt = False
+            RecipientPublicKey = ""
         End If
 
         Dim Signum As ClsSignumNET = New ClsSignumNET(C_PassPhrase)
@@ -1502,9 +1503,14 @@ Public Class ClsSignumAPI
 
         'If Not RecipientPublicKey.Trim = "" Then
 
-        If Not RecipientPublicKey.Contains(Application.ProductName + "-error") And Not RecipientPublicKey = "False" Then
+        If Not RecipientPublicKey.Trim = "" Then
             postDataRL += " &recipientPublicKey=" + RecipientPublicKey
         End If
+
+
+        'If Not RecipientPublicKey.Contains(Application.ProductName + "-error") And Not RecipientPublicKey = "False" Then
+        '    postDataRL += " &recipientPublicKey=" + RecipientPublicKey
+        'End If
 
 
         'End If
@@ -1692,8 +1698,8 @@ Public Class ClsSignumAPI
 
 
         Dim postDataRL As String = "requestType=createATProgram"
-        postDataRL += "&name=BLS"
-        postDataRL += "&description=BLS2WLS"
+        postDataRL += "&name=PFPAT"
+        postDataRL += "&description=PFPAT"
         postDataRL += "&creationBytes=" + C_ReferenceCreationBytes
         'postDataRL += "&code=" 
         'postDataRL += "&data="
@@ -1854,7 +1860,7 @@ Public Class ClsSignumAPI
         Dim ULngList As List(Of ULong) = New List(Of ULong)({CULng(ReferenceCreateOrder), ReserveNQT, XAmountNQT, String2ULng(Xitem.Trim)})
         Dim MsgStr As String = ULngList2DataStr(ULngList)
 
-        Dim Response As String = SendMoney(ATId, Collateral, Fee, MsgStr.Trim, False)
+        Dim Response As String = SendMoney(ATId, Collateral + Planck2Dbl(_GasFeeNQT), Fee, MsgStr.Trim, False)
 
         If Response.Contains(Application.ProductName + "-error") Then
             Response = Application.ProductName + "-error in SetBLSATBuyOrder(): -> " + vbCrLf + Response
@@ -1889,7 +1895,7 @@ Public Class ClsSignumAPI
 
         Dim ULngList As List(Of ULong) = New List(Of ULong)({CULng(ReferenceCreateOrder), CollateralNQT, XAmountNQT, String2ULng(Xitem.Trim)})
         Dim MsgStr As String = ULngList2DataStr(ULngList)
-        Dim Response As String = SendMoney(ATId, WantToSellAmount, Fee, MsgStr.Trim, False)
+        Dim Response As String = SendMoney(ATId, WantToSellAmount + Planck2Dbl(_GasFeeNQT), Fee, MsgStr.Trim, False)
 
         If Response.Contains(Application.ProductName + "-error") Then
             Response = Application.ProductName + "-error in SetBLSATSellOrder(): -> " + vbCrLf + Response
@@ -1906,7 +1912,9 @@ Public Class ClsSignumAPI
         End If
 
         Dim MsgStr As String = ULngList2DataStr(ULongMsgList)
-        Dim Response As String = SendMoney(ATId, Collateral, Fee, MsgStr.Trim, False)
+        Dim Response As String = ""
+
+        Response = SendMoney(ATId, Collateral + Planck2Dbl(_GasFeeNQT), Fee, MsgStr.Trim, False)
 
         If Response.Contains(Application.ProductName + "-error") Then
             Response = Application.ProductName + "-error in SendMessage2BLSAT(): -> " + vbCrLf + Response
@@ -2123,13 +2131,13 @@ Public Class ClsSignumAPI
 
     End Function
 
-    Public Function Dbl2Planck(ByVal Signa As Double) As ULong
+    Public Shared Function Dbl2Planck(ByVal Signa As Double) As ULong
 
         Dim Planck As ULong = Signa * 100000000
         Return Planck
 
     End Function
-    Public Function Planck2Dbl(ByVal Planck As ULong) As Double
+    Public Shared Function Planck2Dbl(ByVal Planck As ULong) As Double
 
         Dim Signa As Double = Planck / 100000000
         Return Signa

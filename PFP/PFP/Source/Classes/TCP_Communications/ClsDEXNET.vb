@@ -41,7 +41,7 @@ Public Class ClsDEXNET
         Dim MessageThread As Threading.Thread
         Dim LastGetMsg As String
         Dim LastSetMsg As String
-        'Dim SetMsg As String
+        Dim Timeout As Integer
         Dim GetMsg As String
 
         Dim SetMsgs As List(Of String)
@@ -53,7 +53,7 @@ Public Class ClsDEXNET
             PublicKey = ""
             LastGetMsg = ""
             LastSetMsg = ""
-            'SetMsg = ""
+            Timeout = -1
             GetMsg = ""
             SetMsgs = New List(Of String)
         End Sub
@@ -367,6 +367,17 @@ Public Class ClsDEXNET
     End Function
     Public Sub GetClients()
         SendRequest("<" + E_XMLTags.Request.ToString + ">GetClients</" + E_XMLTags.Request.ToString + "><" + E_XMLTags.Timestamp.ToString + ">" + GetUnixTimestamp() + "</" + E_XMLTags.Timestamp.ToString + "><" + E_XMLTags.PublicKey.ToString + ">" + DEXNET_PublicKeyHEX + "</" + E_XMLTags.PublicKey.ToString + ">")
+    End Sub
+
+    Public Sub GetPing()
+
+        For i As Integer = 0 To Peers.Count - 1
+            Dim Peer As S_Peer = Peers(i)
+            Peer.Timeout = 3
+            Peers(i) = Peer
+        Next
+
+        SendRequest("<" + E_XMLTags.Request.ToString + ">Ping</" + E_XMLTags.Request.ToString + "><" + E_XMLTags.Timestamp.ToString + ">" + GetUnixTimestamp() + "</" + E_XMLTags.Timestamp.ToString + "><" + E_XMLTags.PublicKey.ToString + ">" + DEXNET_PublicKeyHEX + "</" + E_XMLTags.PublicKey.ToString + ">")
     End Sub
 
 #End Region
@@ -784,6 +795,25 @@ Public Class ClsDEXNET
 
                                 End If
 
+                            Case "Ping"
+
+                                Dim Answer As String = CreateXMLMessage("Ping", E_XMLTags.Response) + CreateXMLMessage(GetUnixTimestamp(), E_XMLTags.Timestamp) + CreateXMLMessage(DEXNET_PublicKeyHEX, E_XMLTags.PublicKey)
+                                Answer = CreateSignatureHash(Answer)
+
+                                T_Process.SetMsg = CreateSignatureHash(Answer)
+
+                                For i As Integer = 0 To Peers.Count - 1
+                                    Dim T_Peer As S_Peer = Peers(i)
+
+                                    If T_Peer.PossibleHost = T_Process.GetPossibleHost And T_Peer.Port = T_Process.GetPort Then
+                                        T_Peer.SetMsgs.Add(T_Process.SetMsg)
+                                        T_Peer.PublicKey = T_Process.PublicKey
+                                        Peers(i) = T_Peer
+                                        Exit For
+                                    End If
+
+                                Next
+
                         End Select
 
                     ElseIf Not Response.Trim = "" Then
@@ -908,6 +938,26 @@ Public Class ClsDEXNET
 
                                 End If
 
+                            Case "Ping"
+
+                                If DEXNET_PublicKeyHEX <> T_PubKey And Not T_PubKey.Trim = "" Then
+                                    If CheckSignatureHash(T_GetMsg, T_PubKey, T_SigHash) = True Then
+
+                                        For PeerInt As Integer = 0 To Peers.Count - 1
+                                            Dim Peer As S_Peer = Peers(PeerInt)
+
+                                            If Peer.TCPClient.Client.RemoteEndPoint.ToString = T_Process.GetIP And Peer.Port = T_Process.GetPort Then
+                                                Peer.Timeout = -1
+                                                Peers(PeerInt) = Peer
+                                                Exit For
+                                            End If
+
+                                        Next
+
+                                    End If
+                                End If
+
+
                         End Select
 
                     End If
@@ -981,9 +1031,9 @@ Public Class ClsDEXNET
                 T_Peer.StreamWriter.Flush()
                 Peers(i) = T_Peer
 
-                Dim LogMsg As String = "(" + Now.ToShortDateString + " " + Now.ToLongTimeString + ") " + T_Peer.PossibleHost + ":" + T_Peer.Port.ToString + " sended: " + TempMsg
 
                 If ShowStatus Then
+                    Dim LogMsg As String = "(" + Now.ToShortDateString + " " + Now.ToLongTimeString + ") " + T_Peer.PossibleHost + ":" + T_Peer.Port.ToString + " sended: " + TempMsg
                     StatusList.Add(LogMsg)
                 End If
 

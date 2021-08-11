@@ -10,7 +10,7 @@ Public Class PFPForm
     Property Block() As Integer = 0
     Property Fee() As Double = 0.0
     Property UTXList() As List(Of List(Of String))
-    Property RefreshTime() As Integer = 600
+    Property RefreshTime() As Integer = 5
 
     Property CurrentMarket As String = ""
     Property MarketIsCrypto() As Boolean = False
@@ -342,6 +342,9 @@ Public Class PFPForm
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        Dim GasFee As Double = ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
+
+        Label16.Text = "+ " + Dbl2LVStr(GasFee, 3) + " Signa Gas fee"
 
 #Region "TradeTracker"
 
@@ -481,7 +484,7 @@ Public Class PFPForm
         PrimaryNode = GetINISetting(E_Setting.DefaultNode, "http://nivbox.co.uk:6876/burst")
 
         'TODO: Reset Refreshtime
-        RefreshTime = 100 ' CInt(GetINISetting(E_Setting.RefreshMinutes, "1")) * 600
+        RefreshTime = 5 ' CInt(GetINISetting(E_Setting.RefreshMinutes, "1")) * 600
 
         If CBool(GetINISetting(E_Setting.TCPAPIEnable, "False")) Then
             TCPAPI.StartAPIServer()
@@ -611,6 +614,28 @@ Public Class PFPForm
 
             BlockTimer.Enabled = False
 
+            If Not IsNothing(DEXNET) Then
+
+                For i As Integer = 0 To DEXNET.Peers.Count - 1
+                    Dim Peer As ClsDEXNET.S_Peer = DEXNET.Peers(i)
+
+                    If Peer.Timeout = -1 Then
+                        Continue For
+                    End If
+
+                    If Peer.Timeout = 0 Then
+                        Peer.TCPClient.Close()
+                        DEXNET.Peers(i) = Peer
+                    Else
+                        Peer.Timeout -= 1
+                        DEXNET.Peers(i) = Peer
+                    End If
+
+                Next
+
+            End If
+
+
             Dim T_NuBlockThread As Threading.Thread = New Threading.Thread(AddressOf GetNuBlock)
             T_NuBlockThread.Start(PrimaryNode)
 
@@ -634,6 +659,8 @@ Public Class PFPForm
                     If Peers.Count = 0 Then
                         DEXNET.StopServer()
                         InitiateDEXNET()
+                    Else
+                        DEXNET.GetPing()
                     End If
 
                 Else
@@ -644,7 +671,7 @@ Public Class PFPForm
                 Wait = SetInLVs()
 
                 'TODO: reset refreshtime
-                RefreshTime = 100 ' CInt(GetINISetting(E_Setting.RefreshMinutes, "1")) * 600
+                RefreshTime = 5 ' CInt(GetINISetting(E_Setting.RefreshMinutes, "1")) * 600
 
                 Dim CoBxChartVal As Integer = 1
                 Dim CoBxTickVal As Integer = 1
@@ -964,7 +991,7 @@ Public Class PFPForm
                         Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to create a new SellOrder?" + vbCrLf + vbCrLf + "Amount: " + Dbl2LVStr(Amount, 8) + " SIGNA" + vbCrLf + "XItem: " + Dbl2LVStr(ItemAmount, Decimals) + " " + Item, "Create SellOrder", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                         If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-                            Dim TX As String = BSR.SetBLSATSellOrder(Recipient, Amount + Collateral + 1.0, Collateral, Item, ItemAmount, Fee)
+                            Dim TX As String = BSR.SetBLSATSellOrder(Recipient, Amount + Collateral, Collateral, Item, ItemAmount, Fee)
                             If TX.Contains(Application.ProductName + "-error") Then
                                 Dim out As ClsOut = New ClsOut(Application.StartupPath)
                                 out.ErrorLog2File(TX)
@@ -987,7 +1014,7 @@ Public Class PFPForm
                         Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to create a new BuyOrder?" + vbCrLf + vbCrLf + "Amount: " + Dbl2LVStr(Amount, 8) + " SIGNA" + vbCrLf + "XItem: " + Dbl2LVStr(ItemAmount, Decimals) + " " + Item, "Create BuyOrder", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                         If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-                            Dim TX As String = BSR.SetBLSATBuyOrder(Recipient, Amount, Collateral + 1.0, Item, ItemAmount, Fee)
+                            Dim TX As String = BSR.SetBLSATBuyOrder(Recipient, Amount, Collateral, Item, ItemAmount, Fee)
 
                             If TX.Contains(Application.ProductName + "-error") Then
                                 Dim out As ClsOut = New ClsOut(Application.StartupPath)
@@ -1138,7 +1165,7 @@ Public Class PFPForm
 
             Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
             Dim BLSAT_TX As S_PFPAT_TX = GetLastTXWithValues(BLS.AT_TXList, CurrentMarket)
-            Dim Amount As Double = BCR.Planck2Dbl(CULng(Between(BLSAT_TX.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
+            Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(CULng(Between(BLSAT_TX.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
 
 
             If Not BLS.Initiator = TBSNOAddress.Text Then
@@ -1157,13 +1184,12 @@ Public Class PFPForm
                     Available = Val(AvaStr.Replace(",", "."))
                 End If
 
-                If Available > Amount + 1.0 Then
+                If Available > Collateral + ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT) And Available > 0.0 Then
 
-                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to Buy " + Dbl2LVStr(BLS.BuySellAmount) + " SIGNA for " + Dbl2LVStr(BCR.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + "?" + vbCrLf + vbCrLf + "collateral: " + Dbl2LVStr(BLS.InitiatorsCollateral) + " SIGNA" + vbCrLf + "handling fees: " + Dbl2LVStr(1.0) + " SIGNA", "Buy Order?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
+                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to Buy " + Dbl2LVStr(BLS.BuySellAmount) + " Signa for " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + "?" + vbCrLf + vbCrLf + "collateral: " + Dbl2LVStr(BLS.InitiatorsCollateral) + " Signa" + vbCrLf + "gas fees: " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)) + " Signa", "Buy Order?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                     If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-                        Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, Amount + 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
-
+                        Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, Collateral, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
                         If TX.Contains(Application.ProductName + "-error") Then
                             Dim out As ClsOut = New ClsOut(Application.StartupPath)
@@ -1171,7 +1197,6 @@ Public Class PFPForm
                         Else
                             ClsMsgs.MBox("SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                         End If
-
 
                     End If
 
@@ -1231,10 +1256,10 @@ Public Class PFPForm
 
             Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
             Dim BLSAT_TX As S_PFPAT_TX = GetLastTXWithValues(BLS.AT_TXList, CurrentMarket)
-            Dim Amount As Double = BCR.Planck2Dbl(CULng(Between(BLSAT_TX.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
+            Dim Amount As Double = ClsSignumAPI.Planck2Dbl(CULng(Between(BLSAT_TX.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
             Dim XItem As String = Between(BLSAT_TX.Attachment, "<xItem>", "</xItem>", GetType(String))
-            Dim XAmount As Double = BCR.Planck2Dbl(CULng(Between(BLSAT_TX.Attachment, "<xAmount>", "</xAmount>", GetType(String))))
-            Dim Sum As Double = Amount + BCR.Planck2Dbl(CULng(BLSAT_TX.AmountNQT))
+            Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(CULng(Between(BLSAT_TX.Attachment, "<xAmount>", "</xAmount>", GetType(String))))
+            Dim Sum As Double = Amount + ClsSignumAPI.Planck2Dbl(CULng(BLSAT_TX.AmountNQT) - ClsSignumAPI._GasFeeNQT)
 
             If Not BLS.Initiator = TBSNOAddress.Text Then
 
@@ -1252,7 +1277,7 @@ Public Class PFPForm
 
                 If Available > Amount + 1.0 Then
 
-                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to Sell " + Dbl2LVStr(BLS.BuySellAmount) + " SIGNA for " + Dbl2LVStr(BCR.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + "?" + vbCrLf + vbCrLf + "collateral: " + Dbl2LVStr(BLS.InitiatorsCollateral) + " SIGNA" + vbCrLf + "handling fees: " + Dbl2LVStr(1.0) + " SIGNA", "Sell Order?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
+                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to Sell " + Dbl2LVStr(BLS.BuySellAmount) + " Signa for " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + "?" + vbCrLf + vbCrLf + "collateral: " + Dbl2LVStr(BLS.InitiatorsCollateral) + " Signa" + vbCrLf + "gas fees: " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)) + " Signa", "Sell Order?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                     If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
 
@@ -1275,7 +1300,7 @@ Public Class PFPForm
                                     PayInfo += " Reference/Note=" + ColWordsString
                                 End If
 
-                                Dim T_MsgStr As String = "AT=" + BLS.ATRS + " TX=" + BLSAT_TX.Transaction + " " + Dbl2LVStr(BCR.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + " " + PayInfo
+                                Dim T_MsgStr As String = "AT=" + BLS.ATRS + " TX=" + BLSAT_TX.Transaction + " " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + " " + PayInfo
                                 Dim TXr As String = SendBillingInfos(BLSAT_TX.Sender, T_MsgStr)
 
                                 If TXr.Contains(Application.ProductName + "-error") Then
@@ -2143,26 +2168,38 @@ Public Class PFPForm
 
             Dim BuyOrder As S_PublicOrdersListViewEntry = BuyOrderLVEList(i)
 
-            If i + 1 > GetINISetting(E_Setting.ShowMaxBuyOrders, 10) Then
-                Exit For
-            End If
+            If Not BuyOrder.Backcolor = Color.Magenta Then
 
-            If ChBxBuyFilterShowAutoinfo.Checked Then
-                If BuyOrder.AutoInfo.ToUpper.Trim <> ChBxBuyFilterShowAutoinfo.Checked.ToString.ToUpper.Trim And BuyOrder.AutoInfo.ToUpper.Trim <> "" Then
+                If i + 1 > GetINISetting(E_Setting.ShowMaxBuyOrders, 10) Then
+                    Exit For
+                End If
+
+                If ChBxBuyFilterShowAutoinfo.Checked Then
+                    If BuyOrder.AutoInfo.ToUpper.Trim <> ChBxBuyFilterShowAutoinfo.Checked.ToString.ToUpper.Trim And BuyOrder.AutoInfo.ToUpper.Trim <> "" Then
+                        Continue For
+                    End If
+                End If
+
+                If ChBxBuyFilterShowAutofinish.Checked Then
+                    If BuyOrder.AutoFinish.ToUpper.Trim <> ChBxBuyFilterShowAutofinish.Checked.ToString.ToUpper.Trim And BuyOrder.AutoFinish.ToUpper.Trim <> "" Then
+                        Continue For
+                    End If
+                End If
+
+                If ChBxBuyFilterShowPayable.Checked Then
+                    If CDbl(BuyOrder.Collateral) + CDbl(BuyOrder.Amount) > CDbl(TBSNOBalance.Text) Then
+                        Continue For
+                    End If
+                End If
+
+
+                Dim ValidBuyMethods As String = LoadMethodFilterFromINI(E_Setting.BuyFilterMethods)
+                If Not ValidBuyMethods.Contains(BuyOrder.Method) Or ValidBuyMethods.Trim = "" Then
                     Continue For
                 End If
+
             End If
 
-            If ChBxBuyFilterShowAutofinish.Checked Then
-                If BuyOrder.AutoFinish.ToUpper.Trim <> ChBxBuyFilterShowAutofinish.Checked.ToString.ToUpper.Trim And BuyOrder.AutoFinish.ToUpper.Trim <> "" Then
-                    Continue For
-                End If
-            End If
-
-            Dim ValidBuyMethods As String = LoadMethodFilterFromINI(E_Setting.BuyFilterMethods)
-            If Not ValidBuyMethods.Contains(BuyOrder.Method) Or ValidBuyMethods.Trim = "" Then
-                Continue For
-            End If
 
             Dim T_LVI As ListViewItem = New ListViewItem
 
@@ -2197,26 +2234,37 @@ Public Class PFPForm
 
             Dim SellOrder As S_PublicOrdersListViewEntry = SellOrderLVEList(i)
 
-            If i + 1 > GetINISetting(E_Setting.ShowMaxSellOrders, 10) Then
-                Exit For
-            End If
+            If Not SellOrder.Backcolor = Color.Magenta Then
 
-            If ChBxSellFilterShowAutoinfo.Checked Then
-                If SellOrder.AutoInfo.ToUpper.Trim <> ChBxSellFilterShowAutoinfo.Checked.ToString.ToUpper.Trim And SellOrder.AutoInfo.ToUpper.Trim <> "" Then
+                If i + 1 > GetINISetting(E_Setting.ShowMaxSellOrders, 10) Then
+                    Exit For
+                End If
+
+                If ChBxSellFilterShowAutoinfo.Checked Then
+                    If SellOrder.AutoInfo.ToUpper.Trim <> ChBxSellFilterShowAutoinfo.Checked.ToString.ToUpper.Trim And SellOrder.AutoInfo.ToUpper.Trim <> "" Then
+                        Continue For
+                    End If
+                End If
+
+                If ChBxSellFilterShowAutofinish.Checked Then
+                    If SellOrder.AutoFinish.ToUpper.Trim <> ChBxSellFilterShowAutofinish.Checked.ToString.ToUpper.Trim And SellOrder.AutoFinish.ToUpper.Trim <> "" Then
+                        Continue For
+                    End If
+                End If
+
+                If ChBxSellFilterShowPayable.Checked Then
+                    If CDbl(SellOrder.Collateral) > CDbl(TBSNOBalance.Text) Then
+                        Continue For
+                    End If
+                End If
+
+                Dim ValidSellMethods As String = LoadMethodFilterFromINI(E_Setting.SellFilterMethods)
+                If Not ValidSellMethods.Contains(SellOrder.Method) Or ValidSellMethods.Trim = "" Then
                     Continue For
                 End If
+
             End If
 
-            If ChBxSellFilterShowAutofinish.Checked Then
-                If SellOrder.AutoFinish.ToUpper.Trim <> ChBxSellFilterShowAutofinish.Checked.ToString.ToUpper.Trim And SellOrder.AutoFinish.ToUpper.Trim <> "" Then
-                    Continue For
-                End If
-            End If
-
-            Dim ValidSellMethods As String = LoadMethodFilterFromINI(E_Setting.SellFilterMethods)
-            If Not ValidSellMethods.Contains(SellOrder.Method) Or ValidSellMethods.Trim = "" Then
-                Continue For
-            End If
 
             Dim T_LVI As ListViewItem = New ListViewItem
 
@@ -4677,11 +4725,11 @@ Public Class PFPForm
             End If
         End If
 
-        Dim FirstAmount As Double = BCR.Planck2Dbl(CULng(FirstTX.AmountNQT))
+        Dim FirstAmount As Double = ClsSignumAPI.Planck2Dbl(CULng(FirstTX.AmountNQT))
 
         Dim Xitem As String = Between(FirstTX.Attachment, "<xItem>", "</xItem>", GetType(String))
-        Dim Xamount As Double = BCR.Planck2Dbl(CULng(Between(FirstTX.Attachment, "<xAmount>", "</xAmount>", GetType(String))))
-        Dim Collateral As Double = BCR.Planck2Dbl(CULng(Between(FirstTX.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
+        Dim Xamount As Double = ClsSignumAPI.Planck2Dbl(CULng(Between(FirstTX.Attachment, "<xAmount>", "</xAmount>", GetType(String))))
+        Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(CULng(Between(FirstTX.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
 
         Dim SellOrder As Boolean = False
         If FirstAmount > Collateral Then
@@ -4745,7 +4793,7 @@ Public Class PFPForm
 
             For Each ConfirmedTX As S_PFPAT_TX In TXList
 
-                If ConfirmedTX.Type = "BLSTX" And BCR.Planck2Dbl(CULng(ConfirmedTX.AmountNQT)) > 0.0 Then
+                If ConfirmedTX.Type = "BLSTX" And ClsSignumAPI.Planck2Dbl(CULng(ConfirmedTX.AmountNQT)) > 0.0 Then
 
                     If Status = "CLOSED" Then
 
@@ -4791,7 +4839,7 @@ Public Class PFPForm
 
         If FirstTX.Type = "SellOrder" Then
 
-            Dim WTSAmount As Double = BCR.Planck2Dbl(CULng(FirstTX.AmountNQT)) - Collateral - 1
+            Dim WTSAmount As Double = ClsSignumAPI.Planck2Dbl(CULng(FirstTX.AmountNQT)) - Collateral - ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
 
             NuOrder = New S_Order With {
                     .AT = BLSAT.AT,
@@ -4829,7 +4877,7 @@ Public Class PFPForm
                     .XAmount = Xamount,
                     .Quantity = Collateral,
                     .Price = Xamount / Collateral,
-                    .Collateral = BCR.Planck2Dbl(CULng(FirstTX.AmountNQT)),
+                    .Collateral = ClsSignumAPI.Planck2Dbl(CULng(FirstTX.AmountNQT) - ClsSignumAPI._GasFeeNQT),
                     .Status = Status,
                     .Attachment = FirstTX.Attachment.ToString,
                     .FirstTransaction = FirstTX.Transaction,
@@ -6001,7 +6049,7 @@ Public Class PFPForm
                                 Balance = "0"
                             End If
 
-                            Dim BalDbl As Double = SignaAPI.Planck2Dbl(CULng(Balance))
+                            Dim BalDbl As Double = ClsSignumAPI.Planck2Dbl(CULng(Balance))
 
                             Dim MachineData As String = BetweenFromList(ATStrList, "<machineData>", "</machineData>")
 
@@ -6045,10 +6093,10 @@ Public Class PFPForm
                                     ResponserRS = BetweenFromList(SignaAPI.RSConvert(Responser.ToString), "<accountRS>", "</accountRS>")
                                 End If
 
-                                InitiatorCollateral = SignaAPI.Planck2Dbl(MachineDataULongList(2))
-                                ResponserCollateral = SignaAPI.Planck2Dbl(MachineDataULongList(3))
+                                InitiatorCollateral = ClsSignumAPI.Planck2Dbl(MachineDataULongList(2)) '- ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
+                                ResponserCollateral = ClsSignumAPI.Planck2Dbl(MachineDataULongList(3)) '- ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
 
-                                BuySellAmount = SignaAPI.Planck2Dbl(MachineDataULongList(4))
+                                BuySellAmount = ClsSignumAPI.Planck2Dbl(MachineDataULongList(4)) '- ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
 
                                 SellOrder = False
 
@@ -6383,7 +6431,7 @@ Public Class PFPForm
 
     End Sub
 
-    Private Sub ChBxFilter_CheckedChanged(sender As Object, e As EventArgs) Handles ChBxSellFilterShowAutoinfo.CheckedChanged, ChBxSellFilterShowAutofinish.CheckedChanged, ChBxBuyFilterShowAutoinfo.CheckedChanged, ChBxBuyFilterShowAutofinish.CheckedChanged
+    Private Sub ChBxFilter_CheckedChanged(sender As Object, e As EventArgs) Handles ChBxSellFilterShowAutoinfo.CheckedChanged, ChBxSellFilterShowAutofinish.CheckedChanged, ChBxSellFilterShowPayable.CheckedChanged, ChBxBuyFilterShowAutoinfo.CheckedChanged, ChBxBuyFilterShowAutofinish.CheckedChanged, ChBxBuyFilterShowPayable.CheckedChanged
 
         SetFitlteredPublicOrdersInLVs()
 
@@ -6395,11 +6443,18 @@ Public Class PFPForm
                 Case ChBxSellFilterShowAutofinish.Name
                     SetINISetting(E_Setting.SellFilterAutofinish, ChBxSellFilterShowAutofinish.Checked)
 
+                Case ChBxSellFilterShowPayable.Name
+                    SetINISetting(E_Setting.SellFilterPayable, ChBxSellFilterShowPayable.Checked)
+
                 Case ChBxBuyFilterShowAutoinfo.Name
                     SetINISetting(E_Setting.BuyFilterAutoinfo, ChBxBuyFilterShowAutoinfo.Checked)
 
                 Case ChBxBuyFilterShowAutofinish.Name
                     SetINISetting(E_Setting.BuyFilterAutofinish, ChBxBuyFilterShowAutofinish.Checked)
+
+                Case ChBxBuyFilterShowPayable.Name
+                    SetINISetting(E_Setting.BuyFilterPayable, ChBxBuyFilterShowPayable.Checked)
+
                 Case Else
                     'do nothing
             End Select
