@@ -136,15 +136,31 @@ Public Class ClsDEXNET
         StartRefresher()
 
     End Sub
+
+    Dim TempConnect As String = ""
     Public Sub Connect(ByVal HostIP As String, ByVal RemotePort As Integer, Optional ByVal MyHost As String = "")
+
+        If TempConnect.Contains(HostIP + ":" + RemotePort.ToString + ";") Then
+            Exit Sub
+        End If
 
         If Peers.Count >= MaxPeers Then
             If ShowStatus Then
                 StatusList.Add("Connect(): MaxPeers reached: " + MaxPeers.ToString)
             End If
         Else
+
+            TempConnect += HostIP + ":" + RemotePort.ToString + ";"
+
             Dim ConThread As Threading.Thread = New Threading.Thread(AddressOf ConnectThread)
             ConThread.Start({HostIP, RemotePort, MyHost})
+
+            While ConThread.IsAlive
+
+            End While
+
+            TempConnect = TempConnect.Replace(HostIP + ":" + RemotePort.ToString + ";", "")
+
         End If
 
     End Sub
@@ -179,14 +195,15 @@ Public Class ClsDEXNET
 
                 T_Peer.PublicKey = ""
 
-                Dim NewPeerRequest As String = "<" + E_XMLTags.Request.ToString + ">Broadcast</" + E_XMLTags.Request.ToString + ">"
-                NewPeerRequest += "<" + E_XMLTags.Timestamp.ToString + ">" + GetUnixTimestamp() + "</" + E_XMLTags.Timestamp.ToString + ">"
+                Dim NewPeerRequest As String = CreateXMLMessage("Broadcast", E_XMLTags.Request)
+                NewPeerRequest += CreateXMLMessage(GetUnixTimestamp(), E_XMLTags.Timestamp)
                 NewPeerRequest += "<" + E_XMLTags.Message.ToString + ">"
-                NewPeerRequest += "<NewPeer>" + MyHost + "</NewPeer>"
-                NewPeerRequest += "<PSPort>" + DEXNET_ServerPort.ToString + "</PSPort>"
-                NewPeerRequest += "<" + E_XMLTags.PublicKey.ToString + ">" + DEXNET_PublicKeyHEX + "</" + E_XMLTags.PublicKey.ToString + ">"
+                NewPeerRequest += CreateXMLMessage(MyHost, "NewPeer")
+                NewPeerRequest += CreateXMLMessage(DEXNET_ServerPort.ToString, "PSPort")
+                NewPeerRequest += CreateXMLMessage(DEXNET_PublicKeyHEX, "PPublicKey")
                 NewPeerRequest += "</" + E_XMLTags.Message.ToString + ">"
 
+                NewPeerRequest += CreateXMLMessage(DEXNET_PublicKeyHEX, E_XMLTags.PublicKey)
                 NewPeerRequest = CreateSignatureHash(NewPeerRequest)
 
                 T_Peer.SetMsgs.Add(NewPeerRequest)
@@ -373,7 +390,7 @@ Public Class ClsDEXNET
 
         For i As Integer = 0 To Peers.Count - 1
             Dim Peer As S_Peer = Peers(i)
-            Peer.Timeout = 3
+            Peer.Timeout = 1
             Peers(i) = Peer
         Next
 
@@ -653,17 +670,11 @@ Public Class ClsDEXNET
                                 For i As Integer = 0 To Peers.Count - 1
                                     Dim T_Peer As S_Peer = Peers(i)
 
-                                    'Debug off
-                                    If T_Peer.PossibleHost.Contains("127.") Or T_Peer.PossibleHost.Contains("192.168.") Or T_Peer.PossibleRemoteServerPort = -1 Then
+                                    If T_Peer.PossibleHost.Contains("127.") Or T_Peer.PossibleHost.Contains("192.168.") Or T_Peer.PossibleRemoteServerPort = -1 Or (Answer.Contains("<HostIP>" + T_Peer.PossibleHost + "</HostIP>") And Answer.Contains("<PeersPort>" + T_Peer.PossibleRemoteServerPort.ToString + "</PeersPort>")) Then
                                     Else
                                         Answer += "<Entry" + CNT.ToString + "><HostIP>" + T_Peer.PossibleHost + "</HostIP><PeersPort>" + T_Peer.PossibleRemoteServerPort.ToString + "</PeersPort><PeersPublicKey>" + T_Peer.PublicKey + "</PeersPublicKey></Entry" + CNT.ToString + ">"
                                         CNT += 1
                                     End If
-
-                                    'For ii As Integer = 0 To 10000
-                                    '    Answer += "<Entry" + CNT.ToString + "><HostIP>" + T_Peer.PossibleHost + "</HostIP><PeersPort>" + T_Peer.PossibleRemoteServerPort.ToString + "</PeersPort><PeersPublicKey>" + T_Peer.PublicKey + "</PeersPublicKey></Entry" + CNT.ToString + ">"
-                                    '    CNT += 1
-                                    'Next
 
                                 Next
 
@@ -697,24 +708,46 @@ Public Class ClsDEXNET
 
                                             Dim T_NuMessage = T_Message.Replace("<NewPeer></NewPeer>", "<NewPeer>" + T_Process.GetIP + "</NewPeer>")
                                             If CheckXMLTag(T_Message, "PSPort") Then
-                                                T_Process.PossibleRemoteServerPort = CInt(Between(T_Message, "<PSPort>", "</PSPort>", GetType(String)))
+                                                T_Process.PossibleRemoteServerPort = Between(T_Message, "<PSPort>", "</PSPort>", GetType(Integer))
                                             End If
 
                                             T_GetMsg = T_GetMsg.Replace(T_Message, T_NuMessage)
+                                            T_GetMsg = T_GetMsg.Replace(T_PubKey, DEXNET_PublicKeyHEX)
+
                                             T_GetMsg = CreateSignatureHash(T_GetMsg)
 
                                         ElseIf CheckXMLTag(T_Message, "NewPeer") Then
 
                                             Dim T_HostIP As String = Between(T_Message, "<NewPeer>", "</NewPeer>", GetType(String))
-                                            Dim T_Port As Integer = CInt(Between(T_Message, "<Port>", "</Port>", GetType(String)))
-
-                                            If CheckHostIP_OK(T_HostIP, T_Process.GetIP) Then
-                                                T_Process.GetPossibleHost = T_HostIP
-                                            Else
-                                                T_Process.GetPossibleHost = T_Process.GetIP
+                                            If T_HostIP.Contains(":") Then
+                                                T_HostIP = T_HostIP.Remove(T_HostIP.IndexOf(":"))
                                             End If
 
-                                            T_Process.PossibleRemoteServerPort = T_Port
+                                            Dim T_Port As Integer = Between(T_Message, "<PSPort>", "</PSPort>", GetType(Integer))
+
+                                            Dim T_GetIP As String = T_Process.GetIP
+                                            If T_GetIP.Contains(":") Then
+                                                T_GetIP = T_GetIP.Remove(T_GetIP.IndexOf(":"))
+                                            End If
+
+                                            If CheckHostIsNotIP(T_HostIP, T_GetIP) Then
+
+                                                Dim Founded As Boolean = False
+                                                For i As Integer = 0 To Peers.Count - 1
+                                                    Dim T_Peer As S_Peer = Peers(i)
+
+                                                    If T_Peer.PossibleHost = T_HostIP And T_Peer.Port = T_Port Then
+                                                        Founded = True
+                                                        Exit For
+                                                    End If
+
+                                                Next
+
+                                                If Not Founded Then
+                                                    Connect(T_HostIP, T_Port)
+                                                End If
+
+                                            End If
 
                                         ElseIf CheckXMLTag(T_Message, "RefreshOrder") Then
 
@@ -850,7 +883,7 @@ Public Class ClsDEXNET
                                                         Dim Founded As Boolean = False
                                                         For c As Integer = 0 To Peers.Count - 1
                                                             Dim T_Peer As S_Peer = Peers(c)
-                                                            If T_Peer.PublicKey = PeersPublicKey Or (Not CheckHostIP_OK(T_Peer.PossibleHost, HostIP) And T_Peer.PossibleRemoteServerPort = PeersPortInt) Then
+                                                            If T_Peer.PublicKey = PeersPublicKey Or (Not CheckHostIsNotIP(T_Peer.PossibleHost, HostIP) And T_Peer.PossibleRemoteServerPort = PeersPortInt) Then
                                                                 Founded = True
                                                             End If
 
@@ -1312,7 +1345,7 @@ Public Class ClsDEXNET
         End Try
 
     End Function
-    Function CheckHostIP_OK(ByVal IPorHost As String, ByVal IP As String) As Boolean
+    Function CheckHostIsNotIP(ByVal IPorHost As String, ByVal IP As String) As Boolean
 
         If IPorHost.Trim = "" Then
             Return False
@@ -1328,7 +1361,7 @@ Public Class ClsDEXNET
             T_Host = System.Net.Dns.GetHostEntry(IPorHost)
 
             Dim T_HostAddresses As List(Of Net.IPAddress) = New List(Of Net.IPAddress)(T_Host.AddressList)
-            Dim T_HostIP As String = ""
+            Dim T_HostIP As String = IPorHost
             For Each IPAddress As Net.IPAddress In T_HostAddresses
                 If IPAddress.AddressFamily = Net.Sockets.AddressFamily.InterNetwork Then
                     T_HostIP = IPAddress.ToString
@@ -1340,7 +1373,7 @@ Public Class ClsDEXNET
             T_IP = System.Net.Dns.GetHostEntry(IP)
 
             Dim T_IPAddresses As List(Of Net.IPAddress) = New List(Of Net.IPAddress)(T_IP.AddressList)
-            Dim T_IPIP As String = ""
+            Dim T_IPIP As String = IP
             For Each IPAddress As Net.IPAddress In T_IPAddresses
                 If IPAddress.AddressFamily = Net.Sockets.AddressFamily.InterNetwork Then
                     T_IPIP = IPAddress.ToString

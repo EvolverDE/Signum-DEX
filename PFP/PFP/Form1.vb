@@ -10,7 +10,7 @@ Public Class PFPForm
     Property Block() As Integer = 0
     Property Fee() As Double = 0.0
     Property UTXList() As List(Of List(Of String))
-    Property RefreshTime() As Integer = 5
+    Property RefreshTime() As Integer = 60
 
     Property CurrentMarket As String = ""
     Property MarketIsCrypto() As Boolean = False
@@ -483,8 +483,7 @@ Public Class PFPForm
 
         PrimaryNode = GetINISetting(E_Setting.DefaultNode, "http://nivbox.co.uk:6876/burst")
 
-        'TODO: Reset Refreshtime
-        RefreshTime = 5 ' CInt(GetINISetting(E_Setting.RefreshMinutes, "1")) * 600
+        RefreshTime = CInt(GetINISetting(E_Setting.RefreshMinutes, "1")) * 60
 
         If CBool(GetINISetting(E_Setting.TCPAPIEnable, "False")) Then
             TCPAPI.StartAPIServer()
@@ -633,8 +632,16 @@ Public Class PFPForm
 
                 Next
 
-            End If
+                If DEXNET.Peers.Count = 0 Then
+                    DEXNET.StopServer()
+                    InitiateDEXNET()
+                Else
+                    DEXNET.GetPing()
+                End If
 
+            Else
+                InitiateDEXNET()
+            End If
 
             Dim T_NuBlockThread As Threading.Thread = New Threading.Thread(AddressOf GetNuBlock)
             T_NuBlockThread.Start(PrimaryNode)
@@ -642,6 +649,8 @@ Public Class PFPForm
             While T_NuBlockThread.IsAlive
                 Application.DoEvents()
             End While
+
+            'TODO: monitor Connectivity
 
             If NuBlock > Block Or ForceReload Then
                 Block = NuBlock
@@ -651,27 +660,12 @@ Public Class PFPForm
 
                 Application.DoEvents()
 
-                If Not IsNothing(DEXNET) Then
 
-                    Dim Peers As List(Of ClsDEXNET.S_Peer) = DEXNET.GetPeers()
-
-                    'TODO: first start skip
-                    If Peers.Count = 0 Then
-                        DEXNET.StopServer()
-                        InitiateDEXNET()
-                    Else
-                        DEXNET.GetPing()
-                    End If
-
-                Else
-                    InitiateDEXNET()
-                End If
 
                 Wait = Loading()
                 Wait = SetInLVs()
 
-                'TODO: reset refreshtime
-                RefreshTime = 5 ' CInt(GetINISetting(E_Setting.RefreshMinutes, "1")) * 600
+                RefreshTime = CInt(GetINISetting(E_Setting.RefreshMinutes, "1")) * 60
 
                 Dim CoBxChartVal As Integer = 1
                 Dim CoBxTickVal As Integer = 1
@@ -4200,7 +4194,7 @@ Public Class PFPForm
                 For Each DNNode As String In DEXNETNodes
 
                     If Not DEXNETMyHost = "" Then
-                        If Not DEXNET.CheckHostIP_OK(DNNode, DEXNETMyHost) Then
+                        If Not DEXNET.CheckHostIsNotIP(DNNode, DEXNETMyHost) Then
                             Continue For
                         End If
                     End If
@@ -5859,6 +5853,12 @@ Public Class PFPForm
 
 
                     If Request.Command = "Exit()" Then
+
+                        If InfoOut Then
+                            Dim IOut As ClsOut = New ClsOut(Application.StartupPath)
+                            IOut.Info2File(Application.ProductName + "-info from GetThread(): -> Exit()")
+                        End If
+
                         Exit While
                     End If
 
@@ -5984,6 +5984,12 @@ Public Class PFPForm
 
             If DelIdx <> -1 Then
                 APIRequestList.RemoveAt(DelIdx)
+
+                If InfoOut Then
+                    Dim IOut As ClsOut = New ClsOut(Application.StartupPath)
+                    IOut.Info2File(Application.ProductName + "-info from GetThread(): -> DelIDX <> -1 -> Exit()")
+                End If
+
             End If
 
         Catch ex As Exception
