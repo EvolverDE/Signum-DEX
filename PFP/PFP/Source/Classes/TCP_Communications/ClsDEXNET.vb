@@ -156,7 +156,7 @@ Public Class ClsDEXNET
             ConThread.Start({HostIP, RemotePort, MyHost})
 
             While ConThread.IsAlive
-
+                Application.DoEvents()
             End While
 
             TempConnect = TempConnect.Replace(HostIP + ":" + RemotePort.ToString + ";", "")
@@ -724,6 +724,7 @@ Public Class ClsDEXNET
                                             End If
 
                                             Dim T_Port As Integer = Between(T_Message, "<PSPort>", "</PSPort>", GetType(Integer))
+                                            Dim T_PPublicKey As String = Between(T_Message, "<PPublicKey>", "</PPublicKey>", GetType(String))
 
                                             Dim T_GetIP As String = T_Process.GetIP
                                             If T_GetIP.Contains(":") Then
@@ -736,7 +737,7 @@ Public Class ClsDEXNET
                                                 For i As Integer = 0 To Peers.Count - 1
                                                     Dim T_Peer As S_Peer = Peers(i)
 
-                                                    If T_Peer.PossibleHost = T_HostIP And T_Peer.Port = T_Port Then
+                                                    If (T_Peer.PossibleHost = T_HostIP And T_Peer.PossibleRemoteServerPort = T_Port) Or T_Peer.PublicKey = T_PPublicKey Then
                                                         Founded = True
                                                         Exit For
                                                     End If
