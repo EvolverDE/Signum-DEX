@@ -5831,9 +5831,11 @@ Public Class PFPForm
         Dim WExitCom As Boolean = True
         While WExitCom
 
-            Try
+            Threading.Thread.Sleep(1)
 
-                Dim Cnt As Integer = APIRequestList.Count
+            'Try
+
+            Dim Cnt As Integer = APIRequestList.Count
 
                 For i As Integer = 0 To Cnt - 1
 
@@ -5844,15 +5846,15 @@ Public Class PFPForm
                     End If
 
 
-                    Try
-                        Request = APIRequestList(i)
-                    Catch ex As Exception
-                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                        Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While1): -> " + ex.Message)
-                    End Try
+                Try
+                    Request = APIRequestList(i)
+                Catch ex As Exception
+                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                    Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While1): -> " + ex.Message)
+                End Try
 
 
-                    If Request.Command = "Exit()" Then
+                If Request.Command = "Exit()" Then
 
                         If InfoOut Then
                             Dim IOut As ClsOut = New ClsOut(Application.StartupPath)
@@ -5877,14 +5879,14 @@ Public Class PFPForm
                                 Continue While
                             End If
 
-                            Try
-                                APIRequestList(i) = Request
-                            Catch ex As Exception
-                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While2): -> " + ex.Message)
-                            End Try
+                        'Try
+                        APIRequestList(i) = Request
+                        'Catch ex As Exception
+                        '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                        '    Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While2): -> " + ex.Message)
+                        'End Try
 
-                            Continue For
+                        Continue For
 
                         End If
 
@@ -5907,14 +5909,14 @@ Public Class PFPForm
 
                         Request.RequestThread.Start({i, Request})
 
-                        Try
-                            APIRequestList(i) = Request
-                        Catch ex As Exception
-                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                            Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While3): -> " + ex.Message)
-                        End Try
+                    'Try
+                    APIRequestList(i) = Request
+                    'Catch ex As Exception
+                    '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                    '    Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While3): -> " + ex.Message)
+                    'End Try
 
-                    ElseIf Request.Status = "Requesting..." Then
+                ElseIf Request.Status = "Requesting..." Then
                         'loadbalancing
                         NuNodeList.Remove(Request.Node)
                     ElseIf Request.Status = "Responsed" Then
@@ -5931,14 +5933,14 @@ Public Class PFPForm
                                     Continue While
                                 End If
 
-                                Try
-                                    APIRequestList(i) = Request
-                                Catch ex As Exception
-                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                    Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While4): -> " + ex.Message)
-                                End Try
+                            'Try
+                            APIRequestList(i) = Request
+                            'Catch ex As Exception
+                            '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                            '    Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While4): -> " + ex.Message)
+                            'End Try
 
-                                Exit For
+                            Exit For
                             End If
                         Next
 
@@ -5951,12 +5953,12 @@ Public Class PFPForm
 
                 Next
 
-            Catch ex As Exception
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While): -> " + ex.Message)
+            'Catch ex As Exception
+            '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+            '    Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While): -> " + ex.Message)
 
-                'MultiInvoker(StatusLabel, "Text", "GetThread(): " + ex.Message)
-            End Try
+            '    'MultiInvoker(StatusLabel, "Text", "GetThread(): " + ex.Message)
+            'End Try
 
         End While
 

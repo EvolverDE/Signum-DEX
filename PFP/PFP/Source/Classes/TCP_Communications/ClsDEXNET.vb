@@ -42,8 +42,9 @@ Public Class ClsDEXNET
         Dim LastGetMsg As String
         Dim LastSetMsg As String
         Dim Timeout As Integer
-        Dim GetMsg As String
+        'Dim GetMsg As String
 
+        Dim GetMsgs As List(Of String)
         Dim SetMsgs As List(Of String)
 
         Sub New(ByVal Clear As Boolean)
@@ -54,7 +55,9 @@ Public Class ClsDEXNET
             LastGetMsg = ""
             LastSetMsg = ""
             Timeout = -1
-            GetMsg = ""
+            'GetMsg = ""
+
+            GetMsgs = New List(Of String)
             SetMsgs = New List(Of String)
         End Sub
 
@@ -69,6 +72,8 @@ Public Class ClsDEXNET
         Dim SetMsg As String
         Dim PublicKey As String
 
+        Dim GetMsgs As List(Of String)
+
         Sub New(ByVal Clear As Boolean)
             GetPossibleHost = ""
             GetIP = ""
@@ -77,6 +82,8 @@ Public Class ClsDEXNET
             GetMsg = ""
             SetMsg = ""
             PublicKey = ""
+
+            GetMsgs = New List(Of String)
         End Sub
 
     End Structure
@@ -155,11 +162,11 @@ Public Class ClsDEXNET
             Dim ConThread As Threading.Thread = New Threading.Thread(AddressOf ConnectThread)
             ConThread.Start({HostIP, RemotePort, MyHost})
 
-            While ConThread.IsAlive
-                Application.DoEvents()
-            End While
+            'While ConThread.IsAlive
+            '    Application.DoEvents()
+            'End While
 
-            TempConnect = TempConnect.Replace(HostIP + ":" + RemotePort.ToString + ";", "")
+            'TempConnect = TempConnect.Replace(HostIP + ":" + RemotePort.ToString + ";", "")
 
         End If
 
@@ -167,7 +174,7 @@ Public Class ClsDEXNET
 
     Private Sub ConnectThread(ByVal Input As Object)
 
-        Dim HostIP As String = TryCast(Input(0), String)
+        Dim RemoteHostIP As String = TryCast(Input(0), String)
         Dim RemotePort As Integer = DirectCast(Input(1), Integer)
         Dim MyHost As String = TryCast(Input(2), String)
 
@@ -178,14 +185,14 @@ Public Class ClsDEXNET
         Try
 
             Dim T_Peer As S_Peer = New S_Peer(True)
-            Dim T_TCPClient As Net.Sockets.TcpClient = New Net.Sockets.TcpClient(HostIP, RemotePort)
+            Dim T_TCPClient As Net.Sockets.TcpClient = New Net.Sockets.TcpClient(RemoteHostIP, RemotePort)
 
             If T_TCPClient.Connected Then
 
                 T_Peer.TCPClient = T_TCPClient
 
                 Dim IPEP As Net.IPEndPoint = T_TCPClient.Client.RemoteEndPoint
-                T_Peer.PossibleHost = HostIP
+                T_Peer.PossibleHost = RemoteHostIP
                 T_Peer.PossibleRemoteServerPort = RemotePort
                 T_Peer.Port = RemotePort
                 Dim NStream As Net.Sockets.NetworkStream = T_TCPClient.GetStream
@@ -212,11 +219,19 @@ Public Class ClsDEXNET
                 Peers.Add(T_Peer)
                 Peers(Peers.Count - 1).MessageThread.Start(Peers.Count - 1)
 
+                TempConnect = TempConnect.Replace(RemoteHostIP + ":" + RemotePort.ToString + ";", "")
+
+                Dim DEXNETNodesString As String = GetINISetting(E_Setting.DEXNETNodes, "signum.zone:8131")
+                If Not DEXNETNodesString.Contains(RemoteHostIP + ":" + RemotePort.ToString) Then
+                    DEXNETNodesString += ";" + RemoteHostIP + ":" + RemotePort.ToString
+                    SetINISetting(E_Setting.DEXNETNodes, DEXNETNodesString)
+                End If
+
             End If
 
         Catch ex As Exception
             If ShowStatus Then
-                StatusList.Add("ConnectThread(HostIP:" + HostIP + " RemotePort:" + RemotePort.ToString + " MyHost:" + MyHost + "): " + ex.Message)
+                StatusList.Add("ConnectThread(HostIP:" + RemoteHostIP + " RemotePort:" + RemotePort.ToString + " MyHost:" + MyHost + "): " + ex.Message)
             End If
         End Try
 
@@ -493,16 +508,15 @@ Public Class ClsDEXNET
 
                         If Not IsNothing(TempMsg) Then
                             T_Peer = Peers(IDX)
-                            T_Peer.GetMsg = TempMsg
+                            T_Peer.GetMsgs.Add(TempMsg)
                             Peers(IDX) = T_Peer
                         Else
                             T_Peer.TCPClient.Close()
                             Exit While
                         End If
 
-                        Dim LogMsg As String = "(" + Now.ToShortDateString + " " + Now.ToLongTimeString + ") " + T_Peer.PossibleHost + ":" + T_Peer.Port.ToString + " received: " + TempMsg
-
                         If ShowStatus Then
+                            Dim LogMsg As String = "(" + Now.ToShortDateString + " " + Now.ToLongTimeString + ") " + T_Peer.PossibleHost + ":" + T_Peer.Port.ToString + " received: " + TempMsg
                             StatusList.Add(LogMsg)
                         End If
 
@@ -530,6 +544,9 @@ Public Class ClsDEXNET
     Private Sub Refresher()
 
         While Not DEXNETClose
+
+            Threading.Thread.Sleep(1)
+
             Application.DoEvents()
             Dim Wait As Boolean = ClearList()
             Wait = ProcessMessages()
@@ -621,10 +638,11 @@ Public Class ClsDEXNET
             For i As Integer = 0 To Peers.Count - 1
                 Dim T_Peer As S_Peer = Peers(i)
 
-                If T_Peer.GetMsg.Trim <> "" Then
-                    Dim TempMsg As String = T_Peer.GetMsg
+                If T_Peer.GetMsgs.Count > 0 Then
+                    Dim TempMsg As String = T_Peer.GetMsgs(T_Peer.GetMsgs.Count - 1)
                     T_Peer.LastGetMsg = TempMsg
-                    T_Peer.GetMsg = ""
+                    Dim TempMsgs As List(Of String) = New List(Of String)(T_Peer.GetMsgs.ToArray)
+                    T_Peer.GetMsgs.Clear()
                     Peers(i) = T_Peer
 
 
@@ -634,160 +652,307 @@ Public Class ClsDEXNET
                     T_Process.PossibleRemoteServerPort = T_Peer.PossibleRemoteServerPort
                     T_Process.GetIP = T_Peer.TCPClient.Client.RemoteEndPoint.ToString
 
-
                     Dim IPEP As Net.IPEndPoint = T_Peer.TCPClient.Client.RemoteEndPoint
                     T_Process.GetPort = IPEP.Port
 
-                    T_Process.GetMsg = TempMsg
+                    T_Process.GetMsgs = TempMsgs
                     T_Process.PublicKey = T_Peer.PublicKey
 
                     ProcList.Add(T_Process)
 
                 End If
 
+                'If T_Peer.GetMsg.Trim <> "" Then
+                '    Dim TempMsg As String = T_Peer.GetMsg
+                '    T_Peer.LastGetMsg = TempMsg
+                '    T_Peer.GetMsg = ""
+                '    Peers(i) = T_Peer
+
+
+                '    Dim T_Process As S_Process = New S_Process(True)
+
+                '    T_Process.GetPossibleHost = T_Peer.PossibleHost
+                '    T_Process.PossibleRemoteServerPort = T_Peer.PossibleRemoteServerPort
+                '    T_Process.GetIP = T_Peer.TCPClient.Client.RemoteEndPoint.ToString
+
+
+                '    Dim IPEP As Net.IPEndPoint = T_Peer.TCPClient.Client.RemoteEndPoint
+                '    T_Process.GetPort = IPEP.Port
+
+                '    T_Process.GetMsg = TempMsg
+                '    T_Process.PublicKey = T_Peer.PublicKey
+
+                '    ProcList.Add(T_Process)
+
+                'End If
+
             Next
 
 
             For Each T_Process As S_Process In ProcList
 
-                Dim T_GetMsg As String = T_Process.GetMsg
+                For T_GetMsgsIDX As Integer = 0 To T_Process.GetMsgs.Count - 1
 
-                Dim Request As String = GetXMLMessage(T_GetMsg, E_XMLTags.Request)
-                Dim Response As String = GetXMLMessage(T_GetMsg, E_XMLTags.Response)
-                Dim T_PubKey As String = GetXMLMessage(T_GetMsg, E_XMLTags.PublicKey)
-                Dim T_SigHash As String = GetXMLMessage(T_GetMsg, E_XMLTags.SignatureHash)
+                    Dim T_GetMsg As String = T_Process.GetMsgs(T_GetMsgsIDX)
 
-                If Not T_PubKey.Trim = "" Then
+                    Dim Request As String = GetXMLMessage(T_GetMsg, E_XMLTags.Request)
+                    Dim Response As String = GetXMLMessage(T_GetMsg, E_XMLTags.Response)
+                    Dim T_PubKey As String = GetXMLMessage(T_GetMsg, E_XMLTags.PublicKey)
+                    Dim T_SigHash As String = GetXMLMessage(T_GetMsg, E_XMLTags.SignatureHash)
 
-                    If Not Request.Trim = "" Then
+                    If Not T_PubKey.Trim = "" Then
 
-                        Select Case Request
-                            Case "GetClients"
+                        If Not Request.Trim = "" Then
 
-                                Dim Answer As String = "<" + E_XMLTags.Response.ToString + ">GetClients</" + E_XMLTags.Response.ToString + "><" + E_XMLTags.Message.ToString + "><Entrys>" '<EntryCount>" + Peers.Count.ToString + "</EntryCount>
+                            Select Case Request
+                                Case "GetClients"
 
-                                Dim CNT As Integer = 0
-                                For i As Integer = 0 To Peers.Count - 1
-                                    Dim T_Peer As S_Peer = Peers(i)
+                                    Dim Answer As String = "<" + E_XMLTags.Response.ToString + ">GetClients</" + E_XMLTags.Response.ToString + "><" + E_XMLTags.Message.ToString + "><Entrys>" '<EntryCount>" + Peers.Count.ToString + "</EntryCount>
 
-                                    If T_Peer.PossibleHost.Contains("127.") Or T_Peer.PossibleHost.Contains("192.168.") Or T_Peer.PossibleRemoteServerPort = -1 Or (Answer.Contains("<HostIP>" + T_Peer.PossibleHost + "</HostIP>") And Answer.Contains("<PeersPort>" + T_Peer.PossibleRemoteServerPort.ToString + "</PeersPort>")) Then
-                                    Else
-                                        Answer += "<Entry" + CNT.ToString + "><HostIP>" + T_Peer.PossibleHost + "</HostIP><PeersPort>" + T_Peer.PossibleRemoteServerPort.ToString + "</PeersPort><PeersPublicKey>" + T_Peer.PublicKey + "</PeersPublicKey></Entry" + CNT.ToString + ">"
-                                        CNT += 1
-                                    End If
+                                    Dim CNT As Integer = 0
+                                    For i As Integer = 0 To Peers.Count - 1
+                                        Dim T_Peer As S_Peer = Peers(i)
 
-                                Next
+                                        If T_Peer.PossibleHost.Contains("127.") Or T_Peer.PossibleHost.Contains("192.168.") Or T_Peer.PossibleRemoteServerPort = -1 Or (Answer.Contains("<HostIP>" + T_Peer.PossibleHost + "</HostIP>") And Answer.Contains("<PeersPort>" + T_Peer.PossibleRemoteServerPort.ToString + "</PeersPort>")) Then
+                                        Else
+                                            Answer += "<Entry" + CNT.ToString + "><HostIP>" + T_Peer.PossibleHost + "</HostIP><PeersPort>" + T_Peer.PossibleRemoteServerPort.ToString + "</PeersPort><PeersPublicKey>" + T_Peer.PublicKey + "</PeersPublicKey></Entry" + CNT.ToString + ">"
+                                            CNT += 1
+                                        End If
 
-                                Answer += "</Entrys></" + E_XMLTags.Message.ToString + "><" + E_XMLTags.PublicKey.ToString + ">" + DEXNET_PublicKeyHEX + "</" + E_XMLTags.PublicKey.ToString + ">"
+                                    Next
 
-                                T_Process.SetMsg = CreateSignatureHash(Answer)
+                                    Answer += "</Entrys></" + E_XMLTags.Message.ToString + "><" + E_XMLTags.PublicKey.ToString + ">" + DEXNET_PublicKeyHEX + "</" + E_XMLTags.PublicKey.ToString + ">"
 
-                                For i As Integer = 0 To Peers.Count - 1
-                                    Dim T_Peer As S_Peer = Peers(i)
+                                    T_Process.SetMsg = CreateSignatureHash(Answer)
 
-                                    If T_Peer.PossibleHost = T_Process.GetPossibleHost And T_Peer.Port = T_Process.GetPort Then
-                                        T_Peer.SetMsgs.Add(T_Process.SetMsg)
-                                        T_Peer.PublicKey = T_Process.PublicKey
-                                        Peers(i) = T_Peer
-                                        Exit For
-                                    End If
+                                    For i As Integer = 0 To Peers.Count - 1
+                                        Dim T_Peer As S_Peer = Peers(i)
 
-                                Next
+                                        If T_Peer.PossibleHost = T_Process.GetPossibleHost And T_Peer.Port = T_Process.GetPort Then
+                                            T_Peer.SetMsgs.Add(T_Process.SetMsg)
+                                            T_Peer.PublicKey = T_Process.PublicKey
+                                            Peers(i) = T_Peer
+                                            Exit For
+                                        End If
 
-                            Case "Broadcast"
+                                    Next
 
-                                If DEXNET_PublicKeyHEX <> T_PubKey And Not T_PubKey.Trim = "" Then
+                                Case "Broadcast"
 
-                                    If CheckSignatureHash(T_GetMsg, T_PubKey, T_SigHash) = True Then
+                                    If DEXNET_PublicKeyHEX <> T_PubKey And Not T_PubKey.Trim = "" Then
 
-                                        T_Process.PublicKey = T_PubKey
+                                        If CheckSignatureHash(T_GetMsg, T_PubKey, T_SigHash) = True Then
 
-                                        Dim BroadcastOK As Boolean = True
-                                        Dim T_Message As String = GetXMLMessage(T_GetMsg, E_XMLTags.Message)
-                                        If T_Message.Contains("<NewPeer></NewPeer>") Then
+                                            T_Process.PublicKey = T_PubKey
 
-                                            Dim T_NuMessage = T_Message.Replace("<NewPeer></NewPeer>", "<NewPeer>" + T_Process.GetIP + "</NewPeer>")
-                                            If CheckXMLTag(T_Message, "PSPort") Then
-                                                T_Process.PossibleRemoteServerPort = Between(T_Message, "<PSPort>", "</PSPort>", GetType(Integer))
+                                            Dim BroadcastOK As Boolean = True
+                                            Dim T_Message As String = GetXMLMessage(T_GetMsg, E_XMLTags.Message)
+                                            If T_Message.Contains("<NewPeer></NewPeer>") Then
+
+                                                Dim T_NuMessage = T_Message.Replace("<NewPeer></NewPeer>", "<NewPeer>" + T_Process.GetIP + "</NewPeer>")
+                                                If CheckXMLTag(T_Message, "PSPort") Then
+                                                    T_Process.PossibleRemoteServerPort = Between(T_Message, "<PSPort>", "</PSPort>", GetType(Integer))
+                                                End If
+
+                                                T_GetMsg = T_GetMsg.Replace(T_Message, T_NuMessage)
+                                                T_GetMsg = T_GetMsg.Replace(T_PubKey, DEXNET_PublicKeyHEX)
+
+                                                T_GetMsg = CreateSignatureHash(T_GetMsg)
+
+                                            ElseIf CheckXMLTag(T_Message, "NewPeer") Then
+
+                                                Dim T_HostIP As String = Between(T_Message, "<NewPeer>", "</NewPeer>", GetType(String))
+                                                If T_HostIP.Contains(":") Then
+                                                    T_HostIP = T_HostIP.Remove(T_HostIP.IndexOf(":"))
+                                                End If
+
+                                                Dim T_Port As Integer = Between(T_Message, "<PSPort>", "</PSPort>", GetType(Integer))
+                                                Dim T_PPublicKey As String = Between(T_Message, "<PPublicKey>", "</PPublicKey>", GetType(String))
+
+                                                Dim T_GetIP As String = T_Process.GetIP
+                                                If T_GetIP.Contains(":") Then
+                                                    T_GetIP = T_GetIP.Remove(T_GetIP.IndexOf(":"))
+                                                End If
+
+                                                If CheckHostIsNotIP(T_HostIP, T_GetIP) Then
+
+                                                    Dim Founded As Boolean = False
+                                                    For i As Integer = 0 To Peers.Count - 1
+                                                        Dim T_Peer As S_Peer = Peers(i)
+
+                                                        If (T_Peer.PossibleHost = T_HostIP And T_Peer.PossibleRemoteServerPort = T_Port) Or T_Peer.PublicKey = T_PPublicKey Then
+                                                            Founded = True
+                                                            Exit For
+                                                        End If
+
+                                                    Next
+
+                                                    If Not Founded Then
+                                                        Connect(T_HostIP, T_Port)
+                                                    End If
+
+                                                End If
+
+                                            ElseIf CheckXMLTag(T_Message, "RefreshOrder") Then
+
+                                                Dim T_AT As String = ""
+
+                                                If CheckXMLTag(T_Message, "AT") Then
+                                                    T_AT = GetXMLMessage(T_Message, "AT")
+                                                End If
+
+                                                Dim T_Type As String = ""
+                                                If CheckXMLTag(T_Message, "Type") Then
+                                                    T_Type = GetXMLMessage(T_Message, "Type")
+                                                End If
+
+                                                Dim T_Seller As String = ""
+                                                If CheckXMLTag(T_Message, "SellerID") Then
+                                                    T_Seller = GetXMLMessage(T_Message, "SellerID")
+                                                End If
+
+                                                Dim T_Buyer As String = ""
+                                                If CheckXMLTag(T_Message, "BuyerID") Then
+                                                    T_Buyer = GetXMLMessage(T_Message, "BuyerID")
+                                                End If
+
+                                                Dim T_AccountID As ULong = GetAccountID(T_PubKey)
+
+                                                If T_Type.Trim = "SellOrder" Then
+                                                    If Not T_AccountID.ToString = T_Seller Then
+                                                        BroadcastOK = False
+                                                    End If
+                                                ElseIf T_Type.Trim = "BuyOrder" Then
+                                                    If Not T_AccountID.ToString = T_Buyer Then
+                                                        BroadcastOK = False
+                                                    End If
+                                                End If
+
                                             End If
 
-                                            T_GetMsg = T_GetMsg.Replace(T_Message, T_NuMessage)
-                                            T_GetMsg = T_GetMsg.Replace(T_PubKey, DEXNET_PublicKeyHEX)
+                                            If BroadcastOK Then
 
-                                            T_GetMsg = CreateSignatureHash(T_GetMsg)
+                                                Dim Found As Boolean = False
+                                                For Each BroadcastedMsg As String In LastBroadcastedMsgList
 
-                                        ElseIf CheckXMLTag(T_Message, "NewPeer") Then
-
-                                            Dim T_HostIP As String = Between(T_Message, "<NewPeer>", "</NewPeer>", GetType(String))
-                                            If T_HostIP.Contains(":") Then
-                                                T_HostIP = T_HostIP.Remove(T_HostIP.IndexOf(":"))
-                                            End If
-
-                                            Dim T_Port As Integer = Between(T_Message, "<PSPort>", "</PSPort>", GetType(Integer))
-                                            Dim T_PPublicKey As String = Between(T_Message, "<PPublicKey>", "</PPublicKey>", GetType(String))
-
-                                            Dim T_GetIP As String = T_Process.GetIP
-                                            If T_GetIP.Contains(":") Then
-                                                T_GetIP = T_GetIP.Remove(T_GetIP.IndexOf(":"))
-                                            End If
-
-                                            If CheckHostIsNotIP(T_HostIP, T_GetIP) Then
-
-                                                Dim Founded As Boolean = False
-                                                For i As Integer = 0 To Peers.Count - 1
-                                                    Dim T_Peer As S_Peer = Peers(i)
-
-                                                    If (T_Peer.PossibleHost = T_HostIP And T_Peer.PossibleRemoteServerPort = T_Port) Or T_Peer.PublicKey = T_PPublicKey Then
-                                                        Founded = True
+                                                    If T_GetMsg = BroadcastedMsg Then
+                                                        Found = True
                                                         Exit For
                                                     End If
 
                                                 Next
 
-                                                If Not Founded Then
-                                                    Connect(T_HostIP, T_Port)
+                                                If Not Found Then
+                                                    LastBroadcastedMsgList.Insert(0, T_GetMsg)
+
+                                                    Dim SendMessage As String = CreateXMLMessage("Confirmation", E_XMLTags.Response) + CreateXMLMessage(GetUnixTimestamp(), E_XMLTags.Timestamp) + CreateXMLMessage(DEXNET_PublicKeyHEX, E_XMLTags.PublicKey)
+                                                    SendMessage = CreateSignatureHash(SendMessage)
+
+                                                    For PeerInt As Integer = 0 To Peers.Count - 1
+                                                        Dim Peer As S_Peer = Peers(PeerInt)
+
+                                                        If Peer.TCPClient.Client.RemoteEndPoint.ToString = T_Process.GetIP And Peer.Port = T_Process.GetPort Then
+                                                            Peer.PublicKey = T_Process.PublicKey
+                                                            Peer.SetMsgs.Add(SendMessage)
+                                                            Peer.PossibleHost = T_Process.GetPossibleHost
+                                                            Peer.PossibleRemoteServerPort = T_Process.PossibleRemoteServerPort
+                                                        Else
+                                                            Peer.SetMsgs.Add(T_GetMsg)
+                                                        End If
+
+                                                        Peers(PeerInt) = Peer
+
+                                                    Next
+
                                                 End If
 
-                                            End If
-
-                                        ElseIf CheckXMLTag(T_Message, "RefreshOrder") Then
-
-                                            Dim T_AT As String = ""
-
-                                            If CheckXMLTag(T_Message, "AT") Then
-                                                T_AT = GetXMLMessage(T_Message, "AT")
-                                            End If
-
-                                            Dim T_Type As String = ""
-                                            If CheckXMLTag(T_Message, "Type") Then
-                                                T_Type = GetXMLMessage(T_Message, "Type")
-                                            End If
-
-                                            Dim T_Seller As String = ""
-                                            If CheckXMLTag(T_Message, "SellerID") Then
-                                                T_Seller = GetXMLMessage(T_Message, "SellerID")
-                                            End If
-
-                                            Dim T_Buyer As String = ""
-                                            If CheckXMLTag(T_Message, "BuyerID") Then
-                                                T_Buyer = GetXMLMessage(T_Message, "BuyerID")
-                                            End If
-
-                                            Dim T_AccountID As ULong = GetAccountID(T_PubKey)
-
-                                            If T_Type.Trim = "SellOrder" Then
-                                                If Not T_AccountID.ToString = T_Seller Then
-                                                    BroadcastOK = False
-                                                End If
-                                            ElseIf T_Type.Trim = "BuyOrder" Then
-                                                If Not T_AccountID.ToString = T_Buyer Then
-                                                    BroadcastOK = False
-                                                End If
                                             End If
 
                                         End If
 
-                                        If BroadcastOK Then
+                                    End If
+
+                                Case "Ping"
+
+                                    Dim Answer As String = CreateXMLMessage("Ping", E_XMLTags.Response) + CreateXMLMessage(GetUnixTimestamp(), E_XMLTags.Timestamp) + CreateXMLMessage(DEXNET_PublicKeyHEX, E_XMLTags.PublicKey)
+                                    Answer = CreateSignatureHash(Answer)
+
+                                    T_Process.SetMsg = CreateSignatureHash(Answer)
+
+                                    For i As Integer = 0 To Peers.Count - 1
+                                        Dim T_Peer As S_Peer = Peers(i)
+
+                                        If T_Peer.PossibleHost = T_Process.GetPossibleHost And T_Peer.Port = T_Process.GetPort Then
+                                            T_Peer.SetMsgs.Add(T_Process.SetMsg)
+                                            T_Peer.PublicKey = T_Process.PublicKey
+                                            Peers(i) = T_Peer
+                                            Exit For
+                                        End If
+
+                                    Next
+
+                            End Select
+
+                        ElseIf Not Response.Trim = "" Then
+
+                            Select Case Response
+
+                                Case "GetClients"
+
+                                    If DEXNET_PublicKeyHEX <> T_PubKey And Not T_PubKey.Trim = "" Then
+                                        If CheckSignatureHash(T_GetMsg, T_PubKey, T_SigHash) = True Then
+
+                                            Dim Message As String = GetXMLMessage(T_GetMsg, E_XMLTags.Message)
+
+                                            If Not Message = "" Then
+                                                Dim Entrys As String = GetXMLMessage(Message, "Entrys")
+
+                                                Dim CNT As Integer = 0
+
+                                                While True
+                                                    Dim Entry As String = GetXMLMessage(Message, "Entry" + CNT.ToString)
+
+                                                    If Entry.Trim = "" Then
+                                                        Exit While
+                                                    End If
+
+                                                    Dim HostIP As String = GetXMLMessage(Entry, "HostIP")
+                                                    Dim PeersPort As String = GetXMLMessage(Entry, "PeersPort")
+                                                    Dim PeersPublicKey As String = GetXMLMessage(Entry, "PeersPublicKey")
+
+                                                    If Not PeersPublicKey.Trim = "" And Not PeersPublicKey = DEXNET_PublicKeyHEX Then
+                                                        If Not PeersPort.Trim = "" And Not PeersPort.Trim = "-1" Then
+                                                            Dim PeersPortInt As Integer = CInt(PeersPort)
+
+                                                            Dim Founded As Boolean = False
+                                                            For c As Integer = 0 To Peers.Count - 1
+                                                                Dim T_Peer As S_Peer = Peers(c)
+                                                                If T_Peer.PublicKey = PeersPublicKey Or (Not CheckHostIsNotIP(T_Peer.PossibleHost, HostIP) And T_Peer.PossibleRemoteServerPort = PeersPortInt) Then
+                                                                    Founded = True
+                                                                End If
+
+                                                            Next
+
+                                                            If Not Founded Then
+                                                                Connect(HostIP, PeersPortInt)
+                                                            End If
+
+                                                        End If
+                                                    End If
+
+                                                    CNT += 1
+
+                                                End While
+
+                                            End If
+
+                                        End If
+                                    End If
+
+                                Case "Broadcast"
+
+                                    If DEXNET_PublicKeyHEX <> T_PubKey And Not T_PubKey.Trim = "" Then
+                                        If CheckSignatureHash(T_GetMsg) = True Then
 
                                             Dim Found As Boolean = False
                                             For Each BroadcastedMsg As String In LastBroadcastedMsgList
@@ -802,17 +967,11 @@ Public Class ClsDEXNET
                                             If Not Found Then
                                                 LastBroadcastedMsgList.Insert(0, T_GetMsg)
 
-                                                Dim SendMessage As String = CreateXMLMessage("Confirmation", E_XMLTags.Response) + CreateXMLMessage(GetUnixTimestamp(), E_XMLTags.Timestamp) + CreateXMLMessage(DEXNET_PublicKeyHEX, E_XMLTags.PublicKey)
-                                                SendMessage = CreateSignatureHash(SendMessage)
-
                                                 For PeerInt As Integer = 0 To Peers.Count - 1
                                                     Dim Peer As S_Peer = Peers(PeerInt)
 
                                                     If Peer.TCPClient.Client.RemoteEndPoint.ToString = T_Process.GetIP And Peer.Port = T_Process.GetPort Then
-                                                        Peer.PublicKey = T_Process.PublicKey
-                                                        Peer.SetMsgs.Add(SendMessage)
-                                                        Peer.PossibleHost = T_Process.GetPossibleHost
-                                                        Peer.PossibleRemoteServerPort = T_Process.PossibleRemoteServerPort
+                                                        'send nothing back
                                                     Else
                                                         Peer.SetMsgs.Add(T_GetMsg)
                                                     End If
@@ -827,113 +986,28 @@ Public Class ClsDEXNET
 
                                     End If
 
-                                End If
+                                Case "Confirmation"
 
-                            Case "Ping"
+                                    If DEXNET_PublicKeyHEX <> T_PubKey And Not T_PubKey.Trim = "" Then
 
-                                Dim Answer As String = CreateXMLMessage("Ping", E_XMLTags.Response) + CreateXMLMessage(GetUnixTimestamp(), E_XMLTags.Timestamp) + CreateXMLMessage(DEXNET_PublicKeyHEX, E_XMLTags.PublicKey)
-                                Answer = CreateSignatureHash(Answer)
+                                        If CheckSignatureHash(T_GetMsg) = True Then
 
-                                T_Process.SetMsg = CreateSignatureHash(Answer)
-
-                                For i As Integer = 0 To Peers.Count - 1
-                                    Dim T_Peer As S_Peer = Peers(i)
-
-                                    If T_Peer.PossibleHost = T_Process.GetPossibleHost And T_Peer.Port = T_Process.GetPort Then
-                                        T_Peer.SetMsgs.Add(T_Process.SetMsg)
-                                        T_Peer.PublicKey = T_Process.PublicKey
-                                        Peers(i) = T_Peer
-                                        Exit For
-                                    End If
-
-                                Next
-
-                        End Select
-
-                    ElseIf Not Response.Trim = "" Then
-
-                        Select Case Response
-
-                            Case "GetClients"
-
-                                If DEXNET_PublicKeyHEX <> T_PubKey And Not T_PubKey.Trim = "" Then
-                                    If CheckSignatureHash(T_GetMsg, T_PubKey, T_SigHash) = True Then
-
-                                        Dim Message As String = GetXMLMessage(T_GetMsg, E_XMLTags.Message)
-
-                                        If Not Message = "" Then
-                                            Dim Entrys As String = GetXMLMessage(Message, "Entrys")
-
-                                            Dim CNT As Integer = 0
-
-                                            While True
-                                                Dim Entry As String = GetXMLMessage(Message, "Entry" + CNT.ToString)
-
-                                                If Entry.Trim = "" Then
-                                                    Exit While
-                                                End If
-
-                                                Dim HostIP As String = GetXMLMessage(Entry, "HostIP")
-                                                Dim PeersPort As String = GetXMLMessage(Entry, "PeersPort")
-                                                Dim PeersPublicKey As String = GetXMLMessage(Entry, "PeersPublicKey")
-
-                                                If Not PeersPublicKey.Trim = "" And Not PeersPublicKey = DEXNET_PublicKeyHEX Then
-                                                    If Not PeersPort.Trim = "" And Not PeersPort.Trim = "-1" Then
-                                                        Dim PeersPortInt As Integer = CInt(PeersPort)
-
-                                                        Dim Founded As Boolean = False
-                                                        For c As Integer = 0 To Peers.Count - 1
-                                                            Dim T_Peer As S_Peer = Peers(c)
-                                                            If T_Peer.PublicKey = PeersPublicKey Or (Not CheckHostIsNotIP(T_Peer.PossibleHost, HostIP) And T_Peer.PossibleRemoteServerPort = PeersPortInt) Then
-                                                                Founded = True
-                                                            End If
-
-                                                        Next
-
-                                                        If Not Founded Then
-                                                            Connect(HostIP, PeersPortInt)
-                                                        End If
-
-                                                    End If
-                                                End If
-
-                                                CNT += 1
-
-                                            End While
-
-                                        End If
-
-                                    End If
-                                End If
-
-                            Case "Broadcast"
-
-                                If DEXNET_PublicKeyHEX <> T_PubKey And Not T_PubKey.Trim = "" Then
-                                    If CheckSignatureHash(T_GetMsg) = True Then
-
-                                        Dim Found As Boolean = False
-                                        For Each BroadcastedMsg As String In LastBroadcastedMsgList
-
-                                            If T_GetMsg = BroadcastedMsg Then
-                                                Found = True
-                                                Exit For
-                                            End If
-
-                                        Next
-
-                                        If Not Found Then
-                                            LastBroadcastedMsgList.Insert(0, T_GetMsg)
+                                            Dim SendMessage As String = CreateXMLMessage("GetClients", E_XMLTags.Request) + CreateXMLMessage(GetUnixTimestamp(), E_XMLTags.Timestamp) + CreateXMLMessage(DEXNET_PublicKeyHEX, E_XMLTags.PublicKey)
 
                                             For PeerInt As Integer = 0 To Peers.Count - 1
                                                 Dim Peer As S_Peer = Peers(PeerInt)
 
-                                                If Peer.TCPClient.Client.RemoteEndPoint.ToString = T_Process.GetIP And Peer.Port = T_Process.GetPort Then
-                                                    'send nothing back
-                                                Else
-                                                    Peer.SetMsgs.Add(T_GetMsg)
+                                                If Peer.TCPClient.Client.RemoteEndPoint.ToString = T_Process.GetIP And Peer.Port = T_Process.GetPort And Peer.PublicKey = "" Then
+                                                    Peer.PublicKey = T_PubKey
+                                                    Peer.PossibleHost = T_Process.GetPossibleHost
+                                                    Peer.SetMsgs.Add(SendMessage)
+                                                    Peer.PossibleRemoteServerPort = T_Process.PossibleRemoteServerPort
+                                                    Peers(PeerInt) = Peer
+                                                    Exit For
+                                                    'Else
+                                                    'TODO: tell other Peers about the new peer
+                                                    'Peer.SetMsg = ""
                                                 End If
-
-                                                Peers(PeerInt) = Peer
 
                                             Next
 
@@ -941,62 +1015,33 @@ Public Class ClsDEXNET
 
                                     End If
 
-                                End If
+                                Case "Ping"
 
-                            Case "Confirmation"
+                                    If DEXNET_PublicKeyHEX <> T_PubKey And Not T_PubKey.Trim = "" Then
+                                        If CheckSignatureHash(T_GetMsg, T_PubKey, T_SigHash) = True Then
 
-                                If DEXNET_PublicKeyHEX <> T_PubKey And Not T_PubKey.Trim = "" Then
+                                            For PeerInt As Integer = 0 To Peers.Count - 1
+                                                Dim Peer As S_Peer = Peers(PeerInt)
 
-                                    If CheckSignatureHash(T_GetMsg) = True Then
+                                                If Peer.TCPClient.Client.RemoteEndPoint.ToString = T_Process.GetIP And Peer.Port = T_Process.GetPort Then
+                                                    Peer.Timeout = -1
+                                                    Peers(PeerInt) = Peer
+                                                    Exit For
+                                                End If
 
-                                        Dim SendMessage As String = CreateXMLMessage("GetClients", E_XMLTags.Request) + CreateXMLMessage(GetUnixTimestamp(), E_XMLTags.Timestamp) + CreateXMLMessage(DEXNET_PublicKeyHEX, E_XMLTags.PublicKey)
+                                            Next
 
-                                        For PeerInt As Integer = 0 To Peers.Count - 1
-                                            Dim Peer As S_Peer = Peers(PeerInt)
-
-                                            If Peer.TCPClient.Client.RemoteEndPoint.ToString = T_Process.GetIP And Peer.Port = T_Process.GetPort And Peer.PublicKey = "" Then
-                                                Peer.PublicKey = T_PubKey
-                                                Peer.PossibleHost = T_Process.GetPossibleHost
-                                                Peer.SetMsgs.Add(SendMessage)
-                                                Peer.PossibleRemoteServerPort = T_Process.PossibleRemoteServerPort
-                                                Peers(PeerInt) = Peer
-                                                Exit For
-                                                'Else
-                                                'TODO: tell other Peers about the new peer
-                                                'Peer.SetMsg = ""
-                                            End If
-
-                                        Next
-
+                                        End If
                                     End If
 
-                                End If
 
-                            Case "Ping"
+                            End Select
 
-                                If DEXNET_PublicKeyHEX <> T_PubKey And Not T_PubKey.Trim = "" Then
-                                    If CheckSignatureHash(T_GetMsg, T_PubKey, T_SigHash) = True Then
-
-                                        For PeerInt As Integer = 0 To Peers.Count - 1
-                                            Dim Peer As S_Peer = Peers(PeerInt)
-
-                                            If Peer.TCPClient.Client.RemoteEndPoint.ToString = T_Process.GetIP And Peer.Port = T_Process.GetPort Then
-                                                Peer.Timeout = -1
-                                                Peers(PeerInt) = Peer
-                                                Exit For
-                                            End If
-
-                                        Next
-
-                                    End If
-                                End If
-
-
-                        End Select
+                        End If
 
                     End If
 
-                End If
+                Next
 
             Next
 
