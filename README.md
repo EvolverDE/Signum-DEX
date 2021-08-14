@@ -1,5 +1,5 @@
 # Was ist PFP?
-PFP ist der codename für eine dezentrale Krypto-Tauschbörse mit PayPal-Integration.
+PFP (Perls for Pigs) ist der codename für eine dezentrale Krypto-Tauschbörse mit PayPal-Integration.
 # Was kann PFP?
 PFP soll einen einfachen Einstieg in die Krypto-Welt ermöglichen.
 # Welche Währungen werden unterstützt?
