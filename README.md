@@ -21,6 +21,5 @@ Neben der Settings.ini werden noch weitere Dateien wie z.b. "cache.dat" und "cac
 - mit dem integriertem auf TCP basiertem DEXNET (über Standardport 8131) das Signa-Netzwerk um offchain-Lösungen erweitern um das Handels-Erlebnis zu verbessern
 
 # Bekannte Probleme
-- tote DEXNET-Peers können in der Liste der verbundenen Peers verbleiben (mögliche Lösung: einen Ping der wenn nicht nach einer bestimmten Zeit antwortet den Peer entfernt)
 - dauerschleife in der PayPal-Sandbox wenn man PayPal-Orders über die Sandbox bezahlen will
 - hin und wieder kommen Fehler vor, die entweder in der unteren Statusleiste des Programms oder in einer Error.log geworfen werden
