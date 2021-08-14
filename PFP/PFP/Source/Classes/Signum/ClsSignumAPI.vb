@@ -163,8 +163,11 @@ Public Class ClsSignumAPI
             Dim Response As String = SignumRequest("requestType=getAccount&account=" + AccountID)
 
             If Response.Contains(Application.ProductName + "-error") Then
-                PFPForm.StatusLabel.Text = Application.ProductName + "-error in IsAT(): -> " + Response
-                Out.ErrorLog2File(Application.ProductName + "-error in IsAT(): -> " + Response)
+                'PFPForm.StatusLabel.Text = Application.ProductName + "-error in IsAT(): -> " + Response
+                If GetINISetting(E_Setting.InfoOut, False) Then
+                    Out.ErrorLog2File(Application.ProductName + "-error in IsAT(): -> " + Response)
+                End If
+
                 Return False
             End If
 
@@ -177,8 +180,11 @@ Public Class ClsSignumAPI
                 'TX OK
             ElseIf Error0.GetType.Name = GetType(String).Name Then
                 'TX not OK
-                PFPForm.StatusLabel.Text = Application.ProductName + "-error in IsAT(): " + Response
-                Out.ErrorLog2File(Application.ProductName + "-error in IsAT(): " + Response)
+                'PFPForm.StatusLabel.Text = Application.ProductName + "-error in IsAT(): " + Response
+                If GetINISetting(E_Setting.InfoOut, False) Then
+                    Out.ErrorLog2File(Application.ProductName + "-error in IsAT(): " + Response)
+                End If
+
                 Return False
             End If
 
@@ -213,8 +219,11 @@ Public Class ClsSignumAPI
         Dim Response As String = SignumRequest("requestType=getAccountId&publicKey=" + ByteAry2HEX(MasterkeyList(0)).Trim)
 
         If Response.Contains(Application.ProductName + "-error") Then
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountFromPassPhrase(): -> " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetAccountFromPassPhrase(): -> " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountFromPassPhrase(): -> " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetAccountFromPassPhrase(): -> " + Response)
+            End If
+
             Return New List(Of String)
         End If
 
@@ -228,8 +237,11 @@ Public Class ClsSignumAPI
             'TX OK
         ElseIf Error0.GetType.Name = GetType(String).Name Then
             'TX not OK
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountFromPassPhrase(): " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetAccountFromPassPhrase(): " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountFromPassPhrase(): " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetAccountFromPassPhrase(): " + Response)
+            End If
+
             Return New List(Of String)
         End If
 
@@ -395,8 +407,11 @@ Public Class ClsSignumAPI
         Dim Response As String = SignumRequest("requestType=getUnconfirmedTransactions")
 
         If Response.Contains(Application.ProductName + "-error") Then
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetUnconfirmedTransactions(): -> " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetUnconfirmedTransactions(): -> " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetUnconfirmedTransactions(): -> " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetUnconfirmedTransactions(): -> " + Response)
+            End If
+
             Return New List(Of List(Of String))
         End If
 
@@ -409,8 +424,11 @@ Public Class ClsSignumAPI
             'TX OK
         ElseIf Error0.GetType.Name = GetType(String).Name Then
             'TX not OK
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetUnconfirmedTransactions(): " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetUnconfirmedTransactions(): " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetUnconfirmedTransactions(): " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetUnconfirmedTransactions(): " + Response)
+            End If
+
             Return New List(Of List(Of String))
         End If
 
@@ -596,8 +614,9 @@ Public Class ClsSignumAPI
         Dim Response As String = SignumRequest("requestType=getMiningInfo")
 
         If Response.Contains(Application.ProductName + "-error") Then
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetCurrentBlock(): -> " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): -> " + Response)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): -> " + Response)
+            End If
             Return 0
         End If
 
@@ -610,8 +629,9 @@ Public Class ClsSignumAPI
             'TX OK
         ElseIf Error0.GetType.Name = GetType(String).Name Then
             'TX not OK
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetCurrentBlock(): " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): " + Response)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): " + Response)
+            End If
             Return 0
         End If
 
@@ -620,7 +640,10 @@ Public Class ClsSignumAPI
         Try
             BlockHeightInt = CInt(BlockHeightStr)
         Catch ex As Exception
-            Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): -> " + ex.Message)
+            End If
+
             Return 0
         End Try
 
@@ -635,8 +658,11 @@ Public Class ClsSignumAPI
         Dim Response As String = SignumRequest("requestType=getTransaction&transaction=" + TXID)
 
         If Response.Contains(Application.ProductName + "-error") Then
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetTransaction(): -> " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetTransaction(): -> " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetTransaction(): -> " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetTransaction(): -> " + Response)
+            End If
+
             Return New List(Of String)
         End If
 
@@ -649,8 +675,11 @@ Public Class ClsSignumAPI
             'TX OK
         ElseIf Error0.GetType.Name = GetType(String).Name Then
             'TX not OK
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetTransaction(): " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetTransaction(): " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetTransaction(): " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetTransaction(): " + Response)
+            End If
+
             Return New List(Of String)
         End If
 
@@ -776,8 +805,11 @@ Public Class ClsSignumAPI
         Dim Response As String = SignumRequest(Request)
 
         If Response.Contains(Application.ProductName + "-error") Then
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountTransactions(): -> " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetAccountTransactions(): -> " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountTransactions(): -> " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetAccountTransactions(): -> " + Response)
+            End If
+
             Return New List(Of List(Of String))
         End If
 
@@ -791,8 +823,11 @@ Public Class ClsSignumAPI
             'TX OK
         ElseIf Error0.GetType.Name = GetType(String).Name Then
             'TX not OK
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountTransactions(): " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetAccountTransactions(): " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountTransactions(): " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetAccountTransactions(): " + Response)
+            End If
+
             Return New List(Of List(Of String))
         End If
 
@@ -1180,8 +1215,11 @@ Public Class ClsSignumAPI
         Dim Response As String = SignumRequest("requestType=getATIds")
 
         If Response.Contains(Application.ProductName + "-error") Then
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATIds(): -> " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetATIds(): -> " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATIds(): -> " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetATIds(): -> " + Response)
+            End If
+
             Return New List(Of String)
         End If
 
@@ -1194,8 +1232,11 @@ Public Class ClsSignumAPI
             'TX OK
         ElseIf Error0.GetType.Name = GetType(String).Name Then
             'TX not OK
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATIds(): " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetATIds(): " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATIds(): " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetATIds(): " + Response)
+            End If
+
             Return New List(Of String)
         End If
 
@@ -1249,8 +1290,11 @@ Public Class ClsSignumAPI
         Dim Response As String = SignumRequest("requestType=getATDetails&at=" + ATId)
 
         If Response.Contains(Application.ProductName + "-error") Then
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATDetails(" + ATId + "): -> " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails(" + ATId + "): -> " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATDetails(" + ATId + "): -> " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails(" + ATId + "): -> " + Response)
+            End If
+
             Return New List(Of String)
         End If
 
@@ -1263,8 +1307,11 @@ Public Class ClsSignumAPI
             'TX OK
         ElseIf Error0.GetType.Name = GetType(String).Name Then
             'TX not OK
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATDetails(" + ATId + "): " + Response
-            Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails(" + ATId + "): " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATDetails(" + ATId + "): " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails(" + ATId + "): " + Response)
+            End If
+
             Return New List(Of String)
         End If
 
@@ -1683,9 +1730,11 @@ Public Class ClsSignumAPI
         Dim out As ClsOut = New ClsOut(Application.StartupPath)
 
         If C_PassPhrase.Trim = "" Then
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): no PassPhrase"
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): no PassPhrase"
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): no PassPhrase")
+            End If
 
-            out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): no PassPhrase")
             Return New List(Of String)
         End If
 
@@ -1729,9 +1778,10 @@ Public Class ClsSignumAPI
         Dim Response As String = SignumRequest(postDataRL)
 
         If Response.Contains(Application.ProductName + "-error") Then
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): -> " + Response
-
-            out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): -> " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): -> " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): -> " + Response)
+            End If
 
             Return New List(Of String)
         End If
@@ -1745,9 +1795,10 @@ Public Class ClsSignumAPI
             'TX OK
         ElseIf Error0.GetType.Name = GetType(String).Name Then
             'TX not OK
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): " + Response
-
-            out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): " + Response)
+            End If
 
             Return New List(Of String)
         End If

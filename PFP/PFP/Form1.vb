@@ -102,8 +102,12 @@ Public Class PFPForm
                         Dim TXStr As String = BCR1.SendMessage2BLSAT(ATID, 1.0, New List(Of ULong)({BCR1.ReferenceFinishOrder}))
 
                         If TXStr.Contains(Application.ProductName + "-error") Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(TXStr)
+
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                out.ErrorLog2File(TXStr)
+                            End If
+
                         Else
                             Status = "COMPLETED"
                         End If
@@ -613,6 +617,9 @@ Public Class PFPForm
 
             BlockTimer.Enabled = False
 
+            TSSStatusImage.Text = "in Synchronization..."
+            TSSStatusImage.Image = My.Resources.status_wait
+
             If Not IsNothing(DEXNET) Then
 
                 For i As Integer = 0 To DEXNET.Peers.Count - 1
@@ -650,7 +657,7 @@ Public Class PFPForm
                 Application.DoEvents()
             End While
 
-            'TODO: monitor Connectivity
+
 
             If NuBlock > Block Or ForceReload Then
                 Block = NuBlock
@@ -659,8 +666,6 @@ Public Class PFPForm
                 LoadRunning = True
 
                 Application.DoEvents()
-
-
 
                 Wait = Loading()
                 Wait = SetInLVs()
@@ -688,10 +693,8 @@ Public Class PFPForm
 
                 Next
 
-
                 Dim ViewThread As Threading.Thread = New Threading.Thread(AddressOf LoadHistory)
                 ViewThread.Start(New List(Of Object)({CoBxChartVal, CoBxTickVal, CurrentMarket}))
-
 
                 TTTL.TradeTrackTimer.Enabled = True
                 BlockTimer.Enabled = True
@@ -701,11 +704,37 @@ Public Class PFPForm
                 If Shutdown Then
                     Me.Close()
                 End If
+
             Else
                 BlockTimer.Enabled = True
             End If
 
+
+            Dim Status As E_ConnectionStatus = GetConnectionStatus(PrimaryNode, DEXNET)
+
+            Select Case Status
+                Case E_ConnectionStatus.Offline
+                    TSSStatusImage.Text = "Offline"
+                    TSSStatusImage.Image = My.Resources.status_offline
+                Case E_ConnectionStatus.InSync
+                    TSSStatusImage.Text = "in Synchronization..."
+                    TSSStatusImage.Image = My.Resources.status_wait
+                Case E_ConnectionStatus.NoDEXNETPeers
+                    TSSStatusImage.Text = "no DEXNET-Connection"
+                    TSSStatusImage.Image = My.Resources.status_wait
+                Case E_ConnectionStatus.NoSignumAPI
+                    TSSStatusImage.Text = "no DefaultNode-Connection"
+                    TSSStatusImage.Image = My.Resources.status_wait
+                Case E_ConnectionStatus.Online
+                    TSSStatusImage.Text = "Online"
+                    TSSStatusImage.Image = My.Resources.status_online
+                Case Else
+                    TSSStatusImage.Text = "Offline"
+                    TSSStatusImage.Image = My.Resources.status_offline
+            End Select
+
         End If
+
 
     End Sub
 
@@ -717,6 +746,7 @@ Public Class PFPForm
         ResetLVColumns()
 
         ForceReload = True
+
     End Sub
     Private Sub TBSNOPassPhrase_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TBSNOPassPhrase.KeyPress
 
@@ -987,8 +1017,11 @@ Public Class PFPForm
                         If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
                             Dim TX As String = BSR.SetBLSATSellOrder(Recipient, Amount + Collateral, Collateral, Item, ItemAmount, Fee)
                             If TX.Contains(Application.ProductName + "-error") Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(TX)
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(TX)
+                                End If
+
                             Else
                                 ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                             End If
@@ -1011,8 +1044,11 @@ Public Class PFPForm
                             Dim TX As String = BSR.SetBLSATBuyOrder(Recipient, Amount, Collateral, Item, ItemAmount, Fee)
 
                             If TX.Contains(Application.ProductName + "-error") Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(TX)
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(TX)
+                                End If
+
                             Else
                                 ClsMsgs.MBox("BuyOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                             End If
@@ -1180,16 +1216,28 @@ Public Class PFPForm
 
                 If Available > Collateral + ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT) And Available > 0.0 Then
 
-                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to Buy " + Dbl2LVStr(BLS.BuySellAmount) + " Signa for " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + "?" + vbCrLf + vbCrLf + "collateral: " + Dbl2LVStr(BLS.InitiatorsCollateral) + " Signa" + vbCrLf + "gas fees: " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)) + " Signa", "Buy Order?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
+                    Dim MBoxMsg As String = "Do you really want to Buy " + Dbl2LVStr(BLS.BuySellAmount) + " Signa for " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + " "
+                    MBoxMsg += "from Seller: " + BLS.Initiator + "?" + vbCrLf + vbCrLf
+                    MBoxMsg += "collateral: " + Dbl2LVStr(BLS.InitiatorsCollateral) + " Signa" + vbCrLf
+                    MBoxMsg += "gas fees: " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)) + " Signa" + vbCrLf + vbCrLf
+                    MBoxMsg += "this transaction will take effect in 1-3 Blocks (4-12 minutes)"
+
+                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox(MBoxMsg, "Buy Order from AT: " + BLS.ATRS, ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                     If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
                         Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, Collateral, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
                         If TX.Contains(Application.ProductName + "-error") Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(TX)
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                out.ErrorLog2File(TX)
+                            End If
+
                         Else
-                            ClsMsgs.MBox("SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                            MBoxMsg = "SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX + vbCrLf + vbCrLf
+                            MBoxMsg += "please wait 1-2 Blocks (4-8 minutes) to get the payment-infos from Seller"
+
+                            ClsMsgs.MBox(MBoxMsg, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                         End If
 
                     End If
@@ -1212,8 +1260,11 @@ Public Class PFPForm
                     Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
                     If TX.Contains(Application.ProductName + "-error") Then
-                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                        out.ErrorLog2File(TX)
+                        If GetINISetting(E_Setting.InfoOut, False) Then
+                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                            out.ErrorLog2File(TX)
+                        End If
+
                     Else
                         ClsMsgs.MBox("SellOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                     End If
@@ -1240,6 +1291,10 @@ Public Class PFPForm
         If LVBuyorders.SelectedItems.Count > 0 Then
 
             Dim BLS As S_PFPAT = DirectCast(LVBuyorders.SelectedItems(0).Tag, S_PFPAT)
+
+            Dim PayInfo As String = GetLVColNameFromSubItem(LVBuyorders, "Method", LVBuyorders.SelectedItems(0))
+            Dim AutoInfo As String = GetLVColNameFromSubItem(LVBuyorders, "Autoinfo", LVBuyorders.SelectedItems(0))
+            Dim Autofinish As String = GetLVColNameFromSubItem(LVBuyorders, "Autofinish", LVBuyorders.SelectedItems(0))
 
             If CheckForUTX(, BLS.ATRS) Then
                 ClsMsgs.MBox("One TX is already Pending for this Order", "Order not available",,, ClsMsgs.Status.Attention, 5, ClsMsgs.Timer_Type.AutoOK)
@@ -1271,42 +1326,99 @@ Public Class PFPForm
 
                 If Available > Amount + 1.0 Then
 
-                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to Sell " + Dbl2LVStr(BLS.BuySellAmount) + " Signa for " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + "?" + vbCrLf + vbCrLf + "collateral: " + Dbl2LVStr(BLS.InitiatorsCollateral) + " Signa" + vbCrLf + "gas fees: " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)) + " Signa", "Sell Order?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
+                    Dim MBoxMsg As String = "Do you really want to Sell " + Dbl2LVStr(BLS.BuySellAmount) + " Signa for " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + " "
+                    MBoxMsg += "to Buyer: " + BLS.Initiator + "?" + vbCrLf + vbCrLf
+                    MBoxMsg += "collateral: " + Dbl2LVStr(BLS.InitiatorsCollateral) + " Signa" + vbCrLf
+                    MBoxMsg += "gas fees: " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)) + " Signa" + vbCrLf + vbCrLf
+                    MBoxMsg += "this transaction will take effect in 1-2 Blocks (4-8 minutes)" + vbCrLf
+
+                    If AutoInfo = "True" Then
+                        MBoxMsg += "you will also inform the buyer with payment info!" + vbCrLf
+                    End If
+
+                    If Autofinish = "True" Then
+                        MBoxMsg += "you also accept the Autofinishing!" + vbCrLf
+                    End If
+
+
+                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox(MBoxMsg, "Sell Order to AT: " + BLS.ATRS, ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                     If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
 
                         Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, Sum, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
                         If TX.Contains(Application.ProductName + "-error") Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(TX)
-
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                out.ErrorLog2File(TX)
+                            End If
                         Else
 
-                            Dim PayInfo As String = GetPaymentInfoFromOrderSettings(BLSAT_TX.Transaction, Amount, XAmount, CurrentMarket)
+                            MBoxMsg = "BuyOrder Accepted" + vbCrLf
+                            MBoxMsg += "TX: " + TX + vbCrLf
+                            MBoxMsg += "Recipient: " + BLS.ATRS + vbCrLf + vbCrLf
 
-                            If Not PayInfo.Trim = "" Then
+                            'Public Enum E_PayType
+                            '    Bankaccount = 0
+                            '    PayPal_E_Mail = 1
+                            '    PayPal_Order = 2
+                            '    Self_Pickup = 3
+                            '    Other = 4
+                            'End Enum
 
-                                If PayInfo.Contains("PayPal-E-Mail=") Then
+                            'TODO: OwnPayType 
+
+                            Dim OwnPayType As String = GetINISetting(E_Setting.PaymentType, "Self Pickup")
+
+                            If PayInfo.Contains(OwnPayType) Then
+
+                                If PayInfo.Contains("PayPal-E-Mail") Then
+
                                     Dim ColWords As ClsColloquialWords = New ClsColloquialWords
                                     Dim ColWordsString As String = ColWords.GenerateColloquialWords(BLSAT_TX.Transaction, True, "-", 5)
 
-                                    PayInfo += " Reference/Note=" + ColWordsString
+                                    PayInfo = "PayPal-E-Mail=" + GetINISetting(E_Setting.PayPalEMail, "test@test.com") + " Reference/Note=" + ColWordsString
+
+                                ElseIf PayInfo.Contains("PayPal-Order") Then
+
+                                    Dim APIOK As String = CheckPayPalAPI()
+
+                                    If APIOK = "True" Then
+                                        Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal
+                                        PPAPI_Autoinfo.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
+                                        PPAPI_Autoinfo.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
+
+                                        Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", Amount, XAmount, BLS.XItem)
+                                        Dim PPOrderID As String = BetweenFromList(PPOrderIDList, "<id>", "</id>")
+                                        PayInfo = "PayPal-Order=" + PPOrderID
+                                    End If
+
                                 End If
 
-                                Dim T_MsgStr As String = "AT=" + BLS.ATRS + " TX=" + BLSAT_TX.Transaction + " " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + " " + PayInfo
+                                Dim T_MsgStr As String = "AT=" + BLS.ATRS + " TX=" + BLSAT_TX.Transaction + " " + Dbl2LVStr(XAmount, Decimals) + " " + BLS.XItem + " " + PayInfo
+
                                 Dim TXr As String = SendBillingInfos(BLSAT_TX.Sender, T_MsgStr)
 
                                 If TXr.Contains(Application.ProductName + "-error") Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(TXr)
-                                Else
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(TXr)
+                                    End If
 
+                                Else
+                                    MBoxMsg += "Payment instructions sended" + vbCrLf
+                                    MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
+                                    MBoxMsg += "Recipient: " + BLSAT_TX.SenderRS
+                                    MBoxMsg += "AT: " + BLS.ATRS + vbCrLf
+                                    MBoxMsg += "Order-Transaction: " + BLSAT_TX.Transaction + vbCrLf
+                                    MBoxMsg += "payment request: " + Dbl2LVStr(XAmount, Decimals) + " " + BLS.XItem + vbCrLf
+                                    MBoxMsg += PayInfo + vbCrLf + vbCrLf
+                                    MBoxMsg += "please wait for requested payment from buyer"
                                 End If
 
                             End If
 
-                            ClsMsgs.MBox("BuyOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                            ClsMsgs.MBox(MBoxMsg, "Transaction(s) created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
 
                         End If
 
@@ -1325,8 +1437,11 @@ Public Class PFPForm
                     Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
                     If TX.Contains(Application.ProductName + "-error") Then
-                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                        out.ErrorLog2File(TX)
+                        If GetINISetting(E_Setting.InfoOut, False) Then
+                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                            out.ErrorLog2File(TX)
+                        End If
+
                     Else
                         ClsMsgs.MBox("BuyOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                     End If
@@ -1403,11 +1518,11 @@ Public Class PFPForm
 
                 ElseIf Seller = "Me" Then
 
-                    BtExecuteOrder.Text = "execute AT"
+                    BtExecuteOrder.Text = "fulfill AT"
                     BtExecuteOrder.Visible = True
 
                     Dim LVCMItem1 As ToolStripMenuItem = New ToolStripMenuItem
-                    LVCMItem1.Text = "execute AT"
+                    LVCMItem1.Text = "fulfill AT"
                     AddHandler LVCMItem1.Click, AddressOf BtExecuteOrder_Click
                     LVContextMenu.Items.Add(LVCMItem1)
 
@@ -1435,7 +1550,7 @@ Public Class PFPForm
 
                 ElseIf Seller = "Me" Then
 
-                    BtExecuteOrder.Text = "execute anyway"
+                    BtExecuteOrder.Text = "fulfill AT"
 
                     If Buyer.Trim = "" Or Seller.Trim = "" Then
                         BtExecuteOrder.Visible = False
@@ -1445,7 +1560,7 @@ Public Class PFPForm
                         BtPayOrder.Visible = False
 
                         Dim LVCMItem1 As ToolStripMenuItem = New ToolStripMenuItem
-                        LVCMItem1.Text = "execute anyway"
+                        LVCMItem1.Text = "fulfill AT"
                         AddHandler LVCMItem1.Click, AddressOf BtExecuteOrder_Click
                         LVContextMenu.Items.Add(LVCMItem1)
 
@@ -1464,8 +1579,8 @@ Public Class PFPForm
                     BtExecuteOrder.Text = "cancel AT"
                     LVCMItem1.Text = "cancel AT"
                 ElseIf Seller = "Me" Then
-                    BtExecuteOrder.Text = "execute anyway"
-                    LVCMItem1.Text = "execute anyway"
+                    BtExecuteOrder.Text = "fulfill AT"
+                    LVCMItem1.Text = "fulfill AT"
                 End If
 
                 If Buyer.Trim = "" Or Seller.Trim = "" Then
@@ -1608,8 +1723,11 @@ Public Class PFPForm
                         Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
                         If TXStr.Contains(Application.ProductName + "-error") Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(TXStr)
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                out.ErrorLog2File(TXStr)
+                            End If
+
                         Else
                             ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                         End If
@@ -1618,15 +1736,18 @@ Public Class PFPForm
 
                 Else
                     'execute AT
-                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to execute the AT?", "execute AT?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
+                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to fulfill the AT?", "fulfill AT?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                     If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
                         Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
                         Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceFinishOrder}))
 
                         If TXStr.Contains(Application.ProductName + "-error") Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(TXStr)
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                out.ErrorLog2File(TXStr)
+                            End If
+
                         Else
                             ClsMsgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
 
@@ -1647,8 +1768,11 @@ Public Class PFPForm
                         Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
                         If TXStr.Contains(Application.ProductName + "-error") Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(TXStr)
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                out.ErrorLog2File(TXStr)
+                            End If
+
                         Else
                             ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                         End If
@@ -1657,15 +1781,18 @@ Public Class PFPForm
 
                 Else
                     'execute AT
-                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to execute the AT?", "execute AT?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
+                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to fulfill the AT?", "fulfill AT?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                     If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
                         Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
                         Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceFinishOrder}))
 
                         If TXStr.Contains(Application.ProductName + "-error") Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(TXStr)
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                out.ErrorLog2File(TXStr)
+                            End If
+
                         Else
                             ClsMsgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                         End If
@@ -1705,10 +1832,10 @@ Public Class PFPForm
                 Exit Sub
             End If
 
-            Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
+            'Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
 
-            Dim ColBuyAmount As Double = BCR.Planck2Dbl(CULng(Between(Order.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
-            Dim Amount As Double = BCR.Planck2Dbl(CULng(Order.FirstTX.AmountNQT))
+            Dim ColBuyAmount As Double = ClsSignumAPI.Planck2Dbl(CULng(Between(Order.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
+            Dim Amount As Double = ClsSignumAPI.Planck2Dbl(CULng(Order.FirstTX.AmountNQT))
             Dim Sum As Double = ColBuyAmount + Amount
 
             Dim PurchaseAmount As Double = ColBuyAmount
@@ -1718,7 +1845,7 @@ Public Class PFPForm
             End If
 
             Dim XItem As String = Between(Order.Attachment, "<xItem>", "</xItem>", GetType(String))
-            Dim XAmount As Double = BCR.Planck2Dbl(CULng(Between(Order.Attachment, "<xAmount>", "</xAmount>", GetType(String))))
+            Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(CULng(Between(Order.Attachment, "<xAmount>", "</xAmount>", GetType(String))))
 
 
             Dim PayInfo As String = GetPaymentInfoFromOrderSettings(Order.FirstTransaction, PurchaseAmount, XAmount, CurrentMarket)
@@ -1736,8 +1863,11 @@ Public Class PFPForm
                 Dim TXr As String = SendBillingInfos(Order.BuyerID, T_MsgStr)
 
                 If TXr.Contains(Application.ProductName + "-error") Then
-                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                    out.ErrorLog2File(TXr)
+                    If GetINISetting(E_Setting.InfoOut, False) Then
+                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                        out.ErrorLog2File(TXr)
+                    End If
+
                 Else
                     ClsMsgs.MBox("New PayPal Order sended as encrypted Message", "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                 End If
@@ -1765,8 +1895,11 @@ Public Class PFPForm
             Dim TXr As String = SendBillingInfos(Recipient, T_MsgStr, ChBxEncMsg.Checked)
 
             If TXr.Contains(Application.ProductName + "-error") Then
-                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                out.ErrorLog2File(TXr)
+                If GetINISetting(E_Setting.InfoOut, False) Then
+                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                    out.ErrorLog2File(TXr)
+                End If
+
             Else
                 If ChBxEncMsg.Checked Then
                     ClsMsgs.MBox("encrypted Message sended" + vbCrLf + vbCrLf + "TX: " + TXr, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
@@ -1966,8 +2099,11 @@ Public Class PFPForm
             Next
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in GetAndCheckATs(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in GetAndCheckATs(): -> " + ex.Message)
+            End If
+
         End Try
 
         Return True
@@ -2140,8 +2276,11 @@ Public Class PFPForm
             'SplitContainer2.Panel1.Visible = True
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in SetInLVs(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in SetInLVs(): -> " + ex.Message)
+            End If
+
         End Try
 
         Return True
@@ -2355,8 +2494,11 @@ Public Class PFPForm
             SaveOrderSettingsToCSV(OrderSettingsBuffer)
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in ProcessingATs(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in ProcessingATs(): -> " + ex.Message)
+            End If
+
         End Try
 
         Return True
@@ -2779,8 +2921,11 @@ Public Class PFPForm
                             End If 'market(USD)
 
                         Catch ex As Exception
-                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                            Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(OPEN): -> " + ex.Message)
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(OPEN): -> " + ex.Message)
+                            End If
+
                         End Try
 
                     ElseIf Order.Status = "RESERVED" Then
@@ -2874,8 +3019,10 @@ Public Class PFPForm
 
 #Region "Automentation"
                                 If AlreadySend.Contains(Application.ProductName + "-error") Then
-                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                    Out.ErrorLog2File(AlreadySend)
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                        Out.ErrorLog2File(AlreadySend)
+                                    End If
 
                                 ElseIf AlreadySend.Trim = "" Then
 
@@ -2918,8 +3065,11 @@ Public Class PFPForm
                                             Dim TXr As String = SendBillingInfos(Order.BuyerID, T_MsgStr)
 
                                             If TXr.Contains(Application.ProductName + "-error") Then
-                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                out.ErrorLog2File(TXr)
+                                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    out.ErrorLog2File(TXr)
+                                                End If
+
                                             Else
                                                 If SetAutoinfoTX2INI(Order.FirstTransaction) Then 'Set autosend-info-TX in Settings.ini
                                                     'ok
@@ -3092,9 +3242,11 @@ Public Class PFPForm
                                 Dim AlreadySend As String = CheckBillingInfosAlreadySend(Order)
 
                                 If AlreadySend.Contains(Application.ProductName + "-error") Then
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                        Out.ErrorLog2File(AlreadySend)
+                                    End If
 
-                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                    Out.ErrorLog2File(AlreadySend)
 
                                 ElseIf AlreadySend = "" Then
 
@@ -3190,8 +3342,11 @@ Public Class PFPForm
 #End Region
 
                         Catch ex As Exception
-                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                            Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(RESERVED): -> " + ex.Message)
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(RESERVED): -> " + ex.Message)
+                            End If
+
                         End Try
 
                     Else 'CLOSED or CANCELED
@@ -3205,8 +3360,11 @@ Public Class PFPForm
                             End If
 
                         Catch ex As Exception
-                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                            Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(Delete): -> " + ex.Message)
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(Delete): -> " + ex.Message)
+                            End If
+
                         End Try
 
 
@@ -3227,8 +3385,11 @@ Public Class PFPForm
                             End If
 
                         Catch ex As Exception
-                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                            Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(DeleteOrdersettingbuffer): -> " + ex.Message)
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(DeleteOrdersettingbuffer): -> " + ex.Message)
+                            End If
+
                         End Try
 
                         If Order.XItem.Contains(Market) Then
@@ -3262,8 +3423,11 @@ Public Class PFPForm
                                     MyClosedOrderLVIList.Add(T_LVI)
 
                                 Catch ex As Exception
-                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                    Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(SetClosedSellOrder): -> " + ex.Message)
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                        Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(SetClosedSellOrder): -> " + ex.Message)
+                                    End If
+
                                 End Try
 
                             ElseIf TBSNOAddress.Text = Order.Buyer Then
@@ -3296,8 +3460,11 @@ Public Class PFPForm
                                     MyClosedOrderLVIList.Add(T_LVI)
 
                                 Catch ex As Exception
-                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                    Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(SetClosedBuyOrder): -> " + ex.Message)
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                        Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(SetClosedBuyOrder): -> " + ex.Message)
+                                    End If
+
                                 End Try
 
                             End If 'myaddress
@@ -3345,8 +3512,11 @@ Public Class PFPForm
             End If 'BLS.AT_TXList.Count
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-        Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(): -> " + ex.Message)
+            End If
+
         End Try
 
     End Sub
@@ -3422,8 +3592,11 @@ Public Class PFPForm
             End If
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in Loading(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in Loading(): -> " + ex.Message)
+            End If
+
         End Try
 
         Return True
@@ -3498,8 +3671,11 @@ Public Class PFPForm
             End If
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in LoadHistory(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in LoadHistory(): -> " + ex.Message)
+            End If
+
         End Try
 
     End Sub
@@ -3764,8 +3940,12 @@ Public Class PFPForm
 
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in TradeTrackCalcs(): -> " + ex.Message)
+
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in TradeTrackCalcs(): -> " + ex.Message)
+            End If
+
         End Try
 
         Return True
@@ -3815,8 +3995,11 @@ Public Class PFPForm
             RefreshTCPAPIResponse("GetOpenOrders", Parameters, OpenOrdersJSON)
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in LoadTCPAPIOpenOrders(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in LoadTCPAPIOpenOrders(): -> " + ex.Message)
+            End If
+
         End Try
 
     End Sub
@@ -3870,9 +4053,11 @@ Public Class PFPForm
             'LabClients.Text = "Clients: " + TCPAPI.ConnectionList.Count.ToString
 
         Catch ex As Exception
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in LoadTCPAPIHistorys(): -> " + ex.Message)
+            End If
 
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in LoadTCPAPIHistorys(): -> " + ex.Message)
         End Try
 
     End Sub
@@ -3970,8 +4155,10 @@ Public Class PFPForm
             Return Currency_Day_Tick
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in GetTCPAPICurrencyDaysTicks(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in GetTCPAPICurrencyDaysTicks(): -> " + ex.Message)
+            End If
 
             Return New List(Of List(Of String))
         End Try
@@ -4048,6 +4235,11 @@ Public Class PFPForm
             'End If
 
         Catch ex As Exception
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in LoadTCPAPIHistory(): -> " + ex.Message)
+            End If
+
             MultiInvoker(StatusLabel, "Text", "LoadTCPAPIHistory(): " + ex.Message)
         End Try
 
@@ -4094,8 +4286,11 @@ Public Class PFPForm
             End If
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in RefreshTCPAPIResponse(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in RefreshTCPAPIResponse(): -> " + ex.Message)
+            End If
+
         End Try
 
 
@@ -4147,9 +4342,11 @@ Public Class PFPForm
 
 
         Catch ex As Exception
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in CompareLists(): -> " + ex.Message)
+            End If
 
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in CompareLists(): -> " + ex.Message)
         End Try
 
         Return True
@@ -4214,8 +4411,11 @@ Public Class PFPForm
 
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in InitiateDEXNET(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in InitiateDEXNET(): -> " + ex.Message)
+            End If
+
         End Try
 
         Return True
@@ -4475,8 +4675,11 @@ Public Class PFPForm
                                             Dim Response As String = SigAPI.SendMessage2BLSAT(RM_ATID, 1.0, ULngList)
 
                                             If Response.Contains(Application.ProductName + "-error") Then
-                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs): -> " + vbCrLf + Response)
+                                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs): -> " + vbCrLf + Response)
+                                                End If
+
                                             Else
 
                                                 Dim PayInfo As String = GetPaymentInfoFromOrderSettings(MyOrder.FirstTransaction, MyOrder.Quantity, MyOrder.XAmount, MyOrder.XItem)
@@ -4499,8 +4702,11 @@ Public Class PFPForm
                                                         Dim TXr As String = SigAPI.SendMessage(RM_AccountID, T_MsgStr,, True,, RM_AccountPublicKey)
 
                                                         If TXr.Contains(Application.ProductName + "-error") Then
-                                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                            out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs): -> " + vbCrLf + TXr)
+                                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs): -> " + vbCrLf + TXr)
+                                                            End If
+
                                                         Else
 
                                                         End If
@@ -4528,9 +4734,10 @@ Public Class PFPForm
                     Next
 
                 Else
-
-                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                    Out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectedMsgs): -> ASK=" + RM_Ask + " ACCID=" + RM_AccIDULong.ToString + " Pubkey=" + RM_AccountPublicKey)
+                    If GetINISetting(E_Setting.InfoOut, False) Then
+                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                        Out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectedMsgs): -> ASK=" + RM_Ask + " ACCID=" + RM_AccIDULong.ToString + " Pubkey=" + RM_AccountPublicKey)
+                    End If
 
                 End If
 
@@ -5639,8 +5846,11 @@ Public Class PFPForm
                         Return DecryptedMsg
                     End If
                 Else
-                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                    Out.ErrorLog2File(DecryptedMsg)
+                    If GetINISetting(E_Setting.InfoOut, False) Then
+                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                        Out.ErrorLog2File(DecryptedMsg)
+                    End If
+
                 End If
 
             End If
@@ -5849,19 +6059,22 @@ Public Class PFPForm
                 Try
                     Request = APIRequestList(i)
                 Catch ex As Exception
-                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                    Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While1): -> " + ex.Message)
+                    If GetINISetting(E_Setting.InfoOut, False) Then
+                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                        Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While1): -> " + ex.Message)
+                    End If
+
                 End Try
 
 
                 If Request.Command = "Exit()" Then
 
-                        If InfoOut Then
-                            Dim IOut As ClsOut = New ClsOut(Application.StartupPath)
-                            IOut.Info2File(Application.ProductName + "-info from GetThread(): -> Exit()")
-                        End If
+                    If GetINISetting(E_Setting.InfoOut, False) Then
+                        Dim IOut As ClsOut = New ClsOut(Application.StartupPath)
+                        IOut.Info2File(Application.ProductName + "-info from GetThread(): -> Exit()")
+                    End If
 
-                        Exit While
+                    Exit While
                     End If
 
                     If Request.Status = "Wait..." Then
@@ -5987,7 +6200,7 @@ Public Class PFPForm
             If DelIdx <> -1 Then
                 APIRequestList.RemoveAt(DelIdx)
 
-                If InfoOut Then
+                If GetINISetting(E_Setting.InfoOut, False) Then
                     Dim IOut As ClsOut = New ClsOut(Application.StartupPath)
                     IOut.Info2File(Application.ProductName + "-info from GetThread(): -> DelIDX <> -1 -> Exit()")
                 End If
@@ -5995,8 +6208,11 @@ Public Class PFPForm
             End If
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in GetThread(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in GetThread(): -> " + ex.Message)
+            End If
+
         End Try
 
     End Sub
@@ -6218,16 +6434,16 @@ Public Class PFPForm
             APIRequestList(Index) = Request
 
         Catch ex As Exception
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in SubGetThread(): -> " + ex.Message)
+            End If
 
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in SubGetThread(): -> " + ex.Message)
         End Try
 
     End Sub
 
     Function MultithreadMonitor() As Boolean
-
-        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
 
         Try
             StatusBar.Visible = True
@@ -6271,7 +6487,11 @@ Public Class PFPForm
             Return True
 
         Catch ex As Exception
-            Out.ErrorLog2File(Application.ProductName + "-error in MultithreadMonitor(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in MultithreadMonitor(): -> " + ex.Message)
+            End If
+
         End Try
 
         Return False
@@ -6327,8 +6547,11 @@ Public Class PFPForm
 
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in MultiInvoker(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in MultiInvoker(): -> " + ex.Message)
+            End If
+
         End Try
 
     End Sub
@@ -6386,9 +6609,11 @@ Public Class PFPForm
             Return False
 
         Catch ex As Exception
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in SetPropertyValueByName(): -> " + ex.Message)
+            End If
 
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in SetPropertyValueByName(): -> " + ex.Message)
             Return False
         End Try
 
@@ -6823,8 +7048,11 @@ Public Class ListViewItemExtremeSorter
             Return SortierVergleich
 
         Catch ex As ArgumentOutOfRangeException
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in ListViewItemExtremeSorter.Compare()(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in ListViewItemExtremeSorter.Compare()(): -> " + ex.Message)
+            End If
+
             Return 0
         End Try
 
@@ -6862,8 +7090,11 @@ Public Class ListViewItemExtremeSorter
             Return datum 'wenn die länge nicht passt, das zurückgeben, was die funktion bekommen hat
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in DateUSToGer(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in DateUSToGer(): -> " + ex.Message)
+            End If
+
             Return datum
         End Try
 

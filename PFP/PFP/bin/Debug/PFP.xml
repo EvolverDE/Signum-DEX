@@ -57,6 +57,21 @@ PFP
   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
 </summary>
 </member>
+<member name="P:PFP.My.Resources.Resources.status_offline">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:PFP.My.Resources.Resources.status_online">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:PFP.My.Resources.Resources.status_wait">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
 <member name="P:PFP.My.Resources.Resources.symbol">
 <summary>
   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.

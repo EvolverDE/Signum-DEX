@@ -133,6 +133,36 @@ Namespace My.Resources
         '''<summary>
         '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         '''</summary>
+        Friend ReadOnly Property status_offline() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("status_offline", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property status_online() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("status_online", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property status_wait() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("status_wait", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        '''</summary>
         Friend ReadOnly Property symbol() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("symbol", resourceCulture)

@@ -23,9 +23,9 @@ Partial Class PFPForm
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim TreeNode1 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("Default Settings")
-        Dim TreeNode2 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("MyOrders Settings")
-        Dim TreeNode3 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("Develope")
+        Dim TreeNode4 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("Default Settings")
+        Dim TreeNode5 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("MyOrders Settings")
+        Dim TreeNode6 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("Develope")
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(PFPForm))
         Me.BlockTimer = New System.Windows.Forms.Timer(Me.components)
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
@@ -33,6 +33,7 @@ Partial Class PFPForm
         Me.StatusBar = New System.Windows.Forms.ToolStripProgressBar()
         Me.StatusBlockLabel = New System.Windows.Forms.ToolStripStatusLabel()
         Me.StatusFeeLabel = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.TSSStatusImage = New System.Windows.Forms.ToolStripStatusLabel()
         Me.LVSellorders = New System.Windows.Forms.ListView()
         Me.ColumnHeader1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Label1 = New System.Windows.Forms.Label()
@@ -227,7 +228,7 @@ Partial Class PFPForm
         '
         Me.StatusStrip1.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.StatusStrip1.ImageScalingSize = New System.Drawing.Size(24, 24)
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.StatusBar, Me.StatusBlockLabel, Me.StatusFeeLabel})
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.StatusBar, Me.StatusBlockLabel, Me.StatusFeeLabel, Me.TSSStatusImage})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 803)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(1717, 22)
@@ -238,7 +239,7 @@ Partial Class PFPForm
         '
         Me.StatusLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.StatusLabel.Name = "StatusLabel"
-        Me.StatusLabel.Size = New System.Drawing.Size(1641, 17)
+        Me.StatusLabel.Size = New System.Drawing.Size(1434, 17)
         Me.StatusLabel.Spring = True
         Me.StatusLabel.Text = " "
         Me.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -260,6 +261,14 @@ Partial Class PFPForm
         Me.StatusFeeLabel.Name = "StatusFeeLabel"
         Me.StatusFeeLabel.Size = New System.Drawing.Size(25, 17)
         Me.StatusFeeLabel.Text = "Fee"
+        '
+        'TSSStatusImage
+        '
+        Me.TSSStatusImage.Image = Global.PFP.My.Resources.Resources.status_offline
+        Me.TSSStatusImage.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.TSSStatusImage.Name = "TSSStatusImage"
+        Me.TSSStatusImage.Size = New System.Drawing.Size(57, 17)
+        Me.TSSStatusImage.Text = "offline"
         '
         'LVSellorders
         '
@@ -1380,13 +1389,13 @@ Partial Class PFPForm
         Me.TVSettings.ForeColor = System.Drawing.Color.White
         Me.TVSettings.Location = New System.Drawing.Point(0, 0)
         Me.TVSettings.Name = "TVSettings"
-        TreeNode1.Name = "Defaults"
-        TreeNode1.Text = "Default Settings"
-        TreeNode2.Name = "MyOrderssettings"
-        TreeNode2.Text = "MyOrders Settings"
-        TreeNode3.Name = "Developements"
-        TreeNode3.Text = "Develope"
-        Me.TVSettings.Nodes.AddRange(New System.Windows.Forms.TreeNode() {TreeNode1, TreeNode2, TreeNode3})
+        TreeNode4.Name = "Defaults"
+        TreeNode4.Text = "Default Settings"
+        TreeNode5.Name = "MyOrderssettings"
+        TreeNode5.Text = "MyOrders Settings"
+        TreeNode6.Name = "Developements"
+        TreeNode6.Text = "Develope"
+        Me.TVSettings.Nodes.AddRange(New System.Windows.Forms.TreeNode() {TreeNode4, TreeNode5, TreeNode6})
         Me.TVSettings.Size = New System.Drawing.Size(226, 748)
         Me.TVSettings.TabIndex = 0
         '
@@ -1656,4 +1665,5 @@ Partial Class PFPForm
     Friend WithEvents ChLBBuyFilterMethods As CheckedListBox
     Friend WithEvents ChBxSellFilterShowPayable As CheckBox
     Friend WithEvents ChBxBuyFilterShowPayable As CheckBox
+    Friend WithEvents TSSStatusImage As ToolStripStatusLabel
 End Class

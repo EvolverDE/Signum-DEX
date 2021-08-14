@@ -138,8 +138,11 @@ Namespace CSVTool
                 End If
 
             Catch ex As Exception
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in WriteCSV(): -> " + ex.Message)
+                If GetINISetting(E_Setting.InfoOut, False) Then
+                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                    Out.ErrorLog2File(Application.ProductName + "-error in WriteCSV(): -> " + ex.Message)
+                End If
+
             End Try
 
         End Sub

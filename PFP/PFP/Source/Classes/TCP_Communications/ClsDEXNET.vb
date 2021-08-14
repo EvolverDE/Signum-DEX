@@ -147,27 +147,47 @@ Public Class ClsDEXNET
     Dim TempConnect As String = ""
     Public Sub Connect(ByVal HostIP As String, ByVal RemotePort As Integer, Optional ByVal MyHost As String = "")
 
+        Dim PeerOK As Boolean = True
+
         If TempConnect.Contains(HostIP + ":" + RemotePort.ToString + ";") Then
             Exit Sub
         End If
 
-        If Peers.Count >= MaxPeers Then
-            If ShowStatus Then
-                StatusList.Add("Connect(): MaxPeers reached: " + MaxPeers.ToString)
+        Dim TempConnList As List(Of String) = New List(Of String)
+
+        If TempConnect.Contains(";") Then
+            TempConnList.AddRange(TempConnect.Split(";"))
+        End If
+
+        For i As Integer = 0 To TempConnList.Count - 1
+            Dim A_Peer As String = TempConnList(i)
+            If Not CheckHostIsNotIP(HostIP, A_Peer) Then
+                PeerOK = False
+                Exit Sub
             End If
-        Else
+        Next
 
-            TempConnect += HostIP + ":" + RemotePort.ToString + ";"
+        If PeerOK Then
+            For i As Integer = 0 To Peers.Count - 1
+                Dim A_Peer As S_Peer = Peers(i)
+                If Not CheckHostIsNotIP(HostIP, A_Peer.PossibleHost) Then
+                    PeerOK = False
+                    Exit Sub
+                End If
+            Next
+        End If
 
-            Dim ConThread As Threading.Thread = New Threading.Thread(AddressOf ConnectThread)
-            ConThread.Start({HostIP, RemotePort, MyHost})
 
-            'While ConThread.IsAlive
-            '    Application.DoEvents()
-            'End While
-
-            'TempConnect = TempConnect.Replace(HostIP + ":" + RemotePort.ToString + ";", "")
-
+        If PeerOK Then
+            If Peers.Count >= MaxPeers Then
+                If ShowStatus Then
+                    StatusList.Add("Connect(): MaxPeers reached: " + MaxPeers.ToString)
+                End If
+            Else
+                TempConnect += HostIP + ":" + RemotePort.ToString + ";"
+                Dim ConThread As Threading.Thread = New Threading.Thread(AddressOf ConnectThread)
+                ConThread.Start({HostIP, RemotePort, MyHost})
+            End If
         End If
 
     End Sub
@@ -456,6 +476,11 @@ Public Class ClsDEXNET
 
             Catch ex As Exception
 
+                If GetINISetting(E_Setting.InfoOut, False) Then
+                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                    Out.ErrorLog2File(Application.ProductName + "-error in DEXNET->Listen(): -> " + ex.Message)
+                End If
+
                 If ShowStatus Then
                     StatusList.Add("(" + Now.ToShortDateString + " " + Now.ToLongTimeString + ") Listen(Port:" + DEXNET_ServerPort.ToString + "): " + ex.Message)
                 End If
@@ -475,6 +500,10 @@ Public Class ClsDEXNET
 
         End While
 
+        If GetINISetting(E_Setting.InfoOut, False) Then
+            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+            Out.ErrorLog2File(Application.ProductName + "-error in DEXNET->Listen(): -> End ")
+        End If
 
         'end: disconnect all clients
 
@@ -490,7 +519,6 @@ Public Class ClsDEXNET
             End Try
 
         Next
-
 
     End Sub
     Private Sub ReceiveMessage(ByVal IDX As Integer)
@@ -1046,8 +1074,11 @@ Public Class ClsDEXNET
             Next
 
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in ProcessMessages(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in ProcessMessages(): -> " + ex.Message)
+            End If
+
         End Try
 
         Return True
@@ -1301,8 +1332,11 @@ Public Class ClsDEXNET
             End If
 #End Region
         Catch ex As Exception
-            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in ProcessMessages(): -> " + ex.Message)
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in ProcessMessages(): -> " + ex.Message)
+            End If
+
         End Try
 
         Return True

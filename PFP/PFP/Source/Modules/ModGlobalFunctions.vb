@@ -1,7 +1,6 @@
 ﻿
 Module ModGlobalFunctions
 
-
     Function GetID() As String
 
         For i As Integer = 0 To Now.Millisecond
@@ -72,6 +71,39 @@ Module ModGlobalFunctions
         End If
 
         Return UnixTimeString
+
+    End Function
+
+    Enum E_ConnectionStatus
+        Offline = 0
+        InSync = 1
+        NoDEXNETPeers = 2
+        NoSignumAPI = 3
+        Online = 4
+    End Enum
+
+    Function GetConnectionStatus(ByVal PrimaryNode As String, ByVal DEXNET As ClsDEXNET) As E_ConnectionStatus
+
+        Dim SLS As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+        Dim Block As Integer = SLS.GetCurrentBlock
+
+        Dim PeerCNT As Integer = 0
+
+        If Not IsNothing(DEXNET) Then
+            PeerCNT = DEXNET.Peers.Count
+        End If
+
+        If Block = 0 And PeerCNT = 0 Then
+            Return E_ConnectionStatus.Offline
+        ElseIf Block = 0 And PeerCNT >= 1 Then
+            Return E_ConnectionStatus.NoSignumAPI
+        ElseIf Block >= 1 And PeerCNT = 0 Then
+            Return E_ConnectionStatus.NoDEXNETPeers
+        ElseIf Block >= 1 And PeerCNT >= 1 Then
+            Return E_ConnectionStatus.Online
+        Else
+            Return E_ConnectionStatus.Offline
+        End If
 
     End Function
 
