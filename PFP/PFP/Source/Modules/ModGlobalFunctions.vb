@@ -1,7 +1,8 @@
 ﻿
 Module ModGlobalFunctions
     Property GlobalPIN As String = ""
-
+    Property GlobalAccountID() As ULong
+    Property GlobalAddress() As String
 
     Function GetID() As String
 
@@ -126,7 +127,7 @@ Module ModGlobalFunctions
                 Dim AccID As ULong = GetAccountID(PubKey)
                 Dim RS As String = ClsReedSolomon.Encode(AccID)
 
-                If PFPForm.TBSNOAddress.Text.Contains(RS) Then
+                If GlobalAddress.Contains(RS) Then
                     Return True
                 Else
                     Return False
@@ -158,7 +159,7 @@ Module ModGlobalFunctions
                     Dim AccID As ULong = GetAccountID(PubKey)
                     Dim RS As String = ClsReedSolomon.Encode(AccID)
 
-                    If PFPForm.TBSNOAddress.Text.Contains(RS) Then
+                    If GlobalAddress.Contains(RS) Then
                         Return True
                     Else
                         Return False

@@ -141,9 +141,9 @@
         '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
         If MasterKeyList.Count > 0 Then
 
-            Dim PrivateKey As String = MasterKeyList(1)
+            Dim AgreementKey As String = MasterKeyList(2)
 
-            Dim DecryptedMsg As String = DecryptMessage(data, nonce, PublicKey, PrivateKey)
+            Dim DecryptedMsg As String = DecryptMessage(data, nonce, PublicKey, AgreementKey)
 
             If DecryptedMsg.Contains(Application.ProductName + "-error") Then
                 Return Application.ProductName + "-error in DecryptFrom(): -> " + vbCrLf + DecryptedMsg

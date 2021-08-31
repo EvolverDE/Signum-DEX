@@ -15,7 +15,8 @@ Public Class PFPForm
     Property MarketIsCrypto() As Boolean = False
     Property Decimals() As Integer = 8
 
-    Property AccountID() As ULong
+
+
 
     Property Boottime As Integer = 0
 
@@ -532,7 +533,7 @@ Public Class PFPForm
         ElseIf Not T_PassPhrase.Trim = "" And T_Address.Trim = "" Then
 
             Dim MasterKeys As List(Of String) = GetMasterKeys(T_PassPhrase)
-            TBSNOAddress.Text = ClsReedSolomon.Encode(GetAccountID(MasterKeys(0)))
+            TBSNOAddress.Text = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
 
         Else
 
@@ -553,7 +554,7 @@ Public Class PFPForm
 
         End If
 
-
+        GlobalAddress = TBSNOAddress.Text
 
         CurrentMarket = GetINISetting(E_Setting.LastMarketViewed, "USD")
         CoBxMarket.SelectedItem = CurrentMarket
@@ -1060,7 +1061,7 @@ Public Class PFPForm
         BtSNOSetOrder.Text = "Wait..."
         BtSNOSetOrder.Enabled = False
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, AccountID,)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, GlobalAccountID,)
 
         Try
 
