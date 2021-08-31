@@ -57,6 +57,16 @@ PFP
   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
 </summary>
 </member>
+<member name="P:PFP.My.Resources.Resources.status_decrypted">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:PFP.My.Resources.Resources.status_encrypted">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
 <member name="P:PFP.My.Resources.Resources.status_offline">
 <summary>
   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
@@ -139,12 +149,6 @@ PFP
  <returns>-1, 0 oder 1 (gemäß Vergleich)</returns>
  <remarks></remarks>
 </member>
-<member name="M:PFP.ClsSignumNET.GenerateMasterKeys">
- <summary>
- Generates the Masterkeys from PassPhrase 0=PublicKey; 1=SignKey; 2=AgreementKey
- </summary>
- <returns>List of Masterkeys</returns>
-</member>
 <member name="M:PFP.ClsSignumNET.EncryptMessage(System.String,System.String,System.String)">
  <summary>
  Encrypts Message from Parameters 0=Data; 1=Nonce
@@ -161,6 +165,13 @@ PFP
  <param name="Data"></param>
  <param name="RecipientPublicKeyHex"></param>
  <param name="SenderAgreementKeyHex"></param>
+ <returns></returns>
+</member>
+<member name="M:PFP.ClsSignumAPI.GetBalance(System.String)">
+ <summary>
+ Gets the Balance from the given Address (HTML-Tags= coin, account, address, balance, available, pending)
+ </summary>
+ <param name="Address"></param>
  <returns></returns>
 </member>
 <member name="M:PFP.ModCrypto.GetMasterKeys(System.String)">
@@ -265,6 +276,12 @@ PFP
  <summary>
  Receives bytes, returns decompressed bytes.
  </summary>
+</member>
+<member name="M:PFP.ModGlobalFunctions.GetPassPhrase">
+ <summary>
+ 0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+ </summary>
+ <returns></returns>
 </member>
 <member name="M:PFP.ModGlobalFunctions.GetLVColNameFromSubItem(System.Windows.Forms.ListView@,System.String,System.Windows.Forms.ListViewItem,System.Int32)">
  <summary>

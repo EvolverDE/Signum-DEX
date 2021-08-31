@@ -122,6 +122,11 @@ Public Class ClsDEXNET
 #Region "Basics"
     Public Sub StartServer(Optional ByVal PPort As Integer = 8131)
 
+        If GetINISetting(E_Setting.InfoOut, False) Then
+            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+            Out.Info2File(Application.ProductName + "-info from DEXNET->StartServer()")
+        End If
+
         DEXNET_ServerPort = PPort
         DEXNETClose = False
 
@@ -160,7 +165,13 @@ Public Class ClsDEXNET
         End If
 
         For i As Integer = 0 To TempConnList.Count - 1
+
             Dim A_Peer As String = TempConnList(i)
+
+            If A_Peer.Contains(":") Then
+                A_Peer = A_Peer.Remove(A_Peer.IndexOf(":"))
+            End If
+
             If Not CheckHostIsNotIP(HostIP, A_Peer) Then
                 PeerOK = False
                 Exit Sub
@@ -170,6 +181,7 @@ Public Class ClsDEXNET
         If PeerOK Then
             For i As Integer = 0 To Peers.Count - 1
                 Dim A_Peer As S_Peer = Peers(i)
+
                 If Not CheckHostIsNotIP(HostIP, A_Peer.PossibleHost) Then
                     PeerOK = False
                     Exit Sub
@@ -295,6 +307,11 @@ Public Class ClsDEXNET
     End Sub
 
     Public Sub StopServer()
+
+        If GetINISetting(E_Setting.InfoOut, False) Then
+            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+            Out.Info2File(Application.ProductName + "-info from DEXNET->StopServer()")
+        End If
 
         DEXNETClose = True
 
@@ -502,7 +519,7 @@ Public Class ClsDEXNET
 
         If GetINISetting(E_Setting.InfoOut, False) Then
             Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            Out.ErrorLog2File(Application.ProductName + "-error in DEXNET->Listen(): -> End ")
+            Out.Info2File(Application.ProductName + "-info from DEXNET->Listen(): -> End ")
         End If
 
         'end: disconnect all clients
@@ -630,6 +647,42 @@ Public Class ClsDEXNET
             End Try
 
         End While
+
+
+        'Dim PubKeyList As List(Of String) = New List(Of String)
+
+        'Dim WExit As Boolean = False
+        'While Not WExit
+        '    WExit = True
+
+        '    For i As Integer = 0 To Peers.Count - 1
+        '        Dim T_Peer As S_Peer = Peers(i)
+
+        '        Dim FoundPubKey As Boolean = False
+        '        For Each PubKey As String In PubKeyList
+
+        '            If T_Peer.PublicKey = PubKey And T_Peer.PublicKey <> DEXNET_PublicKeyHEX Then
+        '                FoundPubKey = True
+        '                Exit For
+        '            End If
+
+        '        Next
+
+        '        If FoundPubKey Then
+        '            WExit = False
+        '            T_Peer.TCPClient.Close()
+        '            Peers.Remove(T_Peer)
+        '            Exit For
+        '        Else
+        '            If DEXNET_PublicKeyHEX <> T_Peer.PublicKey And T_Peer.PublicKey.Trim <> "" Then
+        '                PubKeyList.Add(T_Peer.PublicKey)
+        '            End If
+        '        End If
+
+        '    Next
+
+        'End While
+
 
 
         Dim DelIdx As Integer = -1
@@ -1134,18 +1187,30 @@ Public Class ClsDEXNET
             Dim T_Peer As S_Peer = Peers(i)
 
             If T_Peer.SetMsgs.Count > 0 Then
-                Dim TempMsg As String = T_Peer.SetMsgs(0)
-                T_Peer.LastSetMsg = TempMsg
-                T_Peer.SetMsgs.RemoveAt(0)
-                T_Peer.StreamWriter.WriteLine(TempMsg)
-                T_Peer.StreamWriter.Flush()
-                Peers(i) = T_Peer
+
+                Try
+
+                    Dim TempMsg As String = T_Peer.SetMsgs(0)
+                    T_Peer.LastSetMsg = TempMsg
+                    T_Peer.SetMsgs.RemoveAt(0)
+                    T_Peer.StreamWriter.WriteLine(TempMsg)
+                    T_Peer.StreamWriter.Flush()
+                    Peers(i) = T_Peer
 
 
-                If ShowStatus Then
-                    Dim LogMsg As String = "(" + Now.ToShortDateString + " " + Now.ToLongTimeString + ") " + T_Peer.PossibleHost + ":" + T_Peer.Port.ToString + " sended: " + TempMsg
-                    StatusList.Add(LogMsg)
-                End If
+                    If ShowStatus Then
+                        Dim LogMsg As String = "(" + Now.ToShortDateString + " " + Now.ToLongTimeString + ") " + T_Peer.PossibleHost + ":" + T_Peer.Port.ToString + " sended: " + TempMsg
+                        StatusList.Add(LogMsg)
+                    End If
+
+                Catch ex As Exception
+
+                    If GetINISetting(E_Setting.InfoOut, False) Then
+                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                        Out.ErrorLog2File(Application.ProductName + "-error in SendMessages(): -> " + ex.Message)
+                    End If
+
+                End Try
 
             End If
 

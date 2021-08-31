@@ -156,14 +156,14 @@ Module ModCSV
 
     Property OrderSettingsBuffer As List(Of ClsOrderSettings) = New List(Of ClsOrderSettings)
 
-    Function GetOrderSettingsFromBuffer(ByVal TX As String) As List(Of ClsOrderSettings)
+    Function GetOrderSettingsFromBuffer(ByVal TXID As ULong) As List(Of ClsOrderSettings)
 
         Dim T_OSList As List(Of ClsOrderSettings) = New List(Of ClsOrderSettings) ' GetOrderSettings(Order.FirstTransaction)
 
         For i As Integer = 0 To OrderSettingsBuffer.Count - 1
             Dim T_T_OS As ClsOrderSettings = OrderSettingsBuffer(i)
 
-            If T_T_OS.TX = TX Then
+            If T_T_OS.TXID = TXID Then
                 T_OSList.Add(T_T_OS)
                 Exit For
             End If
@@ -252,7 +252,7 @@ Module ModCSV
             Dim NewOS As Boolean = True
             For Each CSV_OrderSetting As ClsOrderSettings In CSV_OrderSettings
 
-                If NEW_OrderSetting.TX = CSV_OrderSetting.TX Then
+                If NEW_OrderSetting.TXID = CSV_OrderSetting.TXID Then
                     NewOS = False
                     Exit For
                 End If
@@ -272,7 +272,7 @@ Module ModCSV
             Dim T_OrderSetting As ClsOrderSettings = CSV_OrderSetting
 
             For Each NEW_OrderSetting As ClsOrderSettings In T_OrderSettings
-                If T_OrderSetting.TX = NEW_OrderSetting.TX Then
+                If T_OrderSetting.TXID = NEW_OrderSetting.TXID Then
 
                     If Not T_OrderSetting.Type.Trim = NEW_OrderSetting.Type.Trim Then
                         T_OrderSetting.Type = NEW_OrderSetting.Type
@@ -313,7 +313,7 @@ Module ModCSV
         CSVList.Add({"AT", "TX", "Type", "Paytype", "Infotext", "AutoSendInfotext", "AutoCompleteAT", "Status"})
         For Each TOS As ClsOrderSettings In New_CSV_OrderSettingList
             If Not TOS.Status = "DELETED" Then
-                Dim LineArray As String() = {TOS.AT, TOS.TX, TOS.Type, TOS.PaytypeString, TOS.Infotext, TOS.AutoSendInfotext.ToString, TOS.AutoCompleteAT.ToString, TOS.Status}
+                Dim LineArray As String() = {TOS.ATID, TOS.TXID, TOS.Type, TOS.PaytypeString, TOS.Infotext, TOS.AutoSendInfotext.ToString, TOS.AutoCompleteAT.ToString, TOS.Status}
                 CSVList.Add(LineArray)
             End If
         Next

@@ -19,7 +19,7 @@ Public Class ClsSignumAPI
     'FinishOrder2: 6223530244326486469
 #End Region
 
-    Public Const _ReferenceTX As String = "11566074467129414744"
+    Public Const _ReferenceTX As ULong = 11566074467129414744UL
     Public Const _DeployFeeNQT As ULong = 154350000UL
     Public Const _GasFeeNQT As ULong = 29400000UL
 
@@ -37,8 +37,9 @@ Public Class ClsSignumAPI
 
     Property C_Node As String = "http://nivbox.co.uk:6876/burst"
 
-    Property C_PassPhrase As String = ""
-    Property C_AccountID As String
+    'Public Property C_PromptPIN As Boolean = True
+    'Property C_PassPhrase As String = ""
+    Property C_AccountID As ULong
     Property C_Address As String
 
 
@@ -47,26 +48,28 @@ Public Class ClsSignumAPI
     Public Property DEXATList As List(Of String) = New List(Of String)
 
 
-    Sub New(Optional ByVal Node As String = "", Optional ByVal PassPhrase As String = "", Optional ByVal Account As String = "", Optional ByVal ReferenceTX As String = _ReferenceTX)
+    Sub New(Optional ByVal Node As String = "", Optional ByVal Account As ULong = 0UL, Optional ByVal ReferenceTX As ULong = _ReferenceTX)
 
         If Not Node.Trim = "" Then
             C_Node = Node
         End If
 
-        If Not PassPhrase.Trim = "" Then
-            C_PassPhrase = PassPhrase
-        End If
+        'If Not PassPhrase.Trim = "" Then
+        '    C_PassPhrase = PassPhrase
+        'End If
 
-        If Not Account.Trim = "" Then
+        'C_PromptPIN = PromptPIN
+
+        If Not Account = 0UL Then
             C_AccountID = Account
         End If
 
 
         Dim ReferenceTXDetails As List(Of String) = GetTransaction(ReferenceTX)
-        C_ReferenceCreationBytes = BetweenFromList(ReferenceTXDetails, "<creationBytes>", "</creationBytes>")
+        C_ReferenceCreationBytes = BetweenFromList(ReferenceTXDetails, "<creationBytes>", "</creationBytes>",, GetType(String))
 
         Dim ReferenceATDetails = GetATDetails(ReferenceTX)
-        C_ReferenceMachineCode = BetweenFromList(ReferenceATDetails, "<machineCode>", "</machineCode>")
+        C_ReferenceMachineCode = BetweenFromList(ReferenceATDetails, "<machineCode>", "</machineCode>",, GetType(String))
 
     End Sub
 
@@ -99,7 +102,7 @@ Public Class ClsSignumAPI
 
         Dim UTX As Object = JSON.RecursiveListSearch(RespList, "transaction")
 
-        Dim Returner As String = ""
+        Dim Returner As String = Application.ProductName + "-error in BroadcastTransaction(): -> UTX failure"
         If UTX.GetType.Name = GetType(String).Name Then
             Returner = CStr(UTX)
         ElseIf UTX.GetType.Name = GetType(Boolean).Name Then
@@ -210,49 +213,49 @@ Public Class ClsSignumAPI
 
     End Function
 
-    Public Function GetAccountFromPassPhrase() As List(Of String)
+    'Public Function GetAccountFromPassPhrase() As List(Of String)
 
-        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+    '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
 
-        Dim Signum As ClsSignumNET = New ClsSignumNET(C_PassPhrase)
-        Dim MasterkeyList As List(Of Byte()) = Signum.GenerateMasterKeys()
-        Dim Response As String = SignumRequest("requestType=getAccountId&publicKey=" + ByteAry2HEX(MasterkeyList(0)).Trim)
+    '    Dim Signum As ClsSignumNET = New ClsSignumNET(C_PromptPIN)
+    '    Dim MasterkeyList As List(Of Byte()) = Signum.GenerateMasterKeys()
+    '    Dim Response As String = SignumRequest("requestType=getAccountId&publicKey=" + ByteAry2HEX(MasterkeyList(0)).Trim)
 
-        If Response.Contains(Application.ProductName + "-error") Then
-            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountFromPassPhrase(): -> " + Response
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Out.ErrorLog2File(Application.ProductName + "-error in GetAccountFromPassPhrase(): -> " + Response)
-            End If
+    '    If Response.Contains(Application.ProductName + "-error") Then
+    '        'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountFromPassPhrase(): -> " + Response
+    '        If GetINISetting(E_Setting.InfoOut, False) Then
+    '            Out.ErrorLog2File(Application.ProductName + "-error in GetAccountFromPassPhrase(): -> " + Response)
+    '        End If
 
-            Return New List(Of String)
-        End If
+    '        Return New List(Of String)
+    '    End If
 
-        Dim JSON As ClsJSON = New ClsJSON
+    '    Dim JSON As ClsJSON = New ClsJSON
 
-        Dim RespList As Object = JSON.JSONRecursive(Response)
-
-
-        Dim Error0 As Object = JSON.RecursiveListSearch(RespList, "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
-            'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
-            'TX not OK
-            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountFromPassPhrase(): " + Response
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Out.ErrorLog2File(Application.ProductName + "-error in GetAccountFromPassPhrase(): " + Response)
-            End If
-
-            Return New List(Of String)
-        End If
+    '    Dim RespList As Object = JSON.JSONRecursive(Response)
 
 
-        Dim Account As String = JSON.RecursiveListSearch(RespList, "account").ToString
-        Dim AccountRS As String = JSON.RecursiveListSearch(RespList, "accountRS").ToString
-        Dim Balance As List(Of String) = GetBalance(Account, AccountRS)
+    '    Dim Error0 As Object = JSON.RecursiveListSearch(RespList, "errorCode")
+    '    If Error0.GetType.Name = GetType(Boolean).Name Then
+    '        'TX OK
+    '    ElseIf Error0.GetType.Name = GetType(String).Name Then
+    '        'TX not OK
+    '        'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetAccountFromPassPhrase(): " + Response
+    '        If GetINISetting(E_Setting.InfoOut, False) Then
+    '            Out.ErrorLog2File(Application.ProductName + "-error in GetAccountFromPassPhrase(): " + Response)
+    '        End If
 
-        Return Balance
+    '        Return New List(Of String)
+    '    End If
 
-    End Function
+
+    '    Dim Account As String = JSON.RecursiveListSearch(RespList, "account").ToString
+    '    Dim AccountRS As String = JSON.RecursiveListSearch(RespList, "accountRS").ToString
+    '    Dim Balance As List(Of String) = GetBalance(AccountRS)
+
+    '    Return Balance
+
+    'End Function
 
     Public Function GetAccountPublicKeyFromAccountID_RS(ByVal AccountID_RS As String) As String
 
@@ -286,49 +289,151 @@ Public Class ClsSignumAPI
 
     End Function
 
-    Public Function RSConvert(ByVal Input As String) As List(Of String)
+    Public Function RSConvert(ByVal AccountID As ULong) As List(Of String)
 
         Try
 
-            If Input.Contains("-") Then
-
-                Input = Input.Substring(Input.IndexOf("-") + 1) 'remove (T)S- Tag
-
-                Dim AccountID As ULong = ClsReedSolomon.Decode(Input)
-                Dim x As List(Of String) = New List(Of String)({"<account>" + AccountID.ToString + "</account>", "<accountRS>" + Input + "</accountRS>"})
-                Return x
-            Else
-                Dim AccountRS As String = ClsReedSolomon.Encode(CULng(Input))
-                Dim x As List(Of String) = New List(Of String)({"<account>" + Input + "</account>", "<accountRS>TS-" + AccountRS + "</accountRS>"}) 'TODO: Change TS- Tag
-                Return x
-            End If
+            Dim AccountRS As String = ClsReedSolomon.Encode(AccountID)
+            Dim x As List(Of String) = New List(Of String)({"<account>" + AccountID.ToString + "</account>", "<accountRS>TS-" + AccountRS + "</accountRS>"}) 'TODO: Change TS- PreFix
+            Return x
 
         Catch ex As Exception
-            Return New List(Of String)({"<account>" + Input + "</account>", "<accountRS>" + Input + "</accountRS>"})
+            Return New List(Of String)({"<account>" + AccountID.ToString + "</account>", "<accountRS>" + AccountID.ToString + "</accountRS>"})
         End Try
 
     End Function
 
 
-    Public Function GetBalance(Optional ByVal AccountID As String = "", Optional ByVal Address1 As String = "") As List(Of String)
+    Public Function RSConvert(ByVal Address As String) As List(Of String)
+
+        Try
+
+            If Address.Contains("-") Then
+
+                Address = Address.Substring(Address.IndexOf("-") + 1) 'remove (T)S- Tag
+
+                Dim AccountID As ULong = ClsReedSolomon.Decode(Address)
+                Dim x As List(Of String) = New List(Of String)({"<account>" + AccountID.ToString + "</account>", "<accountRS>" + Address + "</accountRS>"})
+                Return x
+            Else
+                Dim AccountRS As String = ClsReedSolomon.Encode(CULng(Address))
+                Dim x As List(Of String) = New List(Of String)({"<account>" + Address + "</account>", "<accountRS>TS-" + AccountRS + "</accountRS>"}) 'TODO: Change TS- PreFix
+                Return x
+            End If
+
+        Catch ex As Exception
+            Return New List(Of String)({"<account>" + Address + "</account>", "<accountRS>" + Address + "</accountRS>"})
+        End Try
+
+    End Function
+
+    ''' <summary>
+    ''' Gets the Balance from the given Address (HTML-Tags= coin, account, address, balance, available, pending)
+    ''' </summary>
+    ''' <param name="Address"></param>
+    ''' <returns></returns>
+    Public Function GetBalance(ByVal Address As String) As List(Of String)
 
         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
 
-        If AccountID.Trim = "" Then
-            AccountID = C_AccountID
+        Dim AccountID As ULong = ClsReedSolomon.Decode(Address)
+
+        Dim CoinBal As List(Of String) = New List(Of String)({"<coin>SIGNA</coin>", "<account>" + AccountID.ToString + "</account>", "<address>" + Address + "</address>", "<balance>0</balance>", "<available>0</available>", "<pending>0</pending>"})
+
+        If AccountID = 0 Then
+
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetBalance(Address=" + Address + "): -> AccountID=0")
+            End If
+
+            Return CoinBal
+        Else
+            Return GetBalance(AccountID)
         End If
 
-        If Address1.Trim = "" Then
-            Address1 = C_Address
-        End If
+#Region "Deprecated"
+        'Dim Response As String = SignumRequest("requestType=getAccount&account=" + AccountID.ToString)
 
-        Dim CoinBal As List(Of String) = New List(Of String)({"<coin>SIGNA</coin>", "<account>" + AccountID + "</account>", "<address>" + Address1 + "</address>", "<balance>0</balance>", "<available>0</available>", "<pending>0</pending>"})
+        'If Response.Contains(Application.ProductName + "-error") Then
+        '    ' PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetBalance(): -> " + Response
 
-        Dim Response As String = SignumRequest("requestType=getAccount&account=" + AccountID.Trim)
+        '    If GetINISetting(E_Setting.InfoOut, False) Then
+        '        Out.ErrorLog2File(Application.ProductName + "-error in GetBalance(AccountRS2=" + Address + "): -> " + Response)
+        '    End If
+
+        '    Return CoinBal
+        'End If
+
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        'Dim RespList As Object = JSON.JSONRecursive(Response)
+
+
+        'Dim Error0 As Object = JSON.RecursiveListSearch(RespList, "errorCode")
+        'If Error0.GetType.Name = GetType(Boolean).Name Then
+        '    'TX OK
+        'ElseIf Error0.GetType.Name = GetType(String).Name Then
+        '    'TX not OK
+        '    'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetBalance(): " + Response
+
+        '    'If GetINISetting(E_Setting.InfoOut, False) Then
+        '    '    Out.ErrorLog2File(Application.ProductName + "-error in GetBalance(AccountRS3=" + Address + "): " + Response)
+        '    'End If
+
+        '    Return CoinBal
+        'End If
+
+
+        'Dim BalancePlanckStr As String = JSON.RecursiveListSearch(RespList, "balanceNQT").ToString
+        'Dim Balance As Double = 0.0
+
+        'Try
+        '    Balance = CDbl(BalancePlanckStr.Insert(BalancePlanckStr.Length - 8, ","))
+        'Catch ex As Exception
+
+        'End Try
+
+        'Dim AvailablePlanckStr As String = JSON.RecursiveListSearch(RespList, "unconfirmedBalanceNQT").ToString
+        'Dim Available As Double = 0.0
+
+        'Try
+        '    Available = CDbl(AvailablePlanckStr.Insert(AvailablePlanckStr.Length - 8, ","))
+        'Catch ex As Exception
+
+        'End Try
+
+        'Dim Pending As Double = Available - Balance
+
+        ''(Coin, Account, Address, Balance, Available, Pending)
+        'CoinBal(0) = "<coin>SIGNA</coin>"
+        'CoinBal(1) = "<account>" + AccountID.ToString + "</account>"
+        'CoinBal(2) = "<address>" + Address.Trim + "</address>"
+        'CoinBal(3) = "<balance>" + Balance.ToString + "</balance>"
+        'CoinBal(4) = "<available>" + Available.ToString + "</available>"
+        'CoinBal(5) = "<pending>" + Pending.ToString + "</pending>"
+
+        'Return CoinBal
+#End Region
+
+    End Function
+
+    Public Function GetBalance(ByVal AccountID As ULong) As List(Of String)
+
+        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+
+        Dim Address As String = ClsReedSolomon.Encode(AccountID)
+
+        Dim CoinBal As List(Of String) = New List(Of String)({"<coin>SIGNA</coin>", "<account>" + AccountID.ToString + "</account>", "<address>TS-" + Address + "</address>", "<balance>0</balance>", "<available>0</available>", "<pending>0</pending>"}) 'TODO: Change TS- PreFix
+
+        Dim Response As String = SignumRequest("requestType=getAccount&account=" + AccountID.ToString)
 
         If Response.Contains(Application.ProductName + "-error") Then
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetBalance(): -> " + Response
-            'Out.ErrorLog2File(Application.ProductName + "-error in GetBalance(): -> " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetBalance(): -> " + Response
+
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetBalance(AccountID=" + AccountID.ToString + "): -> " + Response)
+            End If
+
             Return CoinBal
         End If
 
@@ -342,8 +447,12 @@ Public Class ClsSignumAPI
             'TX OK
         ElseIf Error0.GetType.Name = GetType(String).Name Then
             'TX not OK
-            PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetBalance(): " + Response
-            'Out.ErrorLog2File(Application.ProductName + "-error in GetBalance(): " + Response)
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetBalance(): " + Response
+
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Out.ErrorLog2File(Application.ProductName + "-error in GetBalance(AccountID=" + AccountID.ToString + "): " + Response)
+            End If
+
             Return CoinBal
         End If
 
@@ -368,12 +477,9 @@ Public Class ClsSignumAPI
 
         Dim Pending As Double = Available - Balance
 
-        Dim Address As String = JSON.RecursiveListSearch(RespList, "accountRS").ToString
-
-
         '(Coin, Account, Address, Balance, Available, Pending)
         CoinBal(0) = "<coin>SIGNA</coin>"
-        CoinBal(1) = "<account>" + AccountID.Trim + "</account>"
+        CoinBal(1) = "<account>" + AccountID.ToString + "</account>"
         CoinBal(2) = "<address>" + Address.Trim + "</address>"
         CoinBal(3) = "<balance>" + Balance.ToString + "</balance>"
         CoinBal(4) = "<available>" + Available.ToString + "</available>"
@@ -382,6 +488,8 @@ Public Class ClsSignumAPI
         Return CoinBal
 
     End Function
+
+
 
     Public Function GetSlotFee() As Double
 
@@ -651,11 +759,11 @@ Public Class ClsSignumAPI
 
     End Function
 
-    Public Function GetTransaction(ByVal TXID As String) As List(Of String)
+    Public Function GetTransaction(ByVal TXID As ULong) As List(Of String)
 
         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
 
-        Dim Response As String = SignumRequest("requestType=getTransaction&transaction=" + TXID)
+        Dim Response As String = SignumRequest("requestType=getTransaction&transaction=" + TXID.ToString)
 
         If Response.Contains(Application.ProductName + "-error") Then
             'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetTransaction(): -> " + Response
@@ -789,17 +897,17 @@ Public Class ClsSignumAPI
 
     End Function
 
-    Public Function GetAccountTransactions(ByVal AccountID As String, Optional ByVal FromTimestamp As String = "", Optional UseBuffer As Boolean = False) As List(Of List(Of String))
+    Public Function GetAccountTransactions(ByVal AccountID As ULong, Optional ByVal FromTimestamp As ULong = 0UL, Optional UseBuffer As Boolean = False) As List(Of List(Of String))
 
         'TODO: Debug GetAccountTransactions() wich indicates injected Responders wrong
 
 
         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
 
-        Dim Request As String = "requestType=getAccountTransactions&account=" + AccountID
+        Dim Request As String = "requestType=getAccountTransactions&account=" + AccountID.ToString
 
-        If Not FromTimestamp.Trim = "" Then
-            Request += "&timestamp=" + FromTimestamp
+        If Not FromTimestamp = 0UL Then
+            Request += "&timestamp=" + FromTimestamp.ToString
         End If
 
         Dim Response As String = SignumRequest(Request)
@@ -974,12 +1082,12 @@ Public Class ClsSignumAPI
                     Return New List(Of List(Of String))
                 End If
 
-                Dim T_SenderAccount As ULong = CULng(BetweenFromList(TXEntry, "<sender>", "</sender>"))
+                Dim T_SenderAccount As ULong = BetweenFromList(TXEntry, "<sender>", "</sender>",, GetType(ULong))
 
                 If TXEntry(0).Trim = "<type>BLSTX</type>" Then
                     ' ist ATTX
-                    Dim MSgIdx As Integer = CInt(BetweenFromList(TXEntry, "<message>", "</message>", True))
-                    Dim T_Message As String = BetweenFromList(TXEntry, "<message>", "</message>")
+                    Dim MSgIdx As Integer = BetweenFromList(TXEntry, "<message>", "</message>", True, GetType(Integer))
+                    Dim T_Message As String = BetweenFromList(TXEntry, "<message>", "</message>",, GetType(String))
 
                     If Not T_Message.Trim = "" Then
                         Try
@@ -1007,9 +1115,9 @@ Public Class ClsSignumAPI
                 Else
                     ' ist keine ATTX
 
-                    Dim T_AmountNQT As ULong = CULng(BetweenFromList(TXEntry, "<amountNQT>", "</amountNQT>"))
-                    Dim T_Message As String = BetweenFromList(TXEntry, "<message>", "</message>")
-                    Dim MSgIdx As Integer = CInt(BetweenFromList(TXEntry, "<message>", "</message>", True))
+                    Dim T_AmountNQT As ULong = BetweenFromList(TXEntry, "<amountNQT>", "</amountNQT>",, GetType(ULong))
+                    Dim T_Message As String = BetweenFromList(TXEntry, "<message>", "</message>",, GetType(String))
+                    Dim MSgIdx As Integer = BetweenFromList(TXEntry, "<message>", "</message>", True, GetType(Integer))
 
                     Dim MesULng As List(Of ULong) = New List(Of ULong)
 
@@ -1283,16 +1391,16 @@ Public Class ClsSignumAPI
 
     'End Function
 
-    Public Function GetATDetails(ByVal ATId As String) As List(Of String)
+    Public Function GetATDetails(ByVal ATID As ULong) As List(Of String)
 
         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
 
-        Dim Response As String = SignumRequest("requestType=getATDetails&at=" + ATId)
+        Dim Response As String = SignumRequest("requestType=getATDetails&at=" + ATID.ToString)
 
         If Response.Contains(Application.ProductName + "-error") Then
             'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATDetails(" + ATId + "): -> " + Response
             If GetINISetting(E_Setting.InfoOut, False) Then
-                Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails(" + ATId + "): -> " + Response)
+                Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails(" + ATID.ToString + "): -> " + Response)
             End If
 
             Return New List(Of String)
@@ -1309,7 +1417,7 @@ Public Class ClsSignumAPI
             'TX not OK
             'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATDetails(" + ATId + "): " + Response
             If GetINISetting(E_Setting.InfoOut, False) Then
-                Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails(" + ATId + "): " + Response)
+                Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails(" + ATID.ToString + "): " + Response)
             End If
 
             Return New List(Of String)
@@ -1405,16 +1513,16 @@ Public Class ClsSignumAPI
 
 #Region "Send"
 
-    Public Function SendMoney(ByVal RecipientID As String, ByVal Amount As Double, Optional ByVal Fee As Double = 0.0, Optional ByVal Message As String = "", Optional ByVal MessageIsText As Boolean = True, Optional ByVal RecipientPublicKey As String = "") As String
+    Public Function SendMoney(ByVal SenderPublicKey As String, ByVal RecipientID As ULong, ByVal Amount As Double, Optional ByVal Fee As Double = 0.0, Optional ByVal Message As String = "", Optional ByVal MessageIsText As Boolean = True, Optional ByVal RecipientPublicKey As String = "") As String
 
-        If C_PassPhrase.Trim = "" Then
-            Return "error in SendMoney(): no PassPhrase"
-        End If
+        'If C_PassPhrase.Trim = "" Then
+        '    Return "error in SendMoney(): no PassPhrase"
+        'End If
 
-        Dim Signum As ClsSignumNET = New ClsSignumNET(C_PassPhrase)
-        Dim MasterkeyList As List(Of Byte()) = Signum.GenerateMasterKeys()
+        'Dim SignumNET As ClsSignumNET = New ClsSignumNET()
+        'Dim MasterkeyList As List(Of Byte()) = SignumNET.GenerateMasterKeys()
 
-        Dim PublicKey As String = ByteAry2HEX(MasterkeyList(0))
+        Dim PublicKey As String = SenderPublicKey ' ByteAry2HEX(MasterkeyList(0))
         'Dim SignKey As String = ByteAry2HEX(MasterkeyList(1))
         'Dim AgreementKey As String = ByteAry2HEX(MasterkeyList(2))
 
@@ -1428,7 +1536,7 @@ Public Class ClsSignumAPI
         Dim FeeNQT As String = Dbl2Planck(Fee).ToString
 
         Dim postDataRL As String = "requestType=sendMoney"
-        postDataRL += "&recipient=" + RecipientID
+        postDataRL += "&recipient=" + RecipientID.ToString
         postDataRL += "&amountNQT=" + AmountNQT
         'postDataRL += "&secretPhrase=" + C_PassPhrase
         postDataRL += "&publicKey=" + PublicKey ' <<< debug errormaker
@@ -1462,41 +1570,38 @@ Public Class ClsSignumAPI
             Return Application.ProductName + "-error in SendMoney(): ->" + vbCrLf + Response
         End If
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Return Response
 
-        Dim RespList As Object = JSON.JSONRecursive(Response)
+        'Dim JSON As ClsJSON = New ClsJSON
+        'Dim RespList As Object = JSON.JSONRecursive(Response)
 
-
-        Dim Error0 As Object = JSON.RecursiveListSearch(RespList, "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
-            'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
-            'TX not OK
-            Return Application.ProductName + "-error in SendMoney(): " + Response
-        End If
-
-
-        Dim UTX As Object = JSON.RecursiveListSearch(RespList, "unsignedTransactionBytes")
-
-        Dim Returner As String = ""
-        If UTX.GetType.Name = GetType(String).Name Then
-            Returner = CStr(UTX)
-        End If
+        'Dim Error0 As Object = JSON.RecursiveListSearch(RespList, "errorCode")
+        'If Error0.GetType.Name = GetType(Boolean).Name Then
+        '    'TX OK
+        'ElseIf Error0.GetType.Name = GetType(String).Name Then
+        '    'TX not OK
+        '    Return Application.ProductName + "-error in SendMoney(): " + Response
+        'End If
 
 
-        If Not Returner.Trim = "" Then
-            Dim STX As ClsSignumNET.S_Signature = Signum.SignHelper(UTX)
-            Returner = BroadcastTransaction(STX.SignedTransaction)
-        End If
+        'Dim UTXBytes As Object = JSON.RecursiveListSearch(RespList, "unsignedTransactionBytes")
 
-        Return Returner
+        'Dim Returner As String = ""
+        'If UTXBytes.GetType.Name = GetType(String).Name Then
+        '    Returner = CStr(UTXBytes)
+        'End If
+
+
+        'If Not Returner.Trim = "" Then
+        '    Dim SignumNET As ClsSignumNET = New ClsSignumNET()
+        '    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTXBytes, SenderSignKey)
+        '    Returner = BroadcastTransaction(STX.SignedTransaction)
+        'End If
+
+        'Return Returner
 
     End Function
-    Public Function SendMessage(ByVal RecipientID As String, ByVal Message As String, Optional ByVal MessageIsText As Boolean = True, Optional ByVal Encrypt As Boolean = False, Optional ByVal Fee As Double = 0.0, Optional ByVal RecipientPublicKey As String = "") As String
-
-        If C_PassPhrase.Trim = "" Then '.Contains(Application.ProductName + "-error") Then
-            Return Application.ProductName + "-error in SendMessage(): no PassPhrase"
-        End If
+    Public Function SendMessage(ByVal SenderPublicKey As String, ByVal SenderAgreementKey As String, ByVal RecipientID As ULong, ByVal Message As String, Optional ByVal MessageIsText As Boolean = True, Optional ByVal Encrypt As Boolean = False, Optional ByVal Fee As Double = 0.0, Optional ByVal RecipientPublicKey As String = "") As String
 
         If Fee = 0.0 Then
             Fee = GetSlotFee()
@@ -1504,23 +1609,23 @@ Public Class ClsSignumAPI
         Dim FeeNQT As String = Dbl2Planck(Fee).ToString
 
         If RecipientPublicKey = "" Then
-            RecipientPublicKey = GetAccountPublicKeyFromAccountID_RS(RecipientID)
+            RecipientPublicKey = GetAccountPublicKeyFromAccountID_RS(RecipientID.ToString)
         End If
 
-        If RecipientPublicKey.Trim = "" Or RecipientPublicKey.Trim = "0000000000000000000000000000000000000000000000000000000000000000" Then
+        If RecipientPublicKey.Trim = "" Or RecipientPublicKey.Trim = "0000000000000000000000000000000000000000000000000000000000000000" Or RecipientPublicKey.Contains(Application.ProductName + "-error") Then
             Encrypt = False
             RecipientPublicKey = ""
         End If
 
-        Dim Signum As ClsSignumNET = New ClsSignumNET(C_PassPhrase)
-        Dim MasterkeyList As List(Of Byte()) = Signum.GenerateMasterKeys()
+        Dim Signum As ClsSignumNET = New ClsSignumNET()
+        'Dim MasterkeyList As List(Of Byte()) = Signum.GenerateMasterKeys()
 
-        Dim PublicKey As String = ByteAry2HEX(MasterkeyList(0))
+        Dim PublicKey As String = SenderPublicKey ' ByteAry2HEX(MasterkeyList(0))
         'Dim SignKey As String = ByteAry2HEX(MasterkeyList(1))
-        Dim AgreementKey As String = ByteAry2HEX(MasterkeyList(2))
+        Dim AgreementKey As String = SenderAgreementKey ' ByteAry2HEX(MasterkeyList(2))
 
         Dim postDataRL As String = "requestType=sendMessage"
-        postDataRL += "&recipient=" + RecipientID
+        postDataRL += "&recipient=" + RecipientID.ToString
         'postDataRL += "&secretPhrase=" + C_PassPhrase
         postDataRL += "&publicKey=" + PublicKey
         postDataRL += "&feeNQT=" + FeeNQT
@@ -1564,52 +1669,44 @@ Public Class ClsSignumAPI
 
         Dim Response As String = SignumRequest(postDataRL)
 
-        If Response.Contains(Application.ProductName + "-error") Then
-            Return Application.ProductName + "-error in SendMessage(): ->" + vbCrLf + Response
-        End If
+        Return Response
 
-        Dim JSON As ClsJSON = New ClsJSON
+        'If Response.Contains(Application.ProductName + "-error") Then
+        '    Return Application.ProductName + "-error in SendMessage(): ->" + vbCrLf + Response
+        'End If
 
-        Dim RespList As Object = JSON.JSONRecursive(Response)
+        'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(RespList, "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
-            'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
-            'TX not OK
-            Return Application.ProductName + "-error in SendMessage(): " + Response
-        End If
+        'Dim RespList As Object = JSON.JSONRecursive(Response)
 
-        Dim UTX As Object = JSON.RecursiveListSearch(RespList, "unsignedTransactionBytes")
+        'Dim Error0 As Object = JSON.RecursiveListSearch(RespList, "errorCode")
+        'If Error0.GetType.Name = GetType(Boolean).Name Then
+        '    'TX OK
+        'ElseIf Error0.GetType.Name = GetType(String).Name Then
+        '    'TX not OK
+        '    Return Application.ProductName + "-error in SendMessage(): " + Response
+        'End If
+
+        'Dim UTX As Object = JSON.RecursiveListSearch(RespList, "unsignedTransactionBytes")
 
 
-        Dim Returner As String = ""
-        If UTX.GetType.Name = GetType(String).Name Then
-            Returner = CStr(UTX)
-        End If
+        'Dim Returner As String = ""
+        'If UTX.GetType.Name = GetType(String).Name Then
+        '    Returner = CStr(UTX)
+        'End If
 
-        If Not Returner.Trim = "" Then
-            Dim STX As ClsSignumNET.S_Signature = Signum.SignHelper(UTX)
-            Returner = BroadcastTransaction(STX.SignedTransaction)
-        End If
+        'If Not Returner.Trim = "" Then
+        '    Dim STX As ClsSignumNET.S_Signature = Signum.SignHelper(UTX, SenderSignKey)
+        '    Returner = BroadcastTransaction(STX.SignedTransaction)
+        'End If
 
-        Return Returner
+        'Return Returner
 
     End Function
 
-    Public Function ReadMessage(ByVal TX As String) As String
+    Public Function ReadMessage(ByVal TXID As ULong, ByVal AccountID As ULong) As String
 
-        If C_PassPhrase.Trim = "" Then
-            Return Application.ProductName + "-error in ReadMessage(): no PassPhrase"
-        End If
-
-        Dim Signum As ClsSignumNET = New ClsSignumNET(C_PassPhrase)
-        Dim MasterkeyList As List(Of Byte()) = Signum.GenerateMasterKeys()
-
-        Dim PublicKey As String = ByteAry2HEX(MasterkeyList(0))
-        Dim AgreementKey As String = ByteAry2HEX(MasterkeyList(2))
-
-        Dim postDataRL As String = "requestType=getTransaction&transaction=" + TX
+        Dim postDataRL As String = "requestType=getTransaction&transaction=" + TXID.ToString
         Dim Response As String = SignumRequest(postDataRL)
 
         If Response.Contains(Application.ProductName + "-error") Then
@@ -1633,14 +1730,19 @@ Public Class ClsSignumAPI
 
         Dim EncryptedMsg As Object = JSON.RecursiveListSearch(RespList, "encryptedMessage")
 
-        Dim SenderPublicKey As String = JSON.RecursiveListSearch(RespList, "senderPublicKey")
-        Dim RecipientPublicKey As String = JSON.RecursiveListSearch(RespList, "recipient")
-        RecipientPublicKey = GetAccountPublicKeyFromAccountID_RS(RecipientPublicKey)
+        Dim SenderID As String = JSON.RecursiveListSearch(RespList, "sender")
+        Dim RecipientID As String = JSON.RecursiveListSearch(RespList, "recipient")
 
-        If PublicKey = SenderPublicKey Then
-            PublicKey = RecipientPublicKey
-        ElseIf PublicKey = RecipientPublicKey Then
-            PublicKey = SenderPublicKey
+        If AccountID = SenderID Then
+            AccountID = RecipientID
+        ElseIf AccountID = RecipientID Then
+            AccountID = SenderID
+        End If
+
+        Dim AccountPublicKey As String = GetAccountPublicKeyFromAccountID_RS(AccountID.ToString)
+
+        If AccountPublicKey.Contains(Application.ProductName + "-error") Then
+            Return Application.ProductName + "-error in ReadMessage(): -> no PublicKey for " + AccountID.ToString
         End If
 
         Dim ReturnStr As String = ""
@@ -1654,7 +1756,8 @@ Public Class ClsSignumAPI
             Dim Data As String = JSON.RecursiveListSearch(EncryptedMsg, "data")
             Dim Nonce As String = JSON.RecursiveListSearch(EncryptedMsg, "nonce")
 
-            Dim DecryptedMsg As String = Signum.DecryptMessage(Data, Nonce, PublicKey, AgreementKey)
+            Dim SignumAPI As ClsSignumNET = New ClsSignumNET()
+            Dim DecryptedMsg As String = SignumAPI.DecryptFrom(AccountPublicKey, Data, Nonce)
 
             If DecryptedMsg.Contains(Application.ProductName + "-error") Then
                 Return Application.ProductName + "-error in ReadMessage(): -> " + vbCrLf + DecryptedMsg
@@ -1693,57 +1796,29 @@ Public Class ClsSignumAPI
     End Function
 
 
-    Public Function DecryptFrom(ByVal AccountRS As String, ByVal data As String, ByVal nonce As String, Optional ByVal IsText As Boolean = True) As String
-
-        If C_PassPhrase.Trim = "" Then
-            Return Application.ProductName + "-error in DecryptFrom(): no PassPhrase"
-        End If
-
-        Dim Signum As ClsSignumNET = New ClsSignumNET(C_PassPhrase)
-        Dim MasterkeyList As List(Of Byte()) = Signum.GenerateMasterKeys()
-
-        Dim PrivateKey As String = ByteAry2HEX(MasterkeyList(2))
-        Dim PublicKey As String = GetAccountPublicKeyFromAccountID_RS(AccountRS)
-
-        Dim DecryptedMsg As String = Signum.DecryptMessage(data, nonce, PublicKey, PrivateKey)
-
-        If DecryptedMsg.Contains(Application.ProductName + "-error") Then
-            Return Application.ProductName + "-error in DecryptFrom(): -> " + vbCrLf + DecryptedMsg
-        Else
-
-            If Not MessageIsHEXString(DecryptedMsg) Then
-                Return DecryptedMsg
-            Else
-                Return Application.ProductName + "-error in DecryptFrom(): -> " + vbCrLf + DecryptedMsg
-            End If
-
-        End If
-
-    End Function
-
 #End Region 'Send
 
 #Region "Send Advance"
 
-    Public Function CreateAT() As List(Of String)
+    Public Function CreateAT(ByVal SenderPublicKey As String) As String
 
         Dim out As ClsOut = New ClsOut(Application.StartupPath)
 
-        If C_PassPhrase.Trim = "" Then
-            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): no PassPhrase"
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): no PassPhrase")
-            End If
+        'If C_PassPhrase.Trim = "" Then
+        '    'PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): no PassPhrase"
+        '    If GetINISetting(E_Setting.InfoOut, False) Then
+        '        out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): no PassPhrase")
+        '    End If
 
-            Return New List(Of String)
-        End If
+        '    Return New List(Of String)
+        'End If
 
-        Dim Signum As ClsSignumNET = New ClsSignumNET(C_PassPhrase)
-        Dim MasterkeyList As List(Of Byte()) = Signum.GenerateMasterKeys()
+        'Dim Signum As ClsSignumNET = New ClsSignumNET(C_PromptPIN)
+        'Dim MasterkeyList As List(Of Byte()) = Signum.GenerateMasterKeys()
 
-        Dim PublicKey As String = ByteAry2HEX(MasterkeyList(0))
-        Dim SignKey As String = ByteAry2HEX(MasterkeyList(1))
-        Dim AgreementKey As String = ByteAry2HEX(MasterkeyList(2))
+        Dim PublicKey As String = SenderPublicKey ' ByteAry2HEX(MasterkeyList(0))
+        'Dim SignKey As String = ByteAry2HEX(MasterkeyList(1))
+        'Dim AgreementKey As String = ByteAry2HEX(MasterkeyList(2))
 
 
         Dim postDataRL As String = "requestType=createATProgram"
@@ -1774,117 +1849,132 @@ Public Class ClsSignumAPI
         'postDataRL += "&encryptToSelfMessageNonce="
         'postDataRL += "&recipientPublicKey"
 
-
         Dim Response As String = SignumRequest(postDataRL)
 
         If Response.Contains(Application.ProductName + "-error") Then
-            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): -> " + Response
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): -> " + Response)
-            End If
-
-            Return New List(Of String)
+            Return Application.ProductName + "-error in CreateAT(): ->" + vbCrLf + Response
         End If
 
-        Dim JSON As ClsJSON = New ClsJSON
-
-        Dim RespList As Object = JSON.JSONRecursive(Response)
-
-        Dim Error0 As Object = JSON.RecursiveListSearch(RespList, "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
-            'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
-            'TX not OK
-            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): " + Response
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): " + Response)
-            End If
-
-            Return New List(Of String)
-        End If
+        Return Response
 
 
-        Dim UTX As Object = JSON.RecursiveListSearch(RespList, "unsignedTransactionBytes")
+        'If Response.Contains(Application.ProductName + "-error") Then
+        '    'PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): -> " + Response
+        '    If GetINISetting(E_Setting.InfoOut, False) Then
+        '        out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): -> " + Response)
+        '    End If
 
-        Dim TX As String = ""
-        If UTX.GetType.Name = GetType(String).Name Then
-            TX = CStr(UTX)
-        End If
+        '    Return New List(Of String)
+        'End If
 
+        'Dim JSON As ClsJSON = New ClsJSON
+        'Dim RespList As Object = JSON.JSONRecursive(Response)
 
-        If Not TX.Trim = "" Then
-            Dim STX As ClsSignumNET.S_Signature = Signum.SignHelper(UTX)
-            TX = BroadcastTransaction(STX.SignedTransaction)
-        End If
+        'Dim Error0 As Object = JSON.RecursiveListSearch(RespList, "errorCode")
+        'If Error0.GetType.Name = GetType(Boolean).Name Then
+        '    'TX OK
+        'ElseIf Error0.GetType.Name = GetType(String).Name Then
+        '    'TX not OK
+        '    'PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): " + Response
+        '    If GetINISetting(E_Setting.InfoOut, False) Then
+        '        out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): " + Response)
+        '    End If
 
-        Dim TXDetailList As List(Of String) = New List(Of String)
-
-        For Each Entry In RespList
-
-            Select Case Entry(0)
-                Case "transaction"
-
-                Case "fullHash"
-
-                Case "transactionBytes"
-
-                Case "transactionJSON"
-
-                    Dim Type As String = JSON.RecursiveListSearch(Entry(1), "type")
-                    Dim SubType As String = JSON.RecursiveListSearch(Entry(1), "subtype")
-                    Dim Timestamp As String = JSON.RecursiveListSearch(Entry(1), "timestamp")
-                    'Dim Deadline As String = RecursiveSearch(Entry(1), "deadline")
-                    'Dim senderPublicKey As String = RecursiveSearch(Entry(1), "senderPublicKey")
-                    Dim AmountNQT As String = JSON.RecursiveListSearch(Entry(1), "amountNQT")
-                    Dim FeeNQT As String = JSON.RecursiveListSearch(Entry(1), "feeNQT")
-                    'Dim Signature As String = RecursiveSearch(Entry(1), "signature")
-                    'Dim SignatureHash As String = RecursiveSearch(Entry(1), "signatureHash")
-                    'Dim FullHash As String = RecursiveSearch(Entry(1), "fullHash")
-                    Dim Transaction As String = TX ' RecursiveSearch(Entry(1), "transaction")
-                    'Dim Attachments = RecursiveSearch(Entry(1), "attachment")
-
-                    Dim Attachments As List(Of Object) = TryCast(JSON.RecursiveListSearch(Entry(1), "attachment"), List(Of Object))
-                    Dim AttStr As String = "<attachment>"
-                    If Not IsNothing(Attachments) Then
-                        For Each Attachment In Attachments
-                            Dim AttList As List(Of String) = TryCast(Attachment, List(Of String))
-                            If Not IsNothing(AttList) Then
-                                If AttList.Count > 1 Then
-                                    AttStr += "<" + AttList(0) + ">" + AttList(1) + "</" + AttList(0) + ">"
-                                End If
-                            End If
-                        Next
-                    End If
-
-                    AttStr += "</attachment>"
-
-                    TXDetailList.Add("<type>" + Type + "</type>")
-                    TXDetailList.Add("<subtype>" + SubType + "</subtype>")
-                    TXDetailList.Add("<timestamp>" + Timestamp + "</timestamp>")
-                    'TXDetailList.Add("<deadline>" + Deadline + "</deadline>")
-                    'TXDetailList.Add("<senderPublicKey>" + senderPublicKey + "</senderPublicKey>")
-                    TXDetailList.Add("<amountNQT>" + AmountNQT + "</amountNQT>")
-                    TXDetailList.Add("<feeNQT>" + FeeNQT + "</feeNQT>")
-                    'TXDetailList.Add("<signature>" + Signature + "</signature>")
-                    'TXDetailList.Add("<signatureHash>" + SignatureHash + "</signatureHash>")
-                    'TXDetailList.Add("<fullHash>" + FullHash + "</fullHash>")
-                    TXDetailList.Add("<transaction>" + Transaction + "</transaction>")
-                    TXDetailList.Add(AttStr)
-
-                    Exit For
-                Case "requestProcessingTime"
+        '    Return New List(Of String)
+        'End If
 
 
-            End Select
+        ''Dim UTX As Object = JSON.RecursiveListSearch(RespList, "unsignedTransactionBytes")
 
-        Next
+        ''Dim TX As String = ""
+        ''If UTX.GetType.Name = GetType(String).Name Then
+        ''    TX = CStr(UTX)
+        ''End If
 
-        Return TXDetailList
+
+        ''If Not TX.Trim = "" Then
+        ''    Dim Signum As ClsSignumNET = New ClsSignumNET()
+        ''    Dim STX As ClsSignumNET.S_Signature = Signum.SignHelper(UTX, SenderSignKey)
+        ''    TX = BroadcastTransaction(STX.SignedTransaction)
+        ''End If
+
+        'Dim TXDetailList As List(Of String) = New List(Of String)
+
+        'For Each Entry In RespList
+
+        '    Select Case Entry(0)
+        '        Case "broadcasted"
+
+        '        Case "unsignedTransactionBytes"
+
+        '            TXDetailList.Add("<unsignedTransactionBytes>" + Entry(1) + "</unsignedTransactionBytes>")
+
+        '        Case "transactionJSON"
+
+        '            Dim Type As String = JSON.RecursiveListSearch(Entry(1), "type")
+        '            Dim SubType As String = JSON.RecursiveListSearch(Entry(1), "subtype")
+        '            Dim Timestamp As String = JSON.RecursiveListSearch(Entry(1), "timestamp")
+        '            'Dim Deadline As String = RecursiveSearch(Entry(1), "deadline")
+        '            'Dim senderPublicKey As String = RecursiveSearch(Entry(1), "senderPublicKey")
+        '            Dim AmountNQT As String = JSON.RecursiveListSearch(Entry(1), "amountNQT")
+        '            Dim FeeNQT As String = JSON.RecursiveListSearch(Entry(1), "feeNQT")
+        '            'Dim Signature As String = RecursiveSearch(Entry(1), "signature")
+        '            'Dim SignatureHash As String = RecursiveSearch(Entry(1), "signatureHash")
+        '            'Dim FullHash As String = RecursiveSearch(Entry(1), "fullHash")
+        '            'Dim Transaction As String = TX ' RecursiveSearch(Entry(1), "transaction")
+        '            'Dim Attachments = RecursiveSearch(Entry(1), "attachment")
+
+        '            Dim Attachments As List(Of Object) = TryCast(JSON.RecursiveListSearch(Entry(1), "attachment"), List(Of Object))
+        '            Dim AttStr As String = "<attachment>"
+        '            If Not IsNothing(Attachments) Then
+        '                For Each Attachment In Attachments
+        '                    Dim AttList As List(Of String) = TryCast(Attachment, List(Of String))
+        '                    If Not IsNothing(AttList) Then
+        '                        If AttList.Count > 1 Then
+        '                            AttStr += "<" + AttList(0) + ">" + AttList(1) + "</" + AttList(0) + ">"
+        '                        End If
+        '                    End If
+        '                Next
+        '            End If
+
+        '            AttStr += "</attachment>"
+
+        '            'Dim SenderID As String = JSON.RecursiveListSearch(Entry(1), "sender")
+        '            'Dim SenderRS As String = JSON.RecursiveListSearch(Entry(1), "senderRS")
+        '            'Dim Height As String = JSON.RecursiveListSearch(Entry(1), "height")
+        '            'Dim Version As String = JSON.RecursiveListSearch(Entry(1), "version")
+        '            'Dim ECBlockID As String = JSON.RecursiveListSearch(Entry(1), "ecBlockId")
+        '            'Dim ECBlockHeight As String = JSON.RecursiveListSearch(Entry(1), "ecBlockHeight")
+
+
+        '            TXDetailList.Add("<type>" + Type + "</type>")
+        '            TXDetailList.Add("<subtype>" + SubType + "</subtype>")
+        '            TXDetailList.Add("<timestamp>" + Timestamp + "</timestamp>")
+        '            'TXDetailList.Add("<deadline>" + Deadline + "</deadline>")
+        '            'TXDetailList.Add("<senderPublicKey>" + senderPublicKey + "</senderPublicKey>")
+        '            TXDetailList.Add("<amountNQT>" + AmountNQT + "</amountNQT>")
+        '            TXDetailList.Add("<feeNQT>" + FeeNQT + "</feeNQT>")
+        '            'TXDetailList.Add("<signature>" + Signature + "</signature>")
+        '            'TXDetailList.Add("<signatureHash>" + SignatureHash + "</signatureHash>")
+        '            'TXDetailList.Add("<fullHash>" + FullHash + "</fullHash>")
+        '            'TXDetailList.Add("<transaction>" + Transaction + "</transaction>")
+        '            TXDetailList.Add(AttStr)
+
+        '            Exit For
+
+        '        Case "requestProcessingTime"
+
+
+        '    End Select
+
+        'Next
+
+        'Return TXDetailList
 
     End Function
 
 
-    Public Function SetBLSATBuyOrder(ByVal ATId As String, ByVal WantToBuyAmount As Double, ByVal Collateral As Double, ByVal Xitem As String, ByVal XAmount As Double, Optional Fee As Double = 0.0) As String
+    Public Function SetBLSATBuyOrder(ByVal SenderPublicKey As String, ByVal ATID As ULong, ByVal WantToBuyAmount As Double, ByVal Collateral As Double, ByVal Xitem As String, ByVal XAmount As Double, Optional Fee As Double = 0.0) As String
 
         Dim AmountNQT As ULong = Dbl2Planck(Collateral)
         Dim XAmountNQT As ULong = Dbl2Planck(XAmount)
@@ -1911,16 +2001,11 @@ Public Class ClsSignumAPI
         Dim ULngList As List(Of ULong) = New List(Of ULong)({CULng(ReferenceCreateOrder), ReserveNQT, XAmountNQT, String2ULng(Xitem.Trim)})
         Dim MsgStr As String = ULngList2DataStr(ULngList)
 
-        Dim Response As String = SendMoney(ATId, Collateral + Planck2Dbl(_GasFeeNQT), Fee, MsgStr.Trim, False)
-
-        If Response.Contains(Application.ProductName + "-error") Then
-            Response = Application.ProductName + "-error in SetBLSATBuyOrder(): -> " + vbCrLf + Response
-        End If
-
+        Dim Response As String = SendMoney(SenderPublicKey, ATID, Collateral + Planck2Dbl(_GasFeeNQT), Fee, MsgStr.Trim, False)
         Return Response
 
     End Function
-    Public Function SetBLSATSellOrder(ByVal ATId As String, ByVal WantToSellAmount As Double, ByVal Collateral As Double, ByVal Xitem As String, ByVal XAmount As Double, Optional Fee As Double = 0.0) As String
+    Public Function SetBLSATSellOrder(ByVal SenderPublicKey As String, ByVal ATID As ULong, ByVal WantToSellAmount As Double, ByVal Collateral As Double, ByVal Xitem As String, ByVal XAmount As Double, Optional Fee As Double = 0.0) As String
 
         'Dim AmountNQT As ULong = Dbl2Planck(WantToSellAmount)
         Dim XAmountNQT As ULong = Dbl2Planck(XAmount)
@@ -1946,34 +2031,56 @@ Public Class ClsSignumAPI
 
         Dim ULngList As List(Of ULong) = New List(Of ULong)({CULng(ReferenceCreateOrder), CollateralNQT, XAmountNQT, String2ULng(Xitem.Trim)})
         Dim MsgStr As String = ULngList2DataStr(ULngList)
-        Dim Response As String = SendMoney(ATId, WantToSellAmount + Planck2Dbl(_GasFeeNQT), Fee, MsgStr.Trim, False)
 
-        If Response.Contains(Application.ProductName + "-error") Then
-            Response = Application.ProductName + "-error in SetBLSATSellOrder(): -> " + vbCrLf + Response
-        End If
-
+        Dim Response As String = SendMoney(SenderPublicKey, ATID, WantToSellAmount + Planck2Dbl(_GasFeeNQT), Fee, MsgStr.Trim, False)
         Return Response
 
     End Function
 
-    Public Function SendMessage2BLSAT(ByVal ATId As String, ByVal Collateral As Double, ByVal ULongMsgList As List(Of ULong), Optional ByVal Fee As Double = 0.0) As String
+    Public Function SendMessage2BLSAT(ByVal SenderPublicKeyHEX As String, ByVal ATID As ULong, ByVal Collateral As Double, ByVal ULongMsgList As List(Of ULong), Optional ByVal Fee As Double = 0.0) As String
 
         If Fee = 0.0 Then
             Fee = GetSlotFee()
         End If
 
         Dim MsgStr As String = ULngList2DataStr(ULongMsgList)
-        Dim Response As String = ""
-
-        Response = SendMoney(ATId, Collateral + Planck2Dbl(_GasFeeNQT), Fee, MsgStr.Trim, False)
-
-        If Response.Contains(Application.ProductName + "-error") Then
-            Response = Application.ProductName + "-error in SendMessage2BLSAT(): -> " + vbCrLf + Response
-        End If
-
-        Return Response
+        Return SendMoney(SenderPublicKeyHEX, ATID, Collateral + Planck2Dbl(_GasFeeNQT), Fee, MsgStr.Trim, False)
 
     End Function
+
+    'Public Function SendMessage2BLSATManual(ByVal SenderPublicKey As String, ByVal ATID As ULong, ByVal Collateral As Double, ByVal ULongMsgList As List(Of ULong), Optional ByVal Fee As Double = 0.0) As String
+
+    '    If Fee = 0.0 Then
+    '        Fee = GetSlotFee()
+    '    End If
+
+    '    Dim MsgStr As String = ULngList2DataStr(ULongMsgList)
+    '    Dim Response As String = Application.ProductName + "-error in SendMessage2BLSAT(): -> no Keys"
+
+    '    'Dim MAsterkeys As List(Of String) = GetPassPhrase()
+
+    '    'If MAsterkeys.Count > 0 Then
+    '    Response = SendMoney(SenderPublicKey, ATID, Collateral + Planck2Dbl(_GasFeeNQT), Fee, MsgStr.Trim, False)
+
+    '    'Dim UTXList As List(Of String) = ConvertUnsignedTXToList(Response)
+    '    'Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+    '    'Dim SignumNET As ClsSignumNET = New ClsSignumNET
+    '    'Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MAsterkeys(1))
+    '    'Dim TX As String = BroadcastTransaction(STX.SignedTransaction)
+
+    '    'UTXList.Add("<transaction>" + TX + "</transaction>")
+
+    '    'Response = TX
+
+    '    'End If
+
+    '    'If Response.Contains(Application.ProductName + "-error") Then
+    '    '    Response = Application.ProductName + "-error in SendMessage2BLSAT(): -> " + vbCrLf + Response
+    '    'End If
+
+    '    Return Response
+
+    'End Function
 
 #End Region
 
@@ -1982,22 +2089,130 @@ Public Class ClsSignumAPI
 
 #Region "Convert tools"
 
+    Public Function ConvertUnsignedTXToList(ByVal UnsignedTX As String) As List(Of String)
 
-    Public Function TimeToUnix(ByVal dteDate As Date) As String
-        If dteDate.IsDaylightSavingTime = True Then
-            dteDate = DateAdd(DateInterval.Hour, -1, dteDate)
+        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+
+        Dim JSON As ClsJSON = New ClsJSON
+        Dim RespList As Object = JSON.JSONRecursive(UnsignedTX)
+
+        Dim Error0 As Object = JSON.RecursiveListSearch(RespList, "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            'PFPForm.StatusLabel.Text = Application.ProductName + "-error in CreateAT(): " + Response
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                out.ErrorLog2File(Application.ProductName + "-error in ConvertUnsignedTXToList(): " + UnsignedTX)
+            End If
+
+            Return New List(Of String)
         End If
-        Return DateDiff(DateInterval.Second, CDate("11.08.2014 04:00:16"), dteDate)
+
+
+        'Dim UTX As Object = JSON.RecursiveListSearch(RespList, "unsignedTransactionBytes")
+
+        'Dim TX As String = ""
+        'If UTX.GetType.Name = GetType(String).Name Then
+        '    TX = CStr(UTX)
+        'End If
+
+
+        'If Not TX.Trim = "" Then
+        '    Dim Signum As ClsSignumNET = New ClsSignumNET()
+        '    Dim STX As ClsSignumNET.S_Signature = Signum.SignHelper(UTX, SenderSignKey)
+        '    TX = BroadcastTransaction(STX.SignedTransaction)
+        'End If
+
+        Dim TXDetailList As List(Of String) = New List(Of String)
+
+        For Each Entry In RespList
+
+            Select Case Entry(0)
+                Case "broadcasted"
+
+                Case "unsignedTransactionBytes"
+
+                    TXDetailList.Add("<unsignedTransactionBytes>" + Entry(1) + "</unsignedTransactionBytes>")
+
+                Case "transactionJSON"
+
+                    Dim Type As String = JSON.RecursiveListSearch(Entry(1), "type")
+                    Dim SubType As String = JSON.RecursiveListSearch(Entry(1), "subtype")
+                    Dim Timestamp As String = JSON.RecursiveListSearch(Entry(1), "timestamp")
+                    'Dim Deadline As String = RecursiveSearch(Entry(1), "deadline")
+                    'Dim senderPublicKey As String = RecursiveSearch(Entry(1), "senderPublicKey")
+                    Dim AmountNQT As String = JSON.RecursiveListSearch(Entry(1), "amountNQT")
+                    Dim FeeNQT As String = JSON.RecursiveListSearch(Entry(1), "feeNQT")
+                    'Dim Signature As String = RecursiveSearch(Entry(1), "signature")
+                    'Dim SignatureHash As String = RecursiveSearch(Entry(1), "signatureHash")
+                    'Dim FullHash As String = RecursiveSearch(Entry(1), "fullHash")
+                    'Dim Transaction As String = TX ' RecursiveSearch(Entry(1), "transaction")
+                    'Dim Attachments = RecursiveSearch(Entry(1), "attachment")
+
+                    Dim Attachments As List(Of Object) = TryCast(JSON.RecursiveListSearch(Entry(1), "attachment"), List(Of Object))
+                    Dim AttStr As String = "<attachment>"
+                    If Not IsNothing(Attachments) Then
+                        For Each Attachment In Attachments
+                            Dim AttList As List(Of String) = TryCast(Attachment, List(Of String))
+                            If Not IsNothing(AttList) Then
+                                If AttList.Count > 1 Then
+                                    AttStr += "<" + AttList(0) + ">" + AttList(1) + "</" + AttList(0) + ">"
+                                End If
+                            End If
+                        Next
+                    End If
+
+                    AttStr += "</attachment>"
+
+                    'Dim SenderID As String = JSON.RecursiveListSearch(Entry(1), "sender")
+                    'Dim SenderRS As String = JSON.RecursiveListSearch(Entry(1), "senderRS")
+                    'Dim Height As String = JSON.RecursiveListSearch(Entry(1), "height")
+                    'Dim Version As String = JSON.RecursiveListSearch(Entry(1), "version")
+                    'Dim ECBlockID As String = JSON.RecursiveListSearch(Entry(1), "ecBlockId")
+                    'Dim ECBlockHeight As String = JSON.RecursiveListSearch(Entry(1), "ecBlockHeight")
+
+
+                    TXDetailList.Add("<type>" + Type + "</type>")
+                    TXDetailList.Add("<subtype>" + SubType + "</subtype>")
+                    TXDetailList.Add("<timestamp>" + Timestamp + "</timestamp>")
+                    'TXDetailList.Add("<deadline>" + Deadline + "</deadline>")
+                    'TXDetailList.Add("<senderPublicKey>" + senderPublicKey + "</senderPublicKey>")
+                    TXDetailList.Add("<amountNQT>" + AmountNQT + "</amountNQT>")
+                    TXDetailList.Add("<feeNQT>" + FeeNQT + "</feeNQT>")
+                    'TXDetailList.Add("<signature>" + Signature + "</signature>")
+                    'TXDetailList.Add("<signatureHash>" + SignatureHash + "</signatureHash>")
+                    'TXDetailList.Add("<fullHash>" + FullHash + "</fullHash>")
+                    'TXDetailList.Add("<transaction>" + Transaction + "</transaction>")
+                    TXDetailList.Add(AttStr)
+
+                    Exit For
+
+                Case "requestProcessingTime"
+
+
+            End Select
+
+        Next
+
+        Return TXDetailList
+
     End Function
 
 
+    Public Function TimeToUnix(ByVal dteDate As Date) As ULong
+        If dteDate.IsDaylightSavingTime = True Then
+            dteDate = DateAdd(DateInterval.Hour, -1, dteDate)
+        End If
+        Return CULng(DateDiff(DateInterval.Second, CDate("11.08.2014 04:00:16"), dteDate))
+    End Function
     Public Function UnixToTime(ByVal strUnixTime As String) As Date
-        UnixToTime = DateAdd(DateInterval.Second, Val(strUnixTime), CDate("11.08.2014 04:00:16"))
-        If UnixToTime.IsDaylightSavingTime = True Then
-            UnixToTime = DateAdd(DateInterval.Hour, 1, UnixToTime)
+        Dim UnixToTimex As Date = DateAdd(DateInterval.Second, Val(strUnixTime), CDate("11.08.2014 04:00:16"))
+        If UnixToTimex.IsDaylightSavingTime = True Then
+            UnixToTimex = DateAdd(DateInterval.Hour, 1, UnixToTimex)
         End If
 
-        Return UnixToTime
+        Return UnixToTimex
 
     End Function
 
@@ -2212,8 +2427,8 @@ Public Class ClsSignumAPI
 
             Dim Entry As List(Of String) = input(i)
 
-            Dim T_Timestamp As ULong = CULng(BetweenFromList(Entry, "<timestamp>", "</timestamp>"))
-            Dim T_Transaction As ULong = CULng(BetweenFromList(Entry, "<transaction>", "</transaction>"))
+            Dim T_Timestamp As ULong = BetweenFromList(Entry, "<timestamp>", "</timestamp>",, GetType(ULong))
+            Dim T_Transaction As ULong = BetweenFromList(Entry, "<transaction>", "</transaction>",, GetType(ULong))
 
             Dim NuSort As S_Sorter = New S_Sorter
             NuSort.Timestamp = T_Timestamp
@@ -2231,8 +2446,8 @@ Public Class ClsSignumAPI
             For i As Integer = 0 To input.Count - 1
                 Dim retent = input(i)
 
-                Dim T_Timestamp As ULong = CULng(BetweenFromList(retent, "<timestamp>", "</timestamp>"))
-                Dim T_Transaction As ULong = CULng(BetweenFromList(retent, "<transaction>", "</transaction>"))
+                Dim T_Timestamp As ULong = BetweenFromList(retent, "<timestamp>", "</timestamp>",, GetType(ULong))
+                Dim T_Transaction As ULong = BetweenFromList(retent, "<transaction>", "</transaction>",, GetType(ULong))
 
                 If T_Timestamp = sort.Timestamp And T_Transaction = sort.TXID Then
                     SReturnList.Add(retent)

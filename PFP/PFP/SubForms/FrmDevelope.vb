@@ -25,10 +25,10 @@
         End If
 
 
-        TBTestMyPublicKey.Text = C_MainForm.T_PublicKeyHEX
-        TBTestMySignKey.Text = C_MainForm.T_SignkeyHEX
-        TBTestMyAgreeKey.Text = C_MainForm.T_AgreementKeyHEX
-        TBTestMyPassPhrase.Text = C_MainForm.T_PassPhrase
+        'TBTestMyPublicKey.Text = C_MainForm.T_PublicKeyHEX
+        'TBTestMySignKey.Text = C_MainForm.T_SignkeyHEX
+        'TBTestMyAgreeKey.Text = C_MainForm.T_AgreementKeyHEX
+        'TBTestMyPassPhrase.Text = C_MainForm.T_PassPhrase
 
 
         'TBTestATID.Text = ClsSignumAPI._ReferenceTX.ToString
@@ -188,54 +188,39 @@
 
     Private Sub BtTestDatStr2ULngList_Click(sender As Object, e As EventArgs) Handles BtTestDatStr2ULngList.Click
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.String2ULng(TBTestConvert.Text.Trim)})
-        Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
-
-        'Dim DataLngList = BCR.DataStr2ULngList(TBTestConvert.Text)
-
-        'Dim DataStr As String = ""
-
-        'For Each DataLng In DataLngList
-        '    DataStr += DataLng.ToString + " "
-        'Next
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.String2ULng(TBTestConvert.Text.Trim)})
+        Dim MsgStr As String = SignumAPI.ULngList2DataStr(ULngList)
 
         TBTestConvert.Text = MsgStr
 
     End Sub
     Private Sub BtTestConvert_Click(sender As Object, e As EventArgs) Handles BtTestConvert.Click
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
-
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
 
         Try
-            TBTestConvert.Text = BCR.String2ULng(TBTestConvert.Text)
+            TBTestConvert.Text = SignumAPI.String2ULng(TBTestConvert.Text)
         Catch ex As Exception
             TBTestConvert.Text = "error"
         End Try
 
-
     End Sub
     Private Sub BtTestConvert2_Click(sender As Object, e As EventArgs) Handles BtTestConvert2.Click
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
-
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
 
         Try
-            TBTestConvert.Text = BCR.ULng2String(TBTestConvert.Text)
+            TBTestConvert.Text = SignumAPI.ULng2String(TBTestConvert.Text)
         Catch ex As Exception
             TBTestConvert.Text = "error"
         End Try
 
     End Sub
     Private Sub BtTestTimeConvert_Click(sender As Object, e As EventArgs) Handles BtTestTimeConvert.Click
-
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
-        Dim NowUnix As Long = BCR.TimeToUnix(Now.AddDays(-3)) '.AddDays(-CInt(CoBxChartSelectedItem))).ToString
-
-        TBTestTime.Text = BCR.UnixToTime((139296583).ToString).ToString
-
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
+        TBTestTime.Text = SignumAPI.UnixToTime((139296583).ToString).ToString
     End Sub
     Private Sub BtTestCreateCollWord_Click(sender As Object, e As EventArgs) Handles BtTestCreateCollWord.Click
 
@@ -379,72 +364,72 @@
 #Region "AT Communications"
     Private Sub BtTestCreate_Click(sender As Object, e As EventArgs) Handles BtTestCreate.Click
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
 
-        Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
+        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetSlotFee)
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.ReferenceCreateOrder, CULng(TBTestATComCollateral.Text), 100000000, BCR.String2ULng("EUR")})
-        Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceCreateOrder, CULng(TBTestATComCollateral.Text), 100000000, SignumAPI.String2ULng("USD")})
+        Dim MsgStr As String = SignumAPI.ULngList2DataStr(ULngList)
         Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + TBTestATComAmount.Text + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + TBTestATComAmount.Text + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
 
-        Dim Response As String = BCR.SignumRequest(postDataRL)
+        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
 
         LiBoATComms.Items.Add(Response)
 
     End Sub
     Private Sub BtTestAccept_Click(sender As Object, e As EventArgs) Handles BtTestAccept.Click
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
 
-        Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
+        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetSlotFee)
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.ReferenceAcceptOrder})
-        Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceAcceptOrder})
+        Dim MsgStr As String = SignumAPI.ULngList2DataStr(ULngList)
         Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + TBTestATComAmount.Text + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + TBTestATComAmount.Text + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
 
-        Dim Response As String = BCR.SignumRequest(postDataRL)
+        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
 
         LiBoATComms.Items.Add(Response)
 
     End Sub
     Private Sub BtTestFinish_Click(sender As Object, e As EventArgs) Handles BtTestFinish.Click
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
 
-        Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
+        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetSlotFee)
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.ReferenceFinishOrder})
-        Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceFinishOrder})
+        Dim MsgStr As String = SignumAPI.ULngList2DataStr(ULngList)
         Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
 
-        Dim Response As String = BCR.SignumRequest(postDataRL)
+        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
 
         LiBoATComms.Items.Add(Response)
 
     End Sub
     Private Sub BtTestInject_Click(sender As Object, e As EventArgs) Handles BtTestInject.Click
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
 
-        Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
+        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetSlotFee)
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.ReferenceInjectResponder, CULng(TBTestResponder.Text)})
-        Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceInjectResponder, CULng(TBTestResponder.Text)})
+        Dim MsgStr As String = SignumAPI.ULngList2DataStr(ULngList)
         Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
 
-        Dim Response As String = BCR.SignumRequest(postDataRL)
+        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
 
         LiBoATComms.Items.Add(Response)
 
     End Sub
 
     Private Sub BtTestATComInjectFWDKey_Click(sender As Object, e As EventArgs) Handles BtTestATComInjectFWDKey.Click
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
-        Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
+        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetSlotFee)
 
         If TBTestATComSHA256Key.Text.Trim = "" Then
 
@@ -452,16 +437,16 @@
                 Exit Sub
             End If
 
-            Dim SecretKeyList As List(Of ULong) = BCR.GetSHA256_64(TBTestATComTempSecretKey.Text)
+            Dim SecretKeyList As List(Of ULong) = SignumAPI.GetSHA256_64(TBTestATComTempSecretKey.Text)
             TBTestATComSHA256Key.Text = SecretKeyList(0).ToString
         End If
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.ReferenceInjectForwardKey, CULng(TBTestATComSHA256Key.Text)})
-        Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceInjectForwardKey, CULng(TBTestATComSHA256Key.Text)})
+        Dim MsgStr As String = SignumAPI.ULngList2DataStr(ULngList)
         Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
 
-        Dim Response As String = BCR.SignumRequest(postDataRL)
+        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
 
         LiBoATComms.Items.Add(Response)
 
@@ -469,16 +454,16 @@
 
     Private Sub BtTestATComKeyOK_Click(sender As Object, e As EventArgs) Handles BtTestATComKeyOK.Click
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
 
-        Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
+        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetSlotFee)
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.ReferenceSetForwardKeyOK})
-        Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceSetForwardKeyOK})
+        Dim MsgStr As String = SignumAPI.ULngList2DataStr(ULngList)
         Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
 
-        Dim Response As String = BCR.SignumRequest(postDataRL)
+        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
 
         LiBoATComms.Items.Add(Response)
 
@@ -486,8 +471,8 @@
 
     Private Sub BtTestATComConvertTempSecretKey_Click(sender As Object, e As EventArgs) Handles BtTestATComConvertTempSecretKey.Click
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
-        Dim SecretKeyList As List(Of ULong) = BCR.GetSHA256_64(TBTestATComTempSecretKey.Text)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
+        Dim SecretKeyList As List(Of ULong) = SignumAPI.GetSHA256_64(TBTestATComTempSecretKey.Text)
 
         TBTestATComFinishKey1.Text = SecretKeyList(0).ToString
         TBTestATComFinishKey2.Text = SecretKeyList(1).ToString
@@ -497,9 +482,9 @@
 
     Private Sub BtTestATComFinishKey_Click(sender As Object, e As EventArgs) Handles BtTestATComFinishKey.Click
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode, TBTestPP.Text)
 
-        Dim FeeNQT As ULong = BCR.Dbl2Planck(BCR.GetSlotFee)
+        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetSlotFee)
 
         If TBTestATComFinishKey1.Text.Trim = "" Or TBTestATComFinishKey2.Text.Trim = "" Then
 
@@ -507,19 +492,19 @@
                 Exit Sub
             End If
 
-            Dim SecretKeyList As List(Of ULong) = BCR.GetSHA256_64(TBTestATComTempSecretKey.Text)
+            Dim SecretKeyList As List(Of ULong) = SignumAPI.GetSHA256_64(TBTestATComTempSecretKey.Text)
             TBTestATComFinishKey1.Text = SecretKeyList(0).ToString
             TBTestATComFinishKey2.Text = SecretKeyList(1).ToString
         End If
 
-        Dim Finish As List(Of ULong) = BCR.GetSHA256_64(TBTestATComSHA256Key.Text)
+        Dim Finish As List(Of ULong) = SignumAPI.GetSHA256_64(TBTestATComSHA256Key.Text)
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({BCR.ReferenceFinishOrder2, CULng(TBTestATComFinishKey1.Text), CULng(TBTestATComFinishKey2.Text)})
-        Dim MsgStr As String = BCR.ULngList2DataStr(ULngList)
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceFinishOrder2, CULng(TBTestATComFinishKey1.Text), CULng(TBTestATComFinishKey2.Text)})
+        Dim MsgStr As String = SignumAPI.ULngList2DataStr(ULngList)
         Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + BCR.C_PassPhrase.Trim + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
 
-        Dim Response As String = BCR.SignumRequest(postDataRL)
+        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
 
         LiBoATComms.Items.Add(Response)
 
@@ -722,7 +707,13 @@
 
         If Not TBTestBroadcastMessage.Text.Trim = "" Then
             If ChBxDEXNETEncryptMsg.Checked Then
-                C_MainForm.DEXNET.BroadcastMessage(TBTestBroadcastMessage.Text.Trim, C_MainForm.T_SignkeyHEX, C_MainForm.T_AgreementKeyHEX, C_MainForm.T_PublicKeyHEX, TBTestRecipientPubKey.Text)
+
+                Dim MasterKeys As List(Of String) = GetPassPhrase()
+                '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+                If MasterKeys.Count > 0 Then
+                    C_MainForm.DEXNET.BroadcastMessage(TBTestBroadcastMessage.Text.Trim, MasterKeys(1), MasterKeys(2), MasterKeys(0), TBTestRecipientPubKey.Text)
+                End If
+
             Else
                 C_MainForm.DEXNET.BroadcastMessage(TBTestBroadcastMessage.Text.Trim)
             End If

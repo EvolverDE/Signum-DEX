@@ -1,8 +1,8 @@
 ﻿
 Public Class ClsOrderSettings
 
-    Public Property AT As String
-    Public Property TX As String
+    Public Property ATID As ULong
+    Public Property TXID As ULong
     Public Property Type As String
     Public Property PaytypeString As String
     Public Property PayType As E_PayType
@@ -60,10 +60,10 @@ Public Class ClsOrderSettings
 
     End Sub
 
-    Sub New(ByVal T_AT As String, ByVal T_TX As String, T_Type As String, T_Status As String)
+    Sub New(ByVal T_AT As ULong, ByVal T_TX As ULong, T_Type As String, T_Status As String)
 
-        AT = T_AT
-        TX = T_TX
+        ATID = T_AT
+        TXID = T_TX
         Type = T_Type
         PaytypeString = GetINISetting(E_Setting.PayPalChoice, "")
         SetPayType(PaytypeString)

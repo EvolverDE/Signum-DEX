@@ -1,5 +1,7 @@
 ﻿
 Module ModGlobalFunctions
+    Property GlobalPIN As String = ""
+
 
     Function GetID() As String
 
@@ -103,6 +105,106 @@ Module ModGlobalFunctions
             Return E_ConnectionStatus.Online
         Else
             Return E_ConnectionStatus.Offline
+        End If
+
+    End Function
+
+
+    Function CheckPIN() As Boolean
+
+        Dim PINFingerprint As String = GetINISetting(E_Setting.PINFingerPrint, "")
+
+        If PINFingerprint = "" Then
+
+            Dim PlainPassPhrase As String = GetINISetting(E_Setting.PassPhrase, "")
+
+            If PlainPassPhrase.Trim = "" Then
+                Return False
+            Else
+
+                Dim PubKey As String = GetPubKeyHEX(PlainPassPhrase)
+                Dim AccID As ULong = GetAccountID(PubKey)
+                Dim RS As String = ClsReedSolomon.Encode(AccID)
+
+                If PFPForm.TBSNOAddress.Text.Contains(RS) Then
+                    Return True
+                Else
+                    Return False
+                End If
+
+            End If
+
+        Else
+
+            Dim SHA512 As System.Security.Cryptography.SHA512 = System.Security.Cryptography.SHA512Managed.Create()
+            Dim HashPIN() As Byte = SHA512.ComputeHash(System.Text.Encoding.UTF8.GetBytes(GlobalPIN).ToArray)
+            Dim HashPINHEX As String = ByteArrayToHEXString(HashPIN)
+
+            If HashPINHEX = PINFingerprint Then
+
+                Dim AESPassPhrase As String = GetINISetting(E_Setting.PassPhrase, "")
+
+                If AESPassPhrase.Trim = "" Then
+                    Return False
+                Else
+
+                    Dim DecryptedPassPhrase As String = AESDecrypt(AESPassPhrase, GlobalPIN)
+
+                    If DecryptedPassPhrase = AESPassPhrase Or DecryptedPassPhrase.Trim = "" Then
+                        Return False
+                    End If
+
+                    Dim PubKey As String = GetPubKeyHEX(DecryptedPassPhrase)
+                    Dim AccID As ULong = GetAccountID(PubKey)
+                    Dim RS As String = ClsReedSolomon.Encode(AccID)
+
+                    If PFPForm.TBSNOAddress.Text.Contains(RS) Then
+                        Return True
+                    Else
+                        Return False
+                    End If
+
+                End If
+
+            Else
+                Return False
+            End If
+
+        End If
+
+    End Function
+
+    ''' <summary>
+    ''' 0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+    ''' </summary>
+    ''' <returns></returns>
+    Function GetPassPhrase() As List(Of String)
+
+        If Not CheckPIN() Then
+            Return New List(Of String)
+        End If
+
+        Dim PINFingerprint As String = GetINISetting(E_Setting.PINFingerPrint, "")
+
+        If PINFingerprint = "" Then
+            Dim PlainPassPhrase As String = GetINISetting(E_Setting.PassPhrase, "")
+
+            Dim MasterKeys As List(Of String) = GetMasterKeys(PlainPassPhrase)
+            MasterKeys.Add(PlainPassPhrase)
+
+            Return MasterKeys
+        Else
+            Dim AESPassPhrase As String = GetINISetting(E_Setting.PassPhrase, "")
+            Dim DecryptedPassPhrase As String = AESDecrypt(AESPassPhrase, GlobalPIN)
+
+            If DecryptedPassPhrase = AESPassPhrase Or DecryptedPassPhrase.Trim = "" Then
+                Return New List(Of String)
+            End If
+
+            Dim MasterKeys As List(Of String) = GetMasterKeys(DecryptedPassPhrase)
+            MasterKeys.Add(DecryptedPassPhrase)
+
+            Return MasterKeys
         End If
 
     End Function

@@ -1,26 +1,25 @@
 ﻿Public Class ClsSignumNET
 
-    Public Property PassPhrase() As String = ""
+    'Public Property C_PromptPIN() As Boolean = True
 
-    Sub New(Optional ByVal _PassPhrase As String = "")
-        PassPhrase = _PassPhrase
-    End Sub
+    'Sub New(ByVal PromptPIN As Boolean)
+    '    C_PromptPIN = PromptPIN
+    'End Sub
 
-    ''' <summary>
-    ''' Generates the Masterkeys from PassPhrase 0=PublicKey; 1=SignKey; 2=AgreementKey
-    ''' </summary>
-    ''' <returns>List of Masterkeys</returns>
-    Function GenerateMasterKeys() As List(Of Byte())
+    '''' <summary>
+    '''' Generates the Masterkeys from PassPhrase 0=PublicKey; 1=SignKey; 2=AgreementKey
+    '''' </summary>
+    '''' <returns>List of Masterkeys</returns>
+    'Function GenerateMasterKeys() As List(Of Byte())
 
-        Dim Managed_SHA256 As System.Security.Cryptography.SHA256 = System.Security.Cryptography.SHA256Managed.Create()
-        Dim HashPhrase() As Byte = Managed_SHA256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(PassPhrase).ToArray)
+    '    Dim Managed_SHA256 As System.Security.Cryptography.SHA256 = System.Security.Cryptography.SHA256Managed.Create()
+    '    Dim HashPhrase() As Byte = Managed_SHA256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(PassPhrase).ToArray)
 
-        Dim Keys()() As Byte = Keygen(HashPhrase)
+    '    Dim Keys()() As Byte = Keygen(HashPhrase)
 
-        Return Keys.ToList
+    '    Return Keys.ToList
 
-    End Function
-
+    'End Function
 
 
 
@@ -37,19 +36,19 @@
 
     End Structure
 
-    Function SignHelper(ByVal UnsignedMessageHex As String) As S_Signature
+    Function SignHelper(ByVal UnsignedMessageHex As String, ByVal SignKeyHEX As String) As S_Signature
 
         Dim Signature As S_Signature = New S_Signature
 
-        Dim PassPhraseHash As List(Of Byte()) = GenerateMasterKeys()
+        'Dim PassPhraseHash As List(Of Byte()) = GenerateMasterKeys()
 
-        Signature.UnsignedTransaction = UnsignedMessageHex
-        Signature.PublicKey = ByteArrayToHEXString(PassPhraseHash(0))
-        Signature.SignatureKey = ByteArrayToHEXString(PassPhraseHash(1))
-        Signature.AgreementKey = ByteArrayToHEXString(PassPhraseHash(2))
+        'Signature.UnsignedTransaction = UnsignedMessageHex
+        'Signature.PublicKey = ByteArrayToHEXString(PassPhraseHash(0))
+        'Signature.SignatureKey = ByteArrayToHEXString(PassPhraseHash(1))
+        'Signature.AgreementKey = ByteArrayToHEXString(PassPhraseHash(2))
 
 
-        Dim Sign As String = GenerateSignature(UnsignedMessageHex, ByteArrayToHEXString(PassPhraseHash(1)))
+        Dim Sign As String = GenerateSignature(UnsignedMessageHex, SignKeyHEX)
 
         Signature.Sign = Sign
 
@@ -126,6 +125,41 @@
         Dim OutputHexStr As String = ByteArrayToHEXString(OutputBytes)
 
         Return {OutputHexStr, NonceHexStr}
+
+    End Function
+
+
+    'Public Function DecryptFrom(ByVal AccountID As ULong, ByVal data As String, ByVal nonce As String) As String
+    '    Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
+    '    Dim PublicKey As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(AccountID.ToString)
+    '    Return DecryptFrom(PublicKey, data, nonce)
+    'End Function
+
+    Public Function DecryptFrom(ByVal PublicKey As String, ByVal data As String, ByVal nonce As String) As String
+
+        Dim MasterKeyList As List(Of String) = GetPassPhrase()
+        '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+        If MasterKeyList.Count > 0 Then
+
+            Dim PrivateKey As String = MasterKeyList(1)
+
+            Dim DecryptedMsg As String = DecryptMessage(data, nonce, PublicKey, PrivateKey)
+
+            If DecryptedMsg.Contains(Application.ProductName + "-error") Then
+                Return Application.ProductName + "-error in DecryptFrom(): -> " + vbCrLf + DecryptedMsg
+            Else
+
+                If Not MessageIsHEXString(DecryptedMsg) Then
+                    Return DecryptedMsg
+                Else
+                    Return Application.ProductName + "-error in DecryptFrom(): -> " + vbCrLf + DecryptedMsg
+                End If
+
+            End If
+
+        Else
+            Return Application.ProductName + "-error in DecryptFrom(): -> no Keys"
+        End If
 
     End Function
 

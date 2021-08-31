@@ -133,6 +133,26 @@ Namespace My.Resources
         '''<summary>
         '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         '''</summary>
+        Friend ReadOnly Property status_decrypted() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("status_decrypted", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property status_encrypted() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("status_encrypted", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        '''</summary>
         Friend ReadOnly Property status_offline() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("status_offline", resourceCulture)

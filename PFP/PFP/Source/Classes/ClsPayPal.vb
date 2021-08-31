@@ -1523,8 +1523,8 @@ Public Class ClsPayPal
 
             Dim Entry As List(Of String) = input(i)
 
-            Dim T_Timestamp As ULong = CULng(BetweenFromList(Entry, "<timestamp>", "</timestamp>"))
-            Dim T_Transaction As ULong = CULng(BetweenFromList(Entry, "<transaction>", "</transaction>"))
+            Dim T_Timestamp As ULong = BetweenFromList(Entry, "<timestamp>", "</timestamp>",, GetType(ULong))
+            Dim T_Transaction As ULong = BetweenFromList(Entry, "<transaction>", "</transaction>",, GetType(ULong))
 
             Dim NuSort As S_Sorter = New S_Sorter
             NuSort.Timestamp = T_Timestamp
@@ -1542,8 +1542,8 @@ Public Class ClsPayPal
             For i As Integer = 0 To input.Count - 1
                 Dim retent = input(i)
 
-                Dim T_Timestamp As ULong = CULng(BetweenFromList(retent, "<timestamp>", "</timestamp>"))
-                Dim T_Transaction As ULong = CULng(BetweenFromList(retent, "<transaction>", "</transaction>"))
+                Dim T_Timestamp As ULong = BetweenFromList(retent, "<timestamp>", "</timestamp>",, GetType(ULong))
+                Dim T_Transaction As ULong = BetweenFromList(retent, "<transaction>", "</transaction>",, GetType(ULong))
 
                 If T_Timestamp = sort.Timestamp And T_Transaction = sort.TXID Then
                     SReturnList.Add(retent)

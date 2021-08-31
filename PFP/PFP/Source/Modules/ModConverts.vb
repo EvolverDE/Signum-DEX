@@ -26,18 +26,22 @@ Module ModConverts
 
         Dim TempBytlist As List(Of Byte) = New List(Of Byte)
 
-        If HEXStr.Length Mod 2 > 0 Then
-            HEXStr += "0"
+        If MessageIsHEXString(HEXStr) Then
+            If HEXStr.Length Mod 2 > 0 Then
+                HEXStr += "0"
+            End If
+
+            For i As Integer = 0 To HEXStr.Length - 1 Step 2
+
+                Dim TStr As String = HEXStr.Substring(i, 2)
+                TempBytlist.Add(Convert.ToByte(TStr, 16))
+
+            Next
+
+            Return TempBytlist.ToArray
+        Else
+            Return TempBytlist.ToArray
         End If
-
-        For i As Integer = 0 To HEXStr.Length - 1 Step 2
-
-            Dim TStr As String = HEXStr.Substring(i, 2)
-            TempBytlist.Add(Convert.ToByte(TStr, 16))
-
-        Next
-
-        Return TempBytlist.ToArray
 
     End Function
 

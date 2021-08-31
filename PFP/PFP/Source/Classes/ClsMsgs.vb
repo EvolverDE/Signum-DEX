@@ -10,11 +10,12 @@ Public Class ClsMsgs
     Shared c_Color As Color
 
     Shared Property frmMSG As New Form
+    Shared Property DefBut As Button
 
     Shared ButtonTimer As Timer
     Shared CustomResult As CustomDialogResult
 
-    Public Shared Function MBox(Optional ByVal msgTxt As String = "", Optional ByVal titleTxt As String = "", Optional ByVal buttons As List(Of Button) = Nothing, Optional ByVal c_Color As Color = Nothing, Optional ByVal status As ClsMsgs.Status = ClsMsgs.Status.Standard, Optional ByVal t_time As Integer = -1, Optional ByVal timer_typ As ClsMsgs.Timer_Type = ClsMsgs.Timer_Type.ButtonEnable) As ClsMsgs.CustomDialogResult
+    Public Shared Function MBox(Optional ByVal msgTxt As String = "", Optional ByVal titleTxt As String = "", Optional ByVal buttons As List(Of Button) = Nothing, Optional ByVal c_txtColor As Color = Nothing, Optional ByVal status As ClsMsgs.Status = ClsMsgs.Status.Standard, Optional ByVal t_time As Integer = -1, Optional ByVal timer_typ As ClsMsgs.Timer_Type = ClsMsgs.Timer_Type.ButtonEnable) As ClsMsgs.CustomDialogResult
 
         Dim buts As List(Of Button) = New List(Of Button)
         Dim but As Button = New Button
@@ -26,12 +27,23 @@ Public Class ClsMsgs
         End With
 
         If IsNothing(buttons) Then
+            DefBut = but
             buts.Add(but)
         Else
+
+            For Each Buton As Button In buttons
+
+                If Buton.Name = "DefBut" Then
+                    DefBut = Buton
+                    Exit For
+                End If
+
+            Next
+
             buts = buttons
         End If
 
-        Dim ms As ClsMsgs = New ClsMsgs(titleTxt, msgTxt, buts, c_Color, status, t_time, timer_typ)
+        Dim ms As ClsMsgs = New ClsMsgs(titleTxt, msgTxt, buts, c_txtColor, status, t_time, timer_typ)
         Dim res As ClsMsgs.CustomDialogResult = ClsMsgs.msbox
 
         Return res
@@ -99,6 +111,7 @@ Public Class ClsMsgs
 
         If t_timer > -1 Then
             t_Time = t_timer
+            DefBut.Text += " (" + t_Time.ToString + ")"
         Else
             t_Time = -1
         End If
@@ -110,11 +123,11 @@ Public Class ClsMsgs
         With frmMSG
             .Name = "name"
             .Height = 300
-            If t_Time > -1 Then
-                .Text = frmText + " (" + t_Time.ToString + ")"
-            Else
-                .Text = frmText
-            End If
+            'If t_Time > -1 Then
+            '    .Text = frmText + " (" + t_Time.ToString + ")"
+            'Else
+            .Text = frmText
+            'End If
 
             .StartPosition = FormStartPosition.CenterScreen
             .FormBorderStyle = FormBorderStyle.FixedSingle
@@ -445,7 +458,7 @@ Public Class ClsMsgs
 
     Shared Sub CountDownTimerTick(ByVal sender As Object, ByVal e As EventArgs)
 
-        Dim txt As String = frmMSG.Text
+        Dim txt As String = DefBut.Text
 
         Try
             txt = txt.Remove(txt.IndexOf("(")).Trim
@@ -455,7 +468,7 @@ Public Class ClsMsgs
 
         t_Time -= 1
 
-        If t_Time < 0 Then
+        If t_Time < 1 Then
             ButtonTimer.Stop()
             ButtonTimer.Enabled = False
 
@@ -476,7 +489,16 @@ Public Class ClsMsgs
             'Buttonsl.Item(0).Select()
 
             If t_TimeType = Timer_Type.AutoOK Then
-                Buttonsl.Item(0).PerformClick()
+
+                For Each DefaultButton As Button In Buttonsl
+
+                    If DefaultButton.Name = "DefBut" Then
+                        DefaultButton.PerformClick()
+                        Exit For
+                    End If
+
+                Next
+
             End If
 
 
@@ -486,10 +508,10 @@ Public Class ClsMsgs
 
             End Try
 
-            frmMSG.Text = txt
+            DefBut.Text = txt
             ButtonTimer = Nothing
         Else
-            frmMSG.Text = txt + " (" + t_Time.ToString + ")"
+            DefBut.Text = txt + " (" + t_Time.ToString + ")"
 
         End If
 

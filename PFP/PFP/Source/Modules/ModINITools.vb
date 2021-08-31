@@ -4,74 +4,21 @@ Module ModINITools
     Private Declare Ansi Function DeletePrivateProfileSection Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal Section As String, ByVal NoKey As Integer, ByVal NoSetting As Integer, ByVal FileName As String) As Integer
     Private Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Integer, ByVal lpFileName As String) As Integer
 
-    Public Sub EraseINISection(ByVal INIFile As String, ByVal Section As String)
-        DeletePrivateProfileSection(Section, 0, 0, INIFile)
-    End Sub
-
-    Private Sub INISetValueToFile(ByVal INI, ByVal Section, ByVal Key, ByVal Value)
-
-        Dim Result As String = ""
-        Result = WritePrivateProfileString(Section, Key, Value, INI)
-
-    End Sub
-
-    Private Function INIGetValueFromFile(ByVal File As String, ByVal Section As String, ByVal Key As String, Optional ByVal Def As String = "") As String
-
-        Dim T As String = ""
-
-        Dim Result As String = ""
-        Dim Buffer As String = ""
-        Buffer = Space(16384)
-        Result = GetPrivateProfileString(Section, Key, vbNullString, Buffer, Len(Buffer), File)
-        T = Left(Buffer, Result)
-
-        If Result = 0 Then
-            INISetValue(File, Section, Key, Def)
-            T = Def
-        End If
-
-        Return T
-
-    End Function
-
-    Public Sub INISetValue(ByVal File As String, ByVal Section As String, ByVal Key As String, ByVal Value As String)
-
-        Try
-            INISetValueToFile(File, Section, Key, Value)
-        Catch EXC As Exception
-
-        End Try
-
-    End Sub
-
-    Public Function INIGetValue(ByVal File As String, ByVal Section As String, ByVal Key As String, Optional ByVal Def As String = "") As String
-
-        Dim T As String = ""
-
-        Try
-            T = INIGetValueFromFile(File, Section.ToUpper, Key.ToUpper, Def)
-        Catch EXC As Exception
-            T = ""
-        End Try
-
-        Return T
-
-    End Function
-
-
     Public Enum E_Setting
 
         'Basic
         PassPhrase = 0
-        LastMarketViewed = 1
-        RefreshMinutes = 2
-        Nodes = 3
-        DefaultNode = 4
-        TCPAPIEnable = 5
-        TCPAPIServerPort = 6
-        DEXNETServerPort = 7
-        DEXNETNodes = 8
-        DEXNETMyHost = 9
+        PINFingerPrint = 1
+        Address = 2
+        LastMarketViewed = 3
+        RefreshMinutes = 4
+        Nodes = 5
+        DefaultNode = 6
+        TCPAPIEnable = 7
+        TCPAPIServerPort = 8
+        DEXNETServerPort = 9
+        DEXNETNodes = 10
+        DEXNETMyHost = 11
         'Default
         AutoSendPaymentInfo = 100
         AutoCheckAndFinishAT = 101
@@ -114,6 +61,53 @@ Module ModINITools
     End Enum
 
 
+    Sub InitiateINI()
+
+        Dim Temp As String = GetINISetting(E_Setting.PassPhrase, "")
+        Temp = GetINISetting(E_Setting.PINFingerPrint, "")
+        Temp = GetINISetting(E_Setting.Address, "")
+        Temp = GetINISetting(E_Setting.LastMarketViewed, "")
+        Temp = GetINISetting(E_Setting.RefreshMinutes, "")
+        Temp = GetINISetting(E_Setting.Nodes, "")
+        Temp = GetINISetting(E_Setting.DefaultNode, "")
+        Temp = GetINISetting(E_Setting.TCPAPIEnable, "")
+        Temp = GetINISetting(E_Setting.TCPAPIServerPort, "")
+        Temp = GetINISetting(E_Setting.DEXNETServerPort, "")
+        Temp = GetINISetting(E_Setting.DEXNETNodes, "")
+        Temp = GetINISetting(E_Setting.DEXNETMyHost, "")
+
+        Temp = GetINISetting(E_Setting.AutoSendPaymentInfo, "")
+        Temp = GetINISetting(E_Setting.AutoCheckAndFinishAT, "")
+        Temp = GetINISetting(E_Setting.PaymentType, "")
+        Temp = GetINISetting(E_Setting.PaymentInfoText, "")
+
+        Temp = GetINISetting(E_Setting.ShowMaxSellOrders, "")
+        Temp = GetINISetting(E_Setting.ShowMaxBuyOrders, "")
+        Temp = GetINISetting(E_Setting.SellFilterAutoinfo, "")
+        Temp = GetINISetting(E_Setting.BuyFilterAutoinfo, "")
+        Temp = GetINISetting(E_Setting.SellFilterAutofinish, "")
+        Temp = GetINISetting(E_Setting.BuyFilterAutofinish, "")
+        Temp = GetINISetting(E_Setting.SellFilterMethods, "")
+        Temp = GetINISetting(E_Setting.BuyFilterMethods, "")
+        Temp = GetINISetting(E_Setting.SellFilterPayable, "")
+        Temp = GetINISetting(E_Setting.BuyFilterPayable, "")
+
+        Temp = GetINISetting(E_Setting.PayPalChoice, "")
+        Temp = GetINISetting(E_Setting.PayPalEMail, "")
+        Temp = GetINISetting(E_Setting.PayPalAPIUser, "")
+        Temp = GetINISetting(E_Setting.PayPalAPISecret, "")
+
+        Temp = GetINISetting(E_Setting.AutoSignalTransactions, "")
+        Temp = GetINISetting(E_Setting.AutoInfoTransactions, "")
+
+        Temp = GetINISetting(E_Setting.InfoOut, "")
+        Temp = GetINISetting(E_Setting.TCPAPIShowStatus, "")
+        Temp = GetINISetting(E_Setting.DEXNETEnable, "")
+        Temp = GetINISetting(E_Setting.DEXNETShowStatus, "")
+
+    End Sub
+
+
     Function GetINISection(ByVal Setting As E_Setting) As E_SettingSection
 
         Dim Section As E_SettingSection
@@ -138,6 +132,60 @@ Module ModINITools
         Return Section
 
     End Function
+
+    Public Sub EraseINISection(ByVal INIFile As String, ByVal Section As String)
+        DeletePrivateProfileSection(Section, 0, 0, INIFile)
+    End Sub
+
+    Private Sub INISetValueToFile(ByVal INI As String, ByVal Section As String, ByVal Key As String, ByVal Value As String)
+
+        Dim Result As String = ""
+        Result = WritePrivateProfileString(Section.ToUpper, Key.ToUpper, Value, INI)
+
+    End Sub
+
+    Private Function INIGetValueFromFile(ByVal File As String, ByVal Section As String, ByVal Key As String, Optional ByVal Def As String = "") As String
+
+        Dim T As String = ""
+
+        Dim Result As String = ""
+        Dim Buffer As String = ""
+        Buffer = Space(16384)
+        Result = GetPrivateProfileString(Section.ToUpper, Key.ToUpper, vbNullString, Buffer, Len(Buffer), File)
+        T = Left(Buffer, Result)
+
+        If Result = 0 Then
+            INISetValue(File, Section.ToUpper, Key, Def)
+            T = Def
+        End If
+
+        Return T
+
+    End Function
+
+    Public Sub INISetValue(ByVal File As String, ByVal Section As String, ByVal Key As String, ByVal Value As String)
+
+        Try
+            INISetValueToFile(File, Section, Key, Value)
+        Catch EXC As Exception
+
+        End Try
+
+    End Sub
+    Public Function INIGetValue(ByVal File As String, ByVal Section As String, ByVal Key As String, Optional ByVal Def As String = "") As String
+
+        Dim T As String = ""
+
+        Try
+            T = INIGetValueFromFile(File, Section, Key, Def)
+        Catch EXC As Exception
+            T = ""
+        End Try
+
+        Return T
+
+    End Function
+
 
     Function GetINISetting(ByVal Setting As E_Setting, Optional ByVal DefaultValue As String = "", Optional ByVal File As String = "/Settings.ini") As String
         Dim Section As E_SettingSection = GetINISection(Setting)

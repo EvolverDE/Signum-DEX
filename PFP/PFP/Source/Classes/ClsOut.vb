@@ -22,7 +22,23 @@
             yf.Close()
 
         Catch ex As Exception
-            MsgBox(ex.Message,, "an error occurred in out/ToFile")
+            'MsgBox(ex.Message,, "an error occurred in out/ToFile")
+
+            Try
+
+                Dim NowStr As String = Now.ToString
+                NowStr = NowStr.Replace(" ", "").Replace(":", "")
+
+                Dim yf As IO.FileStream = IO.File.Open(Path + "\Errors" + NowStr + ".log", IO.FileMode.Append)
+                Dim verinfo As Byte() = New System.Text.UTF8Encoding(True).GetBytes(str)
+
+                yf.Write(verinfo, 0, verinfo.Length)
+                yf.Close()
+
+            Catch exxx As Exception
+
+            End Try
+
         End Try
 
     End Sub
@@ -42,7 +58,21 @@
             yf.Close()
 
         Catch ex As Exception
-            MsgBox(ex.Message,, "an error occurred in out/Info2File")
+            'MsgBox(ex.Message,, "an error occurred in out/Info2File")
+            Try
+
+                Dim NowStr As String = Now.ToString
+                NowStr = NowStr.Replace(" ", "").Replace(":", "")
+
+                Dim yf As IO.FileStream = IO.File.Open(Path + "\Errors" + NowStr + ".log", IO.FileMode.Append)
+                Dim verinfo As Byte() = New System.Text.UTF8Encoding(True).GetBytes(str)
+
+                yf.Write(verinfo, 0, verinfo.Length)
+                yf.Close()
+
+            Catch exxx As Exception
+
+            End Try
         End Try
 
     End Sub
@@ -92,7 +122,21 @@
             yf.Close()
 
         Catch ex As Exception
-            MsgBox(ex.Message,, "an error occurred in out/WarningLog2File")
+            'MsgBox(ex.Message,, "an error occurred in out/WarningLog2File")
+            Try
+
+                Dim NowStr As String = Now.ToString
+                NowStr = NowStr.Replace(" ", "").Replace(":", "")
+
+                Dim yf As IO.FileStream = IO.File.Open(Path + "\Errors" + NowStr + ".log", IO.FileMode.Append)
+                Dim verinfo As Byte() = New System.Text.UTF8Encoding(True).GetBytes(str)
+
+                yf.Write(verinfo, 0, verinfo.Length)
+                yf.Close()
+
+            Catch exxx As Exception
+
+            End Try
         End Try
 
     End Sub

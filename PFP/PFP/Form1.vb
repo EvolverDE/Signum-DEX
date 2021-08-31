@@ -3,7 +3,6 @@
 Public Class PFPForm
 
     Property NodeList() As List(Of String) = New List(Of String)
-
     Property PrimaryNode() As String = ""
 
     Property NuBlock As Integer = 1
@@ -16,7 +15,7 @@ Public Class PFPForm
     Property MarketIsCrypto() As Boolean = False
     Property Decimals() As Integer = 8
 
-    Property AccountID() As String
+    Property AccountID() As ULong
 
     Property Boottime As Integer = 0
 
@@ -25,14 +24,14 @@ Public Class PFPForm
     Property CoBxChartSelectedItem As String = ""
     Property CoBxTickSelectedItem As String = ""
 
-    Property InfoOut As Boolean = GetINISetting(E_Setting.InfoOut, True)
+    Property InfoOut As Boolean = False
 
 
-    Function GetPaymentInfoFromOrderSettings(ByVal TX As String, Optional ByVal Quantity As Double = 0.0, Optional ByVal XAmount As Double = 0.0, Optional ByVal Market As String = "") As String
+    Function GetPaymentInfoFromOrderSettings(ByVal TXID As ULong, Optional ByVal Quantity As Double = 0.0, Optional ByVal XAmount As Double = 0.0, Optional ByVal Market As String = "") As String
 
         Dim PaymentInfo As String = ""
 
-        Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(TX)
+        Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(TXID)
 
         If T_OSList.Count > 0 Then
             Dim T_OS As ClsOrderSettings = T_OSList(0)
@@ -55,7 +54,7 @@ Public Class PFPForm
                             PPAPI_Autoinfo.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
 
                             Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", Quantity, XAmount, Market)
-                            Dim PPOrderID As String = BetweenFromList(PPOrderIDList, "<id>", "</id>")
+                            Dim PPOrderID As String = BetweenFromList(PPOrderIDList, "<id>", "</id>",, GetType(String))
                             PaymentInfo = "PayPal-Order=" + PPOrderID
                         End If
 
@@ -72,7 +71,7 @@ Public Class PFPForm
         Return PaymentInfo
 
     End Function
-    Function CheckPayPalOrder(ByVal ATID As String, ByVal PayPalOrder As String) As String
+    Function CheckPayPalOrder(ByVal ATID As ULong, ByVal PayPalOrder As String) As String
 
         Dim Status As String = ""
 
@@ -87,7 +86,7 @@ Public Class PFPForm
                 PPAPI.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
 
                 Dim OrderDetails As List(Of String) = PPAPI.GetOrderDetails(PayPalOrder)
-                Dim PayPalStatus As String = BetweenFromList(OrderDetails, "<status>", "</status>")
+                Dim PayPalStatus As String = BetweenFromList(OrderDetails, "<status>", "</status>",, GetType(String))
 
                 If PayPalStatus = "APPROVED" Then
                     PPAPI = New ClsPayPal
@@ -95,21 +94,53 @@ Public Class PFPForm
                     PPAPI.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
 
                     OrderDetails = PPAPI.CaptureOrder(PayPalOrder)
-                    PayPalStatus = BetweenFromList(OrderDetails, "<status>", "</status>")
+                    PayPalStatus = BetweenFromList(OrderDetails, "<status>", "</status>",, GetType(String))
 
                     If PayPalStatus = "COMPLETED" Then
-                        Dim BCR1 As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-                        Dim TXStr As String = BCR1.SendMessage2BLSAT(ATID, 1.0, New List(Of ULong)({BCR1.ReferenceFinishOrder}))
 
-                        If TXStr.Contains(Application.ProductName + "-error") Then
+                        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+
+                        Dim MasterKeys As List(Of String) = GetPassPhrase()
+                        If MasterKeys.Count > 0 Then
+
+                            Dim Response As String = SignumAPI.SendMessage2BLSAT(MasterKeys(0), ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceFinishOrder}))
+
+                            If Response.Contains(Application.ProductName + "-error") Then
+
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalOrder(1): -> " + vbCrLf + Response)
+                                End If
+
+                            Else
+
+                                Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                If TX.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalOrder(2): -> " + vbCrLf + TX)
+                                    End If
+
+                                Else
+                                    Status = "COMPLETED"
+                                End If
+
+                            End If
+
+
+                        Else
 
                             If GetINISetting(E_Setting.InfoOut, False) Then
                                 Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(TXStr)
+                                out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalOrder(3): -> no Keys")
                             End If
 
-                        Else
-                            Status = "COMPLETED"
                         End If
 
                     Else
@@ -150,10 +181,10 @@ Public Class PFPForm
         Dim APIOK As String = CheckPayPalAPI()
         If APIOK = "True" Then
 
-            Dim BCR1 As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-            Dim CheckAttachment As String = BCR1.ULngList2DataStr(New List(Of ULong)({BCR1.ReferenceFinishOrder}))
-            Dim UTXCheck As Boolean = CheckForUTX(Order.Seller, Order.ATRS, CheckAttachment)
-            Dim TXCheck As Boolean = CheckForTX(Order.Seller, Order.ATRS, Order.FirstTimestamp, CheckAttachment)
+            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode,)
+            Dim CheckAttachment As String = SignumAPI.ULngList2DataStr(New List(Of ULong)({SignumAPI.ReferenceFinishOrder}))
+            Dim UTXCheck As Boolean = CheckForUTX(Order.SellerRS, Order.ATRS, CheckAttachment)
+            Dim TXCheck As Boolean = CheckForTX(Order.SellerRS, Order.ATRS, Order.FirstTimestamp, CheckAttachment)
 
             If Not UTXCheck And Not TXCheck Then
 
@@ -165,20 +196,61 @@ Public Class PFPForm
                     PPAPI_GetPayPalTX_to_Autosignal_AT.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
 
                     Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                    Dim TXDetails As List(Of List(Of String)) = PPAPI_GetPayPalTX_to_Autosignal_AT.GetTransactionList(ColWords.GenerateColloquialWords(Order.FirstTransaction, True, "-", 5))
+                    Dim TXDetails As List(Of List(Of String)) = PPAPI_GetPayPalTX_to_Autosignal_AT.GetTransactionList(ColWords.GenerateColloquialWords(Order.FirstTransaction.ToString, True, "-", 5))
 
                     If TXDetails.Count > 0 Then
 
-                        Dim PayPalStatus As String = BetweenFromList(TXDetails(0), "<transaction_status>", "</transaction_status>")
-                        Dim Amount As String = BetweenFromList(TXDetails(0), "<transaction_amount>", "</transaction_amount>")
+                        Dim PayPalStatus As String = BetweenFromList(TXDetails(0), "<transaction_status>", "</transaction_status>",, GetType(String))
+                        Dim Amount As String = BetweenFromList(TXDetails(0), "<transaction_amount>", "</transaction_amount>",, GetType(String))
 
                         If CDbl(Amount) >= Order.XAmount And PayPalStatus.ToLower.Trim = "s" Then
                             'complete
-                            Dim TXStr As String = BCR1.SendMessage2BLSAT(Order.AT, 1.0, New List(Of ULong)({BCR1.ReferenceFinishOrder}))
-                            Status = "COMPLETED"
 
-                            If SetAutosignalTX2INI(Order.FirstTransaction) Then 'Set autosignal-TX in Settings.ini
-                                'ok
+                            Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+                            If MasterKeys.Count > 0 Then
+                                Dim Response As String = SignumAPI.SendMessage2BLSAT(MasterKeys(0), Order.ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceFinishOrder}))
+
+                                If Response.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalTransaction(1): -> " + vbCrLf + Response)
+                                    End If
+
+                                Else
+
+                                    Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                    Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                    If TX.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalTransaction(2): -> " + vbCrLf + TX)
+                                        End If
+
+                                    Else
+
+                                        Status = "COMPLETED"
+
+                                        If SetAutosignalTX2INI(Order.FirstTransaction) Then 'Set autosignal-TX in Settings.ini
+                                            'ok
+                                        End If
+                                    End If
+
+                                End If
+
+                            Else
+
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalTransaction(3): -> no Keys")
+                                End If
+
                             End If
 
                         End If
@@ -199,7 +271,7 @@ Public Class PFPForm
 
 
     Structure S_AT
-        Dim AT As String
+        Dim AT As ULong
         Dim ATRS As String
         Dim IsBLS_AT As Boolean
     End Structure
@@ -207,15 +279,15 @@ Public Class PFPForm
 
 
     Public Structure S_PFPAT
-        Dim AT As String
+        Dim ATID As ULong
         Dim ATRS As String
-        Dim Creator As String
+        Dim CreatorID As ULong
         Dim CreatorRS As String
         Dim Name As String
         Dim Description As String
         Dim Sellorder As Boolean
-        Dim Initiator As String
-        Dim Responser As String
+        Dim InitiatorRS As String
+        Dim ResponserRS As String
         Dim InitiatorsCollateral As Double
         Dim ResponsersCollateral As Double
         Dim BuySellAmount As Double
@@ -237,40 +309,40 @@ Public Class PFPForm
 
         Sub New(ByVal null)
             Type = ""
-            Timestamp = ""
-            Recipient = ""
+            Timestamp = 0UL
+            RecipientID = 0UL
             RecipientRS = ""
-            AmountNQT = 0.0
-            FeeNQT = 0.0
-            Transaction = ""
+            AmountNQT = 0UL
+            FeeNQT = 0UL
+            TransactionID = 0UL
             Attachment = ""
-            Sender = ""
+            SenderID = 0UL
             SenderRS = ""
-            Confirmations = ""
+            Confirmations = 0UL
 
         End Sub
 
         Dim Type As String
-        Dim Timestamp As String
-        Dim Recipient As String
+        Dim Timestamp As ULong
+        Dim RecipientID As ULong
         Dim RecipientRS As String
-        Dim AmountNQT As String
-        Dim FeeNQT As String
-        Dim Transaction As String
+        Dim AmountNQT As ULong
+        Dim FeeNQT As ULong
+        Dim TransactionID As ULong
         Dim Attachment As String
-        Dim Sender As String
+        Dim SenderID As ULong
         Dim SenderRS As String
-        Dim Confirmations As String
+        Dim Confirmations As ULong
     End Structure
 
     Public Structure S_Order
-        Dim AT As String
+        Dim ATID As ULong
         Dim ATRS As String
         Dim Type As String
-        Dim Seller As String
-        Dim SellerID As String
-        Dim Buyer As String
-        Dim BuyerID As String
+        Dim SellerRS As String
+        Dim SellerID As ULong
+        Dim BuyerRS As String
+        Dim BuyerID As ULong
         Dim XItem As String
         Dim XAmount As Double
         Dim Quantity As Double
@@ -278,8 +350,8 @@ Public Class PFPForm
         Dim Collateral As Double
         Dim Status As String
         Dim Attachment As String
-        Dim FirstTransaction As String
-        Dim FirstTimestamp As String
+        Dim FirstTransaction As ULong
+        Dim FirstTimestamp As ULong
         Dim FirstTX As S_PFPAT_TX
         Dim LastTX As S_PFPAT_TX
     End Structure
@@ -338,13 +410,19 @@ Public Class PFPForm
 
     End Sub
 
-    Property T_PassPhrase() As String = ""
-    Property T_SignkeyHEX As String = ""
-    Property T_AgreementKeyHEX As String = ""
-    Property T_PublicKeyHEX As String = ""
+    'Property T_PassPhrase As String = ""
+    Property T_Address As String = ""
+    'Property T_SignkeyHEX As String = ""
+    'Property T_AgreementKeyHEX As String = ""
+    'Property T_PublicKeyHEX As String = ""
 
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        InitiateINI()
+
+        InfoOut = GetINISetting(E_Setting.InfoOut, False)
+        TCPAPI = New ClsTCPAPI(GetINISetting(E_Setting.TCPAPIServerPort, 8130), GetINISetting(E_Setting.TCPAPIShowStatus, False))
 
         Dim GasFee As Double = ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
 
@@ -427,34 +505,57 @@ Public Class PFPForm
         SplitContainer2.Panel1.Controls.Add(SplitPanel)
 #End Region
 
-        T_PassPhrase = GetINISetting(E_Setting.PassPhrase, "")
+        Dim T_PassPhrase As String = GetINISetting(E_Setting.PassPhrase, "")
+        T_Address = GetINISetting(E_Setting.Address, "")
+        TBSNOAddress.Text = T_Address
 
-        If T_PassPhrase.Trim = "" Then
+        If T_PassPhrase.Trim = "" And T_Address.Trim = "" Then
 
             BlockTimer.Enabled = False
             Dim Result As FrmManual.CustomDialogResult = FrmManual.MBox()
 
-            If T_PassPhrase.Trim = "" Then
-                ClsMsgs.MBox("No PassPhrase set or unknown Address, program will close.", "Unknown Address",,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
+            T_PassPhrase = GetINISetting(E_Setting.PassPhrase, "")
+            T_Address = GetINISetting(E_Setting.Address, "")
 
+            If T_PassPhrase.Trim = "" And T_Address.Trim = "" Then
+                ClsMsgs.MBox("No PassPhrase or Address set, program will close.", "Unknown Address",,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
                 Application.Exit()
                 Exit Sub
-            Else
-                BlockTimer.Enabled = True
             End If
 
-            TBSNOPassPhrase.Text = T_PassPhrase
+            TBSNOAddress.Text = T_Address
+
+            BlockTimer.Enabled = True
+
+        ElseIf T_PassPhrase.Trim = "" And Not T_Address.Trim = "" Then
+            TBSNOAddress.Text = T_Address
+        ElseIf Not T_PassPhrase.Trim = "" And T_Address.Trim = "" Then
+
+            Dim MasterKeys As List(Of String) = GetMasterKeys(T_PassPhrase)
+            TBSNOAddress.Text = ClsReedSolomon.Encode(GetAccountID(MasterKeys(0)))
+
         Else
-            TBSNOPassPhrase.Text = T_PassPhrase
+
+            If CheckPIN() Then
+                Dim MasterKeys As List(Of String) = GetMasterKeys(T_PassPhrase)
+                Dim T_Address As String = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
+
+                If T_Address.Trim = TBSNOAddress.Text.Trim Then
+                    TBSNOAddress.Text = T_Address
+                Else
+
+                    ClsMsgs.MBox("PassPhrase don't match Address, program will close.", "Unknown Address",,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
+                    Application.Exit()
+                    Exit Sub
+
+                End If
+            End If
+
         End If
 
-        Dim MasterKeyHEXList As List(Of String) = GetMasterKeys(T_PassPhrase)
 
-        T_PublicKeyHEX = MasterKeyHEXList(0)
-        T_SignkeyHEX = MasterKeyHEXList(1)
-        T_AgreementKeyHEX = MasterKeyHEXList(2)
 
-        CurrentMarket = GetINISetting(E_Setting.LastMarketViewed, "EUR")
+        CurrentMarket = GetINISetting(E_Setting.LastMarketViewed, "USD")
         CoBxMarket.SelectedItem = CurrentMarket
 
 
@@ -471,7 +572,7 @@ Public Class PFPForm
         SplitContainerBuyFilter.Panel1Collapsed = True
 
         SetMethodFilter(ChLBSellFilterMethods, LoadMethodFilter(E_Setting.SellFilterMethods))
-        SetMethodFilter(ChLBbuyFilterMethods, LoadMethodFilter(E_Setting.BuyFilterMethods))
+        SetMethodFilter(ChLBBuyFilterMethods, LoadMethodFilter(E_Setting.BuyFilterMethods))
 
         CoBxSellFilterMaxOrders.SelectedItem = GetINISetting(E_Setting.ShowMaxSellOrders, 10)
         CoBxBuyFilterMaxOrders.SelectedItem = GetINISetting(E_Setting.ShowMaxBuyOrders, 10)
@@ -493,10 +594,10 @@ Public Class PFPForm
             TCPAPI.StartAPIServer()
         End If
 
-        If TBSNOPassPhrase.Text.Trim = "" Then
-            BlockTimer.Enabled = False
-            Exit Sub
-        End If
+        'If TBSNOPassPhrase.Text.Trim = "" Then
+        '    BlockTimer.Enabled = False
+        '    Exit Sub
+        'End If
 
         Dim T_DEXATList As List(Of String()) = GetDEXATsFromCSV()
         DEXATList.Clear()
@@ -620,6 +721,23 @@ Public Class PFPForm
             TSSStatusImage.Text = "in Synchronization..."
             TSSStatusImage.Image = My.Resources.status_wait
 
+            If CheckPIN() Then
+                TSSCryptStatus.Image = My.Resources.status_decrypted
+                TSSCryptStatus.Tag = "decrypted"
+
+                TSSCryptStatus.AutoToolTip = True
+                TSSCryptStatus.ToolTipText = "the PFP is Unlocked" + vbCrLf + "automation working"
+
+            Else
+                TSSCryptStatus.Image = My.Resources.status_encrypted
+                TSSCryptStatus.Tag = "encrypted"
+
+                TSSCryptStatus.AutoToolTip = True
+                TSSCryptStatus.ToolTipText = "the PFP is Locked" + vbCrLf + "there is no automation"
+
+            End If
+
+
             If Not IsNothing(DEXNET) Then
 
                 For i As Integer = 0 To DEXNET.Peers.Count - 1
@@ -735,20 +853,20 @@ Public Class PFPForm
 
         End If
 
-
     End Sub
-
 
     Property ForceReload As Boolean = False
     Private Sub CoBxMarket_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CoBxMarket.SelectedIndexChanged, CoBxMarket.DropDownClosed
 
         CurrentMarket = CoBxMarket.SelectedItem
+        SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
+
         ResetLVColumns()
 
         ForceReload = True
 
     End Sub
-    Private Sub TBSNOPassPhrase_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TBSNOPassPhrase.KeyPress
+    Private Sub TBSNOPassPhrase_KeyPress(sender As Object, e As KeyPressEventArgs)
 
         Dim keys As Integer = Asc(e.KeyChar)
 
@@ -766,17 +884,7 @@ Public Class PFPForm
 
     End Sub
     Private Sub BtCheckAddress_Click(sender As Object, e As EventArgs) Handles BtCheckAddress.Click
-
-        'Dim BCR As ClsSignumAPI = New ClsSignumAPI With {.C_PassPhrase = TBSNOPassPhrase.Text}
-
-        'Dim x As List(Of String) = BCR.GetAccountFromPassPhrase()
-
-        'TBSNOAddress.Text = BCR.BetweenFromList(x, "<address>", "</address>")
-        'TBSNOBalance.Text = BCR.BetweenFromList(x, "<available>", "</available>")
-        'AccountID = BCR.BetweenFromList(x, "<account>", "</account>")
-
         CoBxMarket_SelectedIndexChanged(Nothing, Nothing)
-
     End Sub
 
 #End Region
@@ -785,13 +893,61 @@ Public Class PFPForm
 
     Private Sub BtCreateNewAT_Click(sender As Object, e As EventArgs) Handles BtCreateNewAT.Click
 
-        Dim BSR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
 
         Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to create a new Payment channel" + vbCrLf + "(AT=Automated Transaction)?", "Create AT", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
         If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
 
-            Dim NuList As List(Of String) = BSR.CreateAT()
+            Dim NuList As List(Of String) = New List(Of String)
+
+            Dim PublicKey As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(TBSNOAddress.Text)
+
+            If PublicKey.Contains(Application.ProductName + "-error") Then
+                ClsMsgs.MBox("This account/address is not in Blockchain and has no Balance to create AT" + vbCrLf + vbCrLf + "Try to buy your first Signa from Sellorders without collateral.", "Account not in Blockchain",,, ClsMsgs.Status.Erro)
+                Exit Sub
+            End If
+
+            Dim SignumResponse As String = SignumAPI.CreateAT(PublicKey)
+
+            If SignumResponse.Contains(Application.ProductName + "-error") Then
+
+                If GetINISetting(E_Setting.InfoOut, False) Then
+                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                    Out.ErrorLog2File(Application.ProductName + "-error in CreateAT(): -> " + SignumResponse)
+                End If
+
+                ClsMsgs.MBox("something went wrong:" + vbCrLf + SignumResponse, "Error",,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
+                Exit Sub
+            End If
+
+            NuList = SignumAPI.ConvertUnsignedTXToList(SignumResponse)
+            Dim UTX As String = BetweenFromList(NuList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+            Dim SignumNET As ClsSignumNET = New ClsSignumNET()
+
+            Dim Masterkeys As List(Of String) = GetPassPhrase()
+            If Masterkeys.Count > 0 Then
+                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, Masterkeys(1))
+                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                NuList.Add("<transaction>" + TX + "</transaction>")
+
+            Else
+
+                Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                PinForm.ShowDialog()
+
+                If Not PinForm.SignKey = "" Then
+                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                    NuList.Add("<transaction>" + TX + "</transaction>")
+                Else
+                    ClsMsgs.MBox("AT creation canceled.", "Canceled",,, ClsMsgs.Status.Erro)
+                    Exit Sub
+                End If
+
+            End If
 
             If NuList.Count = 0 Then
                 ClsMsgs.MBox("Error creating new AT", "Error",,, ClsMsgs.Status.Erro)
@@ -800,16 +956,16 @@ Public Class PFPForm
 
             ' Dim NuATList As List(Of S_AT) = New List(Of S_AT)
             Dim NuAT As S_AT = New S_AT
-            NuAT.AT = BetweenFromList(NuList, "<transaction>", "</transaction>")
+            NuAT.AT = BetweenFromList(NuList, "<transaction>", "</transaction>",, GetType(String))
 
-            Dim AccRS As List(Of String) = BSR.RSConvert(NuAT.AT)
-            NuAT.ATRS = BetweenFromList(AccRS, "<accountRS>", "</accountRS>")
+            Dim AccRS As List(Of String) = SignumAPI.RSConvert(NuAT.AT)
+            NuAT.ATRS = BetweenFromList(AccRS, "<accountRS>", "</accountRS>",, GetType(String))
             NuAT.IsBLS_AT = True
 
             'NuATList.Add(NuAT)
             'SaveATsToCSV(NuATList)
 
-            ClsMsgs.MBox("New AT Created" + vbCrLf + vbCrLf + "TX: " + NuAT.AT, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+            ClsMsgs.MBox("New AT Created" + vbCrLf + vbCrLf + "TX: " + NuAT.AT.ToString, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
 
         End If
 
@@ -904,16 +1060,12 @@ Public Class PFPForm
         BtSNOSetOrder.Text = "Wait..."
         BtSNOSetOrder.Enabled = False
 
-        Dim BSR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode,, AccountID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, AccountID,)
 
         Try
 
-            Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-            Dim x As List(Of String) = BCR.GetAccountFromPassPhrase()
-
-            TBSNOAddress.Text = BetweenFromList(x, "<address>", "</address>")
-            TBSNOBalance.Text = BetweenFromList(x, "<available>", "</available>")
-            AccountID = BetweenFromList(x, "<account>", "</account>")
+            Dim BalList As List(Of String) = SignumAPI.GetBalance(TBSNOAddress.Text)
+            TBSNOBalance.Text = BetweenFromList(BalList, "<available>", "</available>",, GetType(Double)).ToString
 
 
             Dim MinAmount As Double = CDbl(NUDSNOAmount.Text) '100,00000000
@@ -946,7 +1098,7 @@ Public Class PFPForm
             End If
 
 
-            Dim AccAmount As Double = BetweenFromList(BSR.GetBalance(TBSNOAddress.Text), "<available>", "</available>")
+            Dim AccAmount As Double = BetweenFromList(SignumAPI.GetBalance(TBSNOAddress.Text), "<available>", "</available>",, GetType(Double))
 
             If LVOpenChannels.Items.Count > 0 Then
 
@@ -974,7 +1126,7 @@ Public Class PFPForm
                         If Not LVi.BackColor = Color.Crimson Then
                             BLS = DirectCast(LVi.Tag, S_PFPAT)
 
-                            If CheckForUTX(, BLS.ATRS) Or CheckATforTX(BLS.ATRS) Then
+                            If CheckForUTX(, BLS.ATRS) Or CheckATforTX(BLS.ATID) Then
                                 BLS = Nothing ' New S_BLSAT
                             Else
                                 Exit For
@@ -995,7 +1147,7 @@ Public Class PFPForm
                 End If
 
 
-                Dim Recipient As String = BLS.AT
+                Dim Recipient As ULong = BLS.ATID
                 Dim Amount As Double = CDbl(NUDSNOAmount.Value)
                 Dim Fee As Double = CDbl(NUDSNOTXFee.Value)
                 Dim Collateral As Double = CDbl(NUDSNOCollateral.Value)
@@ -1003,9 +1155,6 @@ Public Class PFPForm
 
 
                 Dim ItemAmount As Double = CDbl(NUDSNOItemAmount.Value)
-                Dim PassPhrase As String = TBSNOPassPhrase.Text
-
-                BSR.C_PassPhrase = PassPhrase
 
                 If RBSNOSell.Checked Then
 
@@ -1015,20 +1164,89 @@ Public Class PFPForm
                         Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to create a new SellOrder?" + vbCrLf + vbCrLf + "Amount: " + Dbl2LVStr(Amount, 8) + " SIGNA" + vbCrLf + "XItem: " + Dbl2LVStr(ItemAmount, Decimals) + " " + Item, "Create SellOrder", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                         If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-                            Dim TX As String = BSR.SetBLSATSellOrder(Recipient, Amount + Collateral, Collateral, Item, ItemAmount, Fee)
-                            If TX.Contains(Application.ProductName + "-error") Then
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(TX)
+
+                            Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+                            If MasterKeys.Count > 0 Then
+                                Dim Response As String = SignumAPI.SetBLSATSellOrder(MasterKeys(0), Recipient, Amount + Collateral, Collateral, Item, ItemAmount, Fee)
+
+                                If Response.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Response)
+                                    End If
+
+                                Else
+
+                                    Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                    Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                    If TX.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(1): -> " + vbCrLf + TX)
+                                        End If
+
+                                    Else
+                                        ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
+                                    End If
+
+                                End If
+                            Else
+                                'TODO: show Pinform
+
+
+                                Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                                PinForm.ShowDialog()
+
+                                If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                                    Dim Response As String = SignumAPI.SetBLSATSellOrder(PinForm.PublicKey, Recipient, Amount + Collateral, Collateral, Item, ItemAmount, Fee)
+
+                                    If Response.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(2): -> " + vbCrLf + Response)
+                                        End If
+
+                                    Else
+
+                                        Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                        Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                                        Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                        Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                        Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                        If TX.Contains(Application.ProductName + "-error") Then
+
+                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(2b): -> " + vbCrLf + TX)
+                                            End If
+
+                                        Else
+                                            ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
+                                        End If
+
+                                    End If
+
+                                Else
+                                    ClsMsgs.MBox("SellOrder creation canceled.", "Canceled",,, ClsMsgs.Status.Erro)
                                 End If
 
-                            Else
-                                ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                             End If
+
 
                         End If
 
-                    Else
+                        Else
                         'not enough balance
                         ClsMsgs.MBox("not enough balance", "Error",,, ClsMsgs.Status.Erro)
                     End If
@@ -1041,18 +1259,84 @@ Public Class PFPForm
                         Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to create a new BuyOrder?" + vbCrLf + vbCrLf + "Amount: " + Dbl2LVStr(Amount, 8) + " SIGNA" + vbCrLf + "XItem: " + Dbl2LVStr(ItemAmount, Decimals) + " " + Item, "Create BuyOrder", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                         If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-                            Dim TX As String = BSR.SetBLSATBuyOrder(Recipient, Amount, Collateral, Item, ItemAmount, Fee)
 
-                            If TX.Contains(Application.ProductName + "-error") Then
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(TX)
+                            Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+                            If MasterKeys.Count > 0 Then
+                                Dim Response As String = SignumAPI.SetBLSATBuyOrder(MasterKeys(0), Recipient, Amount, Collateral, Item, ItemAmount, Fee)
+
+                                If Response.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Response)
+                                    End If
+
+                                Else
+
+                                    Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                    Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                    If TX.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(2): -> " + vbCrLf + TX)
+                                        End If
+
+                                    Else
+                                        ClsMsgs.MBox("BuyOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
+                                    End If
+
                                 End If
 
                             Else
-                                ClsMsgs.MBox("BuyOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
-                            End If
+                                'TODO: show pinform
 
+                                Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                                PinForm.ShowDialog()
+
+                                If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                                    Dim Response As String = SignumAPI.SetBLSATBuyOrder(PinForm.PublicKey, Recipient, Amount, Collateral, Item, ItemAmount, Fee)
+
+                                    If Response.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(3): -> " + vbCrLf + Response)
+                                        End If
+
+                                    Else
+
+                                        Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                        Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                                        Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                        Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                        Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                        If TX.Contains(Application.ProductName + "-error") Then
+
+                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(4): -> " + vbCrLf + TX)
+                                            End If
+
+                                        Else
+                                            ClsMsgs.MBox("BuyOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
+                                        End If
+
+                                    End If
+
+                                Else
+                                    ClsMsgs.MBox("BuyOrder creation canceled.", "Canceled",,, ClsMsgs.Status.Erro)
+                                End If
+
+                            End If
 
                         End If
 
@@ -1093,7 +1377,7 @@ Public Class PFPForm
 
             Dim Order As S_PFPAT = DirectCast(LVSellorders.SelectedItems(0).Tag, S_PFPAT)
 
-            If Order.Initiator = TBSNOAddress.Text Then
+            If Order.InitiatorRS = TBSNOAddress.Text Then
                 BtBuy.Text = "cancel"
             Else
 
@@ -1103,21 +1387,21 @@ Public Class PFPForm
 
                 Dim LVCMItemSellerPubKey As ToolStripMenuItem = New ToolStripMenuItem
                 LVCMItemSellerPubKey.Text = "copy seller public key"
-                LVCMItemSellerPubKey.Tag = SAPI.GetAccountPublicKeyFromAccountID_RS(Order.Initiator)
+                LVCMItemSellerPubKey.Tag = SAPI.GetAccountPublicKeyFromAccountID_RS(Order.InitiatorRS)
 
                 AddHandler LVCMItemSellerPubKey.Click, AddressOf Copy2CB
                 LVContextMenu.Items.Add(LVCMItemSellerPubKey)
 
                 Dim LVCMItemSellerID As ToolStripMenuItem = New ToolStripMenuItem
                 LVCMItemSellerID.Text = "copy sellerID"
-                LVCMItemSellerID.Tag = GetAccountIDFromRS(Order.Initiator)
+                LVCMItemSellerID.Tag = GetAccountIDFromRS(Order.InitiatorRS)
 
                 AddHandler LVCMItemSellerID.Click, AddressOf Copy2CB
                 LVContextMenu.Items.Add(LVCMItemSellerID)
 
                 Dim LVCMItemSellerRS As ToolStripMenuItem = New ToolStripMenuItem
                 LVCMItemSellerRS.Text = "copy sellerRS"
-                LVCMItemSellerRS.Tag = Order.Initiator
+                LVCMItemSellerRS.Tag = Order.InitiatorRS
 
                 AddHandler LVCMItemSellerRS.Click, AddressOf Copy2CB
                 LVContextMenu.Items.Add(LVCMItemSellerRS)
@@ -1137,7 +1421,7 @@ Public Class PFPForm
 
             Dim Order As S_PFPAT = DirectCast(LVBuyorders.SelectedItems(0).Tag, S_PFPAT)
 
-            If Order.Initiator = TBSNOAddress.Text Then
+            If Order.InitiatorRS = TBSNOAddress.Text Then
                 BtSell.Text = "cancel"
             Else
 
@@ -1147,21 +1431,21 @@ Public Class PFPForm
 
                 Dim LVCMItemSellerPubKey As ToolStripMenuItem = New ToolStripMenuItem
                 LVCMItemSellerPubKey.Text = "copy buyer public key"
-                LVCMItemSellerPubKey.Tag = SAPI.GetAccountPublicKeyFromAccountID_RS(Order.Initiator)
+                LVCMItemSellerPubKey.Tag = SAPI.GetAccountPublicKeyFromAccountID_RS(Order.InitiatorRS)
 
                 AddHandler LVCMItemSellerPubKey.Click, AddressOf Copy2CB
                 LVContextMenu.Items.Add(LVCMItemSellerPubKey)
 
                 Dim LVCMItemSellerID As ToolStripMenuItem = New ToolStripMenuItem
                 LVCMItemSellerID.Text = "copy buyerID"
-                LVCMItemSellerID.Tag = GetAccountIDFromRS(Order.Initiator)
+                LVCMItemSellerID.Tag = GetAccountIDFromRS(Order.InitiatorRS)
 
                 AddHandler LVCMItemSellerID.Click, AddressOf Copy2CB
                 LVContextMenu.Items.Add(LVCMItemSellerID)
 
                 Dim LVCMItemSellerRS As ToolStripMenuItem = New ToolStripMenuItem
                 LVCMItemSellerRS.Text = "copy buyerRS"
-                LVCMItemSellerRS.Tag = Order.Initiator
+                LVCMItemSellerRS.Tag = Order.InitiatorRS
 
                 AddHandler LVCMItemSellerRS.Click, AddressOf Copy2CB
                 LVContextMenu.Items.Add(LVCMItemSellerRS)
@@ -1193,20 +1477,17 @@ Public Class PFPForm
                 Exit Sub
             End If
 
-            Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
+            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
             Dim BLSAT_TX As S_PFPAT_TX = GetLastTXWithValues(BLS.AT_TXList, CurrentMarket)
             Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(CULng(Between(BLSAT_TX.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
 
 
-            If Not BLS.Initiator = TBSNOAddress.Text Then
-                Dim BCR2 As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
-                Dim x As List(Of String) = BCR2.GetAccountFromPassPhrase()
+            If Not BLS.InitiatorRS = TBSNOAddress.Text Then
 
-                'AccountID = BCR2.BetweenFromList(x, "<account>", "</account>")
-                'TBSNOAddress.Text = BCR2.BetweenFromList(x, "<address>", "</address>")
+                Dim BalList As List(Of String) = SignumAPI.GetBalance(TBSNOAddress.Text)
 
                 Dim Available As Double = 0.0
-                Dim AvaStr As String = BetweenFromList(x, "<available>", "</available>")
+                Dim AvaStr As String = BetweenFromList(BalList, "<available>", "</available>",, GetType(String))
 
                 If AvaStr.Trim = "" Then
 
@@ -1217,7 +1498,7 @@ Public Class PFPForm
                 If Available > Collateral + ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT) And Available > 0.0 Then
 
                     Dim MBoxMsg As String = "Do you really want to Buy " + Dbl2LVStr(BLS.BuySellAmount) + " Signa for " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + " "
-                    MBoxMsg += "from Seller: " + BLS.Initiator + "?" + vbCrLf + vbCrLf
+                    MBoxMsg += "from Seller: " + BLS.InitiatorRS + "?" + vbCrLf + vbCrLf
                     MBoxMsg += "collateral: " + Dbl2LVStr(BLS.InitiatorsCollateral) + " Signa" + vbCrLf
                     MBoxMsg += "gas fees: " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)) + " Signa" + vbCrLf + vbCrLf
                     MBoxMsg += "this transaction will take effect in 1-3 Blocks (4-12 minutes)"
@@ -1225,19 +1506,90 @@ Public Class PFPForm
                     Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox(MBoxMsg, "Buy Order from AT: " + BLS.ATRS, ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                     If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-                        Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, Collateral, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
-                        If TX.Contains(Application.ProductName + "-error") Then
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(TX)
+                        Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+                        If MasterKeys.Count > 0 Then
+
+                            Dim Response As String = SignumAPI.SendMessage2BLSAT(MasterKeys(0), BLS.ATID, Collateral, New List(Of ULong)({SignumAPI.ReferenceAcceptOrder}))
+
+                            If Response.Contains(Application.ProductName + "-error") Then
+
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(1): -> " + vbCrLf + Response)
+                                End If
+
+                            Else
+
+                                Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                If TX.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(2): -> " + vbCrLf + TX)
+                                    End If
+
+                                Else
+                                    MBoxMsg = "SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX + vbCrLf + vbCrLf
+                                    MBoxMsg += "please wait 1-2 Blocks (4-8 minutes) to get the payment-infos from Seller"
+
+                                    ClsMsgs.MBox(MBoxMsg, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                                End If
+
                             End If
 
                         Else
-                            MBoxMsg = "SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX + vbCrLf + vbCrLf
-                            MBoxMsg += "please wait 1-2 Blocks (4-8 minutes) to get the payment-infos from Seller"
+                            'TODO: Show PINForm
 
-                            ClsMsgs.MBox(MBoxMsg, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                            Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                            PinForm.ShowDialog()
+
+                            If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                                Dim Response As String = SignumAPI.SendMessage2BLSAT(PinForm.PublicKey, BLS.ATID, Collateral, New List(Of ULong)({SignumAPI.ReferenceAcceptOrder}))
+
+                                If Response.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(2a): -> " + vbCrLf + Response)
+                                    End If
+
+                                Else
+
+                                    Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                    Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                    If TX.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(2b): -> " + vbCrLf + TX)
+                                        End If
+
+                                    Else
+                                        MBoxMsg = "SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX + vbCrLf + vbCrLf
+                                        MBoxMsg += "please wait 1-2 Blocks (4-8 minutes) to get the payment-infos from Seller"
+
+                                        ClsMsgs.MBox(MBoxMsg, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                                    End If
+
+                                End If
+
+                            Else
+                                ClsMsgs.MBox("BuyOrder acception canceled.", "Canceled",,, ClsMsgs.Status.Erro)
+                            End If
+
                         End If
 
                     End If
@@ -1248,32 +1600,108 @@ Public Class PFPForm
 
                     If Result = ClsMsgs.CustomDialogResult.Yes Then
                         'TODO: Check RecipientPublicKey
-                        DEXNET.BroadcastMessage("<ATID>" + BLS.AT + "</ATID><Ask>WTB</Ask>", T_SignkeyHEX, T_AgreementKeyHEX, T_PublicKeyHEX, BCR.GetAccountPublicKeyFromAccountID_RS(BLS.Initiator))
+
+                        Dim Masterkeys As List(Of String) = GetPassPhrase()
+                        '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+                        If Masterkeys.Count > 0 Then
+                            DEXNET.BroadcastMessage("<ATID>" + BLS.ATID.ToString + "</ATID><Ask>WTB</Ask>", Masterkeys(1), Masterkeys(2), Masterkeys(0), SignumAPI.GetAccountPublicKeyFromAccountID_RS(BLS.InitiatorRS))
+                        End If
+
                     End If
 
                 End If
+
             Else
 
                 Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to cancel the SellOrder?", "Cancel SellOrder?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                 If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-                    Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
-                    If TX.Contains(Application.ProductName + "-error") Then
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(TX)
+                    Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+                    If MasterKeys.Count > 0 Then
+
+                        Dim Response As String = SignumAPI.SendMessage2BLSAT(MasterKeys(0), BLS.ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceAcceptOrder}))
+
+                        If Response.Contains(Application.ProductName + "-error") Then
+
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(cancel1): -> " + vbCrLf + Response)
+                            End If
+
+                        Else
+
+                            Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                            Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                            Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                            Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                            Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                            If TX.Contains(Application.ProductName + "-error") Then
+
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(cancel2): -> " + vbCrLf + TX)
+                                End If
+
+                            Else
+                                ClsMsgs.MBox("SellOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                            End If
+
                         End If
 
                     Else
-                        ClsMsgs.MBox("SellOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                        'TODO: Show PINFrom
+
+                        Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                        PinForm.ShowDialog()
+
+                        If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                            Dim Response As String = SignumAPI.SendMessage2BLSAT(PinForm.PublicKey, BLS.ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceAcceptOrder}))
+
+                            If Response.Contains(Application.ProductName + "-error") Then
+
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(cancel1a): -> " + vbCrLf + Response)
+                                End If
+
+                            Else
+
+                                Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                If TX.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(cancel1b): -> " + vbCrLf + TX)
+                                    End If
+
+                                Else
+
+                                    ClsMsgs.MBox("SellOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
+                                End If
+
+                            End If
+
+                        Else
+                            ClsMsgs.MBox("SellOrder cancelation aborted.", "Canceled",,, ClsMsgs.Status.Erro)
+                        End If
+
+
                     End If
 
                 End If
 
             End If
-
-
 
         End If
 
@@ -1303,20 +1731,19 @@ Public Class PFPForm
                 Exit Sub
             End If
 
-            Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
+            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
             Dim BLSAT_TX As S_PFPAT_TX = GetLastTXWithValues(BLS.AT_TXList, CurrentMarket)
             Dim Amount As Double = ClsSignumAPI.Planck2Dbl(CULng(Between(BLSAT_TX.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
             Dim XItem As String = Between(BLSAT_TX.Attachment, "<xItem>", "</xItem>", GetType(String))
             Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(CULng(Between(BLSAT_TX.Attachment, "<xAmount>", "</xAmount>", GetType(String))))
-            Dim Sum As Double = Amount + ClsSignumAPI.Planck2Dbl(CULng(BLSAT_TX.AmountNQT) - ClsSignumAPI._GasFeeNQT)
+            Dim Sum As Double = Amount + ClsSignumAPI.Planck2Dbl(BLSAT_TX.AmountNQT - ClsSignumAPI._GasFeeNQT)
 
-            If Not BLS.Initiator = TBSNOAddress.Text Then
+            If Not BLS.InitiatorRS = TBSNOAddress.Text Then
 
-                Dim BCR2 As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-                Dim x As List(Of String) = BCR2.GetAccountFromPassPhrase()
+                Dim BalList As List(Of String) = SignumAPI.GetBalance(TBSNOAddress.Text)
 
                 Dim Available As Double = 0.0
-                Dim AvaStr As String = BetweenFromList(x, "<available>", "</available>")
+                Dim AvaStr As String = BetweenFromList(BalList, "<available>", "</available>",, GetType(String))
 
                 If AvaStr.Trim = "" Then
 
@@ -1327,7 +1754,7 @@ Public Class PFPForm
                 If Available > Amount + 1.0 Then
 
                     Dim MBoxMsg As String = "Do you really want to Sell " + Dbl2LVStr(BLS.BuySellAmount) + " Signa for " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(BLS.XAmount), Decimals) + " " + BLS.XItem + " "
-                    MBoxMsg += "to Buyer: " + BLS.Initiator + "?" + vbCrLf + vbCrLf
+                    MBoxMsg += "to Buyer: " + BLS.InitiatorRS + "?" + vbCrLf + vbCrLf
                     MBoxMsg += "collateral: " + Dbl2LVStr(BLS.InitiatorsCollateral) + " Signa" + vbCrLf
                     MBoxMsg += "gas fees: " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)) + " Signa" + vbCrLf + vbCrLf
                     MBoxMsg += "this transaction will take effect in 1-2 Blocks (4-8 minutes)" + vbCrLf
@@ -1345,82 +1772,219 @@ Public Class PFPForm
 
                     If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
 
-                        Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, Sum, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
-                        If TX.Contains(Application.ProductName + "-error") Then
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(TX)
-                            End If
-                        Else
+                        Dim MasterKeys As List(Of String) = GetPassPhrase()
 
-                            MBoxMsg = "BuyOrder Accepted" + vbCrLf
-                            MBoxMsg += "TX: " + TX + vbCrLf
-                            MBoxMsg += "Recipient: " + BLS.ATRS + vbCrLf + vbCrLf
 
-                            'Public Enum E_PayType
-                            '    Bankaccount = 0
-                            '    PayPal_E_Mail = 1
-                            '    PayPal_Order = 2
-                            '    Self_Pickup = 3
-                            '    Other = 4
-                            'End Enum
+                        If MasterKeys.Count > 0 Then
 
-                            'TODO: OwnPayType 
+                            Dim Response As String = SignumAPI.SendMessage2BLSAT(MasterKeys(0), BLS.ATID, Sum, New List(Of ULong)({SignumAPI.ReferenceAcceptOrder}))
 
-                            Dim OwnPayType As String = GetINISetting(E_Setting.PaymentType, "Self Pickup")
+                            If Response.Contains(Application.ProductName + "-error") Then
 
-                            If PayInfo.Contains(OwnPayType) Then
-
-                                If PayInfo.Contains("PayPal-E-Mail") Then
-
-                                    Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                                    Dim ColWordsString As String = ColWords.GenerateColloquialWords(BLSAT_TX.Transaction, True, "-", 5)
-
-                                    PayInfo = "PayPal-E-Mail=" + GetINISetting(E_Setting.PayPalEMail, "test@test.com") + " Reference/Note=" + ColWordsString
-
-                                ElseIf PayInfo.Contains("PayPal-Order") Then
-
-                                    Dim APIOK As String = CheckPayPalAPI()
-
-                                    If APIOK = "True" Then
-                                        Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal
-                                        PPAPI_Autoinfo.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
-                                        PPAPI_Autoinfo.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
-
-                                        Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", Amount, XAmount, BLS.XItem)
-                                        Dim PPOrderID As String = BetweenFromList(PPOrderIDList, "<id>", "</id>")
-                                        PayInfo = "PayPal-Order=" + PPOrderID
-                                    End If
-
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1): -> " + vbCrLf + Response)
                                 End If
 
-                                Dim T_MsgStr As String = "AT=" + BLS.ATRS + " TX=" + BLSAT_TX.Transaction + " " + Dbl2LVStr(XAmount, Decimals) + " " + BLS.XItem + " " + PayInfo
+                            Else
 
-                                Dim TXr As String = SendBillingInfos(BLSAT_TX.Sender, T_MsgStr)
+                                Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                If TXr.Contains(Application.ProductName + "-error") Then
+                                If TX.Contains(Application.ProductName + "-error") Then
+
                                     If GetINISetting(E_Setting.InfoOut, False) Then
                                         Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(TXr)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(2): -> " + vbCrLf + TX)
                                     End If
 
                                 Else
-                                    MBoxMsg += "Payment instructions sended" + vbCrLf
-                                    MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
-                                    MBoxMsg += "Recipient: " + BLSAT_TX.SenderRS
-                                    MBoxMsg += "AT: " + BLS.ATRS + vbCrLf
-                                    MBoxMsg += "Order-Transaction: " + BLSAT_TX.Transaction + vbCrLf
-                                    MBoxMsg += "payment request: " + Dbl2LVStr(XAmount, Decimals) + " " + BLS.XItem + vbCrLf
-                                    MBoxMsg += PayInfo + vbCrLf + vbCrLf
-                                    MBoxMsg += "please wait for requested payment from buyer"
+
+                                    MBoxMsg = "BuyOrder Accepted" + vbCrLf
+                                    MBoxMsg += "TX: " + TX + vbCrLf
+                                    MBoxMsg += "Recipient: " + BLS.ATRS + vbCrLf + vbCrLf
+
+                                    'Public Enum E_PayType
+                                    '    Bankaccount = 0
+                                    '    PayPal_E_Mail = 1
+                                    '    PayPal_Order = 2
+                                    '    Self_Pickup = 3
+                                    '    Other = 4
+                                    'End Enum
+
+                                    'TODO: OwnPayType 
+
+                                    Dim OwnPayType As String = GetINISetting(E_Setting.PaymentType, "Self Pickup")
+
+                                    If PayInfo.Contains(OwnPayType) Then
+
+                                        If PayInfo.Contains("PayPal-E-Mail") Then
+
+                                            Dim ColWords As ClsColloquialWords = New ClsColloquialWords
+                                            Dim ColWordsString As String = ColWords.GenerateColloquialWords(BLSAT_TX.TransactionID.ToString, True, "-", 5)
+
+                                            PayInfo = "PayPal-E-Mail=" + GetINISetting(E_Setting.PayPalEMail, "test@test.com") + " Reference/Note=" + ColWordsString
+
+                                        ElseIf PayInfo.Contains("PayPal-Order") Then
+
+                                            Dim APIOK As String = CheckPayPalAPI()
+
+                                            If APIOK = "True" Then
+                                                Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal
+                                                PPAPI_Autoinfo.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
+                                                PPAPI_Autoinfo.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
+
+                                                Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", Amount, XAmount, BLS.XItem)
+                                                Dim PPOrderID As String = BetweenFromList(PPOrderIDList, "<id>", "</id>",, GetType(String))
+                                                PayInfo = "PayPal-Order=" + PPOrderID
+                                            End If
+
+                                        End If
+
+                                        Dim T_MsgStr As String = "AT=" + BLS.ATRS + " TX=" + BLSAT_TX.TransactionID.ToString + " " + Dbl2LVStr(XAmount, Decimals) + " " + BLS.XItem + " " + PayInfo
+
+                                        Dim TXr As String = SendBillingInfos(BLSAT_TX.SenderID, T_MsgStr, True, True)
+
+                                        If TXr.Contains(Application.ProductName + "-error") Then
+                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                out.ErrorLog2File(TXr)
+                                            End If
+
+                                        Else
+                                            MBoxMsg += "Payment instructions sended" + vbCrLf
+                                            MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
+                                            MBoxMsg += "Recipient: " + BLSAT_TX.SenderRS
+                                            MBoxMsg += "AT: " + BLS.ATRS + vbCrLf
+                                            MBoxMsg += "Order-Transaction: " + BLSAT_TX.TransactionID.ToString + vbCrLf
+                                            MBoxMsg += "payment request: " + Dbl2LVStr(XAmount, Decimals) + " " + BLS.XItem + vbCrLf
+                                            MBoxMsg += PayInfo + vbCrLf + vbCrLf
+                                            MBoxMsg += "please wait for requested payment from buyer"
+                                        End If
+
+                                    End If
+
+                                    ClsMsgs.MBox(MBoxMsg, "Transaction(s) created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
                                 End If
 
                             End If
 
-                            ClsMsgs.MBox(MBoxMsg, "Transaction(s) created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                        Else
+                            'TODO: Show PINForm
+
+                            Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                            PinForm.ShowDialog()
+
+                            If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                                Dim Response As String = SignumAPI.SendMessage2BLSAT(PinForm.PublicKey, BLS.ATID, Sum, New List(Of ULong)({SignumAPI.ReferenceAcceptOrder}))
+
+                                If Response.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1a): -> " + vbCrLf + Response)
+                                    End If
+
+                                Else
+
+                                    Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                    Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                    If TX.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1b): -> " + vbCrLf + TX)
+                                        End If
+
+                                    Else
+
+                                        MBoxMsg = "BuyOrder Accepted" + vbCrLf
+                                        MBoxMsg += "TX: " + TX + vbCrLf
+                                        MBoxMsg += "Recipient: " + BLS.ATRS + vbCrLf + vbCrLf
+
+                                        'Public Enum E_PayType
+                                        '    Bankaccount = 0
+                                        '    PayPal_E_Mail = 1
+                                        '    PayPal_Order = 2
+                                        '    Self_Pickup = 3
+                                        '    Other = 4
+                                        'End Enum
+
+                                        'TODO: OwnPayType 
+
+                                        Dim OwnPayType As String = GetINISetting(E_Setting.PaymentType, "Self Pickup")
+
+                                        If PayInfo.Contains(OwnPayType) Then
+
+                                            If PayInfo.Contains("PayPal-E-Mail") Then
+
+                                                Dim ColWords As ClsColloquialWords = New ClsColloquialWords
+                                                Dim ColWordsString As String = ColWords.GenerateColloquialWords(BLSAT_TX.TransactionID.ToString, True, "-", 5)
+
+                                                PayInfo = "PayPal-E-Mail=" + GetINISetting(E_Setting.PayPalEMail, "test@test.com") + " Reference/Note=" + ColWordsString
+
+                                            ElseIf PayInfo.Contains("PayPal-Order") Then
+
+                                                Dim APIOK As String = CheckPayPalAPI()
+
+                                                If APIOK = "True" Then
+                                                    Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal
+                                                    PPAPI_Autoinfo.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
+                                                    PPAPI_Autoinfo.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
+
+                                                    Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", Amount, XAmount, BLS.XItem)
+                                                    Dim PPOrderID As String = BetweenFromList(PPOrderIDList, "<id>", "</id>",, GetType(String))
+                                                    PayInfo = "PayPal-Order=" + PPOrderID
+                                                End If
+
+                                            End If
+
+                                            Dim T_MsgStr As String = "AT=" + BLS.ATRS + " TX=" + BLSAT_TX.TransactionID.ToString + " " + Dbl2LVStr(XAmount, Decimals) + " " + BLS.XItem + " " + PayInfo
+
+                                            Dim TXr As String = SendBillingInfos(BLSAT_TX.SenderID, T_MsgStr, True, True)
+
+                                            If TXr.Contains(Application.ProductName + "-error") Then
+                                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    out.ErrorLog2File(TXr)
+                                                End If
+
+                                            Else
+                                                MBoxMsg += "Payment instructions sended" + vbCrLf
+                                                MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
+                                                MBoxMsg += "Recipient: " + BLSAT_TX.SenderRS
+                                                MBoxMsg += "AT: " + BLS.ATRS + vbCrLf
+                                                MBoxMsg += "Order-Transaction: " + BLSAT_TX.TransactionID.ToString + vbCrLf
+                                                MBoxMsg += "payment request: " + Dbl2LVStr(XAmount, Decimals) + " " + BLS.XItem + vbCrLf
+                                                MBoxMsg += PayInfo + vbCrLf + vbCrLf
+                                                MBoxMsg += "please wait for requested payment from buyer"
+                                            End If
+
+                                        End If
+
+                                        ClsMsgs.MBox(MBoxMsg, "Transaction(s) created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
+                                    End If
+
+                                End If
+
+                            Else
+                                ClsMsgs.MBox("BuyOrder acception canceled.", "Canceled",,, ClsMsgs.Status.Erro)
+                            End If
 
                         End If
+
 
                     End If
 
@@ -1434,16 +1998,85 @@ Public Class PFPForm
                 Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to cancel the BuyOrder?", "Cancel BuyOrder?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                 If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-                    Dim TX As String = BCR.SendMessage2BLSAT(BLS.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
-                    If TX.Contains(Application.ProductName + "-error") Then
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(TX)
+                    Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+                    If MasterKeys.Count > 0 Then
+
+                        Dim Response As String = SignumAPI.SendMessage2BLSAT(MasterKeys(0), BLS.ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceAcceptOrder}))
+
+                        If Response.Contains(Application.ProductName + "-error") Then
+
+                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel1): -> " + vbCrLf + Response)
+                            End If
+
+                        Else
+
+                            Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                            Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                            Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                            Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                            Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                            If TX.Contains(Application.ProductName + "-error") Then
+
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel2): -> " + vbCrLf + TX)
+                                End If
+
+                            Else
+                                ClsMsgs.MBox("BuyOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                            End If
+
                         End If
 
                     Else
-                        ClsMsgs.MBox("BuyOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                        'TODO: Show PINFrom
+
+                        Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                        PinForm.ShowDialog()
+
+                        If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                            Dim Response As String = SignumAPI.SendMessage2BLSAT(PinForm.PublicKey, BLS.ATID, Sum, New List(Of ULong)({SignumAPI.ReferenceAcceptOrder}))
+
+                            If Response.Contains(Application.ProductName + "-error") Then
+
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel1a): -> " + vbCrLf + Response)
+                                End If
+
+                            Else
+
+                                Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                If TX.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel1b): -> " + vbCrLf + TX)
+                                    End If
+
+                                Else
+                                    ClsMsgs.MBox("BuyOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
+                                End If
+
+                            End If
+
+                        Else
+                            ClsMsgs.MBox("BuyOrder cancelation aborted.", "Canceled",,, ClsMsgs.Status.Erro)
+                        End If
+
                     End If
 
                 End If
@@ -1702,9 +2335,9 @@ Public Class PFPForm
 
         If LVMyOpenOrders.SelectedItems.Count > 0 Then
 
-            Dim TX As S_Order = DirectCast(LVMyOpenOrders.SelectedItems(0).Tag, S_Order)
+            Dim TXOrder As S_Order = DirectCast(LVMyOpenOrders.SelectedItems(0).Tag, S_Order)
 
-            If CheckForUTX(, TX.ATRS) Or CheckATforTX(TX.ATRS) Then
+            If CheckForUTX(, TXOrder.ATRS) Or CheckATforTX(TXOrder.ATID) Then
                 ClsMsgs.MBox("One TX is already Pending for this Order", "Order not available",,, ClsMsgs.Status.Attention, 5, ClsMsgs.Timer_Type.AutoOK)
                 BtExecuteOrder.Text = OldTxt
                 BtExecuteOrder.Enabled = True
@@ -1712,24 +2345,93 @@ Public Class PFPForm
             End If
 
 
-            If TX.Type = "SellOrder" Then
+            If TXOrder.Type = "SellOrder" Then
 
-                If TX.Buyer.Trim = "" Then
+                If TXOrder.BuyerRS.Trim = "" Then
                     'cancel AT
                     Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to cancel the AT?", "cancel AT?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                     If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-                        Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
-                        Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
-                        If TXStr.Contains(Application.ProductName + "-error") Then
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(TXStr)
+                        Dim MasterKeys As List(Of String) = GetPassPhrase()
+                        If MasterKeys.Count > 0 Then
+
+                            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+                            Dim Response As String = SignumAPI.SendMessage2BLSAT(MasterKeys(0), TXOrder.ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceAcceptOrder}))
+
+                            If Response.Contains(Application.ProductName + "-error") Then
+
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(1): -> " + vbCrLf + Response)
+                                End If
+
+                            Else
+
+                                Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                If TX.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(2): -> " + vbCrLf + TX)
+                                    End If
+
+                                Else
+                                    ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                                End If
+
                             End If
 
                         Else
-                            ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
+                            'TODO: show PINForm
+
+                            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+                            Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                            PinForm.ShowDialog()
+
+                            If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                                Dim Response As String = SignumAPI.SendMessage2BLSAT(PinForm.PublicKey, TXOrder.ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceAcceptOrder}))
+
+                                If Response.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(3): -> " + vbCrLf + Response)
+                                    End If
+
+                                Else
+
+                                    Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                    Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                    If TX.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(4): -> " + vbCrLf + TX)
+                                        End If
+
+                                    Else
+                                        ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                                    End If
+
+                                End If
+
+                            Else
+                                ClsMsgs.MBox("Order cancelation aborted.", "Canceled",,, ClsMsgs.Status.Erro)
+                            End If
+
                         End If
 
                     End If
@@ -1739,19 +2441,87 @@ Public Class PFPForm
                     Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to fulfill the AT?", "fulfill AT?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                     If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-                        Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text) ' With {.C_Node = CoBxNode.Text, .C_PassPhrase = TBSNOPassPhrase.Text}
-                        Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceFinishOrder}))
 
-                        If TXStr.Contains(Application.ProductName + "-error") Then
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(TXStr)
+                        Dim MasterKeys As List(Of String) = GetPassPhrase()
+                        If MasterKeys.Count > 0 Then
+
+                            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+                            Dim Response As String = SignumAPI.SendMessage2BLSAT(MasterKeys(0), TXOrder.ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceFinishOrder}))
+
+                            If Response.Contains(Application.ProductName + "-error") Then
+
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(3): -> " + vbCrLf + Response)
+                                End If
+
+                            Else
+
+                                Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                If TX.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(5): -> " + vbCrLf + TX)
+                                    End If
+
+                                Else
+                                    ClsMsgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                                End If
+
                             End If
 
                         Else
-                            ClsMsgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                            'TODO: show PINForm
+
+                            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+                            Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                            PinForm.ShowDialog()
+
+                            If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                                Dim Response As String = SignumAPI.SendMessage2BLSAT(PinForm.PublicKey, TXOrder.ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceFinishOrder}))
+
+                                If Response.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(6): -> " + vbCrLf + Response)
+                                    End If
+
+                                Else
+
+                                    Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                    Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                    If TX.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(7): -> " + vbCrLf + TX)
+                                        End If
+
+                                    Else
+                                        ClsMsgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                                    End If
+
+                                End If
+
+                            Else
+                                ClsMsgs.MBox("Order finishing aborted.", "Canceled",,, ClsMsgs.Status.Erro)
+                            End If
 
                         End If
+
 
                     End If
 
@@ -1759,22 +2529,92 @@ Public Class PFPForm
 
             Else 'BuyOrder
 
-                If TX.Seller.Trim = "" Then
+                If TXOrder.SellerRS.Trim = "" Then
                     'cancel AT
                     Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to cancel the AT?", "cancel AT?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                     If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-                        Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-                        Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceAcceptOrder}))
 
-                        If TXStr.Contains(Application.ProductName + "-error") Then
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(TXStr)
+                        Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+
+                        If MasterKeys.Count > 0 Then
+                            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+                            Dim Response As String = SignumAPI.SendMessage2BLSAT(MasterKeys(0), TXOrder.ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceAcceptOrder}))
+
+                            If Response.Contains(Application.ProductName + "-error") Then
+
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(8): -> " + vbCrLf + Response)
+                                End If
+
+                            Else
+
+                                Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                If TX.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(9): -> " + vbCrLf + TX)
+                                    End If
+
+                                Else
+                                    ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                                End If
+
                             End If
 
                         Else
-                            ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
+                            'TODO: show PINForm
+
+                            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+                            Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                            PinForm.ShowDialog()
+
+                            If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                                Dim Response As String = SignumAPI.SendMessage2BLSAT(PinForm.PublicKey, TXOrder.ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceAcceptOrder}))
+
+                                If Response.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(10): -> " + vbCrLf + Response)
+                                    End If
+
+                                Else
+
+                                    Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                    Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                    If TX.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(11): -> " + vbCrLf + TX)
+                                        End If
+
+                                    Else
+                                        ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                                    End If
+
+                                End If
+
+                            Else
+                                ClsMsgs.MBox("Order cancelation aborted.", "Canceled",,, ClsMsgs.Status.Erro)
+                            End If
+
                         End If
 
                     End If
@@ -1784,17 +2624,87 @@ Public Class PFPForm
                     Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to fulfill the AT?", "fulfill AT?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                     If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-                        Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-                        Dim TXStr As String = BCR.SendMessage2BLSAT(TX.AT, 1.0, New List(Of ULong)({BCR.ReferenceFinishOrder}))
 
-                        If TXStr.Contains(Application.ProductName + "-error") Then
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(TXStr)
+                        Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+                        If MasterKeys.Count > 0 Then
+
+                            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+                            Dim Response As String = SignumAPI.SendMessage2BLSAT(MasterKeys(0), TXOrder.ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceFinishOrder}))
+
+                            If Response.Contains(Application.ProductName + "-error") Then
+
+                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                    out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(12): -> " + vbCrLf + Response)
+                                End If
+
+                            Else
+
+                                Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                If TX.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(13): -> " + vbCrLf + TX)
+                                    End If
+
+                                Else
+                                    ClsMsgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                                End If
+
                             End If
 
                         Else
-                            ClsMsgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TXStr, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
+                            'TODO: show PINForm
+
+                            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+                            Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                            PinForm.ShowDialog()
+
+                            If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                                Dim Response As String = SignumAPI.SendMessage2BLSAT(PinForm.PublicKey, TXOrder.ATID, 1.0, New List(Of ULong)({SignumAPI.ReferenceFinishOrder}))
+
+                                If Response.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(14): -> " + vbCrLf + Response)
+                                    End If
+
+                                Else
+
+                                    Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                    Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                    If TX.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(15): -> " + vbCrLf + TX)
+                                        End If
+
+                                    Else
+                                        ClsMsgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                                    End If
+
+                                End If
+
+                            Else
+                                ClsMsgs.MBox("Order finishing aborted.", "Canceled",,, ClsMsgs.Status.Erro)
+                            End If
+
                         End If
 
                     End If
@@ -1832,10 +2742,9 @@ Public Class PFPForm
                 Exit Sub
             End If
 
-            'Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
 
             Dim ColBuyAmount As Double = ClsSignumAPI.Planck2Dbl(CULng(Between(Order.Attachment, "<colBuyAmount>", "</colBuyAmount>", GetType(String))))
-            Dim Amount As Double = ClsSignumAPI.Planck2Dbl(CULng(Order.FirstTX.AmountNQT))
+            Dim Amount As Double = ClsSignumAPI.Planck2Dbl(Order.FirstTX.AmountNQT)
             Dim Sum As Double = ColBuyAmount + Amount
 
             Dim PurchaseAmount As Double = ColBuyAmount
@@ -1854,13 +2763,13 @@ Public Class PFPForm
 
                 If PayInfo.Contains("PayPal-E-Mail=") Then
                     Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                    Dim ColWordsString As String = ColWords.GenerateColloquialWords(Order.FirstTransaction, True, "-", 5)
+                    Dim ColWordsString As String = ColWords.GenerateColloquialWords(Order.FirstTransaction.ToString, True, "-", 5)
 
                     PayInfo += " Reference/Note=" + ColWordsString
                 End If
 
-                Dim T_MsgStr As String = "AT=" + Order.ATRS + " TX=" + Order.FirstTransaction + " " + Dbl2LVStr(Order.XAmount, Decimals) + " " + Order.XItem + " " + PayInfo
-                Dim TXr As String = SendBillingInfos(Order.BuyerID, T_MsgStr)
+                Dim T_MsgStr As String = "AT=" + Order.ATRS + " TX=" + Order.FirstTransaction.ToString + " " + Dbl2LVStr(Order.XAmount, Decimals) + " " + Order.XItem + " " + PayInfo
+                Dim TXr As String = SendBillingInfos(Order.BuyerID, T_MsgStr, True, True)
 
                 If TXr.Contains(Application.ProductName + "-error") Then
                     If GetINISetting(E_Setting.InfoOut, False) Then
@@ -1884,15 +2793,15 @@ Public Class PFPForm
             Dim Order As S_Order = DirectCast(LVMyOpenOrders.SelectedItems(0).Tag, S_Order)
 
             Dim T_Infotext As String = "Infotext=" + TBManuMsg.Text.Replace(",", ";").Replace(":", ";").Replace("""", ";")
-            Dim T_MsgStr As String = "AT=" + Order.ATRS + " TX=" + Order.FirstTransaction + " " + Dbl2LVStr(Order.XAmount, Decimals) + " " + Order.XItem + " " + T_Infotext
+            Dim T_MsgStr As String = "AT=" + Order.ATRS + " TX=" + Order.FirstTransaction.ToString + " " + Dbl2LVStr(Order.XAmount, Decimals) + " " + Order.XItem + " " + T_Infotext
 
-            Dim Recipient As String = Order.Buyer
+            Dim Recipient As String = Order.BuyerRS
 
-            If Order.Buyer = TBSNOAddress.Text Then
-                Recipient = Order.Seller
+            If Order.BuyerRS = TBSNOAddress.Text Then
+                Recipient = Order.SellerRS
             End If
 
-            Dim TXr As String = SendBillingInfos(Recipient, T_MsgStr, ChBxEncMsg.Checked)
+            Dim TXr As String = SendBillingInfos(Recipient, T_MsgStr, True, ChBxEncMsg.Checked)
 
             If TXr.Contains(Application.ProductName + "-error") Then
                 If GetINISetting(E_Setting.InfoOut, False) Then
@@ -2053,8 +2962,8 @@ Public Class PFPForm
 
         Try
 
-            Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
-            Dim ATList As List(Of String) = BCR.GetATIds()
+            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+            Dim ATList As List(Of String) = SignumAPI.GetATIds()
             Dim CSVATList As List(Of String()) = GetATsFromCSV()
 
 
@@ -2234,9 +3143,15 @@ Public Class PFPForm
                 MultiInvoker(LVMyClosedOrders, "Items", {"Add", MyClosedOrder})
             Next
 
-            For Each BroadcastMsg As String In BroadcastMsgs
-                DEXNET.BroadcastMessage(BroadcastMsg, GetSignKeyHEX(TBSNOPassPhrase.Text.Trim),, GetPubKeyHEX(TBSNOPassPhrase.Text.Trim))
-            Next
+            Dim MasterKeys As List(Of String) = GetPassPhrase()
+            '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+            If MasterKeys.Count > 0 Then
+                For Each BroadcastMsg As String In BroadcastMsgs
+                    DEXNET.BroadcastMessage(BroadcastMsg, MasterKeys(1),, MasterKeys(0))
+                Next
+            End If
+
+
 
             BroadcastMsgs.Clear()
 
@@ -2627,7 +3542,7 @@ Public Class PFPForm
                                 Dim Autosendinfotext As String = "False"
                                 Dim AutocompleteAT As String = "False"
 
-                                If Not CheckForUTX(, Order.ATRS) And Not CheckATforTX(PFPAT.ATRS) Then
+                                If Not CheckForUTX(, Order.ATRS) And Not CheckATforTX(PFPAT.ATID) Then
 
                                     'TODO: Debug Double OPEN And RESERVED Orders by Injected Recipients
 
@@ -2648,12 +3563,12 @@ Public Class PFPForm
                                         'T_LVI.SubItems.Add(Dbl2LVStr(Order.Collateral)) 'collateral
                                         T_LVE.Collateral = Dbl2LVStr(Order.Collateral)
 
-                                        Dim T_SellerRS As String = Order.Seller
+                                        Dim T_SellerRS As String = Order.SellerRS
                                         If T_SellerRS = TBSNOAddress.Text Then
 
                                             Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(Order.FirstTransaction)
 
-                                            Dim T_OS As ClsOrderSettings = New ClsOrderSettings(Order.AT, Order.FirstTransaction, Order.Type, Order.Status)
+                                            Dim T_OS As ClsOrderSettings = New ClsOrderSettings(Order.ATID, Order.FirstTransaction, Order.Type, Order.Status)
 
                                             If T_OSList.Count = 0 Then
                                                 T_OS.PaytypeString = GetINISetting(E_Setting.PaymentType, "Other")
@@ -2685,7 +3600,7 @@ Public Class PFPForm
 
                                             For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
 
-                                                If RelMsg.RelevantKey = "<ATID>" + PFPAT.AT.Trim + "</ATID>" Then
+                                                If RelMsg.RelevantKey = "<ATID>" + PFPAT.ATID.ToString + "</ATID>" Then
                                                     RelKeyFounded = True
 
                                                     If Not RelMsg.RelevantMessage.Trim = "" Then
@@ -2694,7 +3609,7 @@ Public Class PFPForm
 
                                                         If Not T_SellerRS = TBSNOAddress.Text Then
 
-                                                            If Order.SellerID.Trim = GetAccountID(PublicKey).ToString Then
+                                                            If Order.SellerID = GetAccountID(PublicKey) Then
 
                                                                 Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
                                                                 PayMet = PayMethod
@@ -2718,12 +3633,13 @@ Public Class PFPForm
 
                                             If Not RelKeyFounded Then
                                                 If Not IsNothing(DEXNET) Then
-                                                    DEXNET.AddRelevantKey("<ATID>" + PFPAT.AT.Trim + "</ATID>")
+                                                    DEXNET.AddRelevantKey("<ATID>" + PFPAT.ATID.ToString + "</ATID>")
                                                 End If
                                             End If
 
 
 #End Region
+
                                         End If
 
                                         'T_LVI.SubItems.Add(PayMet) 'payment method
@@ -2767,11 +3683,11 @@ Public Class PFPForm
                                         T_LVE.Collateral = Dbl2LVStr(Order.Collateral) 'collateral
 
 
-                                        Dim T_BuyerRS As String = Order.Buyer
+                                        Dim T_BuyerRS As String = Order.BuyerRS
                                         If T_BuyerRS = TBSNOAddress.Text Then
 
                                             Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(Order.FirstTransaction)
-                                            Dim T_OS As ClsOrderSettings = New ClsOrderSettings(Order.AT, Order.FirstTransaction, Order.Type, Order.Status)
+                                            Dim T_OS As ClsOrderSettings = New ClsOrderSettings(Order.ATID, Order.FirstTransaction, Order.Type, Order.Status)
 
                                             If T_OSList.Count = 0 Then
                                                 T_OS.PaytypeString = GetINISetting(E_Setting.PaymentType, "Other")
@@ -2800,7 +3716,7 @@ Public Class PFPForm
                                             Dim RelKeyFounded As Boolean = False
                                             For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
 
-                                                If RelMsg.RelevantKey = "<ATID>" + PFPAT.AT.Trim + "</ATID>" Then
+                                                If RelMsg.RelevantKey = "<ATID>" + PFPAT.ATID.ToString + "</ATID>" Then
                                                     RelKeyFounded = True
 
                                                     If Not RelMsg.RelevantMessage.Trim = "" Then
@@ -2809,7 +3725,7 @@ Public Class PFPForm
 
                                                         If Not T_BuyerRS = TBSNOAddress.Text Then
 
-                                                            If Order.BuyerID.Trim = GetAccountID(PublicKey).ToString Then
+                                                            If Order.BuyerID = GetAccountID(PublicKey) Then
                                                                 Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
                                                                 PayMet = PayMethod
 
@@ -2831,10 +3747,11 @@ Public Class PFPForm
 
                                             If Not RelKeyFounded Then
                                                 If Not IsNothing(DEXNET) Then
-                                                    DEXNET.AddRelevantKey("<ATID>" + PFPAT.AT.Trim + "</ATID>")
+                                                    DEXNET.AddRelevantKey("<ATID>" + PFPAT.ATID.ToString + "</ATID>")
                                                 End If
                                             End If
 #End Region
+
                                         End If
 
 
@@ -2863,14 +3780,15 @@ Public Class PFPForm
                                     End If
 
                                 End If
+
 #End Region
 
 #Region "MyOPENOrders - GUI"
 
-                                If TBSNOAddress.Text = Order.Seller Then
+                                If TBSNOAddress.Text = Order.SellerRS Then
 
                                     'Broadcast info over DEXNET
-                                    BroadcastMsgs.Add("<ATID>" + PFPAT.AT + "</ATID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteAT>" + AutocompleteAT + "</AutocompleteAT>")
+                                    BroadcastMsgs.Add("<ATID>" + PFPAT.ATID.ToString + "</ATID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteAT>" + AutocompleteAT + "</AutocompleteAT>")
 
                                     T_LVI = New ListViewItem
                                     T_LVI.Text = Confirms 'confirms
@@ -2880,7 +3798,7 @@ Public Class PFPForm
                                     T_LVI.SubItems.Add(Autosendinfotext) 'autoinfo
                                     T_LVI.SubItems.Add(AutocompleteAT) 'autofinish
                                     T_LVI.SubItems.Add("Me") 'seller
-                                    T_LVI.SubItems.Add(Order.Buyer) 'buyer
+                                    T_LVI.SubItems.Add(Order.BuyerRS) 'buyer
                                     T_LVI.SubItems.Add(XItem) 'xitem
                                     T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'xamount
                                     T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'quantity
@@ -2891,10 +3809,10 @@ Public Class PFPForm
 
                                     MyOpenOrderLVIList.Add(T_LVI)
 
-                                ElseIf TBSNOAddress.Text = Order.Buyer Then
+                                ElseIf TBSNOAddress.Text = Order.BuyerRS Then
 
                                     'Broadcast info over DEXNET
-                                    BroadcastMsgs.Add("<ATID>" + PFPAT.AT + "</ATID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteAT>" + AutocompleteAT + "</AutocompleteAT>")
+                                    BroadcastMsgs.Add("<ATID>" + PFPAT.ATID.ToString + "</ATID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteAT>" + AutocompleteAT + "</AutocompleteAT>")
 
                                     T_LVI = New ListViewItem
                                     T_LVI.Text = Confirms 'confirms
@@ -2903,7 +3821,7 @@ Public Class PFPForm
                                     T_LVI.SubItems.Add(PayMet) 'method
                                     T_LVI.SubItems.Add(Autosendinfotext) 'autoinfo
                                     T_LVI.SubItems.Add(AutocompleteAT) 'autofinish
-                                    T_LVI.SubItems.Add(Order.Seller) 'seller
+                                    T_LVI.SubItems.Add(Order.SellerRS) 'seller
                                     T_LVI.SubItems.Add("Me") 'buyer
                                     T_LVI.SubItems.Add(XItem) 'xitem
                                     T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'xamount
@@ -2916,6 +3834,7 @@ Public Class PFPForm
                                     MyOpenOrderLVIList.Add(T_LVI)
 
                                 End If 'myaddress
+
 #End Region
 
                             End If 'market(USD)
@@ -2936,11 +3855,11 @@ Public Class PFPForm
 
 #Region "MyRESERVEDOrders - GUI"
 
-                            If TBSNOAddress.Text = Order.Seller Then
+                            If TBSNOAddress.Text = Order.SellerRS Then
 
                                 'Save/ Update() my RESERVED SellOrder to cache2.dat (MyOrders Settings)
                                 Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(Order.FirstTransaction)
-                                Dim T_OS As ClsOrderSettings = New ClsOrderSettings(Order.AT, Order.FirstTransaction, Order.Type, Order.Status)
+                                Dim T_OS As ClsOrderSettings = New ClsOrderSettings(Order.ATID, Order.FirstTransaction, Order.Type, Order.Status)
 
                                 Dim Autosendinfotext As String = "False"
                                 Dim AutocompleteAT As String = "False"
@@ -2960,7 +3879,7 @@ Public Class PFPForm
 
                                     OrderSettingsBuffer.Add(T_OS)
                                     'Broadcast info over DEXNET
-                                    BroadcastMsgs.Add("<ATID>" + PFPAT.AT + "</ATID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteAT>" + AutocompleteAT + "</AutocompleteAT>")
+                                    BroadcastMsgs.Add("<ATID>" + PFPAT.ATID.ToString + "</ATID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteAT>" + AutocompleteAT + "</AutocompleteAT>")
 
                                 Else
 
@@ -2976,7 +3895,7 @@ Public Class PFPForm
 
                                     For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
 
-                                        If RelMsg.RelevantKey = "<ATID>" + PFPAT.AT.Trim + "</ATID>" Then
+                                        If RelMsg.RelevantKey = "<ATID>" + PFPAT.ATID.ToString + "</ATID>" Then
 
                                             RelKeyFounded = True
 
@@ -2984,7 +3903,7 @@ Public Class PFPForm
 
                                                 Dim PublicKey As String = Between(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>", GetType(String))
 
-                                                If Order.BuyerID.Trim = GetAccountID(PublicKey).ToString Then
+                                                If Order.BuyerID = GetAccountID(PublicKey) Then
 
                                                     Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
                                                     PayMet = PayMethod
@@ -3006,7 +3925,7 @@ Public Class PFPForm
 
                                     If Not RelKeyFounded Then
                                         If Not IsNothing(DEXNET) Then
-                                            DEXNET.AddRelevantKey("<ATID>" + PFPAT.AT.Trim + "</ATID>")
+                                            DEXNET.AddRelevantKey("<ATID>" + PFPAT.ATID.ToString + "</ATID>")
                                         End If
                                     End If
 
@@ -3024,25 +3943,18 @@ Public Class PFPForm
                                         Out.ErrorLog2File(AlreadySend)
                                     End If
 
+                                    AlreadySend = "ENCRYPTED"
+
                                 ElseIf AlreadySend.Trim = "" Then
 
                                     Dim SearchAttachmentHEX As String = SigAPI.ULngList2DataStr(New List(Of ULong)({SigAPI.ReferenceFinishOrder}))
-                                    If CheckForUTX(Order.Seller, Order.ATRS, SearchAttachmentHEX) Then
+                                    If CheckForUTX(Order.SellerRS, Order.ATRS, SearchAttachmentHEX) Then
                                         AlreadySend = "PENDING"
-                                    ElseIf CheckForUTX(Order.Buyer, Order.ATRS) Then
+                                    ElseIf CheckForUTX(Order.BuyerRS, Order.ATRS) Then
 
                                     Else
 
                                         AlreadySend = "RESERVED"
-
-                                        'StatusLabel.Text = "Checking Transactions between " + Order.Seller + " and " + Order.ATRS
-                                        'Application.DoEvents()
-
-                                        'If CheckForTX(Order.Seller, Order.ATRS, Order.FirstTimestamp, BCR.ReferenceFinishOrder.ToString) Then
-                                        '    AlreadySend = "PENDING"
-                                        'Else
-                                        '    AlreadySend = "RESERVED, Wait for Payment-Info"
-                                        'End If
 
                                     End If
 
@@ -3056,13 +3968,13 @@ Public Class PFPForm
 
                                             If PayInfo.Contains("PayPal-E-Mail=") Then
                                                 Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                                                Dim ColWordsString As String = ColWords.GenerateColloquialWords(Order.FirstTransaction, True, "-", 5)
+                                                Dim ColWordsString As String = ColWords.GenerateColloquialWords(Order.FirstTransaction.ToString, True, "-", 5)
 
                                                 PayInfo += " Reference/Note=" + ColWordsString
                                             End If
 
-                                            Dim T_MsgStr As String = "AT=" + Order.ATRS + " TX=" + Order.FirstTransaction + " " + Dbl2LVStr(Order.XAmount, Decimals) + " " + Order.XItem + " " + PayInfo
-                                            Dim TXr As String = SendBillingInfos(Order.BuyerID, T_MsgStr)
+                                            Dim T_MsgStr As String = "AT=" + Order.ATRS + " TX=" + Order.FirstTransaction.ToString + " " + Dbl2LVStr(Order.XAmount, Decimals) + " " + Order.XItem + " " + PayInfo
+                                            Dim TXr As String = SendBillingInfos(Order.BuyerID, T_MsgStr, False, True)
 
                                             If TXr.Contains(Application.ProductName + "-error") Then
                                                 If GetINISetting(E_Setting.InfoOut, False) Then
@@ -3126,7 +4038,7 @@ Public Class PFPForm
                                                     PayPalOrder = PayPalOrder.Remove(PayPalOrder.IndexOf(" "))
                                                 End If
 
-                                                Dim PayPalStatus As String = CheckPayPalOrder(Order.AT, PayPalOrder)
+                                                Dim PayPalStatus As String = CheckPayPalOrder(Order.ATID, PayPalOrder)
 
                                                 If Not PayPalStatus.Trim = "" Then
                                                     AlreadySend = PayPalStatus
@@ -3153,7 +4065,7 @@ Public Class PFPForm
                                 T_LVI.SubItems.Add(Autosendinfotext) 'autoinfo
                                 T_LVI.SubItems.Add(AutocompleteAT) 'autofinish
                                 T_LVI.SubItems.Add("Me") 'seller
-                                T_LVI.SubItems.Add(Order.Buyer) 'buyer
+                                T_LVI.SubItems.Add(Order.BuyerRS) 'buyer
                                 T_LVI.SubItems.Add(XItem) 'xitem
                                 T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'xamount
                                 T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'quantity
@@ -3164,11 +4076,11 @@ Public Class PFPForm
 
                                 MyOpenOrderLVIList.Add(T_LVI)
 
-                            ElseIf TBSNOAddress.Text = Order.Buyer Then
+                            ElseIf TBSNOAddress.Text = Order.BuyerRS Then
 
                                 'Save/ Update() my RESERVED SellOrder to cache2.dat (MyOrders Settings)
                                 Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(Order.FirstTransaction)
-                                Dim T_OS As ClsOrderSettings = New ClsOrderSettings(Order.AT, Order.FirstTransaction, Order.Type, Order.Status)
+                                Dim T_OS As ClsOrderSettings = New ClsOrderSettings(Order.ATID, Order.FirstTransaction, Order.Type, Order.Status)
 
                                 Dim Autosendinfotext As String = "False"
                                 Dim AutocompleteAT As String = "False"
@@ -3187,7 +4099,7 @@ Public Class PFPForm
 
                                     OrderSettingsBuffer.Add(T_OS)
                                     'Broadcast info over DEXNET
-                                    BroadcastMsgs.Add("<ATID>" + PFPAT.AT + "</ATID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteAT>" + AutocompleteAT + "</AutocompleteAT>")
+                                    BroadcastMsgs.Add("<ATID>" + PFPAT.ATID.ToString + "</ATID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteAT>" + AutocompleteAT + "</AutocompleteAT>")
 
                                 Else
 
@@ -3203,7 +4115,7 @@ Public Class PFPForm
 
                                     For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
 
-                                        If RelMsg.RelevantKey = "<ATID>" + PFPAT.AT.Trim + "</ATID>" Then
+                                        If RelMsg.RelevantKey = "<ATID>" + PFPAT.ATID.ToString + "</ATID>" Then
 
                                             RelKeyFounded = True
 
@@ -3211,7 +4123,7 @@ Public Class PFPForm
 
                                                 Dim PublicKey As String = Between(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>", GetType(String))
 
-                                                If Order.SellerID.Trim = GetAccountID(PublicKey).ToString Then
+                                                If Order.SellerID = GetAccountID(PublicKey) Then
                                                     Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
                                                     PayMet = PayMethod
 
@@ -3231,7 +4143,7 @@ Public Class PFPForm
 
                                     If Not RelKeyFounded Then
                                         If Not IsNothing(DEXNET) Then
-                                            DEXNET.AddRelevantKey("<ATID>" + PFPAT.AT.Trim + "</ATID>")
+                                            DEXNET.AddRelevantKey("<ATID>" + PFPAT.ATID.ToString + "</ATID>")
                                         End If
                                     End If
 #End Region
@@ -3247,26 +4159,18 @@ Public Class PFPForm
                                         Out.ErrorLog2File(AlreadySend)
                                     End If
 
+                                    AlreadySend = "ENCRYPTED"
 
                                 ElseIf AlreadySend = "" Then
 
                                     Dim SearchAttachmentHEX As String = SigAPI.ULngList2DataStr(New List(Of ULong)({SigAPI.ReferenceFinishOrder}))
-                                    If CheckForUTX(Order.Seller, Order.ATRS, SearchAttachmentHEX) Then
+                                    If CheckForUTX(Order.SellerRS, Order.ATRS, SearchAttachmentHEX) Then
                                         AlreadySend = "PENDING"
-                                    ElseIf CheckForUTX(Order.Buyer, Order.ATRS) Then
+                                    ElseIf CheckForUTX(Order.BuyerRS, Order.ATRS) Then
 
                                     Else
 
                                         AlreadySend = "RESERVED"
-
-                                        'StatusLabel.Text = "Checking Transactions between " + Order.Seller + " and " + Order.ATRS
-                                        'Application.DoEvents()
-
-                                        'If CheckForTX(Order.Seller, Order.ATRS, Order.FirstTimestamp, BCR.ReferenceFinishOrder.ToString) Then
-                                        '    AlreadySend = "PENDING"
-                                        'Else
-                                        '    AlreadySend = "RESERVED, Wait for Payment-Info"
-                                        'End If
 
                                     End If
 
@@ -3306,10 +4210,10 @@ Public Class PFPForm
 
                                 End If
 
-                                Dim BCR1 As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-                                Dim CheckAttachment As String = BCR1.ULngList2DataStr(New List(Of ULong)({SigAPI.ReferenceFinishOrder}))
-                                Dim UTXCheck As Boolean = CheckForUTX(Order.Seller, Order.ATRS, CheckAttachment)
-                                Dim TXCheck As Boolean = CheckForTX(Order.Seller, Order.ATRS, Order.FirstTimestamp, CheckAttachment)
+                                Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+                                Dim CheckAttachment As String = SignumAPI.ULngList2DataStr(New List(Of ULong)({SigAPI.ReferenceFinishOrder}))
+                                Dim UTXCheck As Boolean = CheckForUTX(Order.SellerRS, Order.ATRS, CheckAttachment)
+                                Dim TXCheck As Boolean = CheckForTX(Order.SellerRS, Order.ATRS, Order.FirstTimestamp, CheckAttachment)
 
                                 If Not UTXCheck And Not TXCheck Then
 
@@ -3325,7 +4229,7 @@ Public Class PFPForm
                                 T_LVI.SubItems.Add(PayMet) 'method
                                 T_LVI.SubItems.Add(Autosendinfotext) 'autoinfo
                                 T_LVI.SubItems.Add(AutocompleteAT) 'autofinish
-                                T_LVI.SubItems.Add(Order.Seller) 'seller
+                                T_LVI.SubItems.Add(Order.SellerRS) 'seller
                                 T_LVI.SubItems.Add("Me") 'buyer
                                 T_LVI.SubItems.Add(XItem) 'xitem
                                 T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'xamount
@@ -3376,7 +4280,7 @@ Public Class PFPForm
                                 For i As Integer = 0 To OrderSettingsBuffer.Count - 1
                                     Dim T_TOS As ClsOrderSettings = OrderSettingsBuffer(i)
 
-                                    If T_TOS.TX = Order.FirstTransaction Then
+                                    If T_TOS.TXID = Order.FirstTransaction Then
                                         OrderSettingsBuffer.RemoveAt(i)
                                         Exit For
                                     End If
@@ -3394,15 +4298,15 @@ Public Class PFPForm
 
                         If Order.XItem.Contains(Market) Then
 
-                            If TBSNOAddress.Text = Order.Seller Then
+                            If TBSNOAddress.Text = Order.SellerRS Then
 
                                 Try
 
                                     T_LVI = New ListViewItem
 
-                                    T_LVI.Text = Order.FirstTransaction 'first transaction
-                                    If Not IsNothing(Order.LastTX.Transaction) Then
-                                        T_LVI.SubItems.Add(Order.LastTX.Transaction) 'last transaction
+                                    T_LVI.Text = Order.FirstTransaction.ToString  'first transaction
+                                    If Not IsNothing(Order.LastTX.TransactionID) Then
+                                        T_LVI.SubItems.Add(Order.LastTX.TransactionID.ToString) 'last transaction
                                     Else
                                         T_LVI.SubItems.Add("")
                                     End If
@@ -3411,7 +4315,7 @@ Public Class PFPForm
                                     T_LVI.SubItems.Add(Order.ATRS) 'at
                                     T_LVI.SubItems.Add(Order.Type) 'type
                                     T_LVI.SubItems.Add("Me") 'seller
-                                    T_LVI.SubItems.Add(Order.Buyer) 'buyer
+                                    T_LVI.SubItems.Add(Order.BuyerRS) 'buyer
                                     T_LVI.SubItems.Add(XItem) 'xitem
                                     T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'xamount
                                     T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'quantity
@@ -3430,16 +4334,16 @@ Public Class PFPForm
 
                                 End Try
 
-                            ElseIf TBSNOAddress.Text = Order.Buyer Then
+                            ElseIf TBSNOAddress.Text = Order.BuyerRS Then
 
                                 Try
 
                                     T_LVI = New ListViewItem
 
-                                    T_LVI.Text = Order.FirstTransaction 'first transaction
+                                    T_LVI.Text = Order.FirstTransaction.ToString  'first transaction
 
-                                    If Not IsNothing(Order.LastTX.Transaction) Then
-                                        T_LVI.SubItems.Add(Order.LastTX.Transaction) 'last transaction
+                                    If Not IsNothing(Order.LastTX.TransactionID) Then
+                                        T_LVI.SubItems.Add(Order.LastTX.TransactionID.ToString) 'last transaction
                                     Else
                                         T_LVI.SubItems.Add("")
                                     End If
@@ -3447,7 +4351,7 @@ Public Class PFPForm
                                     T_LVI.SubItems.Add(Confirms) 'confirms
                                     T_LVI.SubItems.Add(Order.ATRS) 'at
                                     T_LVI.SubItems.Add(Order.Type) 'type
-                                    T_LVI.SubItems.Add(Order.Seller) 'seller
+                                    T_LVI.SubItems.Add(Order.SellerRS) 'seller
                                     T_LVI.SubItems.Add("Me") 'buyer
                                     T_LVI.SubItems.Add(XItem) 'xitem
                                     T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'xamount
@@ -3525,13 +4429,9 @@ Public Class PFPForm
 
         Try
 
-            Dim BCR2 As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-
-            Dim x As List(Of String) = BCR2.GetAccountFromPassPhrase()
-
-            TBSNOAddress.Text = BetweenFromList(x, "<address>", "</address>")
-            TBSNOBalance.Text = BetweenFromList(x, "<available>", "</available>")
-            AccountID = BetweenFromList(x, "<account>", "</account>")
+            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+            Dim x As List(Of String) = SignumAPI.GetBalance(TBSNOAddress.Text)
+            TBSNOBalance.Text = BetweenFromList(x, "<available>", "</available>",, GetType(Double)).ToString
 
             LabXItem.Text = CurrentMarket
             LabXitemAmount.Text = CurrentMarket + " Amount: "
@@ -3565,7 +4465,7 @@ Public Class PFPForm
                         Dim BLSAT As S_PFPAT = DirectCast(APIRequest.Result, S_PFPAT)
 
                         PFPList.Add(BLSAT)
-                        Dim SAT As S_AT = New S_AT With {.AT = BLSAT.AT, .ATRS = BLSAT.ATRS, .IsBLS_AT = True}
+                        Dim SAT As S_AT = New S_AT With {.AT = BLSAT.ATID, .ATRS = BLSAT.ATRS, .IsBLS_AT = True}
                         CSVATList.Add(SAT)
 
                     End If
@@ -3955,7 +4855,7 @@ Public Class PFPForm
 
 #Region "TCP API"
 
-    Property TCPAPI As ClsTCPAPI = New ClsTCPAPI(GetINISetting(E_Setting.TCPAPIServerPort, 8130), GetINISetting(E_Setting.TCPAPIShowStatus, False))
+    Property TCPAPI As ClsTCPAPI
 
     Sub LoadTCPAPIOpenOrders(ByVal OrderList As List(Of S_Order))
 
@@ -3967,8 +4867,8 @@ Public Class PFPForm
 
                 Dim AT As String = T_Order.ATRS
                 Dim Type As String = T_Order.Type
-                Dim Seller As String = T_Order.Seller
-                Dim Buyer As String = T_Order.Buyer
+                Dim Seller As String = T_Order.SellerRS
+                Dim Buyer As String = T_Order.BuyerRS
 
                 Dim Collateral As String = T_Order.Collateral.ToString.Replace(",", ".")
                 Dim SignaAmount As String = T_Order.Quantity.ToString.Replace(",", ".")
@@ -4368,11 +5268,11 @@ Public Class PFPForm
 
                 If IsNothing(DEXNET) Then
                     DEXNET = New ClsDEXNET(GetINISetting(E_Setting.DEXNETServerPort, 8131), GetINISetting(E_Setting.DEXNETShowStatus, False))
-                    DEXNET.DEXNET_AgreeKeyHEX = T_AgreementKeyHEX
+                    'DEXNET.DEXNET_AgreeKeyHEX = T_AgreementKeyHEX
                 Else
                     If DEXNET.DEXNETClose = True Then
                         DEXNET = New ClsDEXNET(GetINISetting(E_Setting.DEXNETServerPort, 8131), GetINISetting(E_Setting.DEXNETShowStatus, False))
-                        DEXNET.DEXNET_AgreeKeyHEX = T_AgreementKeyHEX
+                        'DEXNET.DEXNET_AgreeKeyHEX = T_AgreementKeyHEX
                     End If
                 End If
 
@@ -4512,11 +5412,11 @@ Public Class PFPForm
                 Dim RM_ATID As String = Between(RelMsg.RelevantMessage, "<ATID>", "</ATID>", GetType(String))
                 Dim SigAPI As ClsSignumAPI = New ClsSignumAPI()
                 Dim ATIDRSList As List(Of String) = SigAPI.RSConvert(CULng(RM_ATID))
-                Dim RM_ATRS As String = BetweenFromList(ATIDRSList, "<accountRS>", "</accountRS>")
+                Dim RM_ATRS As String = BetweenFromList(ATIDRSList, "<accountRS>", "</accountRS>",, GetType(String))
 
                 Dim RM_AccountPublicKey As String = Between(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>", GetType(String))
-                Dim RM_AccountPublicKeyList As List(Of String) = SigAPI.RSConvert(GetAccountID(RM_AccountPublicKey).ToString)
-                Dim RM_AccountRS As String = BetweenFromList(RM_AccountPublicKeyList, "<accountRS>", "</accountRS>")
+                Dim RM_AccountPublicKeyList As List(Of String) = SigAPI.RSConvert(GetAccountID(RM_AccountPublicKey))
+                Dim RM_AccountRS As String = BetweenFromList(RM_AccountPublicKeyList, "<accountRS>", "</accountRS>",, GetType(String))
 
                 Dim ForContinue As Boolean = False
                 For Each LVI As ListViewItem In LVSellorders.Items
@@ -4633,25 +5533,30 @@ Public Class PFPForm
 #End Region
 
             ElseIf RelMsg.RelevantMessage.Contains("<ATID>") And RelMsg.RelevantMessage.Contains("<PublicKey>") And RelMsg.RelevantMessage.Contains("<Ask>") Then
-                Dim RM_ATID As String = Between(RelMsg.RelevantMessage, "<ATID>", "</ATID>", GetType(String))
-                Dim SigAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
+                Dim RM_ATID As ULong = CULng(Between(RelMsg.RelevantMessage, "<ATID>", "</ATID>", GetType(String)))
+                Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
                 Dim RM_AccountPublicKey As String = Between(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>", GetType(String))
-                Dim RM_AccountPublicKeyList As List(Of String) = SigAPI.RSConvert(GetAccountID(RM_AccountPublicKey).ToString)
-                Dim RM_AccountID As String = BetweenFromList(RM_AccountPublicKeyList, "<account>", "</account>")
-                Dim RM_AccIDULong As ULong = 0UL
+                Dim RM_AccountPublicKeyList As List(Of String) = SignumAPI.RSConvert(GetAccountID(RM_AccountPublicKey))
+                Dim RM_AccountID As ULong = BetweenFromList(RM_AccountPublicKeyList, "<account>", "</account>",, GetType(ULong))
+                'Dim RM_AccIDULong As ULong = 0UL
 
-                Try
-                    RM_AccIDULong = CULng(RM_AccountID)
-                Catch ex As Exception
-                    'TODO: Error Out SetDEXNETRelevantMsgsToLVs(RM_AccointID)
-                End Try
+                'Try
+                '    RM_AccIDULong = RM_AccountID
+                'Catch ex As Exception
+
+                '    If GetINISetting(E_Setting.InfoOut, False) Then
+                '        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                '        out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(RM_AccointID=" + RM_AccountID.ToString + "): -> " + vbCrLf + ex.Message)
+                '    End If
+
+                'End Try
 
                 'TODO:########################################
                 'TODO: Processing UnexpectedMsgs from DEXNET
 
                 Dim RM_Ask As String = Between(RelMsg.RelevantMessage, "<Ask>", "</Ask>", GetType(String))
 
-                If RM_Ask = "WTB" And Not RM_AccIDULong = 0 And Not RM_AccountPublicKey = "" Then
+                If RM_Ask = "WTB" And Not RM_AccountID = 0 And Not RM_AccountPublicKey = "" Then
 
                     For Each LVI As ListViewItem In LVMyOpenOrders.Items
                         Dim MyOrder As S_Order = LVI.Tag
@@ -4665,60 +5570,96 @@ Public Class PFPForm
 
                                 If Not GetAutosignalTXFromINI(MyOrder.FirstTransaction) Then
 
-                                    If MyOrder.AT = RM_ATID Then
+                                    If MyOrder.ATID = RM_ATID Then
 
                                         If MyOrder.Collateral = 0.0 Then
 
-                                            Dim ULngList As List(Of ULong) = New List(Of ULong)({SigAPI.ReferenceInjectResponder, RM_AccIDULong})
-                                            Dim MsgStr As String = SigAPI.ULngList2DataStr(ULngList)
+                                            Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceInjectResponder, RM_AccountID})
+                                            Dim MsgStr As String = SignumAPI.ULngList2DataStr(ULngList)
 
-                                            Dim Response As String = SigAPI.SendMessage2BLSAT(RM_ATID, 1.0, ULngList)
+                                            Dim MasterKeys As List(Of String) = GetPassPhrase()
 
-                                            If Response.Contains(Application.ProductName + "-error") Then
-                                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                    out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs): -> " + vbCrLf + Response)
-                                                End If
+                                            If MasterKeys.Count > 0 Then
 
-                                            Else
+                                                Dim Response As String = SignumAPI.SendMessage2BLSAT(MasterKeys(0), RM_ATID, 1.0, ULngList)
 
-                                                Dim PayInfo As String = GetPaymentInfoFromOrderSettings(MyOrder.FirstTransaction, MyOrder.Quantity, MyOrder.XAmount, MyOrder.XItem)
+                                                If Response.Contains(Application.ProductName + "-error") Then
 
-                                                Dim KnownAcc As String = SigAPI.GetAccountPublicKeyFromAccountID_RS(RM_AccountID)
+                                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                        out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs2): -> " + vbCrLf + Response)
+                                                    End If
 
-                                                If KnownAcc.Contains(Application.ProductName + "-error") Then
-                                                    'cant find account in blockchain, send message with pubkey to activate account
+                                                Else
 
-                                                    If Not PayInfo.Trim = "" Then
+                                                    Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                                    Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                                        If PayInfo.Contains("PayPal-E-Mail=") Then
-                                                            Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                                                            Dim ColWordsString As String = ColWords.GenerateColloquialWords(MyOrder.FirstTransaction, True, "-", 5)
+                                                    If TX.Contains(Application.ProductName + "-error") Then
 
-                                                            PayInfo += " Reference/Note=" + ColWordsString
+                                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                            out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs3): -> " + vbCrLf + TX)
                                                         End If
 
-                                                        Dim T_MsgStr As String = "Account activation" ' "AT=" + MyOrder.ATRS + " TX=" + MyOrder.FirstTransaction + " " + Dbl2LVStr(MyOrder.XAmount, Decimals) + " " + MyOrder.XItem + " " + PayInfo
-                                                        Dim TXr As String = SigAPI.SendMessage(RM_AccountID, T_MsgStr,, True,, RM_AccountPublicKey)
+                                                    Else
 
-                                                        If TXr.Contains(Application.ProductName + "-error") Then
-                                                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                                out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs): -> " + vbCrLf + TXr)
+                                                        Dim PayInfo As String = GetPaymentInfoFromOrderSettings(MyOrder.FirstTransaction, MyOrder.Quantity, MyOrder.XAmount, MyOrder.XItem)
+
+                                                        Dim KnownAcc As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(RM_AccountID.ToString)
+
+                                                        If KnownAcc.Contains(Application.ProductName + "-error") Then
+                                                            'cant find account in blockchain, send message with pubkey to activate account
+
+                                                            If Not PayInfo.Trim = "" Then
+
+                                                                If PayInfo.Contains("PayPal-E-Mail=") Then
+                                                                    Dim ColWords As ClsColloquialWords = New ClsColloquialWords
+                                                                    Dim ColWordsString As String = ColWords.GenerateColloquialWords(MyOrder.FirstTransaction.ToString, True, "-", 5)
+
+                                                                    PayInfo += " Reference/Note=" + ColWordsString
+                                                                End If
+
+                                                                Dim T_MsgStr As String = "Account activation" ' "AT=" + MyOrder.ATRS + " TX=" + MyOrder.FirstTransaction + " " + Dbl2LVStr(MyOrder.XAmount, Decimals) + " " + MyOrder.XItem + " " + PayInfo
+                                                                Dim TXr As String = SendBillingInfos(RM_AccountID, T_MsgStr, False, True) ' SignumAPI.SendMessage(MasterKeys(0), MasterKeys(1), MasterKeys(2), RM_AccountID, T_MsgStr,, True,, RM_AccountPublicKey)
+
+
+                                                                If TXr.Contains(Application.ProductName + "-error") Then
+                                                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                        out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf + TXr)
+                                                                    End If
+
+                                                                Else
+
+                                                                End If
+
                                                             End If
-
-                                                        Else
 
                                                         End If
 
                                                     End If
 
+
+
+
+                                                End If
+
+                                                RelMsg.Setted = True
+                                                RelevantMsgsBuffer(ii) = RelMsg
+                                            Else
+
+                                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs1): -> no Keys")
                                                 End If
 
                                             End If
 
-                                            RelMsg.Setted = True
-                                            RelevantMsgsBuffer(ii) = RelMsg
+
                                         End If
 
                                         Exit For
@@ -4736,7 +5677,7 @@ Public Class PFPForm
                 Else
                     If GetINISetting(E_Setting.InfoOut, False) Then
                         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                        Out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectedMsgs): -> ASK=" + RM_Ask + " ACCID=" + RM_AccIDULong.ToString + " Pubkey=" + RM_AccountPublicKey)
+                        Out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectedMsgs): -> ASK=" + RM_Ask + " ACCID=" + RM_AccountID.ToString + " Pubkey=" + RM_AccountPublicKey)
                     End If
 
                 End If
@@ -4761,7 +5702,7 @@ Public Class PFPForm
         NuBLSTX.Reverse()
 
         Dim Found As Boolean = False
-        Dim ReferenceSenderID As String = ""
+        Dim ReferenceSenderID As ULong = 0UL
         Dim ReferenceSenderRS As String = ""
 
 
@@ -4777,13 +5718,18 @@ Public Class PFPForm
 
                 If Not ReferenceSenderRS = BLSAT_TX.SenderRS Then
 
-                    If Not BLSAT_TX.Attachment.Contains("<injectedResponser>" + ReferenceSenderID + "</injectedResponser>") Then
+                    If Not BLSAT_TX.Attachment.Contains("<injectedResponser>" + ReferenceSenderID.ToString + "</injectedResponser>") Then
                         Found = False
                     Else
 
                         Found = True
 
-                        BLSAT_TX.Sender = ReferenceSenderID
+                        Try
+                            BLSAT_TX.SenderID = ReferenceSenderID
+                        Catch ex As Exception
+
+                        End Try
+
                         BLSAT_TX.SenderRS = ReferenceSenderRS
 
                     End If
@@ -4803,7 +5749,7 @@ Public Class PFPForm
                 If TTX.Attachment.Contains(AttSearch) Then
                     Found = True
                     ReferenceSenderRS = TTX.RecipientRS
-                    ReferenceSenderID = TTX.Recipient
+                    ReferenceSenderID = TTX.RecipientID
 
                 End If
 
@@ -4916,7 +5862,6 @@ Public Class PFPForm
         'TODO: Fix OPEN and RESERVED TXs
 
         Dim NuOrder As S_Order = New S_Order
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
         Dim FirstTX As S_PFPAT_TX = New S_PFPAT_TX
 
         If TXList.Count > 0 Then
@@ -4926,7 +5871,7 @@ Public Class PFPForm
             End If
         End If
 
-        Dim FirstAmount As Double = ClsSignumAPI.Planck2Dbl(CULng(FirstTX.AmountNQT))
+        Dim FirstAmount As Double = ClsSignumAPI.Planck2Dbl(FirstTX.AmountNQT)
 
         Dim Xitem As String = Between(FirstTX.Attachment, "<xItem>", "</xItem>", GetType(String))
         Dim Xamount As Double = ClsSignumAPI.Planck2Dbl(CULng(Between(FirstTX.Attachment, "<xAmount>", "</xAmount>", GetType(String))))
@@ -4939,11 +5884,11 @@ Public Class PFPForm
 
 
         Dim ResponserRS As String = GetLastTXWithValues(TXList, "", "accepted").SenderRS
-        Dim ResponserID As String = GetLastTXWithValues(TXList, "", "accepted").Sender
-        Dim Status As String = GetLastTXWithValues(TXList, "", "finished").Transaction
+        Dim ResponserID As ULong = GetLastTXWithValues(TXList, "", "accepted").SenderID
+        Dim Status As String = GetLastTXWithValues(TXList, "", "finished").TransactionID.ToString
 
 
-        If Status.Trim = "" Then
+        If Status.Trim = "0" Then
             If ResponserRS.Trim = "" Then
                 Status = "OPEN"
             Else
@@ -4994,7 +5939,7 @@ Public Class PFPForm
 
             For Each ConfirmedTX As S_PFPAT_TX In TXList
 
-                If ConfirmedTX.Type = "BLSTX" And ClsSignumAPI.Planck2Dbl(CULng(ConfirmedTX.AmountNQT)) > 0.0 Then
+                If ConfirmedTX.Type = "BLSTX" And ClsSignumAPI.Planck2Dbl(ConfirmedTX.AmountNQT) > 0.0 Then
 
                     If Status = "CLOSED" Then
 
@@ -5040,15 +5985,15 @@ Public Class PFPForm
 
         If FirstTX.Type = "SellOrder" Then
 
-            Dim WTSAmount As Double = ClsSignumAPI.Planck2Dbl(CULng(FirstTX.AmountNQT)) - Collateral - ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
+            Dim WTSAmount As Double = ClsSignumAPI.Planck2Dbl(FirstTX.AmountNQT) - Collateral - ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
 
             NuOrder = New S_Order With {
-                    .AT = BLSAT.AT,
+                    .ATID = BLSAT.ATID,
                     .ATRS = BLSAT.ATRS,
                     .Type = FirstTX.Type,
-                    .Seller = FirstTX.SenderRS,
-                    .SellerID = FirstTX.Sender,
-                    .Buyer = ResponserRS,
+                    .SellerRS = FirstTX.SenderRS,
+                    .SellerID = FirstTX.SenderID,
+                    .BuyerRS = ResponserRS,
                     .BuyerID = ResponserID,
                     .XItem = Xitem,
                     .XAmount = Xamount,
@@ -5057,7 +6002,7 @@ Public Class PFPForm
                     .Collateral = Collateral,
                     .Status = Status,
                     .Attachment = FirstTX.Attachment.ToString,
-                    .FirstTransaction = FirstTX.Transaction,
+                    .FirstTransaction = FirstTX.TransactionID,
                     .FirstTimestamp = FirstTX.Timestamp,
                     .FirstTX = FirstTX,
                     .LastTX = LastTX
@@ -5067,21 +6012,21 @@ Public Class PFPForm
         ElseIf FirstTX.Type = "BuyOrder" Then
 
             NuOrder = New S_Order With {
-                    .AT = BLSAT.AT,
+                    .ATID = BLSAT.ATID,
                     .ATRS = BLSAT.ATRS,
                     .Type = FirstTX.Type,
-                    .Seller = ResponserRS,
+                    .SellerRS = ResponserRS,
                     .SellerID = ResponserID,
-                    .Buyer = FirstTX.SenderRS,
-                    .BuyerID = FirstTX.Sender,
+                    .BuyerRS = FirstTX.SenderRS,
+                    .BuyerID = FirstTX.SenderID,
                     .XItem = Xitem,
                     .XAmount = Xamount,
                     .Quantity = Collateral,
                     .Price = Xamount / Collateral,
-                    .Collateral = ClsSignumAPI.Planck2Dbl(CULng(FirstTX.AmountNQT) - ClsSignumAPI._GasFeeNQT),
+                    .Collateral = ClsSignumAPI.Planck2Dbl(FirstTX.AmountNQT - ClsSignumAPI._GasFeeNQT),
                     .Status = Status,
                     .Attachment = FirstTX.Attachment.ToString,
-                    .FirstTransaction = FirstTX.Transaction,
+                    .FirstTransaction = FirstTX.TransactionID,
                     .FirstTimestamp = FirstTX.Timestamp,
                     .FirstTX = FirstTX,
                     .LastTX = LastTX
@@ -5093,55 +6038,55 @@ Public Class PFPForm
 
     End Function
 
-    Function GetAccountTXList(ByVal ATID As String, Optional ByVal Node As String = "", Optional FromTimestamp As String = "", Optional ByVal UseBuffer As Boolean = True) As List(Of S_PFPAT_TX)
+    Function GetAccountTXList(ByVal ATID As ULong, Optional ByVal Node As String = "", Optional FromTimestamp As ULong = 0UL, Optional ByVal UseBuffer As Boolean = True) As List(Of S_PFPAT_TX)
 
         If Node = "" Then
             Node = PrimaryNode
         End If
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(Node)
-        BCR.DEXATList = DEXATList
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(Node)
+        SignumAPI.DEXATList = DEXATList
 
 
-        Dim ATTXs As List(Of List(Of String)) = BCR.GetAccountTransactions(ATID, FromTimestamp, UseBuffer)
+        Dim ATTXs As List(Of List(Of String)) = SignumAPI.GetAccountTransactions(ATID, FromTimestamp, UseBuffer)
         Dim BLSTXs As List(Of S_PFPAT_TX) = New List(Of S_PFPAT_TX)
 
         For Each ATTX As List(Of String) In ATTXs
 
-            Dim TX_Type As String = BetweenFromList(ATTX, "<type>", "</type>")
-            Dim TX_Timestamp As String = BetweenFromList(ATTX, "<timestamp>", "</timestamp>")
-            Dim TX_Recipient As String = BetweenFromList(ATTX, "<recipient>", "</recipient>")
-            Dim TX_RecipientRS As String = BetweenFromList(ATTX, "<recipientRS>", "</recipientRS>")
-            Dim TX_AmountNQT As String = BetweenFromList(ATTX, "<amountNQT>", "</amountNQT>")
-            Dim TX_FeeNQT As String = BetweenFromList(ATTX, "<feeNQT>", "</feeNQT>")
-            Dim TX_Transaction As String = BetweenFromList(ATTX, "<transaction>", "</transaction>")
+            Dim TX_Type As String = BetweenFromList(ATTX, "<type>", "</type>",, GetType(String))
+            Dim TX_Timestamp As ULong = BetweenFromList(ATTX, "<timestamp>", "</timestamp>",, GetType(ULong))
+            Dim TX_RecipientID As ULong = BetweenFromList(ATTX, "<recipient>", "</recipient>",, GetType(ULong))
+            Dim TX_RecipientRS As String = BetweenFromList(ATTX, "<recipientRS>", "</recipientRS>",, GetType(String))
+            Dim TX_AmountNQT As ULong = BetweenFromList(ATTX, "<amountNQT>", "</amountNQT>",, GetType(ULong))
+            Dim TX_FeeNQT As ULong = BetweenFromList(ATTX, "<feeNQT>", "</feeNQT>",, GetType(ULong))
+            Dim TX_Transaction As ULong = BetweenFromList(ATTX, "<transaction>", "</transaction>",, GetType(ULong))
 
             'StatusLabel.Text = "checking AT TX: " + TX_Transaction
 
-            MultiInvoker(StatusLabel, "Text", "checking AT TX: " + TX_Transaction)
+            MultiInvoker(StatusLabel, "Text", "checking AT TX: " + TX_Transaction.ToString)
 
 
-            Dim TX_Attachment As String = BetweenFromList(ATTX, "<attachment>", "</attachment>")
+            Dim TX_Attachment As String = BetweenFromList(ATTX, "<attachment>", "</attachment>",, GetType(String))
             If TX_Attachment.Trim = "" Then
-                TX_Attachment = BetweenFromList(ATTX, "<message>", "</message>")
+                TX_Attachment = BetweenFromList(ATTX, "<message>", "</message>",, GetType(String))
             End If
 
 
-            Dim TX_Sender As String = BetweenFromList(ATTX, "<sender>", "</sender>")
-            Dim TX_SenderRS As String = BetweenFromList(ATTX, "<senderRS>", "</senderRS>")
-            Dim TX_Confirmations As String = BetweenFromList(ATTX, "<confirmations>", "</confirmations>")
+            Dim TX_SenderID As ULong = BetweenFromList(ATTX, "<sender>", "</sender>",, GetType(ULong))
+            Dim TX_SenderRS As String = BetweenFromList(ATTX, "<senderRS>", "</senderRS>",, GetType(String))
+            Dim TX_Confirmations As ULong = BetweenFromList(ATTX, "<confirmations>", "</confirmations>",, GetType(ULong))
 
 
             Dim BLSTX As S_PFPAT_TX = New S_PFPAT_TX With {
                     .Type = TX_Type,
                     .Timestamp = TX_Timestamp,
-                    .Recipient = TX_Recipient,
+                    .RecipientID = TX_RecipientID,
                     .RecipientRS = TX_RecipientRS,
                     .AmountNQT = TX_AmountNQT,
                     .FeeNQT = TX_FeeNQT,
-                    .Transaction = TX_Transaction,
+                    .TransactionID = TX_Transaction,
                     .Attachment = TX_Attachment,
-                    .Sender = TX_Sender,
+                    .SenderID = TX_SenderID,
                     .SenderRS = TX_SenderRS,
                     .Confirmations = TX_Confirmations
                 }
@@ -5242,10 +6187,74 @@ Public Class PFPForm
 
     End Function
 
-    Function SendBillingInfos(ByVal RecipientID As String, ByVal Message As String, Optional ByVal Encrypt As Boolean = True)
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-        Dim TX As String = BCR.SendMessage(RecipientID, Message,, Encrypt)
-        Return TX
+    Function SendBillingInfos(ByVal RecipientID As ULong, ByVal Message As String, ByVal ShowPINForm As Boolean, Optional ByVal Encrypt As Boolean = True) As String
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+
+        Dim Masterkeys As List(Of String) = GetPassPhrase()
+
+        If Masterkeys.Count > 0 Then
+            Dim Response As String = SignumAPI.SendMessage(Masterkeys(0), Masterkeys(2), RecipientID, Message,, Encrypt)
+
+            If Response.Contains(Application.ProductName + "-error") Then
+                Return Application.ProductName + "-error in SendBillingInfos(1): -> " + vbCrLf + Response
+            Else
+
+                Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+                Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, Masterkeys(1))
+                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                If TX.Contains(Application.ProductName + "-error") Then
+                    Return Application.ProductName + "-error in SendBillingInfos(2): -> " + vbCrLf + TX
+                Else
+                    Return TX
+                End If
+
+            End If
+
+        Else
+
+            Dim Returner As String = Application.ProductName + "-error in SendBillingInfos(3): -> no Keys"
+
+            If ShowPINForm Then
+
+                Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                PinForm.ShowDialog()
+
+                If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" And Not PinForm.AgreeKey = "" Then
+
+                    Dim Response As String = SignumAPI.SendMessage(PinForm.PublicKey, PinForm.AgreeKey, RecipientID, Message,, Encrypt)
+
+                    If Response.Contains(Application.ProductName + "-error") Then
+                        Return Application.ProductName + "-error in SendBillingInfos(4): -> " + vbCrLf + Response
+                    Else
+
+                        Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                        Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                        Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                        Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                        Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                        If TX.Contains(Application.ProductName + "-error") Then
+                            Return Application.ProductName + "-error in SendBillingInfos(5): -> " + vbCrLf + TX
+                        Else
+                            Return TX
+                        End If
+
+                    End If
+
+                Else
+                    Return Returner
+                End If
+
+            Else
+                Return Returner
+            End If
+
+        End If
+
     End Function
 
 #End Region
@@ -5275,7 +6284,7 @@ Public Class PFPForm
     End Structure
     Function GetCandles(ByVal XItem As String, ByVal Orders As List(Of S_Order), ByVal ChartRangeDays As Integer, Optional ByVal ResolutionMin As Integer = 1) As List(Of S_Candle)
 
-        Orders = Orders.OrderBy(Function(s) CDbl(s.LastTX.Timestamp)).ToList
+        Orders = Orders.OrderBy(Function(s) s.LastTX.Timestamp).ToList
 
         Dim GridNow As Date = GetGriddedTime(Now, ResolutionMin)
 
@@ -5298,7 +6307,7 @@ Public Class PFPForm
                     Continue For
                 End If
 
-                Dim TempDay As Date = ConvertLongMSToDate(Order.LastTX.Timestamp)
+                Dim TempDay As Date = ConvertULongMSToDate(Order.LastTX.Timestamp)
 
                 If TempDay > RangeStart And TempDay < CurrentDay Then
 
@@ -5469,73 +6478,24 @@ Public Class PFPForm
 #Region "Checking UTX/TX"
     Function CheckForUTX(Optional ByVal SenderRS As String = "", Optional ByVal RecipientRS As String = "", Optional ByVal SearchAttachmentHEX As String = "") As Boolean
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
 
-        Dim T_UTXList As List(Of List(Of String)) = BCR.GetUnconfirmedTransactions()
+        Dim T_UTXList As List(Of List(Of String)) = SignumAPI.GetUnconfirmedTransactions()
 
         For Each UTX In T_UTXList
 
-            Dim TX_SenderRS As String = BetweenFromList(UTX, "<senderRS>", "</senderRS>")
-            Dim TX_RecipientRS As String = BetweenFromList(UTX, "<recipientRS>", "</recipientRS>")
+            Dim TX_SenderRS As String = BetweenFromList(UTX, "<senderRS>", "</senderRS>",, GetType(String))
+            Dim TX_RecipientRS As String = BetweenFromList(UTX, "<recipientRS>", "</recipientRS>",, GetType(String))
 
             If (TX_SenderRS = SenderRS Or SenderRS = "") And (RecipientRS = TX_RecipientRS Or RecipientRS = "") And Not (SenderRS = "" And RecipientRS = "") Then
 
-                Dim T_Msg As String = BetweenFromList(UTX, "<message>", "</message>")
+                Dim T_Msg As String = BetweenFromList(UTX, "<message>", "</message>",, GetType(String))
                 If T_Msg.ToLower.Trim = SearchAttachmentHEX.ToLower.Trim Or SearchAttachmentHEX = "" Then
                     Return True
                 End If
 
-
-                'Dim EncMessage As String = BCR.BetweenFromList(UTX, "<data>", "</data>")
-                'If Not EncMessage.Trim = "" Then
-
-                '    Dim Transaction As String = BCR.BetweenFromList(UTX, "<transaction>", "</transaction>")
-                '    Dim DecryptedMsg As String = BCR.ReadMessage(Transaction)
-
-                '    DecryptedMsg = DecryptedMsg
-
-                'End If
-
-
             End If
 
-
-            'For Each UTXKey As String In UTX
-
-            '    Select Case True
-            '        Case UTXKey.Contains("<timestamp>")
-
-            '        Case UTXKey.Contains("<amountNQT>")
-
-            '        Case UTXKey.Contains("<feeNQT>")
-
-            '        Case UTXKey.Contains("<transaction>")
-
-            '        Case UTXKey.Contains("<attachment>")
-
-            '        Case UTXKey.Contains("<sender>")
-
-            '        Case UTXKey.Contains("<senderRS>")
-            '            'Dim SenderRS As String = BCR.Between(UTXKey, "<senderRS>", "</senderRS>")
-
-            '            'If SenderRS = AddressRS Then
-            '            '    Return True
-            '            'End If
-
-            '        Case UTXKey.Contains("<recipient>")
-
-            '        Case UTXKey.Contains("<recipientRS>")
-            '            'Dim RecipientRS As String = BCR.Between(UTXKey, "<recipientRS>", "</recipientRS>")
-
-            '            'If RecipientRS = AddressRS Then
-            '            '    Return True
-            '            'End If
-
-            '        Case UTXKey.Contains("<height>")
-
-            '    End Select
-
-            'Next
 
         Next
 
@@ -5543,42 +6503,33 @@ Public Class PFPForm
 
     End Function
 
-    Function CheckForTX(ByVal SenderRS As String, ByVal RecipientRS As String, ByVal FromTimestamp As String, ByVal SearchAttachment As String) As Boolean
+    Function CheckForTX(ByVal SenderRS As String, ByVal RecipientRS As String, ByVal FromTimestamp As ULong, ByVal SearchAttachment As String) As Boolean
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI
-        BCR.DEXATList = DEXATList
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI
+        SignumAPI.DEXATList = DEXATList
         Dim AccountAddressList As List(Of String) = New List(Of String)
 
-        'If Not SenderRS.Trim = "" Then
-        AccountAddressList = BCR.RSConvert(SenderRS)
-        'Else
-        '    AccountAddressList = BCR.RSConvert(RecipientRS)
-        'End If
-
+        AccountAddressList = SignumAPI.RSConvert(SenderRS)
 
         Dim T_Account As String = Between(AccountAddressList(0), "<account>", "</account>")
 
-        Dim TXList As List(Of List(Of String)) = BCR.GetAccountTransactions(T_Account, FromTimestamp, True)
+        Dim TXList As List(Of List(Of String)) = SignumAPI.GetAccountTransactions(T_Account, FromTimestamp, True)
 
         Dim AnswerTX As List(Of String) = New List(Of String)
 
         For Each T_TX In TXList
 
-            Dim TX_SenderRS As String = BetweenFromList(T_TX, "<senderRS>", "</senderRS>")
-            Dim TX_RecipientRS As String = BetweenFromList(T_TX, "<recipientRS>", "</recipientRS>")
+            Dim TX_SenderRS As String = BetweenFromList(T_TX, "<senderRS>", "</senderRS>",, GetType(String))
+            Dim TX_RecipientRS As String = BetweenFromList(T_TX, "<recipientRS>", "</recipientRS>",, GetType(String))
 
 
             If TX_SenderRS = SenderRS And RecipientRS = TX_RecipientRS And Not (SenderRS = "" And RecipientRS = "") Then
 
-                Dim T_Msg As String = BetweenFromList(T_TX, "<message>", "</message>")
+                Dim T_Msg As String = BetweenFromList(T_TX, "<message>", "</message>",, GetType(String))
 
                 If T_Msg.Trim = "" Then
-                    T_Msg = BetweenFromList(T_TX, "<method>", "</method>")
+                    T_Msg = BetweenFromList(T_TX, "<method>", "</method>",, GetType(String))
                 End If
-
-                'If SearchAttachment = "" Then
-                '    Return True
-                'End If
 
                 If T_Msg.ToLower.Trim = SearchAttachment.ToLower.Trim Then
                     Return True
@@ -5591,19 +6542,19 @@ Public Class PFPForm
         Return False
 
     End Function
-    Function CheckForTX(ByVal SenderRS As String, ByVal RecipientRS As String, ByVal FromTimestamp As String, ByVal SearchAttachment As ULong) As Boolean
+    Function CheckForTX(ByVal SenderRS As String, ByVal RecipientRS As String, ByVal FromTimestamp As ULong, ByVal SearchAttachment As ULong) As Boolean
 
-        Dim BCR1 As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-        Dim CheckAttachment As String = BCR1.ULngList2DataStr(New List(Of ULong)({SearchAttachment}))
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+        Dim CheckAttachment As String = SignumAPI.ULngList2DataStr(New List(Of ULong)({SearchAttachment}))
 
         Return CheckForTX(SenderRS, RecipientRS, FromTimestamp, CheckAttachment)
 
     End Function
 
-    Function CheckATforTX(ByVal ATID As String) As Boolean
+    Function CheckATforTX(ByVal ATID As ULong) As Boolean
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
-        Dim T_Timestamp As String = BCR.TimeToUnix(Now.AddDays(-1)).ToString
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+        Dim T_Timestamp As ULong = SignumAPI.TimeToUnix(Now.AddDays(-1))
 
         Dim ATTXList As List(Of S_PFPAT_TX) = GetAccountTXList(ATID,, T_Timestamp)
 
@@ -5622,40 +6573,46 @@ Public Class PFPForm
     End Function
 
     Function CheckBillingInfosAlreadySend(ByVal Order As S_Order) As String
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-        BCR.DEXATList = DEXATList
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, False)
+        SignumAPI.DEXATList = DEXATList
 
-        Dim T_UTXList As List(Of List(Of String)) = BCR.GetUnconfirmedTransactions()
+        Dim SignumNET As ClsSignumNET = New ClsSignumNET()
+
+        Dim T_UTXList As List(Of List(Of String)) = SignumAPI.GetUnconfirmedTransactions()
         T_UTXList.Reverse()
 
         For Each UTX As List(Of String) In T_UTXList
 
-            Dim TX As String = BetweenFromList(UTX, "<transaction>", "</transaction>")
-            Dim Sender As String = BetweenFromList(UTX, "<senderRS>", "</senderRS>")
-            Dim Recipient As String = BetweenFromList(UTX, "<recipientRS>", "</recipientRS>")
+            'Dim TX As String = BetweenFromListi(UTX, "<transaction>", "</transaction>")
+            Dim Sender As String = BetweenFromList(UTX, "<senderRS>", "</senderRS>",, GetType(String))
+            Dim Recipient As String = BetweenFromList(UTX, "<recipientRS>", "</recipientRS>",, GetType(String))
 
-            If Sender = Order.Seller And Recipient = Order.Buyer Then
+            If Sender = Order.SellerRS And Recipient = Order.BuyerRS Then
 
-                Dim Data As String = BetweenFromList(UTX, "<data>", "</data>")
-                Dim Nonce As String = BetweenFromList(UTX, "<nonce>", "</nonce>")
+                Dim Data As String = BetweenFromList(UTX, "<data>", "</data>",, GetType(String))
+                Dim Nonce As String = BetweenFromList(UTX, "<nonce>", "</nonce>",, GetType(String))
 
                 If Data.Trim = "" Or Nonce.Trim = "" Then
                     'no
                 Else
 
-                    Dim VSAcc As String = Order.Buyer
-                    If TBSNOAddress.Text.Trim = VSAcc Then
-                        VSAcc = Order.Seller
+                    Dim VSAcc As ULong = Order.BuyerID
+                    If GetAccountIDFromRS(TBSNOAddress.Text.Trim) = VSAcc Then
+                        VSAcc = Order.SellerID
                     End If
 
-                    Dim DecryptedMsg As String = BCR.DecryptFrom(VSAcc, Data, Nonce)
+                    Dim PubKey As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(VSAcc.ToString)
+
+
+
+                    Dim DecryptedMsg As String = SignumNET.DecryptFrom(PubKey, Data, Nonce)
 
                     If Not MessageIsHEXString(DecryptedMsg) Then
 
                         If DecryptedMsg.Contains("AT=") And DecryptedMsg.Contains("TX=") Then
 
                             Dim DCAT As String = Between(DecryptedMsg, "AT=", " TX=", GetType(String))
-                            Dim DCTransaction As String = Between(DecryptedMsg, "TX=", " ", GetType(String))
+                            Dim DCTransaction As ULong = Between(DecryptedMsg, "TX=", " ", GetType(ULong))
 
                             If DCAT = Order.ATRS And DCTransaction = Order.FirstTransaction Then
                                 Return DecryptedMsg
@@ -5671,28 +6628,32 @@ Public Class PFPForm
 
                 End If
 
-            ElseIf Sender = Order.Buyer And Recipient = Order.Seller Then
+            ElseIf Sender = Order.BuyerRS And Recipient = Order.SellerRS Then
 
-                Dim Data As String = BetweenFromList(UTX, "<data>", "</data>")
-                Dim Nonce As String = BetweenFromList(UTX, "<nonce>", "</nonce>")
+                Dim Data As String = BetweenFromList(UTX, "<data>", "</data>",, GetType(String))
+                Dim Nonce As String = BetweenFromList(UTX, "<nonce>", "</nonce>",, GetType(String))
 
                 If Data.Trim = "" Or Nonce.Trim = "" Then
                     'no
                 Else
 
-                    Dim VSAcc As String = Order.Seller
-                    If TBSNOAddress.Text.Trim = VSAcc Then
-                        VSAcc = Order.Buyer
+                    Dim VSAcc As ULong = Order.SellerID
+                    If GetAccountIDFromRS(TBSNOAddress.Text.Trim) = VSAcc Then
+                        VSAcc = Order.BuyerID
                     End If
 
-                    Dim DecryptedMsg As String = BCR.DecryptFrom(VSAcc, Data, Nonce)
+                    Dim PubKey As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(VSAcc.ToString)
+
+
+
+                    Dim DecryptedMsg As String = SignumNET.DecryptFrom(PubKey, Data, Nonce)
 
                     If Not MessageIsHEXString(DecryptedMsg) Then
 
                         If DecryptedMsg.Contains("AT=") And DecryptedMsg.Contains("TX=") Then
 
                             Dim DCAT As String = Between(DecryptedMsg, "AT=", " TX=", GetType(String))
-                            Dim DCTransaction As String = Between(DecryptedMsg, "TX=", " ", GetType(String))
+                            Dim DCTransaction As ULong = Between(DecryptedMsg, "TX=", " ", GetType(ULong))
 
                             If DCAT = Order.ATRS And DCTransaction = Order.FirstTransaction Then
                                 Return DecryptedMsg
@@ -5712,26 +6673,26 @@ Public Class PFPForm
         Next
 
 
-        Dim TXList As List(Of List(Of String)) = BCR.GetAccountTransactions(Order.BuyerID, Order.FirstTimestamp, True)
+        Dim TXList As List(Of List(Of String)) = SignumAPI.GetAccountTransactions(Order.BuyerID, Order.FirstTimestamp, True)
         TXList.Reverse()
 
         For Each SearchTX As List(Of String) In TXList
 
-            Dim TX As String = BetweenFromList(SearchTX, "<transaction>", "</transaction>")
-            Dim Sender As String = BetweenFromList(SearchTX, "<senderRS>", "</senderRS>")
-            Dim Recipient As String = BetweenFromList(SearchTX, "<recipientRS>", "</recipientRS>")
+            Dim TX As ULong = BetweenFromList(SearchTX, "<transaction>", "</transaction>",, GetType(ULong))
+            Dim SenderRS As String = BetweenFromList(SearchTX, "<senderRS>", "</senderRS>",, GetType(String))
+            Dim RecipientRS As String = BetweenFromList(SearchTX, "<recipientRS>", "</recipientRS>",, GetType(String))
 
-            If Sender = Order.Seller And Recipient = Order.Buyer Then
+            If SenderRS = Order.SellerRS And RecipientRS = Order.BuyerRS Then
 
-                Dim DecryptedMsg As String = BCR.ReadMessage(TX)
+                Dim DecryptedMsg As String = SignumAPI.ReadMessage(TX, GetAccountIDFromRS(TBSNOAddress.Text))
 
                 If Not MessageIsHEXString(DecryptedMsg) Then
 
                     If DecryptedMsg.Contains("AT=") And DecryptedMsg.Contains("TX=") Then
-                        Dim DCAT As String = Between(DecryptedMsg, "AT=", " TX=", GetType(String))
-                        Dim DCTransaction As String = Between(DecryptedMsg, "TX=", " ", GetType(String))
+                        Dim DCATRS As String = Between(DecryptedMsg, "AT=", " TX=", GetType(String))
+                        Dim DCTransaction As ULong = Between(DecryptedMsg, "TX=", " ", GetType(ULong))
 
-                        If DCAT = Order.ATRS And DCTransaction = Order.FirstTransaction Then
+                        If DCATRS = Order.ATRS And DCTransaction = Order.FirstTransaction Then
                             Return DecryptedMsg
                         End If
                     ElseIf DecryptedMsg.Contains(Application.ProductName + "-error") Then
@@ -5741,18 +6702,18 @@ Public Class PFPForm
                     Return Application.ProductName + "-error in CheckBillingInfosAlreadySend(3): -> " + DecryptedMsg
                 End If
 
-            ElseIf Sender = Order.Buyer And Recipient = Order.Seller Then
+            ElseIf SenderRS = Order.BuyerRS And RecipientRS = Order.SellerRS Then
 
-                Dim DecryptedMsg As String = BCR.ReadMessage(TX)
+                Dim DecryptedMsg As String = SignumAPI.ReadMessage(TX, GetAccountIDFromRS(TBSNOAddress.Text))
 
                 If Not MessageIsHEXString(DecryptedMsg) Then
 
                     If DecryptedMsg.Contains("AT=") And DecryptedMsg.Contains("TX=") Then
 
-                        Dim DCAT As String = Between(DecryptedMsg, "AT=", " TX=", GetType(String))
-                        Dim DCTransaction As String = Between(DecryptedMsg, "TX=", " ", GetType(String))
+                        Dim DCATRS As String = Between(DecryptedMsg, "AT=", " TX=", GetType(String))
+                        Dim DCTransaction As ULong = Between(DecryptedMsg, "TX=", " ", GetType(ULong))
 
-                        If DCAT = Order.ATRS And DCTransaction = Order.FirstTransaction Then
+                        If DCATRS = Order.ATRS And DCTransaction = Order.FirstTransaction Then
                             Return DecryptedMsg
                         End If
                     ElseIf DecryptedMsg.Contains(Application.ProductName + "-error") Then
@@ -5773,37 +6734,42 @@ Public Class PFPForm
 
     Function CheckPaymentAlreadySend(ByVal Order As S_Order) As String
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, TBSNOPassPhrase.Text)
-        BCR.DEXATList = DEXATList
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, False)
+        SignumAPI.DEXATList = DEXATList
 
-        Dim T_UTXList As List(Of List(Of String)) = BCR.GetUnconfirmedTransactions()
+        Dim SignumNET As ClsSignumNET = New ClsSignumNET()
+
+        Dim T_UTXList As List(Of List(Of String)) = SignumAPI.GetUnconfirmedTransactions()
         T_UTXList.Reverse()
 
-        Dim TXList As List(Of List(Of String)) = BCR.GetAccountTransactions(Order.SellerID, Order.FirstTimestamp, True)
+        Dim TXList As List(Of List(Of String)) = SignumAPI.GetAccountTransactions(Order.SellerID, Order.FirstTimestamp, True)
         TXList.Reverse()
 
         For Each UTX As List(Of String) In T_UTXList
 
-            Dim TX As String = BetweenFromList(UTX, "<transaction>", "</transaction>")
-            Dim Sender As String = BetweenFromList(UTX, "<senderRS>", "</senderRS>")
-            Dim Recipient As String = BetweenFromList(UTX, "<recipientRS>", "</recipientRS>")
+            'Dim TXID As ulong = BetweenFromList(UTX, "<transaction>", "</transaction>",,GetType(ulong))
+            Dim SenderRS As String = BetweenFromList(UTX, "<senderRS>", "</senderRS>",, GetType(String))
+            Dim RecipientRS As String = BetweenFromList(UTX, "<recipientRS>", "</recipientRS>",, GetType(String))
 
-            If Sender = Order.Buyer And Recipient = Order.Seller Then
+            If SenderRS = Order.BuyerRS And RecipientRS = Order.SellerRS Then
 
-                Dim Data As String = BetweenFromList(UTX, "<data>", "</data>")
-                Dim Nonce As String = BetweenFromList(UTX, "<nonce>", "</nonce>")
+                Dim Data As String = BetweenFromList(UTX, "<data>", "</data>",, GetType(String))
+                Dim Nonce As String = BetweenFromList(UTX, "<nonce>", "</nonce>",, GetType(String))
 
                 If Data.Trim = "" Or Nonce.Trim = "" Then
                     'no
                 Else
-                    Dim DecryptedMsg As String = BCR.DecryptFrom(Order.Seller, Data, Nonce)
+
+                    Dim PubKey As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(Order.SellerRS)
+
+                    Dim DecryptedMsg As String = SignumNET.DecryptFrom(PubKey, Data, Nonce)
 
                     If Not MessageIsHEXString(DecryptedMsg) Then
 
                         If DecryptedMsg.Contains("AT=") And DecryptedMsg.Contains("TX=") Then
 
                             Dim DCAT As String = Between(DecryptedMsg, "AT=", " TX=", GetType(String))
-                            Dim DCTransaction As String = Between(DecryptedMsg, "TX=", " ", GetType(String))
+                            Dim DCTransaction As ULong = Between(DecryptedMsg, "TX=", " ", GetType(ULong))
 
 
                             If DCAT = Order.ATRS And DCTransaction = Order.FirstTransaction Then
@@ -5829,20 +6795,20 @@ Public Class PFPForm
 
         For Each SearchTX As List(Of String) In TXList
 
-            Dim TX As String = BetweenFromList(SearchTX, "<transaction>", "</transaction>")
-            Dim Sender As String = BetweenFromList(SearchTX, "<senderRS>", "</senderRS>")
-            Dim Recipient As String = BetweenFromList(SearchTX, "<recipientRS>", "</recipientRS>")
+            Dim TXID As ULong = BetweenFromList(SearchTX, "<transaction>", "</transaction>",, GetType(ULong))
+            Dim SenderRS As String = BetweenFromList(SearchTX, "<senderRS>", "</senderRS>",, GetType(String))
+            Dim RecipientRS As String = BetweenFromList(SearchTX, "<recipientRS>", "</recipientRS>",, GetType(String))
 
-            If Sender = Order.Buyer And Recipient = Order.Seller Then
+            If SenderRS = Order.BuyerRS And RecipientRS = Order.SellerRS Then
 
-                Dim DecryptedMsg As String = BCR.ReadMessage(TX)
+                Dim DecryptedMsg As String = SignumAPI.ReadMessage(TXID, GetAccountIDFromRS(TBSNOAddress.Text))
 
                 If DecryptedMsg.Contains("AT=") And DecryptedMsg.Contains("TX=") Then
 
-                    Dim DCAT As String = Between(DecryptedMsg, "AT=", " TX=", GetType(String))
-                    Dim DCTransaction As String = Between(DecryptedMsg, "TX=", " ", GetType(String))
+                    Dim DCATRS As String = Between(DecryptedMsg, "AT=", " TX=", GetType(String))
+                    Dim DCTransaction As ULong = Between(DecryptedMsg, "TX=", " ", GetType(ULong))
 
-                    If DCAT = Order.ATRS And DCTransaction = Order.FirstTransaction Then
+                    If DCATRS = Order.ATRS And DCTransaction = Order.FirstTransaction Then
                         Return DecryptedMsg
                     End If
                 Else
@@ -5863,14 +6829,14 @@ Public Class PFPForm
     End Function
 
 
-    Function SetAutoinfoTX2INI(ByVal TX As String) As Boolean
+    Function SetAutoinfoTX2INI(ByVal TXID As ULong) As Boolean
 
         Dim AutoinfoTXStr As String = GetINISetting(E_Setting.AutoInfoTransactions, "")
 
         If AutoinfoTXStr.Trim = "" Then
-            AutoinfoTXStr = TX + ";"
+            AutoinfoTXStr = TXID.ToString + ";"
         ElseIf AutoinfoTXStr.Contains(";") Then
-            AutoinfoTXStr += TX + ";"
+            AutoinfoTXStr += TXID.ToString + ";"
         End If
 
         SetINISetting(E_Setting.AutoInfoTransactions, AutoinfoTXStr.Trim)
@@ -5878,7 +6844,7 @@ Public Class PFPForm
         Return True
 
     End Function
-    Function GetAutoinfoTXFromINI(ByVal TX As String) As Boolean
+    Function GetAutoinfoTXFromINI(ByVal TXID As ULong) As Boolean
 
         Dim AutoinfoTXStr As String = GetINISetting(E_Setting.AutoInfoTransactions, "")
         Dim AutoinfoTXList As List(Of String) = New List(Of String)
@@ -5898,7 +6864,7 @@ Public Class PFPForm
 
 
         For Each AutoinfoTX As String In AutoinfoTXList
-            If TX = AutoinfoTX Then
+            If TXID.ToString = AutoinfoTX Then
                 Return True
             End If
         Next
@@ -5906,16 +6872,16 @@ Public Class PFPForm
         Return False
 
     End Function
-    Function DelAutoinfoTXFromINI(ByVal TX As String) As Boolean
+    Function DelAutoinfoTXFromINI(ByVal TXID As ULong) As Boolean
 
         Dim AutoinfoTXStr As String = GetINISetting(E_Setting.AutoInfoTransactions, "")
         Dim AutoinfoTXList As List(Of String) = New List(Of String)
 
         Dim Returner As Boolean = False
 
-        If AutoinfoTXStr.Contains(TX + ";") Then
+        If AutoinfoTXStr.Contains(TXID.ToString + ";") Then
             Returner = True
-            AutoinfoTXStr = AutoinfoTXStr.Replace(TX + ";", "")
+            AutoinfoTXStr = AutoinfoTXStr.Replace(TXID.ToString + ";", "")
         End If
 
         SetINISetting(E_Setting.AutoInfoTransactions, AutoinfoTXStr.Trim)
@@ -5925,14 +6891,14 @@ Public Class PFPForm
     End Function
 
 
-    Function SetAutosignalTX2INI(ByVal TX As String) As Boolean
+    Function SetAutosignalTX2INI(ByVal TXID As ULong) As Boolean
 
         Dim AutosignalTXStr As String = GetINISetting(E_Setting.AutoSignalTransactions, "")
 
         If AutosignalTXStr.Trim = "" Then
-            AutosignalTXStr = TX + ";"
+            AutosignalTXStr = TXID.ToString + ";"
         ElseIf AutosignalTXStr.Contains(";") Then
-            AutosignalTXStr += TX + ";"
+            AutosignalTXStr += TXID.ToString + ";"
         End If
 
         SetINISetting(E_Setting.AutoSignalTransactions, AutosignalTXStr.Trim)
@@ -5940,7 +6906,7 @@ Public Class PFPForm
         Return True
 
     End Function
-    Function GetAutosignalTXFromINI(ByVal TX As String) As Boolean
+    Function GetAutosignalTXFromINI(ByVal TXID As ULong) As Boolean
 
         Dim AutosignalTXStr As String = GetINISetting(E_Setting.AutoSignalTransactions, "")
         Dim AutosignalTXList As List(Of String) = New List(Of String)
@@ -5960,7 +6926,7 @@ Public Class PFPForm
 
 
         For Each AutosignalTX As String In AutosignalTXList
-            If TX = AutosignalTX Then
+            If TXID.ToString = AutosignalTX Then
                 Return True
             End If
         Next
@@ -5968,16 +6934,16 @@ Public Class PFPForm
         Return False
 
     End Function
-    Function DelAutosignalTXFromINI(ByVal TX As String) As Boolean
+    Function DelAutosignalTXFromINI(ByVal TXID As ULong) As Boolean
 
         Dim AutosignalTXStr As String = GetINISetting(E_Setting.AutoSignalTransactions, "")
         Dim AutosignalTXList As List(Of String) = New List(Of String)
 
         Dim Returner As Boolean = False
 
-        If AutosignalTXStr.Contains(TX + ";") Then
+        If AutosignalTXStr.Contains(TXID.ToString + ";") Then
             Returner = True
-            AutosignalTXStr = AutosignalTXStr.Replace(TX + ";", "")
+            AutosignalTXStr = AutosignalTXStr.Replace(TXID.ToString + ";", "")
         End If
 
         SetINISetting(E_Setting.AutoSignalTransactions, AutosignalTXStr.Trim)
@@ -5997,9 +6963,9 @@ Public Class PFPForm
 
         Return String.Format("{0:#0." + DecStr + "}", Dbl)
     End Function
-    Function ConvertLongMSToDate(ByVal LongS As Long) As Date
+    Function ConvertULongMSToDate(ByVal LongS As ULong) As Date
         Dim StartDate As Date = New DateTime(2014, 8, 11, 4, 0, 0)
-        StartDate = StartDate.AddSeconds(LongS)
+        StartDate = StartDate.AddSeconds(CDbl(LongS))
         Return StartDate
     End Function
 
@@ -6015,19 +6981,19 @@ Public Class PFPForm
     End Structure
 
     Sub GetNuBlock(ByVal Node As Object)
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(Node)
-        NuBlock = BCR.GetCurrentBlock
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(Node)
+        NuBlock = SignumAPI.GetCurrentBlock
     End Sub
 
     Sub BlockFeeThread(ByVal Node As Object)
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI(Node)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(Node)
         MultiInvoker(StatusBlockLabel, "Text", "New Blockheight: " + Block.ToString)
 
-        Fee = BCR.GetSlotFee
+        Fee = SignumAPI.GetSlotFee
         MultiInvoker(StatusFeeLabel, "Text", "Current Slotfee: " + String.Format("{0:#0.00000000}", Fee))
 
-        UTXList = BCR.C_UTXList
+        UTXList = SignumAPI.C_UTXList
 
     End Sub
 
@@ -6047,13 +7013,13 @@ Public Class PFPForm
 
             Dim Cnt As Integer = APIRequestList.Count
 
-                For i As Integer = 0 To Cnt - 1
+            For i As Integer = 0 To Cnt - 1
 
-                    Dim Request As S_APIRequest = New S_APIRequest
+                Dim Request As S_APIRequest = New S_APIRequest
 
-                    If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
-                        Continue While
-                    End If
+                If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
+                    Continue While
+                End If
 
 
                 Try
@@ -6075,22 +7041,22 @@ Public Class PFPForm
                     End If
 
                     Exit While
-                    End If
+                End If
 
-                    If Request.Status = "Wait..." Then
+                If Request.Status = "Wait..." Then
 
-                        If NuNodeList.Count > 0 Then
-                            Request.Node = NuNodeList(0)
+                    If NuNodeList.Count > 0 Then
+                        Request.Node = NuNodeList(0)
 
-                            Request.RequestThread = New Threading.Thread(AddressOf SubGetThread)
-                            Request.Status = "Requesting..."
-                            Request.RequestThread.Start({i, Request})
+                        Request.RequestThread = New Threading.Thread(AddressOf SubGetThread)
+                        Request.Status = "Requesting..."
+                        Request.RequestThread.Start({i, Request})
 
-                            NuNodeList.RemoveAt(0)
+                        NuNodeList.RemoveAt(0)
 
-                            If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
-                                Continue While
-                            End If
+                        If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
+                            Continue While
+                        End If
 
                         'Try
                         APIRequestList(i) = Request
@@ -6101,26 +7067,26 @@ Public Class PFPForm
 
                         Continue For
 
-                        End If
+                    End If
 
-                    ElseIf Request.Status = "Not Ready..." Then
+                ElseIf Request.Status = "Not Ready..." Then
 
-                        NuNodeList.Remove(Request.Node)
-                        NodeList.Remove(Request.Node)
-                        NodeList.Add(Request.Node)
+                    NuNodeList.Remove(Request.Node)
+                    NodeList.Remove(Request.Node)
+                    NodeList.Add(Request.Node)
 
-                        If NuNodeList.Count > 0 Then
-                            Request.Node = NuNodeList(0)
-                        End If
+                    If NuNodeList.Count > 0 Then
+                        Request.Node = NuNodeList(0)
+                    End If
 
-                        Request.RequestThread = New Threading.Thread(AddressOf SubGetThread)
-                        Request.Status = "Requesting..."
+                    Request.RequestThread = New Threading.Thread(AddressOf SubGetThread)
+                    Request.Status = "Requesting..."
 
-                        If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
-                            Continue While
-                        End If
+                    If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
+                        Continue While
+                    End If
 
-                        Request.RequestThread.Start({i, Request})
+                    Request.RequestThread.Start({i, Request})
 
                     'Try
                     APIRequestList(i) = Request
@@ -6130,21 +7096,21 @@ Public Class PFPForm
                     'End Try
 
                 ElseIf Request.Status = "Requesting..." Then
-                        'loadbalancing
-                        NuNodeList.Remove(Request.Node)
-                    ElseIf Request.Status = "Responsed" Then
+                    'loadbalancing
+                    NuNodeList.Remove(Request.Node)
+                ElseIf Request.Status = "Responsed" Then
 
-                        Request.Status = "Ready"
+                    Request.Status = "Ready"
 
-                        Dim founded As Boolean = False
+                    Dim founded As Boolean = False
 
-                        For Each Node In NuNodeList
-                            If Node = Request.Node Then
-                                founded = True
+                    For Each Node In NuNodeList
+                        If Node = Request.Node Then
+                            founded = True
 
-                                If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
-                                    Continue While
-                                End If
+                            If APIRequestList.Count < Cnt And i >= APIRequestList.Count Then
+                                Continue While
+                            End If
 
                             'Try
                             APIRequestList(i) = Request
@@ -6154,17 +7120,17 @@ Public Class PFPForm
                             'End Try
 
                             Exit For
-                            End If
-                        Next
-
-                        If Not founded Then
-                            'loadbalancing
-                            NuNodeList.Add(Request.Node)
                         End If
+                    Next
 
+                    If Not founded Then
+                        'loadbalancing
+                        NuNodeList.Add(Request.Node)
                     End If
 
-                Next
+                End If
+
+            Next
 
             'Catch ex As Exception
             '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
@@ -6223,223 +7189,208 @@ Public Class PFPForm
     ''' <param name="Input">The input to work with Input(0) = List-Index; Input(1) = APIRequest</param>
     Sub SubGetThread(ByVal Input As Object)
 
-        Try
+        'Try
 
-            Dim Index As Integer = DirectCast(Input(0), Integer)
-            Dim Request As S_APIRequest = DirectCast(Input(1), S_APIRequest)
+        Dim Index As Integer = DirectCast(Input(0), Integer)
+        Dim Request As S_APIRequest = DirectCast(Input(1), S_APIRequest)
 
-            Dim Command As String = Request.Command
+        Dim Command As String = Request.Command
 
-            Dim Parameter As String = Between(Command, "(", ")", GetType(String), True)
-            Command = Command.Replace(Parameter, "")
-            Dim ParameterList As List(Of String) = New List(Of String)
+        Dim Parameter As String = Between(Command, "(", ")", GetType(String), True)
+        Command = Command.Replace(Parameter, "")
+        Dim ParameterList As List(Of String) = New List(Of String)
 
-            If Parameter.Contains(",") Then
-                ParameterList.AddRange(Parameter.Split(","))
-            Else
-                ParameterList.Add(Parameter)
-            End If
+        If Parameter.Contains(",") Then
+            ParameterList.AddRange(Parameter.Split(","))
+        Else
+            ParameterList.Add(Parameter)
+        End If
 
-            Select Case Command
+        Dim T_ATID As ULong = CULng(ParameterList(0))
 
-                Case "GetDetails()"
+        Select Case Command
 
-                    Dim SignaAPI As ClsSignumAPI = New ClsSignumAPI(Request.Node)
-                    Dim ATStrList As List(Of String) = SignaAPI.GetATDetails(ParameterList(0))
+            Case "GetDetails()"
 
-                    If Not ATStrList.Count = 0 Then
+                Dim SignaAPI As ClsSignumAPI = New ClsSignumAPI(Request.Node)
+                Dim ATStrList As List(Of String) = SignaAPI.GetATDetails(T_ATID)
 
-                        Dim AT As String = BetweenFromList(ATStrList, "<at>", "</at>")
-                        Dim ATRS As String = BetweenFromList(ATStrList, "<atRS>", "</atRS>")
-                        Dim REFMC As String = BetweenFromList(ATStrList, "<referenceMachineCode>", "</referenceMachineCode>")
+                If Not ATStrList.Count = 0 Then
 
-                        If REFMC.Trim <> "True" And REFMC.Trim <> "False" Then
-                            REFMC = "False"
-                        End If
+                    Dim ATID As ULong = BetweenFromList(ATStrList, "<at>", "</at>",, GetType(ULong))
 
-                        Dim ReferenceMachineCode As Boolean = CBool(REFMC)
+                    'Try
+                    '    ATID =
+                    'Catch ex As Exception
+                    '    If GetINISetting(E_Setting.InfoOut, False) Then
+                    '        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                    '        Out.ErrorLog2File(Application.ProductName + "-error in SubGetThread(AT): -> " + ex.Message)
+                    '    End If
+                    'End Try
 
-                        If ReferenceMachineCode Then
+                    Dim ATRS As String = BetweenFromList(ATStrList, "<atRS>", "</atRS>",, GetType(String))
+                    Dim REFMC As String = BetweenFromList(ATStrList, "<referenceMachineCode>", "</referenceMachineCode>",, GetType(String))
+
+                    If REFMC.Trim <> "True" And REFMC.Trim <> "False" Then
+                        REFMC = "False"
+                    End If
+
+                    Dim ReferenceMachineCode As Boolean = CBool(REFMC)
+
+                    If ReferenceMachineCode Then
 
 #Region "get AT details"
 
-                            Dim Creator As String = BetweenFromList(ATStrList, "<creator>", "</creator>")
-                            Dim CreatorRS As String = BetweenFromList(ATStrList, "<creatorRS>", "</creatorRS>")
-                            Dim Name As String = BetweenFromList(ATStrList, "<name>", "</name>")
-                            Dim Description As String = BetweenFromList(ATStrList, "<description>", "</description>")
+                        Dim CreatorID As ULong = BetweenFromList(ATStrList, "<creator>", "</creator>",, GetType(ULong))
 
-                            Dim Balance As String = BetweenFromList(ATStrList, "<balanceNQT>", "</balanceNQT>")
-                            If Balance = "" Then
-                                Balance = "0"
+                        'Try
+                        '    CreatorID = CULng()
+                        'Catch ex As Exception
+                        '    If GetINISetting(E_Setting.InfoOut, False) Then
+                        '        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                        '        Out.ErrorLog2File(Application.ProductName + "-error in SubGetThread(CreatorID): -> " + ex.Message)
+                        '    End If
+                        'End Try
+
+
+                        Dim CreatorRS As String = BetweenFromList(ATStrList, "<creatorRS>", "</creatorRS>",, GetType(String))
+                        Dim Name As String = BetweenFromList(ATStrList, "<name>", "</name>",, GetType(String))
+                        Dim Description As String = BetweenFromList(ATStrList, "<description>", "</description>",, GetType(String))
+
+                        Dim Balance As ULong = BetweenFromList(ATStrList, "<balanceNQT>", "</balanceNQT>",, GetType(ULong))
+
+
+                        Dim BalDbl As Double = ClsSignumAPI.Planck2Dbl(Balance)
+
+                        Dim MachineData As String = BetweenFromList(ATStrList, "<machineData>", "</machineData>",, GetType(String))
+
+                        Dim MachineDataULongList As List(Of ULong) = SignaAPI.DataStr2ULngList(MachineData)
+
+                        '0 = Address Initiator = null
+                        '1 = Address Responder = null
+
+                        '2 = Long InitiatorsCollateral 
+                        '3 = Long RespondersCollateral
+                        '4 = Long BuySellAmount
+
+                        '5 = Boolean SellOrder = False
+
+                        Dim Initiator As ULong = 0
+                        Dim InitiatorRS As String = ""
+                        Dim Responser As ULong = 0
+                        Dim ResponserRS As String = ""
+
+                        Dim InitiatorCollateral As Double = 0.0
+                        Dim ResponserCollateral As Double = 0.0
+
+                        Dim BuySellAmount As Double = 0.0
+
+                        Dim SellOrder As Boolean = False
+
+                        If MachineDataULongList.Count > 0 Then
+                            Initiator = MachineDataULongList(0)
+
+                            If Initiator = CULng(0) Then
+                                'InitiatorRS = ""
+                            Else
+                                InitiatorRS = BetweenFromList(SignaAPI.RSConvert(Initiator.ToString), "<accountRS>", "</accountRS>",, GetType(String))
                             End If
 
-                            Dim BalDbl As Double = ClsSignumAPI.Planck2Dbl(CULng(Balance))
+                            Responser = MachineDataULongList(1)
 
-                            Dim MachineData As String = BetweenFromList(ATStrList, "<machineData>", "</machineData>")
-
-                            Dim MachineDataULongList As List(Of ULong) = SignaAPI.DataStr2ULngList(MachineData)
-
-                            '0 = Address Initiator = null
-                            '1 = Address Responder = null
-
-                            '2 = Long InitiatorsCollateral 
-                            '3 = Long RespondersCollateral
-                            '4 = Long BuySellAmount
-
-                            '5 = Boolean SellOrder = False
-
-                            Dim Initiator As ULong = 0
-                            Dim InitiatorRS As String = ""
-                            Dim Responser As ULong = 0
-                            Dim ResponserRS As String = ""
-
-                            Dim InitiatorCollateral As Double = 0.0
-                            Dim ResponserCollateral As Double = 0.0
-
-                            Dim BuySellAmount As Double = 0.0
-
-                            Dim SellOrder As Boolean = False
-
-                            If MachineDataULongList.Count > 0 Then
-                                Initiator = MachineDataULongList(0)
-
-                                If Initiator = CULng(0) Then
-                                    'InitiatorRS = ""
-                                Else
-                                    InitiatorRS = BetweenFromList(SignaAPI.RSConvert(Initiator.ToString), "<accountRS>", "</accountRS>")
-                                End If
-
-                                Responser = MachineDataULongList(1)
-
-                                If Responser = CULng(0) Then
-                                    ResponserRS = ""
-                                Else
-                                    ResponserRS = BetweenFromList(SignaAPI.RSConvert(Responser.ToString), "<accountRS>", "</accountRS>")
-                                End If
-
-                                InitiatorCollateral = ClsSignumAPI.Planck2Dbl(MachineDataULongList(2)) '- ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
-                                ResponserCollateral = ClsSignumAPI.Planck2Dbl(MachineDataULongList(3)) '- ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
-
-                                BuySellAmount = ClsSignumAPI.Planck2Dbl(MachineDataULongList(4)) '- ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
-
-                                SellOrder = False
-
-                                If MachineDataULongList(7) = CULng(1) Then
-                                    SellOrder = True
-                                End If
-
+                            If Responser = CULng(0) Then
+                                ResponserRS = ""
+                            Else
+                                ResponserRS = BetweenFromList(SignaAPI.RSConvert(Responser.ToString), "<accountRS>", "</accountRS>",, GetType(String))
                             End If
 
+                            InitiatorCollateral = ClsSignumAPI.Planck2Dbl(MachineDataULongList(2)) '- ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
+                            ResponserCollateral = ClsSignumAPI.Planck2Dbl(MachineDataULongList(3)) '- ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
 
+                            BuySellAmount = ClsSignumAPI.Planck2Dbl(MachineDataULongList(4)) '- ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)
 
-                            Dim Frozen As Boolean = False
-                            Dim FrozenStr As String = BetweenFromList(ATStrList, "<frozen>", "</frozen>")
+                            SellOrder = False
 
-                            If Not FrozenStr = "" Then
-                                Frozen = CBool(FrozenStr)
+                            If MachineDataULongList(7) = CULng(1) Then
+                                SellOrder = True
                             End If
 
-
-                            Dim Running As Boolean = False
-                            Dim RunningStr As String = BetweenFromList(ATStrList, "<running>", "</running>")
-
-                            If Not RunningStr = "" Then
-                                Running = CBool(RunningStr)
-                            End If
+                        End If
 
 
-                            Dim Stopped As Boolean = False
-                            Dim StoppedStr As String = BetweenFromList(ATStrList, "<stopped>", "</stopped>")
+                        Dim Frozen As Boolean = BetweenFromList(ATStrList, "<frozen>", "</frozen>",, GetType(Boolean))
+                        Dim Running As Boolean = BetweenFromList(ATStrList, "<running>", "</running>",, GetType(Boolean))
+                        Dim Stopped As Boolean = BetweenFromList(ATStrList, "<stopped>", "</stopped>",, GetType(Boolean))
+                        Dim Finished As Boolean = BetweenFromList(ATStrList, "<finished>", "</finished>",, GetType(Boolean))
+                        Dim Dead As Boolean = BetweenFromList(ATStrList, "<dead>", "</dead>",, GetType(Boolean))
 
-                            If Not StoppedStr = "" Then
-                                Stopped = CBool(StoppedStr)
-                            End If
-
-
-
-                            Dim Finished As Boolean = False
-                            Dim FinishedStr As String = BetweenFromList(ATStrList, "<finished>", "</finished>")
-
-                            If Not FinishedStr = "" Then
-                                Finished = CBool(FinishedStr)
-                            End If
-
-
-                            Dim Dead As Boolean = False
-                            Dim DeadStr As String = BetweenFromList(ATStrList, "<dead>", "</dead>")
-
-                            If Not DeadStr = "" Then
-                                Dead = CBool(DeadStr)
-                            End If
-
-
-                            Dim SBLSAT As PFPForm.S_PFPAT = New PFPForm.S_PFPAT With {
-                                    .AT = AT,
-                                    .ATRS = ATRS,
-                                    .Creator = Creator,
-                                    .CreatorRS = CreatorRS,
-                                    .Description = Description,
-                                    .Name = Name,
-                                    .Sellorder = SellOrder,
-                                    .Initiator = InitiatorRS,
-                                    .InitiatorsCollateral = InitiatorCollateral,
-                                    .ResponsersCollateral = ResponserCollateral,
-                                    .BuySellAmount = BuySellAmount,
-                                    .Responser = ResponserRS,
-                                    .Balance = Balance,
-                                    .Frozen = Frozen,
-                                    .Running = Running,
-                                    .Stopped = Stopped,
-                                    .Finished = Finished,
-                                    .Dead = Dead
-                                }
+                        Dim SBLSAT As PFPForm.S_PFPAT = New PFPForm.S_PFPAT With {
+                            .ATID = ATID,
+                            .ATRS = ATRS,
+                            .CreatorID = CreatorID,
+                            .CreatorRS = CreatorRS,
+                            .Description = Description,
+                            .Name = Name,
+                            .Sellorder = SellOrder,
+                            .InitiatorRS = InitiatorRS,
+                            .InitiatorsCollateral = InitiatorCollateral,
+                            .ResponsersCollateral = ResponserCollateral,
+                            .BuySellAmount = BuySellAmount,
+                            .ResponserRS = ResponserRS,
+                            .Balance = Balance,
+                            .Frozen = Frozen,
+                            .Running = Running,
+                            .Stopped = Stopped,
+                            .Finished = Finished,
+                            .Dead = Dead
+                        }
 
 
 #End Region
 
 #Region "get AT TXs"
-                            Dim UseBuffer As Boolean = False
-                            If DEXATList.Count > 0 Then
-                                UseBuffer = True
-                            End If
+                        Dim UseBuffer As Boolean = False
+                        If DEXATList.Count > 0 Then
+                            UseBuffer = True
+                        End If
 
 
-                            Dim BLSTXs As List(Of S_PFPAT_TX) = GetAccountTXList(ParameterList(0), Request.Node,, UseBuffer) 'TODO: FromTimestamp
+                        Dim BLSTXs As List(Of S_PFPAT_TX) = GetAccountTXList(T_ATID, Request.Node,, UseBuffer) 'TODO: FromTimestamp
 
-                            SBLSAT.AT_TXList = New List(Of PFPForm.S_PFPAT_TX)(BLSTXs.ToArray)
-                            SBLSAT.Status = GetCurrentBLSATStatus(BLSTXs)
-                            SBLSAT.XItem = GetCurrentBLSATXItem(BLSTXs)
-                            SBLSAT.XAmount = GetCurrentBLSATXAmount(BLSTXs)
+                        SBLSAT.AT_TXList = New List(Of PFPForm.S_PFPAT_TX)(BLSTXs.ToArray)
+                        SBLSAT.Status = GetCurrentBLSATStatus(BLSTXs)
+                        SBLSAT.XItem = GetCurrentBLSATXItem(BLSTXs)
+                        SBLSAT.XAmount = GetCurrentBLSATXAmount(BLSTXs)
 
 #End Region
 
 #Region "Convert AT TXs to Orders"
-                            SBLSAT.AT_OrderList = ConvertTXs2Orders(SBLSAT)
+                        SBLSAT.AT_OrderList = ConvertTXs2Orders(SBLSAT)
 #End Region
 
-                            Request.Result = SBLSAT
-                            Request.Status = "Responsed"
-                        Else
-                            Request.Result = AT + "," + ATRS + ",False"
-                            Request.Status = "Responsed"
-                        End If
+                        Request.Result = SBLSAT
+                        Request.Status = "Responsed"
                     Else
-                        Request.Status = "Not Ready..."
+                        Request.Result = ATID.ToString + "," + ATRS + ",False"
+                        Request.Status = "Responsed"
                     End If
+                Else
+                    Request.Status = "Not Ready..."
+                End If
 
-                Case Else
+            Case Else
 
-            End Select
+        End Select
 
-            APIRequestList(Index) = Request
+        APIRequestList(Index) = Request
 
-        Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in SubGetThread(): -> " + ex.Message)
-            End If
+        'Catch ex As Exception
+        '    If GetINISetting(E_Setting.InfoOut, False) Then
+        '        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+        '        Out.ErrorLog2File(Application.ProductName + "-error in SubGetThread(M): -> " + ex.Message)
+        '    End If
 
-        End Try
+        'End Try
 
     End Sub
 
@@ -6743,7 +7694,6 @@ Public Class PFPForm
     End Sub
 
 
-
     Sub SetMethodFilter(ByVal MethodFilterListBox As CheckedListBox, ByVal CheckedMethods As List(Of String))
 
         MethodFilterListBox.Items.Clear()
@@ -6817,6 +7767,53 @@ Public Class PFPForm
                     'do nothing
 
             End Select
+        End If
+
+    End Sub
+
+    Private Sub BtSetPIN_Click(sender As Object, e As EventArgs) Handles BtSetPIN.Click
+
+        'TODO: Create PIN-Form
+        Dim PINForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.ChangePIN)
+        PINForm.ShowDialog()
+
+    End Sub
+
+    Private Sub TSSCryptStatus_Click(sender As Object, e As EventArgs) Handles TSSCryptStatus.Click
+
+        Dim PassPhrase As String = GetINISetting(E_Setting.PassPhrase, "")
+
+        If PassPhrase = "" Then
+            'TODO: FrmManual
+
+            Dim Result As FrmManual.CustomDialogResult = FrmManual.MBox()
+
+
+
+        Else
+            If TSSCryptStatus.Tag = "encrypted" Then
+                Dim PINForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.EnterPINOnly)
+                PINForm.ShowDialog()
+            Else
+                GlobalPIN = ""
+            End If
+
+        End If
+
+        If CheckPIN() Then
+            TSSCryptStatus.Image = My.Resources.status_decrypted
+            TSSCryptStatus.Tag = "decrypted"
+
+            TSSCryptStatus.AutoToolTip = True
+            TSSCryptStatus.ToolTipText = "the PFP is Unlocked" + vbCrLf + "automation working"
+
+        Else
+            TSSCryptStatus.Image = My.Resources.status_encrypted
+            TSSCryptStatus.Tag = "encrypted"
+
+            TSSCryptStatus.AutoToolTip = True
+            TSSCryptStatus.ToolTipText = "the PFP is Locked" + vbCrLf + "there is no automation"
+
         End If
 
     End Sub

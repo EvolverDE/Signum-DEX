@@ -1,5 +1,7 @@
-﻿Public Class FrmManual
+﻿
+Imports System.Security.Cryptography
 
+Public Class FrmManual
 
     Shared Property frmManual As New FrmManual
 
@@ -137,21 +139,88 @@
 
     Private Sub btManualSetPassPhrase_Click(sender As Object, e As EventArgs) Handles btManualSetPassPhrase.Click
 
-        Dim BCR As ClsSignumAPI = New ClsSignumAPI With {.C_PassPhrase = TBManualPassPhrase.Text}
+        If TBManualPassPhrase.Text.Trim = "" And TBManualAddress.Text.Trim = "" Then
 
-        Dim x As List(Of String) = BCR.GetAccountFromPassPhrase()
-
-        Dim Address As String = BetweenFromList(x, "<address>", "</address>")
-        Dim Balance As String = BetweenFromList(x, "<available>", "</available>")
-        Dim AccountID As String = BetweenFromList(x, "<account>", "</account>")
-
-
-        If Address.Trim = "False" Then
             ClsMsgs.MBox("Unknown Address", "Check Address", ,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
-        Else
-            PFPForm.T_PassPhrase = TBManualPassPhrase.Text
-            SetINISetting(E_Setting.PassPhrase, TBManualPassPhrase.Text)
+
+        ElseIf TBManualPassPhrase.Text.Trim = "" And Not TBManualAddress.Text.Trim = "" Then
+
+            Dim Address As String = TBManualAddress.Text
+            Dim AccountID As ULong = ClsReedSolomon.Decode(Address)
+
+            If AccountID = 0 Then
+                ClsMsgs.MBox("Unknown Address", "Check Address", ,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
+            Else
+                PFPForm.T_Address = TBManualAddress.Text
+                SetINISetting(E_Setting.Address, TBManualAddress.Text)
+                ClsMsgs.MBox("Address OK", "Check Address", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+            End If
+
+        ElseIf Not TBManualPassPhrase.Text.Trim = "" And TBManualAddress.Text.Trim = "" Then
+
+            Dim MasterKeys As List(Of String) = GetMasterKeys(TBManualPassPhrase.Text.Trim)
+            TBManualAddress.Text = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
+
+            PFPForm.T_Address = TBManualAddress.Text
+            SetINISetting(E_Setting.Address, TBManualAddress.Text)
+
+            If ChBxManualEncryptPP.Checked Then
+                If Not TBManualPassPhrase.Text.Trim = "" And Not TBManualPIN.Text = "" Then
+
+                    Dim EncryptedPassPhrase As String = AESEncrypt2HEXStr(TBManualPassPhrase.Text, TBManualPIN.Text)
+                    SetINISetting(E_Setting.PassPhrase, EncryptedPassPhrase)
+
+                    Dim SHA512 As SHA512 = SHA512Managed.Create()
+                    Dim HashPIN() As Byte = SHA512.ComputeHash(System.Text.Encoding.UTF8.GetBytes(TBManualPIN.Text).ToArray)
+                    Dim HashPINHEX As String = ByteArrayToHEXString(HashPIN)
+                    SetINISetting(E_Setting.PINFingerPrint, HashPINHEX)
+
+                Else
+                    SetINISetting(E_Setting.PassPhrase, TBManualPassPhrase.Text)
+                    SetINISetting(E_Setting.PINFingerPrint, "")
+                End If
+            Else
+                SetINISetting(E_Setting.PassPhrase, TBManualPassPhrase.Text)
+                SetINISetting(E_Setting.PINFingerPrint, "")
+            End If
+
             ClsMsgs.MBox("Address OK", "Check Address", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
+        Else
+
+            Dim MasterKeys As List(Of String) = GetMasterKeys(TBManualPassPhrase.Text.Trim)
+            Dim T_Address As String = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
+
+            If T_Address.Trim = TBManualAddress.Text.Trim Then
+
+                PFPForm.T_Address = TBManualAddress.Text
+
+                If ChBxManualEncryptPP.Checked Then
+                    If Not TBManualPassPhrase.Text.Trim = "" And Not TBManualPIN.Text = "" Then
+
+                        Dim EncryptedPassPhrase As String = AESEncrypt2HEXStr(TBManualPassPhrase.Text, TBManualPIN.Text)
+                        SetINISetting(E_Setting.PassPhrase, EncryptedPassPhrase)
+
+                        Dim SHA512 As SHA512 = SHA512Managed.Create()
+                        Dim HashPIN() As Byte = SHA512.ComputeHash(System.Text.Encoding.UTF8.GetBytes(TBManualPIN.Text).ToArray)
+                        Dim HashPINHEX As String = ByteArrayToHEXString(HashPIN)
+                        SetINISetting(E_Setting.PINFingerPrint, HashPINHEX)
+
+                    Else
+                        SetINISetting(E_Setting.PassPhrase, TBManualPassPhrase.Text)
+                        SetINISetting(E_Setting.PINFingerPrint, "")
+                    End If
+                Else
+                    SetINISetting(E_Setting.PassPhrase, TBManualPassPhrase.Text)
+                    SetINISetting(E_Setting.PINFingerPrint, "")
+                End If
+
+                ClsMsgs.MBox("Address OK", "Check Address", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
+            Else
+                ClsMsgs.MBox("PassPhrase don't match Address", "Check PassPhrase/Address", ,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
+            End If
+
         End If
 
     End Sub

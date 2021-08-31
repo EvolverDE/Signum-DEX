@@ -27,9 +27,12 @@ Partial Class FrmManual
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.LabWelcome = New System.Windows.Forms.Label()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.SplitContainer15 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.LabFirstSteps = New System.Windows.Forms.Label()
         Me.SplitContainer2 = New System.Windows.Forms.SplitContainer()
+        Me.TBManualAddress = New System.Windows.Forms.TextBox()
+        Me.Label2 = New System.Windows.Forms.Label()
         Me.TBManualPassPhrase = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.btManualSetPassPhrase = New System.Windows.Forms.Button()
@@ -59,10 +62,14 @@ Partial Class FrmManual
         Me.SplitContainer14 = New System.Windows.Forms.SplitContainer()
         Me.LabExample6 = New System.Windows.Forms.Label()
         Me.PictureBox6 = New System.Windows.Forms.PictureBox()
-        Me.SplitContainer15 = New System.Windows.Forms.SplitContainer()
+        Me.ChBxManualEncryptPP = New System.Windows.Forms.CheckBox()
+        Me.TBManualPIN = New System.Windows.Forms.TextBox()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
+        CType(Me.SplitContainer15, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer15.Panel1.SuspendLayout()
+        Me.SplitContainer15.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -126,9 +133,6 @@ Partial Class FrmManual
         Me.SplitContainer14.Panel2.SuspendLayout()
         Me.SplitContainer14.SuspendLayout()
         CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.SplitContainer15, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.SplitContainer15.Panel1.SuspendLayout()
-        Me.SplitContainer15.SuspendLayout()
         Me.SuspendLayout()
         '
         'TabControl1
@@ -174,6 +178,20 @@ Partial Class FrmManual
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "First Steps"
         '
+        'SplitContainer15
+        '
+        Me.SplitContainer15.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer15.Location = New System.Drawing.Point(3, 3)
+        Me.SplitContainer15.Name = "SplitContainer15"
+        Me.SplitContainer15.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer15.Panel1
+        '
+        Me.SplitContainer15.Panel1.Controls.Add(Me.SplitContainer1)
+        Me.SplitContainer15.Size = New System.Drawing.Size(1017, 584)
+        Me.SplitContainer15.SplitterDistance = 236
+        Me.SplitContainer15.TabIndex = 2
+        '
         'SplitContainer1
         '
         Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
@@ -190,8 +208,8 @@ Partial Class FrmManual
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.SplitContainer2)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1017, 282)
-        Me.SplitContainer1.SplitterDistance = 250
+        Me.SplitContainer1.Size = New System.Drawing.Size(1017, 236)
+        Me.SplitContainer1.SplitterDistance = 170
         Me.SplitContainer1.TabIndex = 1
         '
         'LabFirstSteps
@@ -199,7 +217,7 @@ Partial Class FrmManual
         Me.LabFirstSteps.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabFirstSteps.Location = New System.Drawing.Point(0, 0)
         Me.LabFirstSteps.Name = "LabFirstSteps"
-        Me.LabFirstSteps.Size = New System.Drawing.Size(1017, 250)
+        Me.LabFirstSteps.Size = New System.Drawing.Size(1017, 170)
         Me.LabFirstSteps.TabIndex = 0
         Me.LabFirstSteps.Text = "Loading..."
         '
@@ -213,22 +231,42 @@ Partial Class FrmManual
         '
         'SplitContainer2.Panel1
         '
+        Me.SplitContainer2.Panel1.Controls.Add(Me.TBManualPIN)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.ChBxManualEncryptPP)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.TBManualAddress)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.Label2)
         Me.SplitContainer2.Panel1.Controls.Add(Me.TBManualPassPhrase)
         Me.SplitContainer2.Panel1.Controls.Add(Me.Label1)
         '
         'SplitContainer2.Panel2
         '
         Me.SplitContainer2.Panel2.Controls.Add(Me.btManualSetPassPhrase)
-        Me.SplitContainer2.Size = New System.Drawing.Size(1017, 28)
+        Me.SplitContainer2.Size = New System.Drawing.Size(1017, 62)
         Me.SplitContainer2.SplitterDistance = 872
         Me.SplitContainer2.TabIndex = 0
         '
+        'TBManualAddress
+        '
+        Me.TBManualAddress.Location = New System.Drawing.Point(511, 4)
+        Me.TBManualAddress.Name = "TBManualAddress"
+        Me.TBManualAddress.Size = New System.Drawing.Size(158, 20)
+        Me.TBManualAddress.TabIndex = 3
+        '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(422, 7)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(83, 13)
+        Me.Label2.TabIndex = 2
+        Me.Label2.Text = "and/or Address:"
+        '
         'TBManualPassPhrase
         '
-        Me.TBManualPassPhrase.Location = New System.Drawing.Point(124, 4)
+        Me.TBManualPassPhrase.Location = New System.Drawing.Point(77, 4)
         Me.TBManualPassPhrase.Name = "TBManualPassPhrase"
         Me.TBManualPassPhrase.PasswordChar = Global.Microsoft.VisualBasic.ChrW(35)
-        Me.TBManualPassPhrase.Size = New System.Drawing.Size(366, 20)
+        Me.TBManualPassPhrase.Size = New System.Drawing.Size(339, 20)
         Me.TBManualPassPhrase.TabIndex = 1
         '
         'Label1
@@ -236,9 +274,9 @@ Partial Class FrmManual
         Me.Label1.AutoSize = True
         Me.Label1.Location = New System.Drawing.Point(5, 7)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(113, 13)
+        Me.Label1.Size = New System.Drawing.Size(66, 13)
         Me.Label1.TabIndex = 0
-        Me.Label1.Text = "PassPhrase (TestNet):"
+        Me.Label1.Text = "PassPhrase:"
         '
         'btManualSetPassPhrase
         '
@@ -246,9 +284,9 @@ Partial Class FrmManual
         Me.btManualSetPassPhrase.Dock = System.Windows.Forms.DockStyle.Fill
         Me.btManualSetPassPhrase.Location = New System.Drawing.Point(0, 0)
         Me.btManualSetPassPhrase.Name = "btManualSetPassPhrase"
-        Me.btManualSetPassPhrase.Size = New System.Drawing.Size(141, 28)
+        Me.btManualSetPassPhrase.Size = New System.Drawing.Size(141, 62)
         Me.btManualSetPassPhrase.TabIndex = 0
-        Me.btManualSetPassPhrase.Text = "Check/Set PassPhrase"
+        Me.btManualSetPassPhrase.Text = "Check/Set Account"
         Me.btManualSetPassPhrase.UseVisualStyleBackColor = False
         '
         'TabPage3
@@ -627,20 +665,22 @@ Partial Class FrmManual
         Me.PictureBox6.TabIndex = 0
         Me.PictureBox6.TabStop = False
         '
-        'SplitContainer15
+        'ChBxManualEncryptPP
         '
-        Me.SplitContainer15.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer15.IsSplitterFixed = True
-        Me.SplitContainer15.Location = New System.Drawing.Point(3, 3)
-        Me.SplitContainer15.Name = "SplitContainer15"
-        Me.SplitContainer15.Orientation = System.Windows.Forms.Orientation.Horizontal
+        Me.ChBxManualEncryptPP.AutoSize = True
+        Me.ChBxManualEncryptPP.Location = New System.Drawing.Point(77, 30)
+        Me.ChBxManualEncryptPP.Name = "ChBxManualEncryptPP"
+        Me.ChBxManualEncryptPP.Size = New System.Drawing.Size(170, 17)
+        Me.ChBxManualEncryptPP.TabIndex = 4
+        Me.ChBxManualEncryptPP.Text = "Encrypt PassPhrase With PIN:"
+        Me.ChBxManualEncryptPP.UseVisualStyleBackColor = True
         '
-        'SplitContainer15.Panel1
+        'TBManualPIN
         '
-        Me.SplitContainer15.Panel1.Controls.Add(Me.SplitContainer1)
-        Me.SplitContainer15.Size = New System.Drawing.Size(1017, 584)
-        Me.SplitContainer15.SplitterDistance = 282
-        Me.SplitContainer15.TabIndex = 2
+        Me.TBManualPIN.Location = New System.Drawing.Point(253, 28)
+        Me.TBManualPIN.Name = "TBManualPIN"
+        Me.TBManualPIN.Size = New System.Drawing.Size(163, 20)
+        Me.TBManualPIN.TabIndex = 5
         '
         'FrmManual
         '
@@ -657,6 +697,9 @@ Partial Class FrmManual
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
         Me.TabPage2.ResumeLayout(False)
+        Me.SplitContainer15.Panel1.ResumeLayout(False)
+        CType(Me.SplitContainer15, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer15.ResumeLayout(False)
         Me.SplitContainer1.Panel1.ResumeLayout(False)
         Me.SplitContainer1.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
@@ -721,9 +764,6 @@ Partial Class FrmManual
         CType(Me.SplitContainer14, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer14.ResumeLayout(False)
         CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.SplitContainer15.Panel1.ResumeLayout(False)
-        CType(Me.SplitContainer15, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.SplitContainer15.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -765,4 +805,8 @@ Partial Class FrmManual
     Friend WithEvents LabExample6 As Label
     Private WithEvents PictureBox6 As PictureBox
     Friend WithEvents SplitContainer15 As SplitContainer
+    Friend WithEvents TBManualAddress As TextBox
+    Friend WithEvents Label2 As Label
+    Friend WithEvents TBManualPIN As TextBox
+    Friend WithEvents ChBxManualEncryptPP As CheckBox
 End Class

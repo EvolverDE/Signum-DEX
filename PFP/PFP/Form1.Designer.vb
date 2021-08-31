@@ -23,9 +23,9 @@ Partial Class PFPForm
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim TreeNode4 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("Default Settings")
-        Dim TreeNode5 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("MyOrders Settings")
-        Dim TreeNode6 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("Develope")
+        Dim TreeNode1 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("Default Settings")
+        Dim TreeNode2 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("MyOrders Settings")
+        Dim TreeNode3 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("Develope")
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(PFPForm))
         Me.BlockTimer = New System.Windows.Forms.Timer(Me.components)
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
@@ -34,6 +34,7 @@ Partial Class PFPForm
         Me.StatusBlockLabel = New System.Windows.Forms.ToolStripStatusLabel()
         Me.StatusFeeLabel = New System.Windows.Forms.ToolStripStatusLabel()
         Me.TSSStatusImage = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.TSSCryptStatus = New System.Windows.Forms.ToolStripStatusLabel()
         Me.LVSellorders = New System.Windows.Forms.ListView()
         Me.ColumnHeader1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Label1 = New System.Windows.Forms.Label()
@@ -68,11 +69,8 @@ Partial Class PFPForm
         Me.RBSNOSell = New System.Windows.Forms.RadioButton()
         Me.BtCheckAddress = New System.Windows.Forms.Button()
         Me.Label11 = New System.Windows.Forms.Label()
-        Me.TBSNOBalance = New System.Windows.Forms.TextBox()
         Me.TBSNOAddress = New System.Windows.Forms.TextBox()
         Me.Label10 = New System.Windows.Forms.Label()
-        Me.TBSNOPassPhrase = New System.Windows.Forms.TextBox()
-        Me.Label9 = New System.Windows.Forms.Label()
         Me.CoBxMarket = New System.Windows.Forms.ComboBox()
         Me.BtCreateNewAT = New System.Windows.Forms.Button()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
@@ -127,6 +125,8 @@ Partial Class PFPForm
         Me.SCSettings = New System.Windows.Forms.SplitContainer()
         Me.TVSettings = New System.Windows.Forms.TreeView()
         Me.SplitContainer12 = New System.Windows.Forms.SplitContainer()
+        Me.BtSetPIN = New System.Windows.Forms.Button()
+        Me.TBSNOBalance = New System.Windows.Forms.TextBox()
         Me.BtChartGFXOnOff = New System.Windows.Forms.Button()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.StatusStrip1.SuspendLayout()
@@ -228,9 +228,10 @@ Partial Class PFPForm
         '
         Me.StatusStrip1.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.StatusStrip1.ImageScalingSize = New System.Drawing.Size(24, 24)
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.StatusBar, Me.StatusBlockLabel, Me.StatusFeeLabel, Me.TSSStatusImage})
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.StatusBar, Me.StatusBlockLabel, Me.StatusFeeLabel, Me.TSSStatusImage, Me.TSSCryptStatus})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 803)
         Me.StatusStrip1.Name = "StatusStrip1"
+        Me.StatusStrip1.ShowItemToolTips = True
         Me.StatusStrip1.Size = New System.Drawing.Size(1717, 22)
         Me.StatusStrip1.TabIndex = 1
         Me.StatusStrip1.Text = "StatusStrip1"
@@ -239,7 +240,7 @@ Partial Class PFPForm
         '
         Me.StatusLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.StatusLabel.Name = "StatusLabel"
-        Me.StatusLabel.Size = New System.Drawing.Size(1434, 17)
+        Me.StatusLabel.Size = New System.Drawing.Size(1512, 17)
         Me.StatusLabel.Spring = True
         Me.StatusLabel.Text = " "
         Me.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -270,6 +271,16 @@ Partial Class PFPForm
         Me.TSSStatusImage.Size = New System.Drawing.Size(57, 17)
         Me.TSSStatusImage.Text = "offline"
         '
+        'TSSCryptStatus
+        '
+        Me.TSSCryptStatus.AutoToolTip = True
+        Me.TSSCryptStatus.Image = Global.PFP.My.Resources.Resources.status_decrypted
+        Me.TSSCryptStatus.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
+        Me.TSSCryptStatus.Name = "TSSCryptStatus"
+        Me.TSSCryptStatus.Size = New System.Drawing.Size(72, 17)
+        Me.TSSCryptStatus.Text = "Click Me!"
+        Me.TSSCryptStatus.ToolTipText = "test" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
+        '
         'LVSellorders
         '
         Me.LVSellorders.BackColor = System.Drawing.Color.Crimson
@@ -283,7 +294,7 @@ Partial Class PFPForm
         Me.LVSellorders.Name = "LVSellorders"
         Me.LVSellorders.RightToLeft = System.Windows.Forms.RightToLeft.Yes
         Me.LVSellorders.RightToLeftLayout = True
-        Me.LVSellorders.Size = New System.Drawing.Size(848, 145)
+        Me.LVSellorders.Size = New System.Drawing.Size(848, 146)
         Me.LVSellorders.TabIndex = 2
         Me.LVSellorders.UseCompatibleStateImageBehavior = False
         Me.LVSellorders.View = System.Windows.Forms.View.Details
@@ -313,7 +324,7 @@ Partial Class PFPForm
         Me.LVBuyorders.Location = New System.Drawing.Point(0, 0)
         Me.LVBuyorders.MultiSelect = False
         Me.LVBuyorders.Name = "LVBuyorders"
-        Me.LVBuyorders.Size = New System.Drawing.Size(841, 145)
+        Me.LVBuyorders.Size = New System.Drawing.Size(841, 146)
         Me.LVBuyorders.TabIndex = 5
         Me.LVBuyorders.UseCompatibleStateImageBehavior = False
         Me.LVBuyorders.View = System.Windows.Forms.View.Details
@@ -601,7 +612,7 @@ Partial Class PFPForm
         '
         'BtCheckAddress
         '
-        Me.BtCheckAddress.Location = New System.Drawing.Point(977, 1)
+        Me.BtCheckAddress.Location = New System.Drawing.Point(683, 1)
         Me.BtCheckAddress.Name = "BtCheckAddress"
         Me.BtCheckAddress.Size = New System.Drawing.Size(110, 23)
         Me.BtCheckAddress.TabIndex = 31
@@ -611,53 +622,28 @@ Partial Class PFPForm
         'Label11
         '
         Me.Label11.AutoSize = True
-        Me.Label11.Location = New System.Drawing.Point(835, 6)
+        Me.Label11.Location = New System.Drawing.Point(499, 6)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(49, 13)
         Me.Label11.TabIndex = 30
         Me.Label11.Text = "Balance:"
         '
-        'TBSNOBalance
-        '
-        Me.TBSNOBalance.Location = New System.Drawing.Point(890, 3)
-        Me.TBSNOBalance.Name = "TBSNOBalance"
-        Me.TBSNOBalance.ReadOnly = True
-        Me.TBSNOBalance.Size = New System.Drawing.Size(81, 20)
-        Me.TBSNOBalance.TabIndex = 29
-        '
         'TBSNOAddress
         '
-        Me.TBSNOAddress.Location = New System.Drawing.Point(629, 3)
+        Me.TBSNOAddress.Location = New System.Drawing.Point(335, 3)
         Me.TBSNOAddress.Name = "TBSNOAddress"
         Me.TBSNOAddress.ReadOnly = True
-        Me.TBSNOAddress.Size = New System.Drawing.Size(200, 20)
+        Me.TBSNOAddress.Size = New System.Drawing.Size(158, 20)
         Me.TBSNOAddress.TabIndex = 28
         '
         'Label10
         '
         Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(575, 6)
+        Me.Label10.Location = New System.Drawing.Point(281, 6)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(48, 13)
         Me.Label10.TabIndex = 27
         Me.Label10.Text = "Address:"
-        '
-        'TBSNOPassPhrase
-        '
-        Me.TBSNOPassPhrase.Location = New System.Drawing.Point(277, 3)
-        Me.TBSNOPassPhrase.Name = "TBSNOPassPhrase"
-        Me.TBSNOPassPhrase.PasswordChar = Global.Microsoft.VisualBasic.ChrW(35)
-        Me.TBSNOPassPhrase.Size = New System.Drawing.Size(292, 20)
-        Me.TBSNOPassPhrase.TabIndex = 25
-        '
-        'Label9
-        '
-        Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(158, 6)
-        Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(113, 13)
-        Me.Label9.TabIndex = 24
-        Me.Label9.Text = "PassPhrase (TestNet):"
         '
         'CoBxMarket
         '
@@ -892,7 +878,7 @@ Partial Class PFPForm
         '
         Me.SplitContainerSellFilter.Panel2.Controls.Add(Me.LVSellorders)
         Me.SplitContainerSellFilter.Size = New System.Drawing.Size(848, 250)
-        Me.SplitContainerSellFilter.SplitterDistance = 101
+        Me.SplitContainerSellFilter.SplitterDistance = 100
         Me.SplitContainerSellFilter.TabIndex = 3
         '
         'ChBxSellFilterShowPayable
@@ -1040,7 +1026,7 @@ Partial Class PFPForm
         '
         Me.SplitContainerBuyFilter.Panel2.Controls.Add(Me.LVBuyorders)
         Me.SplitContainerBuyFilter.Size = New System.Drawing.Size(841, 250)
-        Me.SplitContainerBuyFilter.SplitterDistance = 101
+        Me.SplitContainerBuyFilter.SplitterDistance = 100
         Me.SplitContainerBuyFilter.TabIndex = 6
         '
         'ChBxBuyFilterShowPayable
@@ -1136,7 +1122,7 @@ Partial Class PFPForm
         '
         Me.SplitContainer13.Panel2.Controls.Add(Me.SplitContainer15)
         Me.SplitContainer13.Size = New System.Drawing.Size(1703, 742)
-        Me.SplitContainer13.SplitterDistance = 333
+        Me.SplitContainer13.SplitterDistance = 332
         Me.SplitContainer13.TabIndex = 5
         '
         'SplitContainer14
@@ -1155,7 +1141,7 @@ Partial Class PFPForm
         'SplitContainer14.Panel2
         '
         Me.SplitContainer14.Panel2.Controls.Add(Me.SplitContainer16)
-        Me.SplitContainer14.Size = New System.Drawing.Size(1701, 331)
+        Me.SplitContainer14.Size = New System.Drawing.Size(1701, 330)
         Me.SplitContainer14.SplitterDistance = 25
         Me.SplitContainer14.TabIndex = 0
         '
@@ -1190,8 +1176,8 @@ Partial Class PFPForm
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtReCreatePayPalOrder)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtPayOrder)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtExecuteOrder)
-        Me.SplitContainer16.Size = New System.Drawing.Size(1701, 302)
-        Me.SplitContainer16.SplitterDistance = 219
+        Me.SplitContainer16.Size = New System.Drawing.Size(1701, 301)
+        Me.SplitContainer16.SplitterDistance = 218
         Me.SplitContainer16.TabIndex = 0
         '
         'LVMyOpenOrders
@@ -1206,7 +1192,7 @@ Partial Class PFPForm
         Me.LVMyOpenOrders.Location = New System.Drawing.Point(0, 0)
         Me.LVMyOpenOrders.MultiSelect = False
         Me.LVMyOpenOrders.Name = "LVMyOpenOrders"
-        Me.LVMyOpenOrders.Size = New System.Drawing.Size(1701, 219)
+        Me.LVMyOpenOrders.Size = New System.Drawing.Size(1701, 218)
         Me.LVMyOpenOrders.TabIndex = 0
         Me.LVMyOpenOrders.UseCompatibleStateImageBehavior = False
         Me.LVMyOpenOrders.View = System.Windows.Forms.View.Details
@@ -1307,7 +1293,7 @@ Partial Class PFPForm
         'SplitContainer15.Panel2
         '
         Me.SplitContainer15.Panel2.Controls.Add(Me.SplitContainer17)
-        Me.SplitContainer15.Size = New System.Drawing.Size(1701, 403)
+        Me.SplitContainer15.Size = New System.Drawing.Size(1701, 404)
         Me.SplitContainer15.SplitterDistance = 25
         Me.SplitContainer15.TabIndex = 0
         '
@@ -1332,8 +1318,8 @@ Partial Class PFPForm
         'SplitContainer17.Panel1
         '
         Me.SplitContainer17.Panel1.Controls.Add(Me.LVMyClosedOrders)
-        Me.SplitContainer17.Size = New System.Drawing.Size(1701, 374)
-        Me.SplitContainer17.SplitterDistance = 343
+        Me.SplitContainer17.Size = New System.Drawing.Size(1701, 375)
+        Me.SplitContainer17.SplitterDistance = 344
         Me.SplitContainer17.TabIndex = 0
         '
         'LVMyClosedOrders
@@ -1348,7 +1334,7 @@ Partial Class PFPForm
         Me.LVMyClosedOrders.Location = New System.Drawing.Point(0, 0)
         Me.LVMyClosedOrders.MultiSelect = False
         Me.LVMyClosedOrders.Name = "LVMyClosedOrders"
-        Me.LVMyClosedOrders.Size = New System.Drawing.Size(1701, 343)
+        Me.LVMyClosedOrders.Size = New System.Drawing.Size(1701, 344)
         Me.LVMyClosedOrders.TabIndex = 3
         Me.LVMyClosedOrders.UseCompatibleStateImageBehavior = False
         Me.LVMyClosedOrders.View = System.Windows.Forms.View.Details
@@ -1389,13 +1375,13 @@ Partial Class PFPForm
         Me.TVSettings.ForeColor = System.Drawing.Color.White
         Me.TVSettings.Location = New System.Drawing.Point(0, 0)
         Me.TVSettings.Name = "TVSettings"
-        TreeNode4.Name = "Defaults"
-        TreeNode4.Text = "Default Settings"
-        TreeNode5.Name = "MyOrderssettings"
-        TreeNode5.Text = "MyOrders Settings"
-        TreeNode6.Name = "Developements"
-        TreeNode6.Text = "Develope"
-        Me.TVSettings.Nodes.AddRange(New System.Windows.Forms.TreeNode() {TreeNode4, TreeNode5, TreeNode6})
+        TreeNode1.Name = "Defaults"
+        TreeNode1.Text = "Default Settings"
+        TreeNode2.Name = "MyOrderssettings"
+        TreeNode2.Text = "MyOrders Settings"
+        TreeNode3.Name = "Developements"
+        TreeNode3.Text = "Develope"
+        Me.TVSettings.Nodes.AddRange(New System.Windows.Forms.TreeNode() {TreeNode1, TreeNode2, TreeNode3})
         Me.TVSettings.Size = New System.Drawing.Size(226, 748)
         Me.TVSettings.TabIndex = 0
         '
@@ -1410,15 +1396,14 @@ Partial Class PFPForm
         '
         'SplitContainer12.Panel1
         '
+        Me.SplitContainer12.Panel1.Controls.Add(Me.BtSetPIN)
+        Me.SplitContainer12.Panel1.Controls.Add(Me.TBSNOBalance)
         Me.SplitContainer12.Panel1.Controls.Add(Me.BtChartGFXOnOff)
         Me.SplitContainer12.Panel1.Controls.Add(Me.BtCheckAddress)
         Me.SplitContainer12.Panel1.Controls.Add(Me.Label4)
         Me.SplitContainer12.Panel1.Controls.Add(Me.Label11)
-        Me.SplitContainer12.Panel1.Controls.Add(Me.TBSNOBalance)
         Me.SplitContainer12.Panel1.Controls.Add(Me.CoBxMarket)
-        Me.SplitContainer12.Panel1.Controls.Add(Me.Label9)
         Me.SplitContainer12.Panel1.Controls.Add(Me.TBSNOAddress)
-        Me.SplitContainer12.Panel1.Controls.Add(Me.TBSNOPassPhrase)
         Me.SplitContainer12.Panel1.Controls.Add(Me.Label10)
         '
         'SplitContainer12.Panel2
@@ -1429,9 +1414,27 @@ Partial Class PFPForm
         Me.SplitContainer12.SplitterDistance = 25
         Me.SplitContainer12.TabIndex = 15
         '
+        'BtSetPIN
+        '
+        Me.BtSetPIN.Location = New System.Drawing.Point(158, 1)
+        Me.BtSetPIN.Name = "BtSetPIN"
+        Me.BtSetPIN.Size = New System.Drawing.Size(117, 23)
+        Me.BtSetPIN.TabIndex = 34
+        Me.BtSetPIN.Text = "(un)set/change PIN"
+        Me.BtSetPIN.UseVisualStyleBackColor = True
+        '
+        'TBSNOBalance
+        '
+        Me.TBSNOBalance.Location = New System.Drawing.Point(554, 3)
+        Me.TBSNOBalance.Name = "TBSNOBalance"
+        Me.TBSNOBalance.ReadOnly = True
+        Me.TBSNOBalance.Size = New System.Drawing.Size(123, 20)
+        Me.TBSNOBalance.TabIndex = 33
+        Me.TBSNOBalance.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
         'BtChartGFXOnOff
         '
-        Me.BtChartGFXOnOff.Location = New System.Drawing.Point(1093, 1)
+        Me.BtChartGFXOnOff.Location = New System.Drawing.Point(799, 1)
         Me.BtChartGFXOnOff.Name = "BtChartGFXOnOff"
         Me.BtChartGFXOnOff.Size = New System.Drawing.Size(99, 23)
         Me.BtChartGFXOnOff.TabIndex = 32
@@ -1583,8 +1586,6 @@ Partial Class PFPForm
     Friend WithEvents BtSNOSetOrder As Button
     Friend WithEvents GroupBox1 As GroupBox
     Friend WithEvents CoBxMarket As ComboBox
-    Friend WithEvents TBSNOPassPhrase As TextBox
-    Friend WithEvents Label9 As Label
     Friend WithEvents BtSNOSetCurFee As Button
     Friend WithEvents Label8 As Label
     Friend WithEvents Label7 As Label
@@ -1596,7 +1597,6 @@ Partial Class PFPForm
     Friend WithEvents BtCreateNewAT As Button
     Friend WithEvents BtCheckAddress As Button
     Friend WithEvents Label11 As Label
-    Friend WithEvents TBSNOBalance As TextBox
     Friend WithEvents TBSNOAddress As TextBox
     Friend WithEvents Label10 As Label
     Friend WithEvents SplitContainer1 As SplitContainer
@@ -1666,4 +1666,7 @@ Partial Class PFPForm
     Friend WithEvents ChBxSellFilterShowPayable As CheckBox
     Friend WithEvents ChBxBuyFilterShowPayable As CheckBox
     Friend WithEvents TSSStatusImage As ToolStripStatusLabel
+    Friend WithEvents TBSNOBalance As TextBox
+    Friend WithEvents BtSetPIN As Button
+    Friend WithEvents TSSCryptStatus As ToolStripStatusLabel
 End Class

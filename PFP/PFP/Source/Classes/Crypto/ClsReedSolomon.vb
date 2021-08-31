@@ -79,6 +79,12 @@ Public Class ClsReedSolomon
     End Function
     Public Shared Function Decode(cypher_string As String) As ULong
 
+        Dim PreFix As String = cypher_string.Substring(0, 2)
+
+        If PreFix = "TS" Then 'TODO: Change TS- PreFix
+            cypher_string = cypher_string.Substring(3)
+        End If
+
         cypher_string = cypher_string.Replace("-", "") 'lets remove the - in the address
 
         Dim codeword(UBound(initial_codeword)) As Integer

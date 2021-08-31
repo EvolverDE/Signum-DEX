@@ -116,6 +116,12 @@
       <DependentUpon>Form1.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FrmEnterPIN.Designer.vb">
+      <DependentUpon>FrmEnterPIN.vb</DependentUpon>
+    </Compile>
+    <Compile Include="FrmEnterPIN.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FrmManual.Designer.vb">
       <DependentUpon>FrmManual.vb</DependentUpon>
     </Compile>
@@ -209,6 +215,9 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FrmEnterPIN.resx">
+      <DependentUpon>FrmEnterPIN.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmManual.resx">
       <DependentUpon>FrmManual.vb</DependentUpon>
     </EmbeddedResource>
@@ -275,6 +284,8 @@
     <Content Include="obj\Debug\PFP.vbproj.FileListAbsolute.txt" />
     <Content Include="obj\Debug\PFP.xml" />
     <Content Include="Resources\logo.bmp" />
+    <None Include="Resources\status_decrypted.png" />
+    <None Include="Resources\status_encrypted.png" />
     <None Include="Resources\status_wait.png" />
     <None Include="Resources\status_online.png" />
     <None Include="Resources\status_offline.png" />
@@ -306,82 +317,82 @@
   <ItemGroup>
     <PublishFile Include="bin\Debug\PFP.exe">
       <Visible>False</Visible>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>False</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>False</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="bin\Debug\PFP.pdb">
       <Visible>False</Visible>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="bin\Debug\PFP.xml">
       <Visible>False</Visible>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="bin\Debug\TestAccs.txt">
       <Visible>False</Visible>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="obj\Debug\PFP.exe">
       <Visible>False</Visible>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="obj\Debug\PFP.pdb">
       <Visible>False</Visible>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="obj\Debug\PFP.vbproj.FileListAbsolute.txt">
       <Visible>False</Visible>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="obj\Debug\PFP.xml">
       <Visible>False</Visible>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
       <FileType>File</FileType>
     </PublishFile>
   </ItemGroup>

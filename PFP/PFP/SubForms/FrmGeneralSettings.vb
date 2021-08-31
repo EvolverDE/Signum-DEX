@@ -130,11 +130,11 @@ Public Class FrmGeneralSettings
 
         Dim Changes As Boolean = False
 
-        If C_MainForm.TBSNOPassPhrase.Text <> GetINISetting(E_Setting.PassPhrase, "") Then
-            Changes = True
-        End If
+        'If C_MainForm.TBSNOPassPhrase.Text <> GetINISetting(E_Setting.PassPhrase, "") Then
+        '    Changes = True
+        'End If
 
-        If C_MainForm.CoBxMarket.SelectedItem <> GetINISetting(E_Setting.LastMarketViewed, "EUR") Then
+        If C_MainForm.CoBxMarket.SelectedItem <> GetINISetting(E_Setting.LastMarketViewed, "USD") Then
             Changes = True
         End If
 
@@ -215,8 +215,8 @@ Public Class FrmGeneralSettings
 
             If Result = ClsMsgs.CustomDialogResult.Yes Then
 
-                SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
-                SetINISetting(E_Setting.LastMarketViewed, C_MainForm.TBSNOPassPhrase.Text, C_MainForm.CurrentMarket)
+                'SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
+                SetINISetting(E_Setting.LastMarketViewed, C_MainForm.CurrentMarket)
                 SetINISetting(E_Setting.RefreshMinutes, CoBxRefresh.Text)
                 SetINISetting(E_Setting.DefaultNode, C_MainForm.PrimaryNode)
 
@@ -246,7 +246,7 @@ Public Class FrmGeneralSettings
 
     Private Sub BtSaveSettings_Click(sender As Object, e As EventArgs) Handles BtSaveSettings.Click
 
-        SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
+        'SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
         SetINISetting(E_Setting.LastMarketViewed, C_MainForm.CurrentMarket)
         SetINISetting(E_Setting.RefreshMinutes, CoBxRefresh.Text)
         SetINISetting(E_Setting.DefaultNode, C_MainForm.PrimaryNode)

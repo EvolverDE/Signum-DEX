@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PFP.exe" size="2894320">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="PFP.exe" size="2992112">
       <assemblyIdentity name="PFP" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>83bAIqlGs2RXU8LKLXEf/KvkJy7BC/FgoUG8P/NX8/Y=</dsig:DigestValue>
+        <dsig:DigestValue>pcDGzUqibfxMVnkG9iqE+i87GNvfbra/jKNeoUv08Yk=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -63,13 +63,13 @@
       <dsig:DigestValue>2cVT0sEXe5vaHIlJKQ1t93QnpuraxF0/RTH5qFlmExU=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="obj\Debug\TempPE\My Project.Resources.Designer.vb.dll" size="7680">
+  <file name="obj\Debug\TempPE\My Project.Resources.Designer.vb.dll" size="8192">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>Z1v7zuZ11jp85WbDoozvb8avYk1Vwm27wpwyVKgVKs4=</dsig:DigestValue>
+      <dsig:DigestValue>KcG9JvvEgTWp2+slRnIhSqzM1tCke1vfJ6aOVhhYCj0=</dsig:DigestValue>
     </hash>
   </file>
   <file name="PFP.exe.config" size="188">

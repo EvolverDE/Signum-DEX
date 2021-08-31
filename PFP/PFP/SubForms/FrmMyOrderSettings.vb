@@ -25,8 +25,8 @@ Public Class FrmMyOrderSettings
         Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettings()
 
         For Each T_OS As ClsOrderSettings In T_OSList
-            With LVOrders.Items.Add(T_OS.AT) 'AT
-                .SubItems.Add(T_OS.TX) 'TX
+            With LVOrders.Items.Add(T_OS.ATID) 'AT
+                .SubItems.Add(T_OS.TXID) 'TX
                 .SubItems.Add(T_OS.Type) 'Type
                 .SubItems.Add(T_OS.PaytypeString) 'Paytype
                 .SubItems.Add(T_OS.Infotext) 'Infotext
@@ -85,8 +85,10 @@ Public Class FrmMyOrderSettings
         If LVOrders.SelectedItems.Count > 0 Then
             Dim SelectedItem As ListViewItem = LVOrders.SelectedItems(0)
 
-            Dim AT As String = GetLVColNameFromSubItem(LVOrders, "AT", SelectedItem)
-            Dim TX As String = GetLVColNameFromSubItem(LVOrders, "Transaction", SelectedItem)
+            Dim ATRS As ULong = GetLVColNameFromSubItem(LVOrders, "AT", SelectedItem)
+            Dim ATID As ULong = ClsReedSolomon.Decode(ATRS)
+
+            Dim TXID As ULong = CULng(GetLVColNameFromSubItem(LVOrders, "Transaction", SelectedItem))
             Dim Type As String = GetLVColNameFromSubItem(LVOrders, "Type", SelectedItem)
             'Dim Paytype As String = GetLVColNameFromSubItem(LVOrders, "Paytype", SelectedItem)
             'Dim Infotext As String = GetLVColNameFromSubItem(LVOrders, "Infotext", SelectedItem)
@@ -109,7 +111,7 @@ Public Class FrmMyOrderSettings
 
                 Dim PFPAT As PFPForm.S_PFPAT = LVISO.Tag
 
-                If PFPAT.AT = AT Then
+                If PFPAT.ATID = ATID Then
 
                     SetLVColName2SubItem(C_MainForm.LVSellorders, C_MainForm.LVSellorders.Items(i), "Method", Paytype)
                     SetLVColName2SubItem(C_MainForm.LVSellorders, C_MainForm.LVSellorders.Items(i), "Autoinfo", ChBxAutosendInfo.Checked.ToString)
@@ -126,7 +128,7 @@ Public Class FrmMyOrderSettings
 
                 Dim PFPAT As PFPForm.S_PFPAT = LVISO.Tag
 
-                If PFPAT.AT = AT Then
+                If PFPAT.ATID = ATID Then
 
                     SetLVColName2SubItem(C_MainForm.LVBuyorders, C_MainForm.LVBuyorders.Items(i), "Method", Paytype)
                     SetLVColName2SubItem(C_MainForm.LVBuyorders, C_MainForm.LVBuyorders.Items(i), "Autoinfo", ChBxAutosendInfo.Checked.ToString)
@@ -143,7 +145,7 @@ Public Class FrmMyOrderSettings
 
                 Dim PFPOrder As PFPForm.S_Order = LVISO.Tag
 
-                If PFPOrder.AT = AT Then
+                If PFPOrder.ATID = ATID Then
 
                     SetLVColName2SubItem(C_MainForm.LVMyOpenOrders, C_MainForm.LVMyOpenOrders.Items(i), "Method", Paytype)
                     SetLVColName2SubItem(C_MainForm.LVMyOpenOrders, C_MainForm.LVMyOpenOrders.Items(i), "Autoinfo", ChBxAutosendInfo.Checked.ToString)
@@ -158,7 +160,7 @@ Public Class FrmMyOrderSettings
             For i As Integer = 0 To OrderSettingsBuffer.Count - 1
                 Dim TT_OS As ClsOrderSettings = OrderSettingsBuffer(i)
 
-                If TT_OS.AT = AT And TT_OS.TX = TX Then
+                If TT_OS.ATID = ATID And TT_OS.TXID = TXID Then
 
                     TT_OS.Infotext = TBInfotext.Text.Trim
                     TT_OS.AutoSendInfotext = ChBxAutosendInfo.Checked.ToString
@@ -174,7 +176,7 @@ Public Class FrmMyOrderSettings
 
 
 #Region "refresh CSV"
-            Dim T_OS As ClsOrderSettings = New ClsOrderSettings(AT, TX, Type, Status)
+            Dim T_OS As ClsOrderSettings = New ClsOrderSettings(ATID, TXID, Type, Status)
 
             T_OS.PaytypeString = Paytype
             T_OS.Infotext = TBInfotext.Text.Trim

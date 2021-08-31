@@ -1,7 +1,7 @@
 ﻿
 Module ModJSON
 
-    Function BetweenFromList(ByVal inputList As List(Of String), Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional ByVal GetListIndex As Boolean = False) As String
+    Function BetweenFromList(ByVal inputList As List(Of String), Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional ByVal GetListIndex As Boolean = False, Optional ByVal GetTyp As Object = Nothing) As Object
 
         Try
 
@@ -12,7 +12,7 @@ Module ModJSON
                     If GetListIndex Then
                         Return i.ToString
                     Else
-                        Return Between(Entry, startchar, endchar, GetType(String))
+                        Return Between(Entry, startchar, endchar, GetTyp)
                     End If
 
                 End If
@@ -49,6 +49,14 @@ Module ModJSON
     ''' <remarks></remarks>
     Function Between(ByVal input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional ByVal GetTyp As Object = Nothing, Optional LastIdxOf As Boolean = False) As Object
 
+        'TODO: OUT from Between
+        'If GetINISetting(E_Setting.InfoOut, False) Then
+        '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+        '    Out.ErrorLog2File(Application.ProductName + "-error in SendMessages(): -> " + ex.Message)
+        'End If
+
+
+
         If input.Trim <> "" Then
             If input.Contains(startchar) And input.Contains(endchar) Then
 
@@ -65,12 +73,41 @@ Module ModJSON
                     Return input
                 Else
                     Select Case GetTyp.Name
+                        Case GetType(Boolean).Name
+                            Try
+                                Return CBool(input)
+                            Catch ex As Exception
+                                Return False
+                            End Try
+
                         Case GetType(Integer).Name
-                            Return CInt(input)
+                            Try
+                                Return CInt(input)
+                            Catch ex As Exception
+                                Return 0
+                            End Try
+
+                        Case GetType(ULong).Name
+                            Try
+                                Return CULng(input)
+                            Catch ex As Exception
+                                Return 0UL
+                            End Try
+
                         Case GetType(Double).Name
-                            Return Val(input.Replace(",", "."))
+                            Try
+                                Return Val(input.Replace(",", "."))
+                            Catch ex As Exception
+                                Return 0.0
+                            End Try
+
                         Case GetType(Date).Name
-                            Return CDate(input)
+                            Try
+                                Return CDate(input)
+                            Catch ex As Exception
+                                Return Now
+                            End Try
+
                         Case GetType(String).Name
                             Return input
                     End Select
@@ -83,8 +120,16 @@ Module ModJSON
             Return 0.0
         Else
             Select Case GetTyp.Name
+                Case GetType(Boolean).Name
+                    Return False
+                Case GetType(Integer).Name
+                    Return 0
+                Case GetType(ULong).Name
+                    Return 0UL
                 Case GetType(Double).Name
                     Return 0.0
+                Case GetType(Date).Name
+                    Return Now
                 Case GetType(String).Name
                     Return ""
                 Case Else
