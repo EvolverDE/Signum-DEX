@@ -31,6 +31,8 @@ Partial Class FrmManual
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.LabFirstSteps = New System.Windows.Forms.Label()
         Me.SplitContainer2 = New System.Windows.Forms.SplitContainer()
+        Me.TBManualPIN = New System.Windows.Forms.TextBox()
+        Me.ChBxManualEncryptPP = New System.Windows.Forms.CheckBox()
         Me.TBManualAddress = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.TBManualPassPhrase = New System.Windows.Forms.TextBox()
@@ -62,8 +64,6 @@ Partial Class FrmManual
         Me.SplitContainer14 = New System.Windows.Forms.SplitContainer()
         Me.LabExample6 = New System.Windows.Forms.Label()
         Me.PictureBox6 = New System.Windows.Forms.PictureBox()
-        Me.ChBxManualEncryptPP = New System.Windows.Forms.CheckBox()
-        Me.TBManualPIN = New System.Windows.Forms.TextBox()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
@@ -144,7 +144,7 @@ Partial Class FrmManual
         Me.TabControl1.Location = New System.Drawing.Point(0, 0)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
-        Me.TabControl1.Size = New System.Drawing.Size(1031, 616)
+        Me.TabControl1.Size = New System.Drawing.Size(784, 361)
         Me.TabControl1.TabIndex = 0
         '
         'TabPage1
@@ -154,7 +154,7 @@ Partial Class FrmManual
         Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(1023, 590)
+        Me.TabPage1.Size = New System.Drawing.Size(776, 335)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Welcome"
         '
@@ -163,7 +163,7 @@ Partial Class FrmManual
         Me.LabWelcome.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabWelcome.Location = New System.Drawing.Point(3, 3)
         Me.LabWelcome.Name = "LabWelcome"
-        Me.LabWelcome.Size = New System.Drawing.Size(1017, 584)
+        Me.LabWelcome.Size = New System.Drawing.Size(770, 329)
         Me.LabWelcome.TabIndex = 0
         Me.LabWelcome.Text = "Loading..."
         '
@@ -174,7 +174,7 @@ Partial Class FrmManual
         Me.TabPage2.Location = New System.Drawing.Point(4, 22)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(1023, 590)
+        Me.TabPage2.Size = New System.Drawing.Size(776, 335)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "First Steps"
         '
@@ -188,8 +188,8 @@ Partial Class FrmManual
         'SplitContainer15.Panel1
         '
         Me.SplitContainer15.Panel1.Controls.Add(Me.SplitContainer1)
-        Me.SplitContainer15.Size = New System.Drawing.Size(1017, 584)
-        Me.SplitContainer15.SplitterDistance = 236
+        Me.SplitContainer15.Size = New System.Drawing.Size(770, 329)
+        Me.SplitContainer15.SplitterDistance = 183
         Me.SplitContainer15.TabIndex = 2
         '
         'SplitContainer1
@@ -208,8 +208,8 @@ Partial Class FrmManual
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.SplitContainer2)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1017, 236)
-        Me.SplitContainer1.SplitterDistance = 170
+        Me.SplitContainer1.Size = New System.Drawing.Size(770, 183)
+        Me.SplitContainer1.SplitterDistance = 117
         Me.SplitContainer1.TabIndex = 1
         '
         'LabFirstSteps
@@ -217,7 +217,7 @@ Partial Class FrmManual
         Me.LabFirstSteps.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabFirstSteps.Location = New System.Drawing.Point(0, 0)
         Me.LabFirstSteps.Name = "LabFirstSteps"
-        Me.LabFirstSteps.Size = New System.Drawing.Size(1017, 170)
+        Me.LabFirstSteps.Size = New System.Drawing.Size(770, 117)
         Me.LabFirstSteps.TabIndex = 0
         Me.LabFirstSteps.Text = "Loading..."
         '
@@ -241,9 +241,26 @@ Partial Class FrmManual
         'SplitContainer2.Panel2
         '
         Me.SplitContainer2.Panel2.Controls.Add(Me.btManualSetPassPhrase)
-        Me.SplitContainer2.Size = New System.Drawing.Size(1017, 62)
-        Me.SplitContainer2.SplitterDistance = 872
+        Me.SplitContainer2.Size = New System.Drawing.Size(770, 62)
+        Me.SplitContainer2.SplitterDistance = 625
         Me.SplitContainer2.TabIndex = 0
+        '
+        'TBManualPIN
+        '
+        Me.TBManualPIN.Location = New System.Drawing.Point(253, 28)
+        Me.TBManualPIN.Name = "TBManualPIN"
+        Me.TBManualPIN.Size = New System.Drawing.Size(163, 20)
+        Me.TBManualPIN.TabIndex = 5
+        '
+        'ChBxManualEncryptPP
+        '
+        Me.ChBxManualEncryptPP.AutoSize = True
+        Me.ChBxManualEncryptPP.Location = New System.Drawing.Point(77, 30)
+        Me.ChBxManualEncryptPP.Name = "ChBxManualEncryptPP"
+        Me.ChBxManualEncryptPP.Size = New System.Drawing.Size(170, 17)
+        Me.ChBxManualEncryptPP.TabIndex = 4
+        Me.ChBxManualEncryptPP.Text = "Encrypt PassPhrase With PIN:"
+        Me.ChBxManualEncryptPP.UseVisualStyleBackColor = True
         '
         'TBManualAddress
         '
@@ -296,7 +313,7 @@ Partial Class FrmManual
         Me.TabPage3.Controls.Add(Me.Panel1)
         Me.TabPage3.Location = New System.Drawing.Point(4, 22)
         Me.TabPage3.Name = "TabPage3"
-        Me.TabPage3.Size = New System.Drawing.Size(1023, 590)
+        Me.TabPage3.Size = New System.Drawing.Size(776, 335)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "Example"
         '
@@ -306,7 +323,7 @@ Partial Class FrmManual
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel1.Location = New System.Drawing.Point(0, 0)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(1006, 3610)
+        Me.Panel1.Size = New System.Drawing.Size(759, 3610)
         Me.Panel1.TabIndex = 1
         '
         'SplitContainer4
@@ -324,7 +341,7 @@ Partial Class FrmManual
         'SplitContainer4.Panel2
         '
         Me.SplitContainer4.Panel2.Controls.Add(Me.SplitContainer6)
-        Me.SplitContainer4.Size = New System.Drawing.Size(1006, 3610)
+        Me.SplitContainer4.Size = New System.Drawing.Size(759, 3610)
         Me.SplitContainer4.SplitterDistance = 683
         Me.SplitContainer4.TabIndex = 1
         '
@@ -343,7 +360,7 @@ Partial Class FrmManual
         'SplitContainer3.Panel2
         '
         Me.SplitContainer3.Panel2.Controls.Add(Me.PictureBox1)
-        Me.SplitContainer3.Size = New System.Drawing.Size(1006, 683)
+        Me.SplitContainer3.Size = New System.Drawing.Size(759, 683)
         Me.SplitContainer3.SplitterDistance = 184
         Me.SplitContainer3.TabIndex = 0
         '
@@ -352,7 +369,7 @@ Partial Class FrmManual
         Me.LabExample1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabExample1.Location = New System.Drawing.Point(0, 0)
         Me.LabExample1.Name = "LabExample1"
-        Me.LabExample1.Size = New System.Drawing.Size(1006, 184)
+        Me.LabExample1.Size = New System.Drawing.Size(759, 184)
         Me.LabExample1.TabIndex = 0
         Me.LabExample1.Text = "Example1 Loading..."
         Me.LabExample1.TextAlign = System.Drawing.ContentAlignment.BottomLeft
@@ -364,7 +381,7 @@ Partial Class FrmManual
         Me.PictureBox1.Image = Global.PFP.My.Resources.Resources.createorder
         Me.PictureBox1.Location = New System.Drawing.Point(0, 0)
         Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(1006, 495)
+        Me.PictureBox1.Size = New System.Drawing.Size(759, 495)
         Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
         Me.PictureBox1.TabIndex = 0
         Me.PictureBox1.TabStop = False
@@ -384,7 +401,7 @@ Partial Class FrmManual
         'SplitContainer6.Panel2
         '
         Me.SplitContainer6.Panel2.Controls.Add(Me.SplitContainer8)
-        Me.SplitContainer6.Size = New System.Drawing.Size(1006, 2923)
+        Me.SplitContainer6.Size = New System.Drawing.Size(759, 2923)
         Me.SplitContainer6.SplitterDistance = 552
         Me.SplitContainer6.TabIndex = 2
         '
@@ -403,7 +420,7 @@ Partial Class FrmManual
         'SplitContainer5.Panel2
         '
         Me.SplitContainer5.Panel2.Controls.Add(Me.PictureBox2)
-        Me.SplitContainer5.Size = New System.Drawing.Size(1006, 552)
+        Me.SplitContainer5.Size = New System.Drawing.Size(759, 552)
         Me.SplitContainer5.SplitterDistance = 54
         Me.SplitContainer5.TabIndex = 1
         '
@@ -412,7 +429,7 @@ Partial Class FrmManual
         Me.LabExample2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabExample2.Location = New System.Drawing.Point(0, 0)
         Me.LabExample2.Name = "LabExample2"
-        Me.LabExample2.Size = New System.Drawing.Size(1006, 54)
+        Me.LabExample2.Size = New System.Drawing.Size(759, 54)
         Me.LabExample2.TabIndex = 0
         Me.LabExample2.Text = "Example2 Loading..."
         Me.LabExample2.TextAlign = System.Drawing.ContentAlignment.BottomLeft
@@ -424,7 +441,7 @@ Partial Class FrmManual
         Me.PictureBox2.Image = Global.PFP.My.Resources.Resources.showmyopenorder
         Me.PictureBox2.Location = New System.Drawing.Point(0, 0)
         Me.PictureBox2.Name = "PictureBox2"
-        Me.PictureBox2.Size = New System.Drawing.Size(1006, 494)
+        Me.PictureBox2.Size = New System.Drawing.Size(759, 494)
         Me.PictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
         Me.PictureBox2.TabIndex = 0
         Me.PictureBox2.TabStop = False
@@ -444,7 +461,7 @@ Partial Class FrmManual
         'SplitContainer8.Panel2
         '
         Me.SplitContainer8.Panel2.Controls.Add(Me.SplitContainer10)
-        Me.SplitContainer8.Size = New System.Drawing.Size(1006, 2367)
+        Me.SplitContainer8.Size = New System.Drawing.Size(759, 2367)
         Me.SplitContainer8.SplitterDistance = 591
         Me.SplitContainer8.TabIndex = 2
         '
@@ -463,7 +480,7 @@ Partial Class FrmManual
         'SplitContainer7.Panel2
         '
         Me.SplitContainer7.Panel2.Controls.Add(Me.PictureBox3)
-        Me.SplitContainer7.Size = New System.Drawing.Size(1006, 591)
+        Me.SplitContainer7.Size = New System.Drawing.Size(759, 591)
         Me.SplitContainer7.SplitterDistance = 92
         Me.SplitContainer7.TabIndex = 1
         '
@@ -472,7 +489,7 @@ Partial Class FrmManual
         Me.LabExample3.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabExample3.Location = New System.Drawing.Point(0, 0)
         Me.LabExample3.Name = "LabExample3"
-        Me.LabExample3.Size = New System.Drawing.Size(1006, 92)
+        Me.LabExample3.Size = New System.Drawing.Size(759, 92)
         Me.LabExample3.TabIndex = 0
         Me.LabExample3.Text = "Example3 Loading..."
         Me.LabExample3.TextAlign = System.Drawing.ContentAlignment.BottomLeft
@@ -484,7 +501,7 @@ Partial Class FrmManual
         Me.PictureBox3.Image = Global.PFP.My.Resources.Resources.responseopenorder
         Me.PictureBox3.Location = New System.Drawing.Point(0, 0)
         Me.PictureBox3.Name = "PictureBox3"
-        Me.PictureBox3.Size = New System.Drawing.Size(1006, 495)
+        Me.PictureBox3.Size = New System.Drawing.Size(759, 495)
         Me.PictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
         Me.PictureBox3.TabIndex = 0
         Me.PictureBox3.TabStop = False
@@ -504,7 +521,7 @@ Partial Class FrmManual
         'SplitContainer10.Panel2
         '
         Me.SplitContainer10.Panel2.Controls.Add(Me.SplitContainer11)
-        Me.SplitContainer10.Size = New System.Drawing.Size(1006, 1772)
+        Me.SplitContainer10.Size = New System.Drawing.Size(759, 1772)
         Me.SplitContainer10.SplitterDistance = 567
         Me.SplitContainer10.TabIndex = 3
         '
@@ -523,7 +540,7 @@ Partial Class FrmManual
         'SplitContainer9.Panel2
         '
         Me.SplitContainer9.Panel2.Controls.Add(Me.PictureBox4)
-        Me.SplitContainer9.Size = New System.Drawing.Size(1006, 567)
+        Me.SplitContainer9.Size = New System.Drawing.Size(759, 567)
         Me.SplitContainer9.SplitterDistance = 69
         Me.SplitContainer9.TabIndex = 2
         '
@@ -532,7 +549,7 @@ Partial Class FrmManual
         Me.LabExample4.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabExample4.Location = New System.Drawing.Point(0, 0)
         Me.LabExample4.Name = "LabExample4"
-        Me.LabExample4.Size = New System.Drawing.Size(1006, 69)
+        Me.LabExample4.Size = New System.Drawing.Size(759, 69)
         Me.LabExample4.TabIndex = 0
         Me.LabExample4.Text = "Example4 Loading..."
         Me.LabExample4.TextAlign = System.Drawing.ContentAlignment.BottomLeft
@@ -544,7 +561,7 @@ Partial Class FrmManual
         Me.PictureBox4.Image = Global.PFP.My.Resources.Resources.buyorder
         Me.PictureBox4.Location = New System.Drawing.Point(0, 0)
         Me.PictureBox4.Name = "PictureBox4"
-        Me.PictureBox4.Size = New System.Drawing.Size(1006, 494)
+        Me.PictureBox4.Size = New System.Drawing.Size(759, 494)
         Me.PictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
         Me.PictureBox4.TabIndex = 0
         Me.PictureBox4.TabStop = False
@@ -564,7 +581,7 @@ Partial Class FrmManual
         'SplitContainer11.Panel2
         '
         Me.SplitContainer11.Panel2.Controls.Add(Me.SplitContainer13)
-        Me.SplitContainer11.Size = New System.Drawing.Size(1006, 1201)
+        Me.SplitContainer11.Size = New System.Drawing.Size(759, 1201)
         Me.SplitContainer11.SplitterDistance = 544
         Me.SplitContainer11.TabIndex = 4
         '
@@ -583,7 +600,7 @@ Partial Class FrmManual
         'SplitContainer12.Panel2
         '
         Me.SplitContainer12.Panel2.Controls.Add(Me.PictureBox5)
-        Me.SplitContainer12.Size = New System.Drawing.Size(1006, 544)
+        Me.SplitContainer12.Size = New System.Drawing.Size(759, 544)
         Me.SplitContainer12.SplitterDistance = 46
         Me.SplitContainer12.TabIndex = 2
         '
@@ -592,7 +609,7 @@ Partial Class FrmManual
         Me.LabExample5.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabExample5.Location = New System.Drawing.Point(0, 0)
         Me.LabExample5.Name = "LabExample5"
-        Me.LabExample5.Size = New System.Drawing.Size(1006, 46)
+        Me.LabExample5.Size = New System.Drawing.Size(759, 46)
         Me.LabExample5.TabIndex = 0
         Me.LabExample5.Text = "Example5 Loading..."
         Me.LabExample5.TextAlign = System.Drawing.ContentAlignment.BottomLeft
@@ -604,7 +621,7 @@ Partial Class FrmManual
         Me.PictureBox5.Image = Global.PFP.My.Resources.Resources.OpenOrder
         Me.PictureBox5.Location = New System.Drawing.Point(0, 0)
         Me.PictureBox5.Name = "PictureBox5"
-        Me.PictureBox5.Size = New System.Drawing.Size(1006, 494)
+        Me.PictureBox5.Size = New System.Drawing.Size(759, 494)
         Me.PictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
         Me.PictureBox5.TabIndex = 0
         Me.PictureBox5.TabStop = False
@@ -620,7 +637,7 @@ Partial Class FrmManual
         'SplitContainer13.Panel1
         '
         Me.SplitContainer13.Panel1.Controls.Add(Me.SplitContainer14)
-        Me.SplitContainer13.Size = New System.Drawing.Size(1006, 653)
+        Me.SplitContainer13.Size = New System.Drawing.Size(759, 653)
         Me.SplitContainer13.SplitterDistance = 616
         Me.SplitContainer13.TabIndex = 5
         '
@@ -639,7 +656,7 @@ Partial Class FrmManual
         'SplitContainer14.Panel2
         '
         Me.SplitContainer14.Panel2.Controls.Add(Me.PictureBox6)
-        Me.SplitContainer14.Size = New System.Drawing.Size(1006, 616)
+        Me.SplitContainer14.Size = New System.Drawing.Size(759, 616)
         Me.SplitContainer14.SplitterDistance = 118
         Me.SplitContainer14.TabIndex = 2
         '
@@ -648,7 +665,7 @@ Partial Class FrmManual
         Me.LabExample6.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabExample6.Location = New System.Drawing.Point(0, 0)
         Me.LabExample6.Name = "LabExample6"
-        Me.LabExample6.Size = New System.Drawing.Size(1006, 118)
+        Me.LabExample6.Size = New System.Drawing.Size(759, 118)
         Me.LabExample6.TabIndex = 0
         Me.LabExample6.Text = "Example6 Loading..."
         Me.LabExample6.TextAlign = System.Drawing.ContentAlignment.BottomLeft
@@ -660,34 +677,17 @@ Partial Class FrmManual
         Me.PictureBox6.Image = Global.PFP.My.Resources.Resources.settings
         Me.PictureBox6.Location = New System.Drawing.Point(0, 0)
         Me.PictureBox6.Name = "PictureBox6"
-        Me.PictureBox6.Size = New System.Drawing.Size(1006, 494)
+        Me.PictureBox6.Size = New System.Drawing.Size(759, 494)
         Me.PictureBox6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
         Me.PictureBox6.TabIndex = 0
         Me.PictureBox6.TabStop = False
-        '
-        'ChBxManualEncryptPP
-        '
-        Me.ChBxManualEncryptPP.AutoSize = True
-        Me.ChBxManualEncryptPP.Location = New System.Drawing.Point(77, 30)
-        Me.ChBxManualEncryptPP.Name = "ChBxManualEncryptPP"
-        Me.ChBxManualEncryptPP.Size = New System.Drawing.Size(170, 17)
-        Me.ChBxManualEncryptPP.TabIndex = 4
-        Me.ChBxManualEncryptPP.Text = "Encrypt PassPhrase With PIN:"
-        Me.ChBxManualEncryptPP.UseVisualStyleBackColor = True
-        '
-        'TBManualPIN
-        '
-        Me.TBManualPIN.Location = New System.Drawing.Point(253, 28)
-        Me.TBManualPIN.Name = "TBManualPIN"
-        Me.TBManualPIN.Size = New System.Drawing.Size(163, 20)
-        Me.TBManualPIN.TabIndex = 5
         '
         'FrmManual
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.ClientSize = New System.Drawing.Size(1031, 616)
+        Me.ClientSize = New System.Drawing.Size(784, 361)
         Me.Controls.Add(Me.TabControl1)
         Me.ForeColor = System.Drawing.Color.White
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)

@@ -25,7 +25,7 @@ Public Class FrmMyOrderSettings
         Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettings()
 
         For Each T_OS As ClsOrderSettings In T_OSList
-            With LVOrders.Items.Add(T_OS.ATID) 'AT
+            With LVOrders.Items.Add("TS-" + ClsReedSolomon.Encode(T_OS.ATID)) 'TODO: change TS- prefix
                 .SubItems.Add(T_OS.TXID) 'TX
                 .SubItems.Add(T_OS.Type) 'Type
                 .SubItems.Add(T_OS.PaytypeString) 'Paytype
@@ -85,7 +85,7 @@ Public Class FrmMyOrderSettings
         If LVOrders.SelectedItems.Count > 0 Then
             Dim SelectedItem As ListViewItem = LVOrders.SelectedItems(0)
 
-            Dim ATRS As ULong = GetLVColNameFromSubItem(LVOrders, "AT", SelectedItem)
+            Dim ATRS As String = GetLVColNameFromSubItem(LVOrders, "AT", SelectedItem)
             Dim ATID As ULong = ClsReedSolomon.Decode(ATRS)
 
             Dim TXID As ULong = CULng(GetLVColNameFromSubItem(LVOrders, "Transaction", SelectedItem))

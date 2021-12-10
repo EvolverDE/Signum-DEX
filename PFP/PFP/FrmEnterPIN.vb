@@ -41,6 +41,12 @@ Public Class FrmEnterPIN
         C_Mode = Mode
         ChBxPIN.Checked = True
 
+        Dim PINFingerPrint As String = GetINISetting(E_Setting.PINFingerPrint, "")
+
+        If PINFingerPrint.Trim = "" Then
+            SplitContainer1.Panel1Collapsed = True
+        End If
+
         If C_Mode = E_Mode.ChangePIN Then
             Me.Text = "Change PIN"
             BtOK.Text = "change"
@@ -66,7 +72,7 @@ Public Class FrmEnterPIN
             Label3.Visible = False
             TBOldPIN.Visible = False
             ChBxPIN.Enabled = False
-            SplitContainer1.Panel2Collapsed = True 'TODO: Sign Unsigned Transaction Bytes
+            SplitContainer1.Panel2Collapsed = False 'TODO: Sign Unsigned Transaction Bytes
         End If
 
     End Sub
@@ -177,7 +183,7 @@ Public Class FrmEnterPIN
 
     End Sub
 
-    Private Sub TBPIN_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TBSignature.KeyPress, TBPIN.KeyPress
+    Private Sub TBPIN_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TBSignedBytes.KeyPress, TBPIN.KeyPress
 
         Dim keys As Integer = Asc(e.KeyChar)
 

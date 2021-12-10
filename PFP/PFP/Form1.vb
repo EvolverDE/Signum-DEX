@@ -139,7 +139,7 @@ Public Class PFPForm
 
                             If GetINISetting(E_Setting.InfoOut, False) Then
                                 Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalOrder(3): -> no Keys")
+                                out.WarningLog2File(Application.ProductName + "-warning in CheckPayPalOrder(3): -> no Keys")
                             End If
 
                         End If
@@ -249,7 +249,7 @@ Public Class PFPForm
 
                                 If GetINISetting(E_Setting.InfoOut, False) Then
                                     Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalTransaction(3): -> no Keys")
+                                    out.WarningLog2File(Application.ProductName + "-warning in CheckPayPalTransaction(3): -> no Keys")
                                 End If
 
                             End If
@@ -274,7 +274,7 @@ Public Class PFPForm
     Structure S_AT
         Dim AT As ULong
         Dim ATRS As String
-        Dim IsBLS_AT As Boolean
+        Dim IsDEX_AT As Boolean
     End Structure
     Property CSVATList() As List(Of S_AT) = New List(Of S_AT)
 
@@ -388,7 +388,7 @@ Public Class PFPForm
 
         If InfoOut Then
             Dim IOut As ClsOut = New ClsOut(Application.StartupPath)
-            IOut.Info2File(Application.ProductName + "-info from Form1_FormClosing(): -> app close")
+            IOut.Info2File(Application.ProductName + "-info from Form1_FormClosing(): -> app close (" + sender.ToString + " -> " + e.ToString + ")")
         End If
 
         'If ChBxTCPAPI.Checked Then
@@ -411,16 +411,18 @@ Public Class PFPForm
 
     End Sub
 
-    'Property T_PassPhrase As String = ""
-    Property T_Address As String = ""
-    'Property T_SignkeyHEX As String = ""
-    'Property T_AgreementKeyHEX As String = ""
-    'Property T_PublicKeyHEX As String = ""
+    Dim MaxWidth As Integer = Screen.PrimaryScreen.Bounds.Width
+    Dim MaxHeight As Integer = Screen.PrimaryScreen.Bounds.Height
 
+    Dim WTS As TradeTrackerSlot = New TradeTrackerSlot
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        InitiateINI()
+        'Me.Text = "Codename: Perls for Pigs (TestNet) " & MaxWidth.ToString & "/" & MaxHeight.ToString + " TO " + Me.Size.Width.ToString + "/" + Me.Size.Height.ToString
+
+        Dim Wait As Boolean = InitiateINI()
+
+        Wait = ReloadINI()
 
         InfoOut = GetINISetting(E_Setting.InfoOut, False)
         TCPAPI = New ClsTCPAPI(GetINISetting(E_Setting.TCPAPIServerPort, 8130), GetINISetting(E_Setting.TCPAPIShowStatus, False))
@@ -471,6 +473,14 @@ Public Class PFPForm
         CoBxChartSelectedItem = CoBxChart.Items(1)
         AddHandler CoBxChart.DropDownClosed, AddressOf CoBx_Chart_Handler
 
+        'Dim BtRightLeft As Button = New Button
+        'BtRightLeft.Location = New Point(CoBxChart.Location.X + CoBxChart.Width, 10)
+        'BtRightLeft.Text = "<"
+        'BtRightLeft.Size = New Size(20, 20)
+        'BtRightLeft.Font = New Font(BtRightLeft.Font, FontStyle.Bold)
+        'BtRightLeft.Name = "BtRightLeft"
+
+
 
         Dim LabTick As Label = New Label
         LabTick.Text = "Tick (Min): "
@@ -492,12 +502,10 @@ Public Class PFPForm
         TLS.Panel1.Controls.AddRange({LabChart, LabTick, CoBxChart, CoBxTick})
         TLS.Panel2.Controls.Add(TTTL)
 
-        Dim WTS As TradeTrackerSlot = New TradeTrackerSlot
         WTS.Location = New Point(0, 0)
         WTS.Dock = DockStyle.Fill
         WTS.LabExch.Text = "booting..."
         WTS.LabPair.Text = "booting..."
-
 
         SplitPanel.Panel1.Controls.Add(TLS)
         PanelForSplitPanel.Controls.Add(WTS)
@@ -506,61 +514,146 @@ Public Class PFPForm
         SplitContainer2.Panel1.Controls.Add(SplitPanel)
 #End Region
 
+
+
+#Region "check PassPhrase and Address"
+        BlockTimer.Enabled = False
+
         Dim T_PassPhrase As String = GetINISetting(E_Setting.PassPhrase, "")
-        T_Address = GetINISetting(E_Setting.Address, "")
-        TBSNOAddress.Text = T_Address
+        Dim T_Address As String = GetINISetting(E_Setting.Address, "")
 
         If T_PassPhrase.Trim = "" And T_Address.Trim = "" Then
 
-            BlockTimer.Enabled = False
             Dim Result As FrmManual.CustomDialogResult = FrmManual.MBox()
 
             T_PassPhrase = GetINISetting(E_Setting.PassPhrase, "")
             T_Address = GetINISetting(E_Setting.Address, "")
+        End If
 
-            If T_PassPhrase.Trim = "" And T_Address.Trim = "" Then
+        Dim T_AddressList As List(Of String) = ConvertAddress(T_Address)
+
+        If T_PassPhrase.Trim = "" Then
+
+            If T_AddressList.Count = 0 Then
+
                 ClsMsgs.MBox("No PassPhrase or Address set, program will close.", "Unknown Address",,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
                 Application.Exit()
                 Exit Sub
+
+            ElseIf T_AddressList.Count = 1 Then
+                GlobalPublicKey = ""
+                GlobalAccountID = CULng(ConvertAddress(T_Address)(0))
+                GlobalAddress = T_Address
+            Else
+                GlobalPublicKey = T_AddressList(1)
+                GlobalAccountID = CULng(T_AddressList(0))
+                GlobalAddress = "TS-" + ClsReedSolomon.Encode(GlobalAccountID) 'TODO: change TS- Prefix
             End If
-
-            TBSNOAddress.Text = T_Address
-
-            BlockTimer.Enabled = True
-
-        ElseIf T_PassPhrase.Trim = "" And Not T_Address.Trim = "" Then
-            TBSNOAddress.Text = T_Address
-        ElseIf Not T_PassPhrase.Trim = "" And T_Address.Trim = "" Then
-
-            Dim MasterKeys As List(Of String) = GetMasterKeys(T_PassPhrase)
-            TBSNOAddress.Text = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
 
         Else
 
             If CheckPIN() Then
                 Dim MasterKeys As List(Of String) = GetMasterKeys(T_PassPhrase)
-                Dim T_Address As String = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
+                GlobalPublicKey = MasterKeys(0)
+                GlobalAccountID = GetAccountID(GlobalPublicKey)
+                GlobalAddress = "TS-" + ClsReedSolomon.Encode(GlobalAccountID) 'TODO: remove TS- Prefix
 
-                If T_Address.Trim = TBSNOAddress.Text.Trim Then
-                    TBSNOAddress.Text = T_Address
-                Else
+                If Not T_Address.Trim.Contains(GlobalAddress.Trim) Then
 
                     ClsMsgs.MBox("PassPhrase don't match Address, program will close.", "Unknown Address",,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
                     Application.Exit()
                     Exit Sub
 
                 End If
+
+            Else
+
+                If T_AddressList.Count = 0 Then
+
+                    ClsMsgs.MBox("Can't get Address from PassPhrase because its encrypted, program will close. Please make sure there is an Address in the Settings.ini", "Unknown Address",,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
+                    Application.Exit()
+                    Exit Sub
+
+                ElseIf T_AddressList.Count = 1 Then
+                    GlobalPublicKey = ""
+                    GlobalAccountID = CULng(ConvertAddress(T_Address)(0))
+                    GlobalAddress = T_Address
+                Else
+                    GlobalPublicKey = T_AddressList(1)
+                    GlobalAccountID = CULng(T_AddressList(0))
+                    GlobalAddress = "TS-" + ClsReedSolomon.Encode(GlobalAccountID) 'TODO: change TS- Prefix
+                End If
             End If
 
         End If
 
-        GlobalAddress = TBSNOAddress.Text
+        BlockTimer.Enabled = True
+
+        TBSNOAddress.Text = GlobalAddress
+
+#End Region
+
+
+#Region "deprecated"
+        'If T_PassPhrase.Trim = "" And GlobalAddress.Trim = "" Then
+
+        '         BlockTimer.Enabled = False
+        '         Dim Result As FrmManual.CustomDialogResult = FrmManual.MBox()
+
+        '         T_PassPhrase = GetINISetting(E_Setting.PassPhrase, "")
+
+        '         Dim T_AddressExtended As String = GetINISetting(E_Setting.Address, "")
+
+        '         GlobalAddress = GetAccountRSFromID(ConvertAddress(T_AddressExtended)(0))
+
+        '         If T_PassPhrase.Trim = "" And GlobalAddress.Trim = "" Then
+        '             ClsMsgs.MBox("No PassPhrase or Address set, program will close.", "Unknown Address",,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
+        '             Application.Exit()
+        '             Exit Sub
+        '         End If
+
+        '         TBSNOAddress.Text = GlobalAddress
+
+        '         BlockTimer.Enabled = True
+
+        '     ElseIf T_PassPhrase.Trim = "" And Not GlobalAddress.Trim = "" Then
+
+
+
+
+        '     ElseIf Not T_PassPhrase.Trim = "" And GlobalAddress.Trim = "" Then
+
+        '         Dim MasterKeys As List(Of String) = GetMasterKeys(T_PassPhrase)
+        '         TBSNOAddress.Text = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
+
+        '     Else 'If Not T_PassPhrase.Trim = "" And Not GlobalAddress.Trim = ""
+
+        '         If CheckPIN() Then
+        '             Dim MasterKeys As List(Of String) = GetMasterKeys(T_PassPhrase)
+        '             Dim MT_Address As String = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
+
+        '             If MT_Address.Trim = TBSNOAddress.Text.Trim Then
+        '                 TBSNOAddress.Text = MT_Address
+        '             Else
+
+        '                 ClsMsgs.MBox("PassPhrase don't match Address, program will close.", "Unknown Address",,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
+        '                 Application.Exit()
+        '                 Exit Sub
+
+        '             End If
+        '         End If
+
+        '     End If
+
+#End Region
+
+
 
         CurrentMarket = GetINISetting(E_Setting.LastMarketViewed, "USD")
         CoBxMarket.SelectedItem = CurrentMarket
 
 
-        Dim Nodes As String = GetINISetting(E_Setting.Nodes, "http://nivbox.co.uk:6876/burst;https://testnet.burstcoin.network:6876/burst") ' INIGetValue(Application.StartupPath + "/Settings.ini", "Basic", "Nodes", "http://nivbox.co.uk:6876/burst;https://testnet.burstcoin.network:6876/burst;https://octalsburstnode.ddns.net:6876/burst;https://testnetwallet.burstcoin.ro/burst")
+        Dim Nodes As String = GetINISetting(E_Setting.Nodes, "http://lmsi.club:6876/burst;https://testnet.burstcoin.network:6876/burst")
 
         NodeList.Clear()
         If Nodes.Contains(";") Then
@@ -575,8 +668,8 @@ Public Class PFPForm
         SetMethodFilter(ChLBSellFilterMethods, LoadMethodFilter(E_Setting.SellFilterMethods))
         SetMethodFilter(ChLBBuyFilterMethods, LoadMethodFilter(E_Setting.BuyFilterMethods))
 
-        CoBxSellFilterMaxOrders.SelectedItem = GetINISetting(E_Setting.ShowMaxSellOrders, 10)
-        CoBxBuyFilterMaxOrders.SelectedItem = GetINISetting(E_Setting.ShowMaxBuyOrders, 10)
+        CoBxSellFilterMaxOrders.SelectedItem = GetINISetting(E_Setting.ShowMaxSellOrders, 10).ToString
+        CoBxBuyFilterMaxOrders.SelectedItem = GetINISetting(E_Setting.ShowMaxBuyOrders, 10).ToString
 
         ChBxSellFilterShowAutoinfo.Checked = GetINISetting(E_Setting.SellFilterAutoinfo, False)
         ChBxBuyFilterShowAutoinfo.Checked = GetINISetting(E_Setting.BuyFilterAutoinfo, False)
@@ -584,14 +677,16 @@ Public Class PFPForm
         ChBxSellFilterShowAutofinish.Checked = GetINISetting(E_Setting.SellFilterAutofinish, False)
         ChBxBuyFilterShowAutofinish.Checked = GetINISetting(E_Setting.BuyFilterAutofinish, False)
 
+        ChBxSellFilterShowPayable.Checked = GetINISetting(E_Setting.SellFilterPayable, False)
+        ChBxBuyFilterShowPayable.Checked = GetINISetting(E_Setting.BuyFilterPayable, False)
 
         'InitiateDEXNET()
 
-        PrimaryNode = GetINISetting(E_Setting.DefaultNode, "http://nivbox.co.uk:6876/burst")
+        PrimaryNode = GetINISetting(E_Setting.DefaultNode, "http://lmsi.club:6876/burst")
 
-        RefreshTime = CInt(GetINISetting(E_Setting.RefreshMinutes, "1")) * 60
+        RefreshTime = GetINISetting(E_Setting.RefreshMinutes, 1) * 60
 
-        If CBool(GetINISetting(E_Setting.TCPAPIEnable, "False")) Then
+        If GetINISetting(E_Setting.TCPAPIEnable, False) Then
             TCPAPI.StartAPIServer()
         End If
 
@@ -600,10 +695,10 @@ Public Class PFPForm
         '    Exit Sub
         'End If
 
-        Dim T_DEXATList As List(Of String()) = GetDEXATsFromCSV()
+        Dim T_DEXATList As List(Of List(Of String)) = GetDEXATsFromCSV()
         DEXATList.Clear()
 
-        For Each T_DEX In T_DEXATList
+        For Each T_DEX As List(Of String) In T_DEXATList
             If T_DEX(2) = "True" Then
                 DEXATList.Add(T_DEX(0))
             End If
@@ -712,121 +807,150 @@ Public Class PFPForm
 
         SetDEXNETRelevantMsgsToLVs()
 
+        'MsgBox(SplitContainer2.Panel2.Width.ToString)
+        If SplitContainer2.Panel1.Width < 500 Then
+            If Not TLS.Panel1Collapsed Then
+                TLS.Panel1Collapsed = True
+                WTS.SlotSplitter.Panel1Collapsed = True
+            End If
+        Else
+            If TLS.Panel1Collapsed Then
+                TLS.Panel1Collapsed = False
+                WTS.SlotSplitter.Panel1Collapsed = False
+            End If
+        End If
+
+
         Dim Wait As Boolean = False
 
         If Boottime >= RefreshTime Or ForceReload Then
+
+            'Me.Text = "Codename: Perls for Pigs (TestNet) " & MaxWidth.ToString & "/" & MaxHeight.ToString + " TO " + Me.Size.Width.ToString + "/" + Me.Size.Height.ToString
+
+            ReloadINI()
+
+            If MaxWidth < Me.Size.Width Or MaxHeight < Me.Size.Height Then
+                Wait = AutoResizeWindow()
+            End If
+
             Boottime = 0
 
-            BlockTimer.Enabled = False
 
-            TSSStatusImage.Text = "in Synchronization..."
-            TSSStatusImage.Image = My.Resources.status_wait
+            If Checknodes() > 0 Then
 
-            If CheckPIN() Then
-                TSSCryptStatus.Image = My.Resources.status_decrypted
-                TSSCryptStatus.Tag = "decrypted"
+                BlockTimer.Enabled = False
 
-                TSSCryptStatus.AutoToolTip = True
-                TSSCryptStatus.ToolTipText = "the PFP is Unlocked" + vbCrLf + "automation working"
+                TSSStatusImage.Text = "in Synchronization..."
+                TSSStatusImage.Image = My.Resources.status_wait
 
-            Else
-                TSSCryptStatus.Image = My.Resources.status_encrypted
-                TSSCryptStatus.Tag = "encrypted"
+                If CheckPIN() Then
+                    TSSCryptStatus.Image = My.Resources.status_decrypted
+                    TSSCryptStatus.Tag = "decrypted"
 
-                TSSCryptStatus.AutoToolTip = True
-                TSSCryptStatus.ToolTipText = "the PFP is Locked" + vbCrLf + "there is no automation"
+                    TSSCryptStatus.AutoToolTip = True
+                    TSSCryptStatus.ToolTipText = "the PFP is Unlocked" + vbCrLf + "automation working"
 
-            End If
-
-
-            If Not IsNothing(DEXNET) Then
-
-                For i As Integer = 0 To DEXNET.Peers.Count - 1
-                    Dim Peer As ClsDEXNET.S_Peer = DEXNET.Peers(i)
-
-                    If Peer.Timeout = -1 Then
-                        Continue For
-                    End If
-
-                    If Peer.Timeout = 0 Then
-                        Peer.TCPClient.Close()
-                        DEXNET.Peers(i) = Peer
-                    Else
-                        Peer.Timeout -= 1
-                        DEXNET.Peers(i) = Peer
-                    End If
-
-                Next
-
-                If DEXNET.Peers.Count = 0 Then
-                    DEXNET.StopServer()
-                    InitiateDEXNET()
                 Else
-                    DEXNET.GetPing()
+                    TSSCryptStatus.Image = My.Resources.status_encrypted
+                    TSSCryptStatus.Tag = "encrypted"
+
+                    TSSCryptStatus.AutoToolTip = True
+                    TSSCryptStatus.ToolTipText = "the PFP is Locked" + vbCrLf + "there is no automation"
+
                 End If
 
-            Else
-                InitiateDEXNET()
-            End If
 
-            Dim T_NuBlockThread As Threading.Thread = New Threading.Thread(AddressOf GetNuBlock)
-            T_NuBlockThread.Start(PrimaryNode)
+                If Not IsNothing(DEXNET) Then
 
-            While T_NuBlockThread.IsAlive
-                Application.DoEvents()
-            End While
+                    For i As Integer = 0 To DEXNET.Peers.Count - 1
+                        Dim Peer As ClsDEXNET.S_Peer = DEXNET.Peers(i)
 
-
-
-            If NuBlock > Block Or ForceReload Then
-                Block = NuBlock
-                ForceReload = False
-
-                LoadRunning = True
-
-                Application.DoEvents()
-
-                Wait = Loading()
-                Wait = SetInLVs()
-
-                RefreshTime = CInt(GetINISetting(E_Setting.RefreshMinutes, "1")) * 60
-
-                Dim CoBxChartVal As Integer = 1
-                Dim CoBxTickVal As Integer = 1
-
-                For Each CTRL In TLS.Panel1.Controls
-
-                    If CTRL.GetType.Name = GetType(ComboBox).Name Then
-
-                        If CTRL.Name = "CoBxChart" Then
-                            Dim CoBxChart As ComboBox = DirectCast(CTRL, ComboBox)
-                            CoBxChartVal = CInt(CoBxChart.SelectedItem)
+                        If Peer.Timeout = -1 Then
+                            Continue For
                         End If
 
-                        If CTRL.Name = "CoBxTick" Then
-                            Dim CoBxTick As ComboBox = DirectCast(CTRL, ComboBox)
-                            CoBxTickVal = CInt(CoBxTick.SelectedItem)
+                        If Peer.Timeout = 0 Then
+                            Peer.TCPClient.Close()
+                            DEXNET.Peers(i) = Peer
+                        Else
+                            Peer.Timeout -= 1
+                            DEXNET.Peers(i) = Peer
                         End If
 
+                    Next
+
+                    If DEXNET.Peers.Count = 0 Then
+                        DEXNET.StopServer()
+                        InitiateDEXNET()
+                    Else
+                        DEXNET.GetPing()
                     End If
 
-                Next
-
-                Dim ViewThread As Threading.Thread = New Threading.Thread(AddressOf LoadHistory)
-                ViewThread.Start(New List(Of Object)({CoBxChartVal, CoBxTickVal, CurrentMarket}))
-
-                TTTL.TradeTrackTimer.Enabled = True
-                BlockTimer.Enabled = True
-
-                LoadRunning = False
-
-                If Shutdown Then
-                    Me.Close()
+                Else
+                    InitiateDEXNET()
                 End If
 
-            Else
-                BlockTimer.Enabled = True
+                Dim T_NuBlockThread As Threading.Thread = New Threading.Thread(AddressOf GetNuBlock)
+                T_NuBlockThread.Start(PrimaryNode)
+
+                While T_NuBlockThread.IsAlive
+                    Application.DoEvents()
+                End While
+
+
+
+                If NuBlock > Block Or ForceReload Then
+                    Block = NuBlock
+                    ForceReload = False
+
+                    LoadRunning = True
+
+                    Application.DoEvents()
+
+                    Wait = Loading()
+                    Wait = SetInLVs()
+
+                    RefreshTime = GetINISetting(E_Setting.RefreshMinutes, 1) * 60
+
+                    Dim CoBxChartVal As Integer = 1
+                    Dim CoBxTickVal As Integer = 1
+
+                    For Each CTRL In TLS.Panel1.Controls
+
+                        If CTRL.GetType.Name = GetType(ComboBox).Name Then
+
+                            If CTRL.Name = "CoBxChart" Then
+                                Dim CoBxChart As ComboBox = DirectCast(CTRL, ComboBox)
+                                CoBxChartVal = CInt(CoBxChart.SelectedItem)
+                            End If
+
+                            If CTRL.Name = "CoBxTick" Then
+                                Dim CoBxTick As ComboBox = DirectCast(CTRL, ComboBox)
+                                CoBxTickVal = CInt(CoBxTick.SelectedItem)
+                            End If
+
+                        End If
+
+                    Next
+
+                    Dim ViewThread As Threading.Thread = New Threading.Thread(AddressOf LoadHistory)
+                    ViewThread.Start(New List(Of Object)({CoBxChartVal, CoBxTickVal, CurrentMarket}))
+
+                    TTTL.TradeTrackTimer.Enabled = True
+                    BlockTimer.Enabled = True
+
+                    LoadRunning = False
+
+                    If Shutdown Then
+                        Me.Close()
+                    End If
+
+                Else
+                    BlockTimer.Enabled = True
+                End If
+
             End If
+
 
 
             Dim Status As E_ConnectionStatus = GetConnectionStatus(PrimaryNode, DEXNET)
@@ -961,7 +1085,7 @@ Public Class PFPForm
 
             Dim AccRS As List(Of String) = SignumAPI.RSConvert(NuAT.AT)
             NuAT.ATRS = BetweenFromList(AccRS, "<accountRS>", "</accountRS>",, GetType(String))
-            NuAT.IsBLS_AT = True
+            NuAT.IsDEX_AT = True
 
             'NuATList.Add(NuAT)
             'SaveATsToCSV(NuATList)
@@ -1190,7 +1314,7 @@ Public Class PFPForm
 
                                         If GetINISetting(E_Setting.InfoOut, False) Then
                                             Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(1): -> " + vbCrLf + TX)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Sell1): -> " + vbCrLf + TX)
                                         End If
 
                                     Else
@@ -1201,19 +1325,40 @@ Public Class PFPForm
                             Else
                                 'TODO: show Pinform
 
-
                                 Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+
+                                Dim Response As String = ""
+
+                                If Not GlobalPublicKey.Trim = "" Then
+
+                                    Response = SignumAPI.SetBLSATSellOrder(GlobalPublicKey, Recipient, Amount + Collateral, Collateral, Item, ItemAmount, Fee)
+                                    If Response.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Sell2): -> " + vbCrLf + Response)
+                                        End If
+
+                                    Else
+                                        Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                        Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                                        PinForm.TBUnsignedBytes.Text = UTX
+
+                                    End If
+                                End If
+
                                 PinForm.ShowDialog()
 
                                 If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
 
-                                    Dim Response As String = SignumAPI.SetBLSATSellOrder(PinForm.PublicKey, Recipient, Amount + Collateral, Collateral, Item, ItemAmount, Fee)
+                                    Response = SignumAPI.SetBLSATSellOrder(PinForm.PublicKey, Recipient, Amount + Collateral, Collateral, Item, ItemAmount, Fee)
 
                                     If Response.Contains(Application.ProductName + "-error") Then
 
                                         If GetINISetting(E_Setting.InfoOut, False) Then
                                             Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(2): -> " + vbCrLf + Response)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Sell3): -> " + vbCrLf + Response)
                                         End If
 
                                     Else
@@ -1229,7 +1374,7 @@ Public Class PFPForm
 
                                             If GetINISetting(E_Setting.InfoOut, False) Then
                                                 Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(2b): -> " + vbCrLf + TX)
+                                                out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(Sell4): -> " + vbCrLf + TX)
                                             End If
 
                                         Else
@@ -1238,7 +1383,24 @@ Public Class PFPForm
 
                                     End If
 
+                                ElseIf Not PinForm.TBSignedBytes.Text.Trim = "" Then
+
+                                    Dim TX As String = SignumAPI.BroadcastTransaction(PinForm.TBSignedBytes.Text.Trim)
+
+                                    If TX.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(Sell5): -> " + vbCrLf + TX)
+                                        End If
+
+                                    Else
+                                        ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
+                                    End If
+
+
                                 Else
+
                                     ClsMsgs.MBox("SellOrder creation canceled.", "Canceled",,, ClsMsgs.Status.Erro)
                                 End If
 
@@ -1247,7 +1409,7 @@ Public Class PFPForm
 
                         End If
 
-                        Else
+                    Else
                         'not enough balance
                         ClsMsgs.MBox("not enough balance", "Error",,, ClsMsgs.Status.Erro)
                     End If
@@ -1285,7 +1447,7 @@ Public Class PFPForm
 
                                         If GetINISetting(E_Setting.InfoOut, False) Then
                                             Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(2): -> " + vbCrLf + TX)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Buy1): -> " + vbCrLf + TX)
                                         End If
 
                                     Else
@@ -1298,17 +1460,41 @@ Public Class PFPForm
                                 'TODO: show pinform
 
                                 Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+
+
+                                Dim Response As String = ""
+
+                                If Not GlobalPublicKey.Trim = "" Then
+
+                                    Response = SignumAPI.SetBLSATSellOrder(GlobalPublicKey, Recipient, Amount + Collateral, Collateral, Item, ItemAmount, Fee)
+                                    If Response.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Buy2): -> " + vbCrLf + Response)
+                                        End If
+
+                                    Else
+                                        Dim UTXList As List(Of String) = SignumAPI.ConvertUnsignedTXToList(Response)
+                                        Dim UTX As String = BetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>",, GetType(String))
+
+                                        PinForm.TBUnsignedBytes.Text = UTX
+
+                                    End If
+                                End If
+
+
                                 PinForm.ShowDialog()
 
                                 If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
 
-                                    Dim Response As String = SignumAPI.SetBLSATBuyOrder(PinForm.PublicKey, Recipient, Amount, Collateral, Item, ItemAmount, Fee)
+                                    Response = SignumAPI.SetBLSATBuyOrder(PinForm.PublicKey, Recipient, Amount, Collateral, Item, ItemAmount, Fee)
 
                                     If Response.Contains(Application.ProductName + "-error") Then
 
                                         If GetINISetting(E_Setting.InfoOut, False) Then
                                             Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(3): -> " + vbCrLf + Response)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Buy3): -> " + vbCrLf + Response)
                                         End If
 
                                     Else
@@ -1324,13 +1510,28 @@ Public Class PFPForm
 
                                             If GetINISetting(E_Setting.InfoOut, False) Then
                                                 Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(4): -> " + vbCrLf + TX)
+                                                out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Buy4): -> " + vbCrLf + TX)
                                             End If
 
                                         Else
                                             ClsMsgs.MBox("BuyOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                                         End If
 
+                                    End If
+
+                                ElseIf Not PinForm.TBSignedBytes.Text.Trim = "" Then
+
+                                    Dim TX As String = SignumAPI.BroadcastTransaction(PinForm.TBSignedBytes.Text.Trim)
+
+                                    If TX.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Buy5): -> " + vbCrLf + TX)
+                                        End If
+
+                                    Else
+                                        ClsMsgs.MBox("BuyOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                                     End If
 
                                 Else
@@ -1856,7 +2057,13 @@ Public Class PFPForm
                                                 out.ErrorLog2File(TXr)
                                             End If
 
+                                        ElseIf TXr.Contains(Application.ProductName + "-warning") Then
+                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                out.WarningLog2File(TXr)
+                                            End If
                                         Else
+
                                             MBoxMsg += "Payment instructions sended" + vbCrLf
                                             MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
                                             MBoxMsg += "Recipient: " + BLSAT_TX.SenderRS
@@ -1960,7 +2167,11 @@ Public Class PFPForm
                                                     Dim out As ClsOut = New ClsOut(Application.StartupPath)
                                                     out.ErrorLog2File(TXr)
                                                 End If
-
+                                            ElseIf TXr.Contains(Application.ProductName + "-warning") Then
+                                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    out.WarningLog2File(TXr)
+                                                End If
                                             Else
                                                 MBoxMsg += "Payment instructions sended" + vbCrLf
                                                 MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
@@ -2777,7 +2988,11 @@ Public Class PFPForm
                         Dim out As ClsOut = New ClsOut(Application.StartupPath)
                         out.ErrorLog2File(TXr)
                     End If
-
+                ElseIf TXr.Contains(Application.ProductName + "-warning") Then
+                    If GetINISetting(E_Setting.InfoOut, False) Then
+                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                        out.WarningLog2File(TXr)
+                    End If
                 Else
                     ClsMsgs.MBox("New PayPal Order sended as encrypted Message", "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                 End If
@@ -2809,7 +3024,11 @@ Public Class PFPForm
                     Dim out As ClsOut = New ClsOut(Application.StartupPath)
                     out.ErrorLog2File(TXr)
                 End If
-
+            ElseIf TXr.Contains(Application.ProductName + "-warning") Then
+                If GetINISetting(E_Setting.InfoOut, False) Then
+                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                    out.WarningLog2File(TXr)
+                End If
             Else
                 If ChBxEncMsg.Checked Then
                     ClsMsgs.MBox("encrypted Message sended" + vbCrLf + vbCrLf + "TX: " + TXr, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
@@ -2924,6 +3143,25 @@ Public Class PFPForm
 
 #Region "Methods/Functions"
 
+    Function Checknodes() As Integer
+
+        Dim NodeCNT As Integer = 0
+
+        For Each Node As String In NodeList
+
+            Dim SignaAPI As ClsSignumAPI = New ClsSignumAPI(Node)
+
+            Dim Blockheight As Integer = SignaAPI.GetCurrentBlock()
+            If Blockheight > 0 Then
+                NodeCNT += 1
+            End If
+
+        Next
+
+        Return NodeCNT
+
+    End Function
+
     Function GetMarketCurrencyIsCrypto(ByVal Currency As String) As Boolean
 
         Select Case Currency
@@ -2965,7 +3203,7 @@ Public Class PFPForm
 
             Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
             Dim ATList As List(Of String) = SignumAPI.GetATIds()
-            Dim CSVATList As List(Of String()) = GetATsFromCSV()
+            Dim CSVATList As List(Of List(Of String)) = GetATsFromCSV()
 
 
             Dim Nu_ATList As List(Of String) = New List(Of String)
@@ -2973,7 +3211,7 @@ Public Class PFPForm
             For Each AT As String In ATList
 
                 Dim Found As Boolean = False
-                For Each CSVAT As String() In CSVATList
+                For Each CSVAT As List(Of String) In CSVATList
 
                     If AT = CSVAT(0) Then
                         Found = True
@@ -2988,7 +3226,7 @@ Public Class PFPForm
             Next
 
 
-            For Each CSVAT As String() In CSVATList
+            For Each CSVAT As List(Of String) In CSVATList
 
                 If CSVAT(2).Trim = "True" Then
                     Nu_ATList.Add(CSVAT(0))
@@ -3034,6 +3272,7 @@ Public Class PFPForm
         LVSellorders.Columns.Add("AT")
 
 
+
         LVBuyorders.Columns.Clear()
         With LVBuyorders.Columns.Add("Price (" + CurrentMarket + ")")
             .TextAlign = HorizontalAlignment.Right
@@ -3054,6 +3293,7 @@ Public Class PFPForm
         LVBuyorders.Columns.Add("AT")
 
 
+
         LVMyOpenOrders.Columns.Clear()
         LVMyOpenOrders.Columns.Add("Confirmations")
         LVMyOpenOrders.Columns.Add("AT")
@@ -3069,6 +3309,7 @@ Public Class PFPForm
         LVMyOpenOrders.Columns.Add("Collateral")
         LVMyOpenOrders.Columns.Add("Price")
         LVMyOpenOrders.Columns.Add("Status")
+
 
 
         LVMyClosedOrders.Columns.Clear()
@@ -3087,117 +3328,123 @@ Public Class PFPForm
         LVMyClosedOrders.Columns.Add("Status")
         'LVMyClosedOrders.Columns.Add("Conditions")
 
+
         Return True
 
     End Function
 
     Function SetInLVs()
 
-        Try
+        'Try
 
 #Region "set LVs"
 
-            BuyOrderLVEList.Clear()
-            SellOrderLVEList.Clear()
+        BuyOrderLVEList.Clear()
+        SellOrderLVEList.Clear()
 
-            OpenChannelLVIList.Clear()
-            'BuyOrderLVIList.Clear()
-            'SellOrderLVIList.Clear()
-            MyOpenOrderLVIList.Clear()
-            MyClosedOrderLVIList.Clear()
+        OpenChannelLVIList.Clear()
+        'BuyOrderLVIList.Clear()
+        'SellOrderLVIList.Clear()
+        MyOpenOrderLVIList.Clear()
+        MyClosedOrderLVIList.Clear()
 
-            Dim Wait As Boolean = ProcessingATs()
+        Dim Wait As Boolean = ProcessingATs()
 
-            BtBuy.Text = "Buy"
-            BtSell.Text = "Sell"
+        BtBuy.Text = "Buy"
+        BtSell.Text = "Sell"
 
-            BtPayOrder.Visible = False
-            BtReCreatePayPalOrder.Visible = False
-            BtExecuteOrder.Visible = False
+        BtPayOrder.Visible = False
+        BtReCreatePayPalOrder.Visible = False
+        BtExecuteOrder.Visible = False
 
-            Label15.Visible = False 'Sendmessage MyOpenOrders
-            TBManuMsg.Visible = False
-            BtSendMsg.Visible = False
-            ChBxEncMsg.Visible = False
+        Label15.Visible = False 'Sendmessage MyOpenOrders
+        TBManuMsg.Visible = False
+        BtSendMsg.Visible = False
+        ChBxEncMsg.Visible = False
 
-            LVOpenChannels.Visible = False
+        LVOpenChannels.Visible = False
 
-            LVMyOpenOrders.Visible = False
-            LVMyClosedOrders.Visible = False
+        LVMyOpenOrders.Visible = False
+        LVMyClosedOrders.Visible = False
 
-            SplitContainer16.Panel2Collapsed = True 'hide interaction-buttons
+        SplitContainer16.Panel2Collapsed = True 'hide interaction-buttons
 
-            LVOpenChannels.Items.Clear()
-            For Each OpenChannel As ListViewItem In OpenChannelLVIList
-                MultiInvoker(LVOpenChannels, "Items", {"Add", OpenChannel})
-            Next
+        LVOpenChannels.Items.Clear()
+        For Each OpenChannel As ListViewItem In OpenChannelLVIList
+            MultiInvoker(LVOpenChannels, "Items", {"Add", OpenChannel})
+        Next
 
-            Wait = SetFitlteredPublicOrdersInLVs()
+        Wait = SetFitlteredPublicOrdersInLVs()
 
-            LVMyOpenOrders.Items.Clear()
-            For Each MyOpenOrder As ListViewItem In MyOpenOrderLVIList
-                MultiInvoker(LVMyOpenOrders, "Items", {"Add", MyOpenOrder})
-            Next
+        LVMyOpenOrders.Items.Clear()
+        For Each MyOpenOrder As ListViewItem In MyOpenOrderLVIList
+            MultiInvoker(LVMyOpenOrders, "Items", {"Add", MyOpenOrder})
+        Next
 
-            LVMyClosedOrders.Items.Clear()
-            For Each MyClosedOrder As ListViewItem In MyClosedOrderLVIList
-                MultiInvoker(LVMyClosedOrders, "Items", {"Add", MyClosedOrder})
-            Next
+        LVMyClosedOrders.Items.Clear()
+        For Each MyClosedOrder As ListViewItem In MyClosedOrderLVIList
+            MultiInvoker(LVMyClosedOrders, "Items", {"Add", MyClosedOrder})
+        Next
 
-            Dim MasterKeys As List(Of String) = GetPassPhrase()
-            '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
-            If MasterKeys.Count > 0 Then
-                For Each BroadcastMsg As String In BroadcastMsgs
+        Dim MasterKeys As List(Of String) = GetPassPhrase()
+        '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+        If MasterKeys.Count > 0 Then
+            For Each BroadcastMsg As String In BroadcastMsgs
+                If Not IsNothing(DEXNET) Then
                     DEXNET.BroadcastMessage(BroadcastMsg, MasterKeys(1),, MasterKeys(0))
-                Next
-            End If
+                End If
+            Next
+        End If
 
 
 
-            BroadcastMsgs.Clear()
+        BroadcastMsgs.Clear()
 
-            LVMyOpenOrders.ListViewItemSorter = New ListViewItemExtremeSorter(SortOrder.Ascending, 0)
-            LVMyClosedOrders.ListViewItemSorter = New ListViewItemExtremeSorter(SortOrder.Ascending, 2)
+        LVMyOpenOrders.ListViewItemSorter = New ListViewItemExtremeSorter(SortOrder.Ascending, 0)
+        LVMyClosedOrders.ListViewItemSorter = New ListViewItemExtremeSorter(SortOrder.Ascending, 2)
 
-            LVOpenChannels.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
+        LVOpenChannels.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
 
-            LVMyOpenOrders.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
-            LVMyClosedOrders.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
+        LVMyOpenOrders.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
+        LVMyClosedOrders.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
 
 #End Region
-            'setLVs
+        'setLVs
 
-            Dim T_BlockFeeThread As Threading.Thread = New Threading.Thread(AddressOf BlockFeeThread)
+        Dim T_BlockFeeThread As Threading.Thread = New Threading.Thread(AddressOf BlockFeeThread)
 
-            StatusBlockLabel.Text = "loading Blockheight..."
-            StatusFeeLabel.Text = "loading Current Slotfee..."
-            StatusStrip1.Refresh()
+        StatusBlockLabel.Text = "loading Blockheight..."
+        StatusFeeLabel.Text = "loading Current Slotfee..."
+        StatusStrip1.Refresh()
 
-            T_BlockFeeThread.Start(PrimaryNode)
+        T_BlockFeeThread.Start(PrimaryNode)
 
-            'BLSAT_TX_List.Clear()
-            'BLSAT_TX_List.AddRange(T_BLSAT_TX_List.ToArray)
-            'BLSAT_TX_List = BLSAT_TX_List.OrderBy(Function(BLSAT_TX As S_BLSAT_TX) BLSAT_TX.Timestamp).ToList
+        'BLSAT_TX_List.Clear()
+        'BLSAT_TX_List.AddRange(T_BLSAT_TX_List.ToArray)
+        'BLSAT_TX_List = BLSAT_TX_List.OrderBy(Function(BLSAT_TX As S_BLSAT_TX) BLSAT_TX.Timestamp).ToList
 
-            StatusBar.Value = 0
-            StatusBar.Maximum = 100
-            StatusBar.Visible = False
-            StatusLabel.Text = ""
+        StatusBar.Value = 0
+        StatusBar.Maximum = 100
+        StatusBar.Visible = False
+        StatusLabel.Text = ""
 
-            LVOpenChannels.Visible = True
+        LVOpenChannels.Visible = True
 
-            LVMyOpenOrders.Visible = True
-            LVMyClosedOrders.Visible = True
+        LVMyOpenOrders.Visible = True
+        LVMyClosedOrders.Visible = True
 
-            'SplitContainer2.Panel1.Visible = True
+        LVMyOpenOrders.Size = New Size(0, 0)
+        LVMyOpenOrders.Size = New Size(0, 0)
 
-        Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in SetInLVs(): -> " + ex.Message)
-            End If
+        'SplitContainer2.Panel1.Visible = True
 
-        End Try
+        'Catch ex As Exception
+        '    If GetINISetting(E_Setting.InfoOut, False) Then
+        '        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+        '        Out.ErrorLog2File(Application.ProductName + "-error in SetInLVs(): -> " + ex.Message)
+        '    End If
+
+        'End Try
 
         Return True
 
@@ -3347,6 +3594,9 @@ Public Class PFPForm
 
         LVSellorders.Visible = True
         LVBuyorders.Visible = True
+
+        LVSellorders.Size = New Size(0, 0)
+        LVBuyorders.Size = New Size(0, 0)
 
         Return True
 
@@ -3858,224 +4108,268 @@ Public Class PFPForm
 
                             If TBSNOAddress.Text = Order.SellerRS Then
 
-                                'Save/ Update() my RESERVED SellOrder to cache2.dat (MyOrders Settings)
-                                Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(Order.FirstTransaction)
-                                Dim T_OS As ClsOrderSettings = New ClsOrderSettings(Order.ATID, Order.FirstTransaction, Order.Type, Order.Status)
+                                Try
 
-                                Dim Autosendinfotext As String = "False"
-                                Dim AutocompleteAT As String = "False"
+                                    'Save/Update my RESERVED SellOrder to cache2.dat (MyOrders Settings)
+                                    Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(Order.FirstTransaction)
+                                    Dim T_OS As ClsOrderSettings = New ClsOrderSettings(Order.ATID, Order.FirstTransaction, Order.Type, Order.Status)
 
-                                If Order.Type = "SellOrder" Then
-                                    If T_OSList.Count = 0 Then
-                                        T_OS.PaytypeString = GetINISetting(E_Setting.PaymentType, "Other")
-                                        T_OS.Infotext = GetINISetting(E_Setting.PaymentInfoText, "Unknown")
+                                    Dim Autosendinfotext As String = "False"
+                                    Dim AutocompleteAT As String = "False"
+
+                                    If Order.Type = "SellOrder" Then
+                                        If T_OSList.Count = 0 Then
+                                            T_OS.PaytypeString = GetINISetting(E_Setting.PaymentType, "Other")
+                                            T_OS.Infotext = GetINISetting(E_Setting.PaymentInfoText, "Unknown")
+                                        Else
+                                            T_OS = T_OSList(0)
+                                            T_OS.SetPayType()
+                                            T_OS.Status = Order.Status
+                                            PayMet = T_OS.PaytypeString
+                                            Autosendinfotext = T_OS.AutoSendInfotext.ToString
+                                            AutocompleteAT = T_OS.AutoCompleteAT.ToString
+                                        End If
+
+                                        OrderSettingsBuffer.Add(T_OS)
+                                        'Broadcast info over DEXNET
+                                        BroadcastMsgs.Add("<ATID>" + PFPAT.ATID.ToString + "</ATID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteAT>" + AutocompleteAT + "</AutocompleteAT>")
+
                                     Else
-                                        T_OS = T_OSList(0)
-                                        T_OS.SetPayType()
-                                        T_OS.Status = Order.Status
-                                        PayMet = T_OS.PaytypeString
-                                        Autosendinfotext = T_OS.AutoSendInfotext.ToString
-                                        AutocompleteAT = T_OS.AutoCompleteAT.ToString
-                                    End If
-
-                                    OrderSettingsBuffer.Add(T_OS)
-                                    'Broadcast info over DEXNET
-                                    BroadcastMsgs.Add("<ATID>" + PFPAT.ATID.ToString + "</ATID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteAT>" + AutocompleteAT + "</AutocompleteAT>")
-
-                                Else
 
 #Region "SellOrder-Info from DEXNET"
+                                        Try
 
-                                    Dim RelMsgs As List(Of ClsDEXNET.S_RelevantMessage) = New List(Of ClsDEXNET.S_RelevantMessage)
+                                            Dim RelMsgs As List(Of ClsDEXNET.S_RelevantMessage) = New List(Of ClsDEXNET.S_RelevantMessage)
 
-                                    If Not IsNothing(DEXNET) Then
-                                        RelMsgs = DEXNET.GetRelevantMsgs()
-                                    End If
+                                            If Not IsNothing(DEXNET) Then
+                                                RelMsgs = DEXNET.GetRelevantMsgs()
+                                            End If
 
-                                    Dim RelKeyFounded As Boolean = False
+                                            Dim RelKeyFounded As Boolean = False
 
-                                    For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
+                                            For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
 
-                                        If RelMsg.RelevantKey = "<ATID>" + PFPAT.ATID.ToString + "</ATID>" Then
+                                                If RelMsg.RelevantKey = "<ATID>" + PFPAT.ATID.ToString + "</ATID>" Then
 
-                                            RelKeyFounded = True
+                                                    RelKeyFounded = True
 
-                                            If Not RelMsg.RelevantMessage.Trim = "" Then
+                                                    If Not RelMsg.RelevantMessage.Trim = "" Then
 
-                                                Dim PublicKey As String = Between(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>", GetType(String))
+                                                        Dim PublicKey As String = Between(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>", GetType(String))
 
-                                                If Order.BuyerID = GetAccountID(PublicKey) Then
+                                                        If Order.BuyerID = GetAccountID(PublicKey) Then
 
-                                                    Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
-                                                    PayMet = PayMethod
+                                                            Dim PayMethod As String = Between(RelMsg.RelevantMessage, "<PayType>", "</PayType>", GetType(String))
+                                                            PayMet = PayMethod
 
-                                                    Dim T_Autosendinfotext As String = Between(RelMsg.RelevantMessage, "<Autosendinfotext>", "</Autosendinfotext>", GetType(String))
-                                                    Autosendinfotext = T_Autosendinfotext
+                                                            Dim T_Autosendinfotext As String = Between(RelMsg.RelevantMessage, "<Autosendinfotext>", "</Autosendinfotext>", GetType(String))
+                                                            Autosendinfotext = T_Autosendinfotext
 
-                                                    Dim T_AutocompleteAT As String = Between(RelMsg.RelevantMessage, "<AutocompleteAT>", "</AutocompleteAT>", GetType(String))
-                                                    AutocompleteAT = T_AutocompleteAT
+                                                            Dim T_AutocompleteAT As String = Between(RelMsg.RelevantMessage, "<AutocompleteAT>", "</AutocompleteAT>", GetType(String))
+                                                            AutocompleteAT = T_AutocompleteAT
+
+                                                        End If
+
+
+                                                    End If
 
                                                 End If
 
+                                            Next
 
+                                            If Not RelKeyFounded Then
+                                                If Not IsNothing(DEXNET) Then
+                                                    DEXNET.AddRelevantKey("<ATID>" + PFPAT.ATID.ToString + "</ATID>")
+                                                End If
                                             End If
 
-                                        End If
+                                        Catch ex As Exception
+                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(RESERVED->SellOrder-Info from DEXNET): -> " + ex.Message)
+                                            End If
+                                        End Try
+#End Region
 
-                                    Next
-
-                                    If Not RelKeyFounded Then
-                                        If Not IsNothing(DEXNET) Then
-                                            DEXNET.AddRelevantKey("<ATID>" + PFPAT.ATID.ToString + "</ATID>")
-                                        End If
                                     End If
 
-#End Region
-                                End If
-
-
-
-                                Dim AlreadySend As String = CheckBillingInfosAlreadySend(Order)
+                                    Dim AlreadySend As String = CheckBillingInfosAlreadySend(Order)
 
 #Region "Automentation"
-                                If AlreadySend.Contains(Application.ProductName + "-error") Then
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                        Out.ErrorLog2File(AlreadySend)
-                                    End If
+                                    If AlreadySend.Contains(Application.ProductName + "-error") Then
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                            Out.ErrorLog2File(AlreadySend)
+                                        End If
 
-                                    AlreadySend = "ENCRYPTED"
+                                        AlreadySend = "ENCRYPTED"
 
-                                ElseIf AlreadySend.Trim = "" Then
 
-                                    Dim SearchAttachmentHEX As String = SigAPI.ULngList2DataStr(New List(Of ULong)({SigAPI.ReferenceFinishOrder}))
-                                    If CheckForUTX(Order.SellerRS, Order.ATRS, SearchAttachmentHEX) Then
-                                        AlreadySend = "PENDING"
-                                    ElseIf CheckForUTX(Order.BuyerRS, Order.ATRS) Then
+                                    ElseIf AlreadySend.Contains(Application.ProductName + "-warning") Then
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.WarningLog2File(AlreadySend)
+                                        End If
 
-                                    Else
+                                        AlreadySend = "ENCRYPTED"
 
-                                        AlreadySend = "RESERVED"
+                                    ElseIf AlreadySend.Trim = "" Then
 
-                                    End If
+                                        Dim SearchAttachmentHEX As String = SigAPI.ULngList2DataStr(New List(Of ULong)({SigAPI.ReferenceFinishOrder}))
+                                        If CheckForUTX(Order.SellerRS, Order.ATRS, SearchAttachmentHEX) Then
+                                            AlreadySend = "PENDING"
+                                        ElseIf CheckForUTX(Order.BuyerRS, Order.ATRS) Then
 
-                                    If T_OS.AutoSendInfotext Then 'autosend info to Buyer
+                                        Else
+
+                                            AlreadySend = "RESERVED"
+
+                                        End If
+
+                                        If T_OS.AutoSendInfotext Then 'autosend info to Buyer
 
 #Region "AutoSend PaymentInfotext"
+                                            Try
 
-                                        If Not GetAutoinfoTXFromINI(Order.FirstTransaction) Then 'Check for autosend-info-TX in Settings.ini and skip if founded
+                                                If Not GetAutoinfoTXFromINI(Order.FirstTransaction) Then 'Check for autosend-info-TX in Settings.ini and skip if founded
 
-                                            Dim PayInfo As String = GetPaymentInfoFromOrderSettings(Order.FirstTransaction, Order.Quantity, Order.XAmount, CurrentMarket)
+                                                    Dim PayInfo As String = GetPaymentInfoFromOrderSettings(Order.FirstTransaction, Order.Quantity, Order.XAmount, CurrentMarket)
 
-                                            If PayInfo.Contains("PayPal-E-Mail=") Then
-                                                Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                                                Dim ColWordsString As String = ColWords.GenerateColloquialWords(Order.FirstTransaction.ToString, True, "-", 5)
+                                                    If PayInfo.Contains("PayPal-E-Mail=") Then
+                                                        Dim ColWords As ClsColloquialWords = New ClsColloquialWords
+                                                        Dim ColWordsString As String = ColWords.GenerateColloquialWords(Order.FirstTransaction.ToString, True, "-", 5)
 
-                                                PayInfo += " Reference/Note=" + ColWordsString
-                                            End If
+                                                        PayInfo += " Reference/Note=" + ColWordsString
+                                                    End If
 
-                                            Dim T_MsgStr As String = "AT=" + Order.ATRS + " TX=" + Order.FirstTransaction.ToString + " " + Dbl2LVStr(Order.XAmount, Decimals) + " " + Order.XItem + " " + PayInfo
-                                            Dim TXr As String = SendBillingInfos(Order.BuyerID, T_MsgStr, False, True)
+                                                    Dim T_MsgStr As String = "AT=" + Order.ATRS + " TX=" + Order.FirstTransaction.ToString + " " + Dbl2LVStr(Order.XAmount, Decimals) + " " + Order.XItem + " " + PayInfo
+                                                    Dim TXr As String = SendBillingInfos(Order.BuyerID, T_MsgStr, False, True)
 
-                                            If TXr.Contains(Application.ProductName + "-error") Then
+                                                    If TXr.Contains(Application.ProductName + "-error") Then
+                                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                            out.ErrorLog2File(TXr)
+                                                        End If
+
+                                                    ElseIf TXr.Contains(Application.ProductName + "-warning") Then
+                                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                            out.WarningLog2File(TXr)
+                                                        End If
+                                                    Else
+
+                                                        If SetAutoinfoTX2INI(Order.FirstTransaction) Then 'Set autosend-info-TX in Settings.ini
+                                                            'ok
+                                                        End If
+                                                    End If
+
+                                                End If
+
+                                            Catch ex As Exception
                                                 If GetINISetting(E_Setting.InfoOut, False) Then
-                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                    out.ErrorLog2File(TXr)
+                                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(RESERVED->Autosend PaymentInfotext): -> " + ex.Message)
                                                 End If
-
-                                            Else
-                                                If SetAutoinfoTX2INI(Order.FirstTransaction) Then 'Set autosend-info-TX in Settings.ini
-                                                    'ok
-                                                End If
-                                            End If
+                                            End Try
+#End Region
 
                                         End If
 
-#End Region
+                                    Else 'BillingInfo Already send, check for aproving
 
-                                    End If
+                                        Dim PayInfoList As List(Of String) = New List(Of String)
 
-                                Else 'BillingInfo Already send, check for aproving
+                                        If AlreadySend.Contains(" ") Then
+                                            PayInfoList.AddRange(AlreadySend.Split(" "))
+                                        End If
 
-                                    Dim PayInfoList As List(Of String) = New List(Of String)
-
-                                    If AlreadySend.Contains(" ") Then
-                                        PayInfoList.AddRange(AlreadySend.Split(" "))
-                                    End If
-
-                                    If PayInfoList.Count > 2 Then
-                                        Dim NuPayInfo As String = ""
-                                        For i As Integer = 2 To PayInfoList.Count - 1
-                                            Dim T_PayInfo As String = PayInfoList(i)
-                                            If Not T_PayInfo.Trim = "" Then
-                                                NuPayInfo += T_PayInfo + " "
-                                            End If
-                                        Next
-                                        AlreadySend = NuPayInfo.Trim
-                                    End If
+                                        If PayInfoList.Count > 2 Then
+                                            Dim NuPayInfo As String = ""
+                                            For i As Integer = 2 To PayInfoList.Count - 1
+                                                Dim T_PayInfo As String = PayInfoList(i)
+                                                If Not T_PayInfo.Trim = "" Then
+                                                    NuPayInfo += T_PayInfo + " "
+                                                End If
+                                            Next
+                                            AlreadySend = NuPayInfo.Trim
+                                        End If
 
 
-                                    If DelAutoinfoTXFromINI(Order.FirstTransaction) Then 'Delete autosend-info-TX from Settings.ini
-                                        'ok
-                                    End If
+                                        If DelAutoinfoTXFromINI(Order.FirstTransaction) Then 'Delete autosend-info-TX from Settings.ini
+                                            'ok
+                                        End If
 
-                                    If T_OS.AutoCompleteAT Then 'autosignal AT
+                                        If T_OS.AutoCompleteAT Then 'autosignal AT
 
 #Region "AutoComplete AT with PayPalInfo"
+                                            Try
 
-                                        If T_OS.PayType = ClsOrderSettings.E_PayType.PayPal_E_Mail Then
+                                                If T_OS.PayType = ClsOrderSettings.E_PayType.PayPal_E_Mail Then
 
-                                            Dim PayPalStatus As String = CheckPayPalTransaction(Order)
+                                                    Dim PayPalStatus As String = CheckPayPalTransaction(Order)
 
-                                            If Not PayPalStatus.Trim = "" Then
-                                                AlreadySend = PayPalStatus
-                                            End If
+                                                    If Not PayPalStatus.Trim = "" Then
+                                                        AlreadySend = PayPalStatus
+                                                    End If
 
-                                        ElseIf T_OS.PayType = ClsOrderSettings.E_PayType.PayPal_Order Then
+                                                ElseIf T_OS.PayType = ClsOrderSettings.E_PayType.PayPal_Order Then
 
-                                            If AlreadySend.Contains("PayPal-Order=") Then
-                                                Dim PayPalOrder As String = AlreadySend.Substring(AlreadySend.IndexOf("PayPal-Order=") + 13).Trim
-                                                If PayPalOrder.Contains(" ") Then
-                                                    PayPalOrder = PayPalOrder.Remove(PayPalOrder.IndexOf(" "))
+                                                    If AlreadySend.Contains("PayPal-Order=") Then
+                                                        Dim PayPalOrder As String = AlreadySend.Substring(AlreadySend.IndexOf("PayPal-Order=") + 13).Trim
+                                                        If PayPalOrder.Contains(" ") Then
+                                                            PayPalOrder = PayPalOrder.Remove(PayPalOrder.IndexOf(" "))
+                                                        End If
+
+                                                        Dim PayPalStatus As String = CheckPayPalOrder(Order.ATID, PayPalOrder)
+
+                                                        If Not PayPalStatus.Trim = "" Then
+                                                            AlreadySend = PayPalStatus
+                                                        End If
+
+                                                    End If
+
                                                 End If
 
-                                                Dim PayPalStatus As String = CheckPayPalOrder(Order.ATID, PayPalOrder)
-
-                                                If Not PayPalStatus.Trim = "" Then
-                                                    AlreadySend = PayPalStatus
+                                            Catch ex As Exception
+                                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(RESERVED->Autocomplete): -> " + ex.Message)
                                                 End If
-
-                                            End If
+                                            End Try
+#End Region
 
                                         End If
 
-#End Region
-
                                     End If
 
-                                End If
-
 #End Region
 
-                                T_LVI = New ListViewItem
+                                    T_LVI = New ListViewItem
 
-                                T_LVI.Text = Confirms 'confirms
-                                T_LVI.SubItems.Add(PFPAT.ATRS) 'at
-                                T_LVI.SubItems.Add(Order.Type) 'type
-                                T_LVI.SubItems.Add(PayMet) 'method
-                                T_LVI.SubItems.Add(Autosendinfotext) 'autoinfo
-                                T_LVI.SubItems.Add(AutocompleteAT) 'autofinish
-                                T_LVI.SubItems.Add("Me") 'seller
-                                T_LVI.SubItems.Add(Order.BuyerRS) 'buyer
-                                T_LVI.SubItems.Add(XItem) 'xitem
-                                T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'xamount
-                                T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'quantity
-                                T_LVI.SubItems.Add(Dbl2LVStr(Order.Collateral)) 'collateral
-                                T_LVI.SubItems.Add(Dbl2LVStr(Order.Price, Decimals)) 'price
-                                T_LVI.SubItems.Add(AlreadySend) 'status
-                                T_LVI.Tag = Order
+                                    T_LVI.Text = Confirms 'confirms
+                                    T_LVI.SubItems.Add(PFPAT.ATRS) 'at
+                                    T_LVI.SubItems.Add(Order.Type) 'type
+                                    T_LVI.SubItems.Add(PayMet) 'method
+                                    T_LVI.SubItems.Add(Autosendinfotext) 'autoinfo
+                                    T_LVI.SubItems.Add(AutocompleteAT) 'autofinish
+                                    T_LVI.SubItems.Add("Me") 'seller
+                                    T_LVI.SubItems.Add(Order.BuyerRS) 'buyer
+                                    T_LVI.SubItems.Add(XItem) 'xitem
+                                    T_LVI.SubItems.Add(Dbl2LVStr(Order.XAmount, Decimals)) 'xamount
+                                    T_LVI.SubItems.Add(Dbl2LVStr(Order.Quantity)) 'quantity
+                                    T_LVI.SubItems.Add(Dbl2LVStr(Order.Collateral)) 'collateral
+                                    T_LVI.SubItems.Add(Dbl2LVStr(Order.Price, Decimals)) 'price
+                                    T_LVI.SubItems.Add(AlreadySend) 'status
+                                    T_LVI.Tag = Order
 
-                                MyOpenOrderLVIList.Add(T_LVI)
+                                    MyOpenOrderLVIList.Add(T_LVI)
+
+                                Catch ex As Exception
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                        Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetAT2LV(RESERVED->Seller): -> " + ex.Message)
+                                    End If
+                                End Try
 
                             ElseIf TBSNOAddress.Text = Order.BuyerRS Then
 
@@ -4158,6 +4452,15 @@ Public Class PFPForm
                                     If GetINISetting(E_Setting.InfoOut, False) Then
                                         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
                                         Out.ErrorLog2File(AlreadySend)
+                                    End If
+
+                                    AlreadySend = "ENCRYPTED"
+
+
+                                ElseIf AlreadySend.Contains(Application.ProductName + "-warning") Then
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.WarningLog2File(AlreadySend)
                                     End If
 
                                     AlreadySend = "ENCRYPTED"
@@ -4278,14 +4581,17 @@ Public Class PFPForm
                         Try
 
                             If TOSList.Count > 0 Then
-                                For i As Integer = 0 To OrderSettingsBuffer.Count - 1
-                                    Dim T_TOS As ClsOrderSettings = OrderSettingsBuffer(i)
-
+                                Dim DelTOSID As ULong = 0
+                                For Each T_TOS In TOSList
                                     If T_TOS.TXID = Order.FirstTransaction Then
-                                        OrderSettingsBuffer.RemoveAt(i)
+                                        DelTOSID = T_TOS.ATID
                                         Exit For
                                     End If
                                 Next
+
+                                If Not DelTOSID = 0 Then
+                                    DelOrderSettings(DelTOSID)
+                                End If
 
                             End If
 
@@ -4428,55 +4734,60 @@ Public Class PFPForm
 
     Function Loading() As Boolean
 
-        Try
+        'Try
 
-            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
-            Dim x As List(Of String) = SignumAPI.GetBalance(TBSNOAddress.Text)
-            TBSNOBalance.Text = BetweenFromList(x, "<available>", "</available>",, GetType(Double)).ToString
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+        Dim x As List(Of String) = SignumAPI.GetBalance(TBSNOAddress.Text)
+        TBSNOBalance.Text = BetweenFromList(x, "<available>", "</available>",, GetType(Double)).ToString
 
-            LabXItem.Text = CurrentMarket
-            LabXitemAmount.Text = CurrentMarket + " Amount: "
+        LabXItem.Text = CurrentMarket
+        LabXitemAmount.Text = CurrentMarket + " Amount: "
 
-            MarketIsCrypto = GetMarketCurrencyIsCrypto(CurrentMarket)
-            Decimals = GetCurrencyDecimals(CurrentMarket)
+        MarketIsCrypto = GetMarketCurrencyIsCrypto(CurrentMarket)
+        Decimals = GetCurrencyDecimals(CurrentMarket)
 
-            NUDSNOItemAmount.DecimalPlaces = Decimals
+        NUDSNOItemAmount.DecimalPlaces = Decimals
 
-            PFPList.Clear()
-            CSVATList.Clear()
+        PFPList.Clear()
+        CSVATList.Clear()
 
-            Dim Wait As Boolean = GetAndCheckATs()
-            Wait = MultithreadMonitor()
+        OrderSettingsBuffer.Clear()
 
 
-            Dim T_DEXATList As List(Of String()) = GetDEXATsFromCSV()
+        Dim Wait As Boolean = GetAndCheckATs()
+        Wait = MultithreadMonitor()
 
-            For Each APIRequest As S_APIRequest In APIRequestList
 
-                If Not IsNothing(APIRequest.Result) Then
-                    If APIRequest.Result.GetType = GetType(String) Then
+        Dim T_DEXATList As List(Of List(Of String)) = GetDEXATsFromCSV()
 
-                        Dim AT_ATRS_BLSAT As List(Of String) = New List(Of String)(APIRequest.Result.ToString.Split(","))
+        OrderSettingsBuffer = GetOrderSettings()
 
-                        Dim SAT As S_AT = New S_AT With {.AT = AT_ATRS_BLSAT(0), .ATRS = AT_ATRS_BLSAT(1), .IsBLS_AT = False}
-                        CSVATList.Add(SAT)
+        For Each APIRequest As S_APIRequest In APIRequestList
 
-                    Else
+            If Not IsNothing(APIRequest.Result) Then
+                If APIRequest.Result.GetType = GetType(String) Then
 
-                        Dim BLSAT As S_PFPAT = DirectCast(APIRequest.Result, S_PFPAT)
+                    Dim AT_ATRS_BLSAT As List(Of String) = New List(Of String)(APIRequest.Result.ToString.Split(","))
 
-                        PFPList.Add(BLSAT)
-                        Dim SAT As S_AT = New S_AT With {.AT = BLSAT.ATID, .ATRS = BLSAT.ATRS, .IsBLS_AT = True}
-                        CSVATList.Add(SAT)
+                    Dim SAT As S_AT = New S_AT With {.AT = AT_ATRS_BLSAT(0), .ATRS = AT_ATRS_BLSAT(1), .IsDEX_AT = False}
+                    CSVATList.Add(SAT)
+
+                Else
+
+                    Dim BLSAT As S_PFPAT = DirectCast(APIRequest.Result, S_PFPAT)
+
+                    PFPList.Add(BLSAT)
+                    Dim SAT As S_AT = New S_AT With {.AT = BLSAT.ATID, .ATRS = BLSAT.ATRS, .IsDEX_AT = True}
+                    CSVATList.Add(SAT)
 
                     End If
                 End If
 
             Next
 
-            SaveATsToCSV(CSVATList)
+        SaveATsToCSV(CSVATList, OrderSettingsBuffer)
 
-            If T_DEXATList.Count = 0 Then
+        If T_DEXATList.Count = 0 Then
                 T_DEXATList = GetDEXATsFromCSV()
             End If
 
@@ -4492,13 +4803,14 @@ Public Class PFPForm
                 Next
             End If
 
-        Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in Loading(): -> " + ex.Message)
-            End If
+        'Catch ex As Exception
 
-        End Try
+        '    If GetINISetting(E_Setting.InfoOut, False) Then
+        '        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+        '        Out.ErrorLog2File(Application.ProductName + "-error in Loading(): -> " + ex.Message)
+        '    End If
+
+        'End Try
 
         Return True
 
@@ -4529,7 +4841,7 @@ Public Class PFPForm
 
             Next
 
-            If CBool(GetINISetting(E_Setting.TCPAPIEnable, "")) Then ' ChBxTCPAPI.Checked Then
+            If GetINISetting(E_Setting.TCPAPIEnable, True) Then ' ChBxTCPAPI.Checked Then
                 LoadTCPAPIOpenOrders(T_OpenOrderList)
                 LoadTCPAPIHistorys(T_OrderList)
             End If
@@ -5634,7 +5946,13 @@ Public Class PFPForm
                                                                         out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf + TXr)
                                                                     End If
 
+                                                                ElseIf TXr.Contains(Application.ProductName + "-warning") Then
+                                                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                        out.WarningLog2File(Application.ProductName + "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf + TXr)
+                                                                    End If
                                                                 Else
+
 
                                                                 End If
 
@@ -5655,7 +5973,7 @@ Public Class PFPForm
 
                                                 If GetINISetting(E_Setting.InfoOut, False) Then
                                                     Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                    out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs1): -> no Keys")
+                                                    out.WarningLog2File(Application.ProductName + "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs1): -> no Keys")
                                                 End If
 
                                             End If
@@ -6216,7 +6534,7 @@ Public Class PFPForm
 
         Else
 
-            Dim Returner As String = Application.ProductName + "-error in SendBillingInfos(3): -> no Keys"
+            Dim Returner As String = Application.ProductName + "-warning in SendBillingInfos(3): -> no Keys"
 
             If ShowPINForm Then
 
@@ -6621,6 +6939,8 @@ Public Class PFPForm
 
                         ElseIf DecryptedMsg.Contains(Application.ProductName + "-error") Then
                             Return Application.ProductName + "-error in CheckBillingInfosAlreadySend(1): -> " + DecryptedMsg
+                        ElseIf DecryptedMsg.Contains(Application.ProductName + "-warning") Then
+                            Return Application.ProductName + "-warning in CheckBillingInfosAlreadySend(1): -> " + DecryptedMsg
                         End If
 
                     Else
@@ -6662,6 +6982,8 @@ Public Class PFPForm
 
                         ElseIf DecryptedMsg.Contains(Application.ProductName + "-error") Then
                             Return Application.ProductName + "-error in CheckBillingInfosAlreadySend(2): -> " + DecryptedMsg
+                        ElseIf DecryptedMsg.Contains(Application.ProductName + "-warning") Then
+                            Return Application.ProductName + "-warning in CheckBillingInfosAlreadySend(2): -> " + DecryptedMsg
                         End If
                     Else
                         Return Application.ProductName + "-error in CheckBillingInfosAlreadySend(2): -> " + DecryptedMsg
@@ -6698,6 +7020,8 @@ Public Class PFPForm
                         End If
                     ElseIf DecryptedMsg.Contains(Application.ProductName + "-error") Then
                         Return Application.ProductName + "-error in CheckBillingInfosAlreadySend(3): -> " + DecryptedMsg
+                    ElseIf DecryptedMsg.Contains(Application.ProductName + "-warning") Then
+                        Return Application.ProductName + "-warning in CheckBillingInfosAlreadySend(3): -> " + DecryptedMsg
                     End If
                 Else
                     Return Application.ProductName + "-error in CheckBillingInfosAlreadySend(3): -> " + DecryptedMsg
@@ -6719,6 +7043,8 @@ Public Class PFPForm
                         End If
                     ElseIf DecryptedMsg.Contains(Application.ProductName + "-error") Then
                         Return Application.ProductName + "-error in CheckBillingInfosAlreadySend(4): -> " + DecryptedMsg
+                    ElseIf DecryptedMsg.Contains(Application.ProductName + "-warning") Then
+                        Return Application.ProductName + "-warning in CheckBillingInfosAlreadySend(4): -> " + DecryptedMsg
                     End If
 
                 Else
@@ -6779,6 +7105,8 @@ Public Class PFPForm
 
                         ElseIf DecryptedMsg.Contains(Application.ProductName + "-error") Then
                             Return Application.ProductName + "-error in CheckPaymentAlreadySend(): -> " + DecryptedMsg
+                        ElseIf DecryptedMsg.Contains(Application.ProductName + "-warning") Then
+                            Return Application.ProductName + "-warning in CheckPaymentAlreadySend(): -> " + DecryptedMsg
                         End If
 
                         Return DecryptedMsg
@@ -6812,10 +7140,15 @@ Public Class PFPForm
                     If DCATRS = Order.ATRS And DCTransaction = Order.FirstTransaction Then
                         Return DecryptedMsg
                     End If
-                Else
+                ElseIf DecryptedMsg.Contains("-error") Then
                     If GetINISetting(E_Setting.InfoOut, False) Then
                         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
                         Out.ErrorLog2File(DecryptedMsg)
+                    End If
+                ElseIf DecryptedMsg.Contains("-warning") Then
+                    If GetINISetting(E_Setting.InfoOut, False) Then
+                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                        Out.WarningLog2File(DecryptedMsg)
                     End If
 
                 End If
@@ -7072,12 +7405,15 @@ Public Class PFPForm
 
                 ElseIf Request.Status = "Not Ready..." Then
 
+
                     NuNodeList.Remove(Request.Node)
-                    NodeList.Remove(Request.Node)
-                    NodeList.Add(Request.Node)
+                    NodeList.Remove(Request.Node) 'remove from list
+                    NodeList.Add(Request.Node) 'set node to last place
 
                     If NuNodeList.Count > 0 Then
                         Request.Node = NuNodeList(0)
+                    Else
+                        LoadRunning = False
                     End If
 
                     Request.RequestThread = New Threading.Thread(AddressOf SubGetThread)
@@ -7818,6 +8154,59 @@ Public Class PFPForm
         End If
 
     End Sub
+
+
+    Private Function AutoResizeWindow() As Boolean
+        Try
+
+            'Me.WindowState = FormWindowState.Maximized
+
+            Dim MaxSize As Drawing.Size = Me.Size
+
+            'For i As Integer = 0 To 1000
+            '    MaxSize = Me.Size
+            '    Threading.Thread.Sleep(1)
+            '    Application.DoEvents()
+            '    Me.Refresh()
+            'Next
+
+            Dim Wid As Integer = MaxWidth
+            Dim Hei As Integer = MaxHeight
+
+            Wid -= CInt(Wid / 1000)
+            Hei -= CInt((Hei / 100) * 10)
+
+            MaxSize.Width = Wid
+            MaxSize.Height = Hei
+
+            'Me.WindowState = FormWindowState.Normal
+
+            Me.Size = MaxSize
+            Me.Location = New Point(0, 0)
+
+            'For i As Integer = 0 To 1000
+            '    Threading.Thread.Sleep(1)
+            '    Application.DoEvents()
+            '    Me.Refresh()
+            'Next
+
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+
+        Return True
+
+    End Function
+
+
+
+    Private Sub NUDSNOAmount_KeyPress(sender As Object, e As KeyEventArgs) Handles NUDSNOTXFee.KeyDown, NUDSNOItemAmount.KeyDown, NUDSNOCollateral.KeyDown, NUDSNOAmount.KeyDown
+        If e.KeyCode = Keys.Enter Then
+            e.SuppressKeyPress = True
+        End If
+
+    End Sub
+
 
 #End Region 'Test
 

@@ -283,6 +283,13 @@ PFP
  </summary>
  <returns></returns>
 </member>
+<member name="M:PFP.ModGlobalFunctions.ConvertAddress(System.String)">
+ <summary>
+ converts accountID (and publicKey) from given address (0=AccountID; 1=PublicKey)
+ </summary>
+ <param name="Address">the address (e.g. (T)S-2222-2222-2222-22222(-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ))</param>
+ <returns>List(Of String)("12345678901234567890","a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2")</returns>
+</member>
 <member name="M:PFP.ModGlobalFunctions.GetLVColNameFromSubItem(System.Windows.Forms.ListView@,System.String,System.Windows.Forms.ListViewItem,System.Int32)">
  <summary>
  Von einer ListView das subitem aus dem item lesen

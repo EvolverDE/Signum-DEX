@@ -25,6 +25,7 @@ Partial Class FrmMyOrderSettings
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.LVOrders = New System.Windows.Forms.ListView()
+        Me.ColumnHeader8 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader2 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader3 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -41,7 +42,6 @@ Partial Class FrmMyOrderSettings
         Me.LabInfo = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.CoBxPayType = New System.Windows.Forms.ComboBox()
-        Me.ColumnHeader8 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -103,6 +103,10 @@ Partial Class FrmMyOrderSettings
         Me.LVOrders.TabIndex = 0
         Me.LVOrders.UseCompatibleStateImageBehavior = False
         Me.LVOrders.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader8
+        '
+        Me.ColumnHeader8.Text = "AT"
         '
         'ColumnHeader1
         '
@@ -225,10 +229,6 @@ Partial Class FrmMyOrderSettings
         Me.CoBxPayType.Size = New System.Drawing.Size(134, 21)
         Me.CoBxPayType.TabIndex = 0
         '
-        'ColumnHeader8
-        '
-        Me.ColumnHeader8.Text = "AT"
-        '
         'FrmMyOrderSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -236,6 +236,7 @@ Partial Class FrmMyOrderSettings
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
         Me.ClientSize = New System.Drawing.Size(800, 450)
         Me.Controls.Add(Me.SplitContainer1)
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Name = "FrmMyOrderSettings"
         Me.Text = "FrmMyOrdersettings"
         Me.SplitContainer1.Panel1.ResumeLayout(False)

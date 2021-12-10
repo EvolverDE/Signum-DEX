@@ -12,7 +12,7 @@ Public Class FrmManual
         Close
     End Enum
 
-    Shared Property CustomResult As CustomDialogResult
+    Shared Property CustomResult As CustomDialogResult = CustomDialogResult.Close
 
 
     Sub New()
@@ -21,11 +21,9 @@ Public Class FrmManual
 
         ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
 
-        CustomResult = CustomDialogResult.Close
-
     End Sub
 
-    Public Shared Function MBox(Optional ByVal msgTxt As String = "", Optional ByVal titleTxt As String = "", Optional ByVal buttons As List(Of Button) = Nothing, Optional ByVal c_Color As Color = Nothing, Optional ByVal status As ClsMsgs.Status = ClsMsgs.Status.Standard, Optional ByVal t_time As Integer = -1, Optional ByVal timer_typ As ClsMsgs.Timer_Type = ClsMsgs.Timer_Type.ButtonEnable)
+    Public Shared Function MBox(Optional ByVal test As Integer = 0)
 
         ' Dim ms As FrmManual = New FrmManual
         Dim Result As CustomDialogResult = ShowManuDialog()
@@ -35,6 +33,9 @@ Public Class FrmManual
 
 
     Shared Sub frmMSG_closing(sender As Object, e As System.Windows.Forms.FormClosingEventArgs)
+
+        'CustomResult = CustomDialogResult.Close 
+
         e.Cancel = False
     End Sub
 
@@ -51,6 +52,8 @@ Public Class FrmManual
 
 
     Private Sub FrmManual_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        Me.Text += " " + Application.StartupPath
 
         Dim WelcomeStr As String = "Welcome to a decentrailze exchange for SIGNA." + vbCrLf
         WelcomeStr += "" + vbCrLf
@@ -145,24 +148,59 @@ Public Class FrmManual
 
         ElseIf TBManualPassPhrase.Text.Trim = "" And Not TBManualAddress.Text.Trim = "" Then
 
-            Dim Address As String = TBManualAddress.Text
-            Dim AccountID As ULong = ClsReedSolomon.Decode(Address)
+            Dim T_Address As String = TBManualAddress.Text.Trim
 
-            If AccountID = 0 Then
-                ClsMsgs.MBox("Unknown Address", "Check Address", ,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
+            If IsReedSolomon(T_Address) Then
+
+                Dim T_AddressList As List(Of String) = ConvertAddress(T_Address)
+
+                If T_AddressList.Count = 0 Then
+                    ClsMsgs.MBox("Unknown Address", "Check Address", ,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
+                ElseIf T_AddressList.Count = 1 Then
+
+                    'PFPForm.C_Address = T_AddressList(0)
+                    'PFPForm.C_PublicKeyHEX = ""
+
+                    GlobalPublicKey = ""
+                    GlobalAddress = T_AddressList(0)
+
+                    SetINISetting(E_Setting.Address, TBManualAddress.Text)
+                    ClsMsgs.MBox("Address OK", "Check Address", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
+                Else
+
+                    'PFPForm.C_Address = T_AddressList(0)
+                    'PFPForm.C_PublicKeyHEX = T_AddressList(1)
+
+                    GlobalPublicKey = T_AddressList(1)
+                    GlobalAddress = T_AddressList(0)
+
+                    SetINISetting(E_Setting.Address, TBManualAddress.Text)
+                    ClsMsgs.MBox("Address OK", "Check Address", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
+                End If
+
             Else
-                PFPForm.T_Address = TBManualAddress.Text
-                SetINISetting(E_Setting.Address, TBManualAddress.Text)
-                ClsMsgs.MBox("Address OK", "Check Address", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                ClsMsgs.MBox("Unknown Address", "Check Address", ,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
             End If
+
 
         ElseIf Not TBManualPassPhrase.Text.Trim = "" And TBManualAddress.Text.Trim = "" Then
 
             Dim MasterKeys As List(Of String) = GetMasterKeys(TBManualPassPhrase.Text.Trim)
-            TBManualAddress.Text = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
 
-            PFPForm.T_Address = TBManualAddress.Text
-            SetINISetting(E_Setting.Address, TBManualAddress.Text)
+            Dim T_Address As String = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
+            Dim T_AddressExtended As String = T_Address + "-" + ClsBase36.EncodeHexToBase36(MasterKeys(0))
+
+            TBManualAddress.Text = T_AddressExtended
+
+            'PFPForm.C_Address = T_Address
+            'PFPForm.C_PublicKeyHEX = MasterKeys(0)
+
+            GlobalPublicKey = MasterKeys(0)
+            GlobalAddress = T_Address
+
+            SetINISetting(E_Setting.Address, T_AddressExtended)
 
             If ChBxManualEncryptPP.Checked Then
                 If Not TBManualPassPhrase.Text.Trim = "" And Not TBManualPIN.Text = "" Then
@@ -190,10 +228,19 @@ Public Class FrmManual
 
             Dim MasterKeys As List(Of String) = GetMasterKeys(TBManualPassPhrase.Text.Trim)
             Dim T_Address As String = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
+            Dim T_AddressExtended As String = T_Address + "-" + ClsBase36.EncodeHexToBase36(MasterKeys(0))
 
-            If T_Address.Trim = TBManualAddress.Text.Trim Then
 
-                PFPForm.T_Address = TBManualAddress.Text
+            If T_Address.Trim = TBManualAddress.Text.Trim Or T_AddressExtended.Trim = TBManualAddress.Text.Trim Then
+
+                TBManualAddress.Text = T_AddressExtended
+
+                'PFPForm.C_Address = T_Address
+                'PFPForm.C_PublicKeyHEX = MasterKeys(0)
+
+                GlobalPublicKey = MasterKeys(0)
+                GlobalAddress = T_Address
+
 
                 If ChBxManualEncryptPP.Checked Then
                     If Not TBManualPassPhrase.Text.Trim = "" And Not TBManualPIN.Text = "" Then

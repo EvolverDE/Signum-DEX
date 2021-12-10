@@ -15,7 +15,7 @@
 
         Try
 
-            Dim yf As IO.FileStream = IO.File.Open(Path + "\" + File, Mode)
+            Dim yf As IO.FileStream = IO.File.Open(Path + "/" + File, Mode)
             Dim verinfo As Byte() = New System.Text.UTF8Encoding(True).GetBytes(str)
 
             yf.Write(verinfo, 0, verinfo.Length)
@@ -29,7 +29,7 @@
                 Dim NowStr As String = Now.ToString
                 NowStr = NowStr.Replace(" ", "").Replace(":", "")
 
-                Dim yf As IO.FileStream = IO.File.Open(Path + "\Errors" + NowStr + ".log", IO.FileMode.Append)
+                Dim yf As IO.FileStream = IO.File.Open(Path + "/" + "Errors" + NowStr + ".log", IO.FileMode.Append)
                 Dim verinfo As Byte() = New System.Text.UTF8Encoding(True).GetBytes(str)
 
                 yf.Write(verinfo, 0, verinfo.Length)
@@ -51,7 +51,7 @@
         str += vbCrLf + "#################### MESSAGE END ####################" + vbCrLf
 
         Try
-            Dim yf As IO.FileStream = IO.File.Open(Path + "\Info.log", IO.FileMode.Append)
+            Dim yf As IO.FileStream = IO.File.Open(Path + "/" + "Info.log", IO.FileMode.Append)
             Dim verinfo As Byte() = New System.Text.UTF8Encoding(True).GetBytes(str)
 
             yf.Write(verinfo, 0, verinfo.Length)
@@ -64,7 +64,7 @@
                 Dim NowStr As String = Now.ToString
                 NowStr = NowStr.Replace(" ", "").Replace(":", "")
 
-                Dim yf As IO.FileStream = IO.File.Open(Path + "\Errors" + NowStr + ".log", IO.FileMode.Append)
+                Dim yf As IO.FileStream = IO.File.Open(Path + "/" + "Errors" + NowStr + ".log", IO.FileMode.Append)
                 Dim verinfo As Byte() = New System.Text.UTF8Encoding(True).GetBytes(str)
 
                 yf.Write(verinfo, 0, verinfo.Length)
@@ -84,7 +84,7 @@
         str += vbCrLf + "##################### MESSAGE END #####################" + vbCrLf
 
         Try
-            Dim yf As IO.FileStream = IO.File.Open(Path + "\Errors.log", IO.FileMode.Append)
+            Dim yf As IO.FileStream = IO.File.Open(Path + "/" + "Errors.log", IO.FileMode.Append)
             Dim verinfo As Byte() = New System.Text.UTF8Encoding(True).GetBytes(str)
 
             yf.Write(verinfo, 0, verinfo.Length)
@@ -96,7 +96,7 @@
                 Dim NowStr As String = Now.ToString
                 NowStr = NowStr.Replace(" ", "").Replace(":", "")
 
-                Dim yf As IO.FileStream = IO.File.Open(Path + "\Errors" + NowStr + ".log", IO.FileMode.Append)
+                Dim yf As IO.FileStream = IO.File.Open(Path + "/" + "Errors" + NowStr + ".log", IO.FileMode.Append)
                 Dim verinfo As Byte() = New System.Text.UTF8Encoding(True).GetBytes(str)
 
                 yf.Write(verinfo, 0, verinfo.Length)
@@ -115,7 +115,7 @@
         str = "#################### MESSAGE START ####################" + vbCrLf + Now.ToShortDateString + " " + Now.ToShortTimeString + vbCrLf + vbCrLf + str
         str += vbCrLf + "##################### MESSAGE END #####################" + vbCrLf
         Try
-            Dim yf As IO.FileStream = IO.File.Open(Path + "\Warnings.log", IO.FileMode.Append)
+            Dim yf As IO.FileStream = IO.File.Open(Path + "/" + "Warnings.log", IO.FileMode.Append)
             Dim verinfo As Byte() = New System.Text.UTF8Encoding(True).GetBytes(str)
 
             yf.Write(verinfo, 0, verinfo.Length)
@@ -128,7 +128,7 @@
                 Dim NowStr As String = Now.ToString
                 NowStr = NowStr.Replace(" ", "").Replace(":", "")
 
-                Dim yf As IO.FileStream = IO.File.Open(Path + "\Errors" + NowStr + ".log", IO.FileMode.Append)
+                Dim yf As IO.FileStream = IO.File.Open(Path + "/" + "Errors" + NowStr + ".log", IO.FileMode.Append)
                 Dim verinfo As Byte() = New System.Text.UTF8Encoding(True).GetBytes(str)
 
                 yf.Write(verinfo, 0, verinfo.Length)

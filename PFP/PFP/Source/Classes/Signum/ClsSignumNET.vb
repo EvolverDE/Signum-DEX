@@ -158,7 +158,7 @@
             End If
 
         Else
-            Return Application.ProductName + "-error in DecryptFrom(): -> no Keys"
+            Return Application.ProductName + "-warning in DecryptFrom(): -> no Keys"
         End If
 
     End Function

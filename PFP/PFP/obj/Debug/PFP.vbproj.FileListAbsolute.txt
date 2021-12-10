@@ -67,6 +67,10 @@ C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.application
 C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.exe
 C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.xml
 C:\Current_Develpements\Burstcoin\Burstcoin\PFP\PFP\obj\Debug\PFP.pdb
+C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Debug\PFP.exe.config
+C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Debug\PFP.exe
+C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Debug\PFP.pdb
+C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Debug\PFP.xml
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.vbprojAssemblyReference.cache
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.PFPForm.resources
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.FrmEnterPIN.resources
@@ -81,14 +85,6 @@ C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.TradeTrackerTimeLine
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.TradeTrackerTimeRail.resources
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.vbproj.GenerateResource.cache
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.vbproj.CoreCompileInputs.cache
-C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Debug\PFP.exe.config
-C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Debug\PFP.exe.manifest
-C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Debug\PFP.application
-C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Debug\PFP.exe
-C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Debug\PFP.pdb
-C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Debug\PFP.xml
-C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.exe.manifest
-C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.application
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.exe
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.xml
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.pdb

@@ -119,15 +119,25 @@ Partial Class FrmDevelope
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.TestGrpBoxMultithreadings = New System.Windows.Forms.GroupBox()
         Me.SplitContainer9 = New System.Windows.Forms.SplitContainer()
+        Me.LabActiveNodes = New System.Windows.Forms.Label()
+        Me.Label36 = New System.Windows.Forms.Label()
         Me.ChBxAutoRefreshMultiThreads = New System.Windows.Forms.CheckBox()
         Me.BtTestMultiRefresh = New System.Windows.Forms.Button()
         Me.BtTestExit = New System.Windows.Forms.Button()
+        Me.SplitContainer12 = New System.Windows.Forms.SplitContainer()
+        Me.SplitContainer13 = New System.Windows.Forms.SplitContainer()
+        Me.Label37 = New System.Windows.Forms.Label()
         Me.LVTestMulti = New System.Windows.Forms.ListView()
         Me.ColumnHeader2 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader3 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader4 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader5 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader6 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.SplitContainer14 = New System.Windows.Forms.SplitContainer()
+        Me.Label38 = New System.Windows.Forms.Label()
+        Me.LVActiveNodes = New System.Windows.Forms.ListView()
+        Me.ColumnHeader1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader15 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabPage11 = New System.Windows.Forms.TabPage()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.ChBxTestTCPAPIEnable = New System.Windows.Forms.CheckBox()
@@ -157,6 +167,9 @@ Partial Class FrmDevelope
         Me.ChBxTestDEXNETShowStatus = New System.Windows.Forms.CheckBox()
         Me.ChBxTestDEXNETEnable = New System.Windows.Forms.CheckBox()
         Me.LiBoDEXNETStatus = New System.Windows.Forms.ListBox()
+        Me.CMSTestLiBoDEXNETStatus = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.ClearEntryToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ClearAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.SplitContainer7 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer3 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer4 = New System.Windows.Forms.SplitContainer()
@@ -181,9 +194,6 @@ Partial Class FrmDevelope
         Me.Label29 = New System.Windows.Forms.Label()
         Me.TBTestMyPublicKey = New System.Windows.Forms.TextBox()
         Me.Label28 = New System.Windows.Forms.Label()
-        Me.CMSTestLiBoDEXNETStatus = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.ClearEntryToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ClearAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.TestTabControl.SuspendLayout()
         Me.TabPage6.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
@@ -208,6 +218,18 @@ Partial Class FrmDevelope
         Me.SplitContainer9.Panel1.SuspendLayout()
         Me.SplitContainer9.Panel2.SuspendLayout()
         Me.SplitContainer9.SuspendLayout()
+        CType(Me.SplitContainer12, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer12.Panel1.SuspendLayout()
+        Me.SplitContainer12.Panel2.SuspendLayout()
+        Me.SplitContainer12.SuspendLayout()
+        CType(Me.SplitContainer13, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer13.Panel1.SuspendLayout()
+        Me.SplitContainer13.Panel2.SuspendLayout()
+        Me.SplitContainer13.SuspendLayout()
+        CType(Me.SplitContainer14, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer14.Panel1.SuspendLayout()
+        Me.SplitContainer14.Panel2.SuspendLayout()
+        Me.SplitContainer14.SuspendLayout()
         Me.TabPage11.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
@@ -223,6 +245,7 @@ Partial Class FrmDevelope
         Me.SplitContainer2.Panel1.SuspendLayout()
         Me.SplitContainer2.Panel2.SuspendLayout()
         Me.SplitContainer2.SuspendLayout()
+        Me.CMSTestLiBoDEXNETStatus.SuspendLayout()
         CType(Me.SplitContainer7, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer7.Panel1.SuspendLayout()
         Me.SplitContainer7.Panel2.SuspendLayout()
@@ -247,7 +270,6 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel1.SuspendLayout()
         Me.SplitContainer11.Panel2.SuspendLayout()
         Me.SplitContainer11.SuspendLayout()
-        Me.CMSTestLiBoDEXNETStatus.SuspendLayout()
         Me.SuspendLayout()
         '
         'TestTabControl
@@ -1210,16 +1232,38 @@ Partial Class FrmDevelope
         '
         'SplitContainer9.Panel1
         '
+        Me.SplitContainer9.Panel1.Controls.Add(Me.LabActiveNodes)
+        Me.SplitContainer9.Panel1.Controls.Add(Me.Label36)
         Me.SplitContainer9.Panel1.Controls.Add(Me.ChBxAutoRefreshMultiThreads)
         Me.SplitContainer9.Panel1.Controls.Add(Me.BtTestMultiRefresh)
         Me.SplitContainer9.Panel1.Controls.Add(Me.BtTestExit)
         '
         'SplitContainer9.Panel2
         '
-        Me.SplitContainer9.Panel2.Controls.Add(Me.LVTestMulti)
+        Me.SplitContainer9.Panel2.Controls.Add(Me.SplitContainer12)
         Me.SplitContainer9.Size = New System.Drawing.Size(1199, 416)
         Me.SplitContainer9.SplitterDistance = 55
         Me.SplitContainer9.TabIndex = 32
+        '
+        'LabActiveNodes
+        '
+        Me.LabActiveNodes.AutoSize = True
+        Me.LabActiveNodes.ForeColor = System.Drawing.Color.Black
+        Me.LabActiveNodes.Location = New System.Drawing.Point(245, 8)
+        Me.LabActiveNodes.Name = "LabActiveNodes"
+        Me.LabActiveNodes.Size = New System.Drawing.Size(13, 13)
+        Me.LabActiveNodes.TabIndex = 34
+        Me.LabActiveNodes.Text = "0"
+        '
+        'Label36
+        '
+        Me.Label36.AutoSize = True
+        Me.Label36.ForeColor = System.Drawing.Color.Black
+        Me.Label36.Location = New System.Drawing.Point(165, 8)
+        Me.Label36.Name = "Label36"
+        Me.Label36.Size = New System.Drawing.Size(74, 13)
+        Me.Label36.TabIndex = 33
+        Me.Label36.Text = "Active Nodes:"
         '
         'ChBxAutoRefreshMultiThreads
         '
@@ -1252,6 +1296,52 @@ Partial Class FrmDevelope
         Me.BtTestExit.Text = "Exit"
         Me.BtTestExit.UseVisualStyleBackColor = True
         '
+        'SplitContainer12
+        '
+        Me.SplitContainer12.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer12.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer12.Name = "SplitContainer12"
+        '
+        'SplitContainer12.Panel1
+        '
+        Me.SplitContainer12.Panel1.Controls.Add(Me.SplitContainer13)
+        '
+        'SplitContainer12.Panel2
+        '
+        Me.SplitContainer12.Panel2.Controls.Add(Me.SplitContainer14)
+        Me.SplitContainer12.Size = New System.Drawing.Size(1199, 357)
+        Me.SplitContainer12.SplitterDistance = 595
+        Me.SplitContainer12.TabIndex = 29
+        '
+        'SplitContainer13
+        '
+        Me.SplitContainer13.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer13.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer13.IsSplitterFixed = True
+        Me.SplitContainer13.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer13.Name = "SplitContainer13"
+        Me.SplitContainer13.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer13.Panel1
+        '
+        Me.SplitContainer13.Panel1.Controls.Add(Me.Label37)
+        '
+        'SplitContainer13.Panel2
+        '
+        Me.SplitContainer13.Panel2.Controls.Add(Me.LVTestMulti)
+        Me.SplitContainer13.Size = New System.Drawing.Size(595, 357)
+        Me.SplitContainer13.SplitterDistance = 25
+        Me.SplitContainer13.TabIndex = 0
+        '
+        'Label37
+        '
+        Me.Label37.AutoSize = True
+        Me.Label37.Location = New System.Drawing.Point(5, 6)
+        Me.Label37.Name = "Label37"
+        Me.Label37.Size = New System.Drawing.Size(89, 13)
+        Me.Label37.TabIndex = 0
+        Me.Label37.Text = "API Request List:"
+        '
         'LVTestMulti
         '
         Me.LVTestMulti.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader2, Me.ColumnHeader3, Me.ColumnHeader4, Me.ColumnHeader5, Me.ColumnHeader6})
@@ -1262,7 +1352,7 @@ Partial Class FrmDevelope
         Me.LVTestMulti.Location = New System.Drawing.Point(0, 0)
         Me.LVTestMulti.MultiSelect = False
         Me.LVTestMulti.Name = "LVTestMulti"
-        Me.LVTestMulti.Size = New System.Drawing.Size(1199, 357)
+        Me.LVTestMulti.Size = New System.Drawing.Size(595, 328)
         Me.LVTestMulti.TabIndex = 28
         Me.LVTestMulti.UseCompatibleStateImageBehavior = False
         Me.LVTestMulti.View = System.Windows.Forms.View.Details
@@ -1286,6 +1376,58 @@ Partial Class FrmDevelope
         'ColumnHeader6
         '
         Me.ColumnHeader6.Text = "Result"
+        '
+        'SplitContainer14
+        '
+        Me.SplitContainer14.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer14.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer14.IsSplitterFixed = True
+        Me.SplitContainer14.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer14.Name = "SplitContainer14"
+        Me.SplitContainer14.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer14.Panel1
+        '
+        Me.SplitContainer14.Panel1.Controls.Add(Me.Label38)
+        '
+        'SplitContainer14.Panel2
+        '
+        Me.SplitContainer14.Panel2.Controls.Add(Me.LVActiveNodes)
+        Me.SplitContainer14.Size = New System.Drawing.Size(600, 357)
+        Me.SplitContainer14.SplitterDistance = 25
+        Me.SplitContainer14.TabIndex = 0
+        '
+        'Label38
+        '
+        Me.Label38.AutoSize = True
+        Me.Label38.Location = New System.Drawing.Point(3, 6)
+        Me.Label38.Name = "Label38"
+        Me.Label38.Size = New System.Drawing.Size(88, 13)
+        Me.Label38.TabIndex = 1
+        Me.Label38.Text = "Active Node List:"
+        '
+        'LVActiveNodes
+        '
+        Me.LVActiveNodes.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader1, Me.ColumnHeader15})
+        Me.LVActiveNodes.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LVActiveNodes.FullRowSelect = True
+        Me.LVActiveNodes.GridLines = True
+        Me.LVActiveNodes.HideSelection = False
+        Me.LVActiveNodes.Location = New System.Drawing.Point(0, 0)
+        Me.LVActiveNodes.MultiSelect = False
+        Me.LVActiveNodes.Name = "LVActiveNodes"
+        Me.LVActiveNodes.Size = New System.Drawing.Size(600, 328)
+        Me.LVActiveNodes.TabIndex = 29
+        Me.LVActiveNodes.UseCompatibleStateImageBehavior = False
+        Me.LVActiveNodes.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader1
+        '
+        Me.ColumnHeader1.Text = "Node"
+        '
+        'ColumnHeader15
+        '
+        Me.ColumnHeader15.Text = "Status"
         '
         'TabPage11
         '
@@ -1577,6 +1719,24 @@ Partial Class FrmDevelope
         Me.LiBoDEXNETStatus.Size = New System.Drawing.Size(590, 300)
         Me.LiBoDEXNETStatus.TabIndex = 0
         '
+        'CMSTestLiBoDEXNETStatus
+        '
+        Me.CMSTestLiBoDEXNETStatus.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ClearEntryToolStripMenuItem, Me.ClearAllToolStripMenuItem})
+        Me.CMSTestLiBoDEXNETStatus.Name = "CMSTestLiBoDEXNETStatus"
+        Me.CMSTestLiBoDEXNETStatus.Size = New System.Drawing.Size(130, 48)
+        '
+        'ClearEntryToolStripMenuItem
+        '
+        Me.ClearEntryToolStripMenuItem.Name = "ClearEntryToolStripMenuItem"
+        Me.ClearEntryToolStripMenuItem.Size = New System.Drawing.Size(129, 22)
+        Me.ClearEntryToolStripMenuItem.Text = "clear entry"
+        '
+        'ClearAllToolStripMenuItem
+        '
+        Me.ClearAllToolStripMenuItem.Name = "ClearAllToolStripMenuItem"
+        Me.ClearAllToolStripMenuItem.Size = New System.Drawing.Size(129, 22)
+        Me.ClearAllToolStripMenuItem.Text = "clear all"
+        '
         'SplitContainer7
         '
         Me.SplitContainer7.Dock = System.Windows.Forms.DockStyle.Fill
@@ -1854,24 +2014,6 @@ Partial Class FrmDevelope
         Me.Label28.TabIndex = 0
         Me.Label28.Text = "My Public Key:"
         '
-        'CMSTestLiBoDEXNETStatus
-        '
-        Me.CMSTestLiBoDEXNETStatus.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ClearEntryToolStripMenuItem, Me.ClearAllToolStripMenuItem})
-        Me.CMSTestLiBoDEXNETStatus.Name = "CMSTestLiBoDEXNETStatus"
-        Me.CMSTestLiBoDEXNETStatus.Size = New System.Drawing.Size(181, 70)
-        '
-        'ClearEntryToolStripMenuItem
-        '
-        Me.ClearEntryToolStripMenuItem.Name = "ClearEntryToolStripMenuItem"
-        Me.ClearEntryToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
-        Me.ClearEntryToolStripMenuItem.Text = "clear entry"
-        '
-        'ClearAllToolStripMenuItem
-        '
-        Me.ClearAllToolStripMenuItem.Name = "ClearAllToolStripMenuItem"
-        Me.ClearAllToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
-        Me.ClearAllToolStripMenuItem.Text = "clear all"
-        '
         'FrmDevelope
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1879,6 +2021,7 @@ Partial Class FrmDevelope
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
         Me.ClientSize = New System.Drawing.Size(1213, 548)
         Me.Controls.Add(Me.SplitContainer11)
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Name = "FrmDevelope"
         Me.Text = "FrmDevelope"
         Me.TestTabControl.ResumeLayout(False)
@@ -1915,6 +2058,20 @@ Partial Class FrmDevelope
         Me.SplitContainer9.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer9, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer9.ResumeLayout(False)
+        Me.SplitContainer12.Panel1.ResumeLayout(False)
+        Me.SplitContainer12.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer12, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer12.ResumeLayout(False)
+        Me.SplitContainer13.Panel1.ResumeLayout(False)
+        Me.SplitContainer13.Panel1.PerformLayout()
+        Me.SplitContainer13.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer13, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer13.ResumeLayout(False)
+        Me.SplitContainer14.Panel1.ResumeLayout(False)
+        Me.SplitContainer14.Panel1.PerformLayout()
+        Me.SplitContainer14.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer14, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer14.ResumeLayout(False)
         Me.TabPage11.ResumeLayout(False)
         Me.SplitContainer1.Panel1.ResumeLayout(False)
         Me.SplitContainer1.Panel1.PerformLayout()
@@ -1932,6 +2089,7 @@ Partial Class FrmDevelope
         Me.SplitContainer2.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer2.ResumeLayout(False)
+        Me.CMSTestLiBoDEXNETStatus.ResumeLayout(False)
         Me.SplitContainer7.Panel1.ResumeLayout(False)
         Me.SplitContainer7.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer7, System.ComponentModel.ISupportInitialize).EndInit()
@@ -1960,7 +2118,6 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer11, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer11.ResumeLayout(False)
-        Me.CMSTestLiBoDEXNETStatus.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -2124,4 +2281,14 @@ Partial Class FrmDevelope
     Friend WithEvents CMSTestLiBoDEXNETStatus As ContextMenuStrip
     Friend WithEvents ClearEntryToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ClearAllToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents Label36 As Label
+    Friend WithEvents LabActiveNodes As Label
+    Friend WithEvents SplitContainer12 As SplitContainer
+    Friend WithEvents SplitContainer13 As SplitContainer
+    Friend WithEvents SplitContainer14 As SplitContainer
+    Friend WithEvents Label37 As Label
+    Friend WithEvents Label38 As Label
+    Friend WithEvents LVActiveNodes As ListView
+    Friend WithEvents ColumnHeader1 As ColumnHeader
+    Friend WithEvents ColumnHeader15 As ColumnHeader
 End Class

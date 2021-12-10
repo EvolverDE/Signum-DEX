@@ -1,8 +1,13 @@
+
+Imports PFP.ClsINITool
+
 Module ModINITools
 
-    Private Declare Function WritePrivateProfileString Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpString As String, ByVal lpFileName As String) As Integer
-    Private Declare Ansi Function DeletePrivateProfileSection Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal Section As String, ByVal NoKey As Integer, ByVal NoSetting As Integer, ByVal FileName As String) As Integer
-    Private Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Integer, ByVal lpFileName As String) As Integer
+    Dim INISettings As ClsINITool = New ClsINITool()
+
+    'Private Declare Function WritePrivateProfileString Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpString As String, ByVal lpFileName As String) As Integer
+    'Private Declare Ansi Function DeletePrivateProfileSection Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal Section As String, ByVal NoKey As Integer, ByVal NoSetting As Integer, ByVal FileName As String) As Integer
+    'Private Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Integer, ByVal lpFileName As String) As Integer
 
     Public Enum E_Setting
 
@@ -61,51 +66,71 @@ Module ModINITools
     End Enum
 
 
-    Sub InitiateINI()
+    Function ReloadINI() As Boolean
+        INISettings.ReadINI()
+        Return True
+
+    End Function
+
+
+    Function InitiateINI() As Boolean
 
         Dim Temp As String = GetINISetting(E_Setting.PassPhrase, "")
         Temp = GetINISetting(E_Setting.PINFingerPrint, "")
         Temp = GetINISetting(E_Setting.Address, "")
-        Temp = GetINISetting(E_Setting.LastMarketViewed, "")
-        Temp = GetINISetting(E_Setting.RefreshMinutes, "")
-        Temp = GetINISetting(E_Setting.Nodes, "")
-        Temp = GetINISetting(E_Setting.DefaultNode, "")
-        Temp = GetINISetting(E_Setting.TCPAPIEnable, "")
-        Temp = GetINISetting(E_Setting.TCPAPIServerPort, "")
-        Temp = GetINISetting(E_Setting.DEXNETServerPort, "")
-        Temp = GetINISetting(E_Setting.DEXNETNodes, "")
+        Temp = GetINISetting(E_Setting.LastMarketViewed, "USD")
+        Temp = GetINISetting(E_Setting.RefreshMinutes, 1)
+        Temp = GetINISetting(E_Setting.Nodes, "http://lmsi.club:6876/burst")
+        Temp = GetINISetting(E_Setting.DefaultNode, "http://lmsi.club:6876/burst")
+        Temp = GetINISetting(E_Setting.TCPAPIEnable, True)
+        Temp = GetINISetting(E_Setting.TCPAPIServerPort, 8130)
+        Temp = GetINISetting(E_Setting.DEXNETServerPort, 8131)
+        Temp = GetINISetting(E_Setting.DEXNETNodes, "signum.zone:8131")
         Temp = GetINISetting(E_Setting.DEXNETMyHost, "")
 
-        Temp = GetINISetting(E_Setting.AutoSendPaymentInfo, "")
-        Temp = GetINISetting(E_Setting.AutoCheckAndFinishAT, "")
-        Temp = GetINISetting(E_Setting.PaymentType, "")
-        Temp = GetINISetting(E_Setting.PaymentInfoText, "")
+        Temp = GetINISetting(E_Setting.AutoSendPaymentInfo, False)
+        Temp = GetINISetting(E_Setting.AutoCheckAndFinishAT, False)
+        Temp = GetINISetting(E_Setting.PaymentType, "Other")
+        Temp = GetINISetting(E_Setting.PaymentInfoText, "self pickup")
 
-        Temp = GetINISetting(E_Setting.ShowMaxSellOrders, "")
-        Temp = GetINISetting(E_Setting.ShowMaxBuyOrders, "")
-        Temp = GetINISetting(E_Setting.SellFilterAutoinfo, "")
-        Temp = GetINISetting(E_Setting.BuyFilterAutoinfo, "")
-        Temp = GetINISetting(E_Setting.SellFilterAutofinish, "")
-        Temp = GetINISetting(E_Setting.BuyFilterAutofinish, "")
-        Temp = GetINISetting(E_Setting.SellFilterMethods, "")
-        Temp = GetINISetting(E_Setting.BuyFilterMethods, "")
-        Temp = GetINISetting(E_Setting.SellFilterPayable, "")
-        Temp = GetINISetting(E_Setting.BuyFilterPayable, "")
+        Temp = GetINISetting(E_Setting.ShowMaxSellOrders, 10)
+        Temp = GetINISetting(E_Setting.ShowMaxBuyOrders, 10)
+        Temp = GetINISetting(E_Setting.SellFilterAutoinfo, False)
+        Temp = GetINISetting(E_Setting.BuyFilterAutoinfo, False)
+        Temp = GetINISetting(E_Setting.SellFilterAutofinish, False)
+        Temp = GetINISetting(E_Setting.BuyFilterAutofinish, False)
 
-        Temp = GetINISetting(E_Setting.PayPalChoice, "")
-        Temp = GetINISetting(E_Setting.PayPalEMail, "")
+
+        Dim DefaultMethodList As List(Of String) = New List(Of String)(ClsOrderSettings.GetPayTypes.ToArray)
+
+        Dim DefaultMethods As String = "Unknown;"
+        For Each DefMet As String In DefaultMethodList
+            DefaultMethods += DefMet + ";"
+        Next
+
+        DefaultMethods = DefaultMethods.Remove(DefaultMethods.Length - 1)
+
+        Temp = GetINISetting(E_Setting.SellFilterMethods, DefaultMethods)
+        Temp = GetINISetting(E_Setting.BuyFilterMethods, DefaultMethods)
+        Temp = GetINISetting(E_Setting.SellFilterPayable, False)
+        Temp = GetINISetting(E_Setting.BuyFilterPayable, False)
+
+        Temp = GetINISetting(E_Setting.PayPalChoice, "EMail")
+        Temp = GetINISetting(E_Setting.PayPalEMail, "test@test.com")
         Temp = GetINISetting(E_Setting.PayPalAPIUser, "")
         Temp = GetINISetting(E_Setting.PayPalAPISecret, "")
 
         Temp = GetINISetting(E_Setting.AutoSignalTransactions, "")
         Temp = GetINISetting(E_Setting.AutoInfoTransactions, "")
 
-        Temp = GetINISetting(E_Setting.InfoOut, "")
-        Temp = GetINISetting(E_Setting.TCPAPIShowStatus, "")
-        Temp = GetINISetting(E_Setting.DEXNETEnable, "")
-        Temp = GetINISetting(E_Setting.DEXNETShowStatus, "")
+        Temp = GetINISetting(E_Setting.InfoOut, True)
+        Temp = GetINISetting(E_Setting.TCPAPIShowStatus, False)
+        Temp = GetINISetting(E_Setting.DEXNETEnable, False)
+        Temp = GetINISetting(E_Setting.DEXNETShowStatus, False)
 
-    End Sub
+        Return True
+
+    End Function
 
 
     Function GetINISection(ByVal Setting As E_Setting) As E_SettingSection
@@ -133,33 +158,35 @@ Module ModINITools
 
     End Function
 
-    Public Sub EraseINISection(ByVal INIFile As String, ByVal Section As String)
-        DeletePrivateProfileSection(Section, 0, 0, INIFile)
-    End Sub
+    'Public Sub EraseINISection(ByVal INIFile As String, ByVal Section As String)
+    '    DeletePrivateProfileSection(Section, 0, 0, INIFile)
+    'End Sub
 
     Private Sub INISetValueToFile(ByVal INI As String, ByVal Section As String, ByVal Key As String, ByVal Value As String)
 
         Dim Result As String = ""
-        Result = WritePrivateProfileString(Section.ToUpper, Key.ToUpper, Value, INI)
+        Result = INISettings.SetValueToSectionKey(Section, Key, Value) ' WritePrivateProfileString(Section.ToUpper, Key.ToUpper, Value, INI)
 
     End Sub
 
     Private Function INIGetValueFromFile(ByVal File As String, ByVal Section As String, ByVal Key As String, Optional ByVal Def As String = "") As String
 
-        Dim T As String = ""
+        Return INISettings.GetValueFromSectionKey(Section, Key, Def)
 
-        Dim Result As String = ""
-        Dim Buffer As String = ""
-        Buffer = Space(16384)
-        Result = GetPrivateProfileString(Section.ToUpper, Key.ToUpper, vbNullString, Buffer, Len(Buffer), File)
-        T = Left(Buffer, Result)
+        'Dim T As String = ""
 
-        If Result = 0 Then
-            INISetValue(File, Section.ToUpper, Key, Def)
-            T = Def
-        End If
+        'Dim Result As String = ""
+        'Dim Buffer As String = ""
+        'Buffer = Space(16384)
+        'Result = GetPrivateProfileString(Section.ToUpper, Key.ToUpper, vbNullString, Buffer, Len(Buffer), File)
+        'T = Left(Buffer, Result)
 
-        Return T
+        'If Result = 0 Then
+        '    INISetValue(File, Section.ToUpper, Key, Def)
+        '    T = Def
+        'End If
+
+        'Return T
 
     End Function
 
@@ -179,6 +206,7 @@ Module ModINITools
         Try
             T = INIGetValueFromFile(File, Section, Key, Def)
         Catch EXC As Exception
+            MsgBox(EXC.Message)
             T = ""
         End Try
 
@@ -187,17 +215,17 @@ Module ModINITools
     End Function
 
 
-    Function GetINISetting(ByVal Setting As E_Setting, Optional ByVal DefaultValue As String = "", Optional ByVal File As String = "/Settings.ini") As String
+    Function GetINISetting(ByVal Setting As E_Setting, Optional ByVal DefaultValue As String = "", Optional ByVal File As String = "/" + "Settings.ini") As String
         Dim Section As E_SettingSection = GetINISection(Setting)
         Return INIGetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, DefaultValue)
     End Function
-    Function GetINISetting(ByVal Setting As E_Setting, Optional ByVal DefaultValue As Integer = -1, Optional ByVal File As String = "/Settings.ini") As String
+    Function GetINISetting(ByVal Setting As E_Setting, Optional ByVal DefaultValue As Integer = -1, Optional ByVal File As String = "/" + "Settings.ini") As Integer
 
         Dim Section As E_SettingSection = GetINISection(Setting)
         Dim Returner As Integer = DefaultValue
 
         Try
-            Returner = CInt(INIGetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, DefaultValue))
+            Returner = CInt(INIGetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, DefaultValue.ToString))
         Catch ex As Exception
 
         End Try
@@ -205,13 +233,13 @@ Module ModINITools
         Return Returner
 
     End Function
-    Function GetINISetting(ByVal Setting As E_Setting, Optional ByVal DefaultValue As Boolean = False, Optional ByVal File As String = "/Settings.ini") As String
+    Function GetINISetting(ByVal Setting As E_Setting, Optional ByVal DefaultValue As Boolean = False, Optional ByVal File As String = "/" + "Settings.ini") As Boolean
 
         Dim Section As E_SettingSection = GetINISection(Setting)
         Dim Returner As Boolean = DefaultValue
 
         Try
-            Returner = CBool(INIGetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, DefaultValue))
+            Returner = CBool(INIGetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, DefaultValue.ToString))
         Catch ex As Exception
 
         End Try
@@ -220,17 +248,17 @@ Module ModINITools
 
     End Function
 
-    Function SetINISetting(ByVal Setting As E_Setting, ByVal Value As String, Optional ByVal File As String = "/Settings.ini") As Boolean
+    Function SetINISetting(ByVal Setting As E_Setting, ByVal Value As String, Optional ByVal File As String = "/" + "Settings.ini") As Boolean
         Dim Section As E_SettingSection = GetINISection(Setting)
         INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.Trim)
         Return True
     End Function
-    Function SetINISetting(ByVal Setting As E_Setting, ByVal Value As Integer, Optional ByVal File As String = "/Settings.ini") As Boolean
+    Function SetINISetting(ByVal Setting As E_Setting, ByVal Value As Integer, Optional ByVal File As String = "/" + "Settings.ini") As Boolean
         Dim Section As E_SettingSection = GetINISection(Setting)
         INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.ToString.Trim)
         Return True
     End Function
-    Function SetINISetting(ByVal Setting As E_Setting, ByVal Value As Boolean, Optional ByVal File As String = "/Settings.ini") As Boolean
+    Function SetINISetting(ByVal Setting As E_Setting, ByVal Value As Boolean, Optional ByVal File As String = "/" + "Settings.ini") As Boolean
         Dim Section As E_SettingSection = GetINISection(Setting)
         INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.ToString.Trim)
         Return True

@@ -20,6 +20,7 @@ Public Class ClsSignumAPI
 #End Region
 
     Public Const _ReferenceTX As ULong = 11566074467129414744UL
+    Public Const _ReferenceTXFullHash As String = "58d4f6ba72f382a0db9b983df4b0fb60e6c3b08fcc35b623aaa7200637633072"
     Public Const _DeployFeeNQT As ULong = 154350000UL
     Public Const _GasFeeNQT As ULong = 29400000UL
 
@@ -35,7 +36,7 @@ Public Class ClsSignumAPI
     ReadOnly Property C_ReferenceMachineCode As String
 
 
-    Property C_Node As String = "http://nivbox.co.uk:6876/burst"
+    Property C_Node As String = ""
 
     'Public Property C_PromptPIN As Boolean = True
     'Property C_PassPhrase As String = ""
@@ -52,6 +53,8 @@ Public Class ClsSignumAPI
 
         If Not Node.Trim = "" Then
             C_Node = Node
+        Else
+            C_Node = GetINISetting(E_Setting.DefaultNode, "http://lmsi.club:6876/burst")
         End If
 
         'If Not PassPhrase.Trim = "" Then
@@ -336,7 +339,12 @@ Public Class ClsSignumAPI
 
         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
 
-        Dim AccountID As ULong = ClsReedSolomon.Decode(Address)
+        Dim AccountID As ULong = 0
+
+        Dim ConvAddress As List(Of String) = ConvertAddress(Address)
+        If ConvAddress.Count > 0 Then
+            AccountID = ConvAddress(0)
+        End If
 
         Dim CoinBal As List(Of String) = New List(Of String)({"<coin>SIGNA</coin>", "<account>" + AccountID.ToString + "</account>", "<address>" + Address + "</address>", "<balance>0</balance>", "<available>0</available>", "<pending>0</pending>"})
 
@@ -1400,7 +1408,7 @@ Public Class ClsSignumAPI
         If Response.Contains(Application.ProductName + "-error") Then
             'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATDetails(" + ATId + "): -> " + Response
             If GetINISetting(E_Setting.InfoOut, False) Then
-                Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails(" + ATID.ToString + "): -> " + Response)
+                Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails1(" + ATID.ToString + "): -> " + Response)
             End If
 
             Return New List(Of String)
@@ -1417,7 +1425,7 @@ Public Class ClsSignumAPI
             'TX not OK
             'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetATDetails(" + ATId + "): " + Response
             If GetINISetting(E_Setting.InfoOut, False) Then
-                Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails(" + ATID.ToString + "): " + Response)
+                Out.ErrorLog2File(Application.ProductName + "-error in GetATDetails2(" + ATID.ToString + "): " + Response)
             End If
 
             Return New List(Of String)
@@ -1761,6 +1769,8 @@ Public Class ClsSignumAPI
 
             If DecryptedMsg.Contains(Application.ProductName + "-error") Then
                 Return Application.ProductName + "-error in ReadMessage(): -> " + vbCrLf + DecryptedMsg
+            ElseIf DecryptedMsg.Contains(Application.ProductName + "-warning") Then
+                Return Application.ProductName + "-warning in ReadMessage(): -> " + vbCrLf + DecryptedMsg
             End If
 
             If Not MessageIsHEXString(DecryptedMsg) Then
@@ -1822,9 +1832,9 @@ Public Class ClsSignumAPI
 
 
         Dim postDataRL As String = "requestType=createATProgram"
-        postDataRL += "&name=PFPAT"
+        postDataRL += "&name=CarbonPFPDEX"
         postDataRL += "&description=PFPAT"
-        postDataRL += "&creationBytes=" + C_ReferenceCreationBytes
+        'postDataRL += "&creationBytes=" + C_ReferenceCreationBytes
         'postDataRL += "&code=" 
         'postDataRL += "&data="
         'postDataRL += "&dpages="
@@ -1834,8 +1844,8 @@ Public Class ClsSignumAPI
         'postDataRL += "&secretPhrase=" + C_PassPhrase
         postDataRL += "&publicKey=" + PublicKey
         postDataRL += "&feeNQT=" + _DeployFeeNQT.ToString
-        postDataRL += "&deadline=60"
-        'postDataRL += "&referencedTransactionFullHash="
+        postDataRL += "&deadline=1440"
+        postDataRL += "&referencedTransactionFullHash=" + _ReferenceTXFullHash
         'postDataRL += "&broadcast=true"
         'postDataRL += "&message="
         'postDataRL += "&messageIsText="

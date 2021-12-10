@@ -28,9 +28,9 @@ Partial Class FrmEnterPIN
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.TBOldPIN = New System.Windows.Forms.TextBox()
         Me.Label3 = New System.Windows.Forms.Label()
-        Me.TBSignature = New System.Windows.Forms.TextBox()
+        Me.TBSignedBytes = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
-        Me.TBBytesToSign = New System.Windows.Forms.TextBox()
+        Me.TBUnsignedBytes = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.SplitContainer2 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer3 = New System.Windows.Forms.SplitContainer()
@@ -83,9 +83,9 @@ Partial Class FrmEnterPIN
         '
         'SplitContainer1.Panel2
         '
-        Me.SplitContainer1.Panel2.Controls.Add(Me.TBSignature)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.TBSignedBytes)
         Me.SplitContainer1.Panel2.Controls.Add(Me.Label2)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.TBBytesToSign)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.TBUnsignedBytes)
         Me.SplitContainer1.Panel2.Controls.Add(Me.Label1)
         Me.SplitContainer1.Size = New System.Drawing.Size(246, 113)
         Me.SplitContainer1.SplitterDistance = 26
@@ -109,29 +109,29 @@ Partial Class FrmEnterPIN
         Me.Label3.TabIndex = 2
         Me.Label3.Text = "Old PIN:"
         '
-        'TBSignature
+        'TBSignedBytes
         '
-        Me.TBSignature.Location = New System.Drawing.Point(3, 58)
-        Me.TBSignature.Name = "TBSignature"
-        Me.TBSignature.Size = New System.Drawing.Size(240, 20)
-        Me.TBSignature.TabIndex = 3
+        Me.TBSignedBytes.Location = New System.Drawing.Point(3, 58)
+        Me.TBSignedBytes.Name = "TBSignedBytes"
+        Me.TBSignedBytes.Size = New System.Drawing.Size(240, 20)
+        Me.TBSignedBytes.TabIndex = 3
         '
         'Label2
         '
         Me.Label2.AutoSize = True
         Me.Label2.Location = New System.Drawing.Point(3, 42)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(55, 13)
+        Me.Label2.Size = New System.Drawing.Size(131, 13)
         Me.Label2.TabIndex = 2
-        Me.Label2.Text = "Signature:"
+        Me.Label2.Text = "Signed Transaction Bytes:"
         '
-        'TBBytesToSign
+        'TBUnsignedBytes
         '
-        Me.TBBytesToSign.Location = New System.Drawing.Point(3, 19)
-        Me.TBBytesToSign.Name = "TBBytesToSign"
-        Me.TBBytesToSign.ReadOnly = True
-        Me.TBBytesToSign.Size = New System.Drawing.Size(240, 20)
-        Me.TBBytesToSign.TabIndex = 1
+        Me.TBUnsignedBytes.Location = New System.Drawing.Point(3, 19)
+        Me.TBUnsignedBytes.Name = "TBUnsignedBytes"
+        Me.TBUnsignedBytes.ReadOnly = True
+        Me.TBUnsignedBytes.Size = New System.Drawing.Size(240, 20)
+        Me.TBUnsignedBytes.TabIndex = 1
         '
         'Label1
         '
@@ -219,9 +219,9 @@ Partial Class FrmEnterPIN
     Friend WithEvents ChBxPIN As CheckBox
     Friend WithEvents TBPIN As TextBox
     Friend WithEvents SplitContainer1 As SplitContainer
-    Friend WithEvents TBSignature As TextBox
+    Friend WithEvents TBSignedBytes As TextBox
     Friend WithEvents Label2 As Label
-    Friend WithEvents TBBytesToSign As TextBox
+    Friend WithEvents TBUnsignedBytes As TextBox
     Friend WithEvents Label1 As Label
     Friend WithEvents SplitContainer2 As SplitContainer
     Friend WithEvents SplitContainer3 As SplitContainer

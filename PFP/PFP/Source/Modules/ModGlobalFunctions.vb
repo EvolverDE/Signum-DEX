@@ -1,8 +1,10 @@
 ﻿
 Module ModGlobalFunctions
+    Property GlobalPublicKey() As String = ""
+    Property GlobalAccountID() As ULong = 0UL
+    Property GlobalAddress() As String = ""
+
     Property GlobalPIN As String = ""
-    Property GlobalAccountID() As ULong
-    Property GlobalAddress() As String
 
     Function GetID() As String
 
@@ -88,7 +90,7 @@ Module ModGlobalFunctions
     Function GetConnectionStatus(ByVal PrimaryNode As String, ByVal DEXNET As ClsDEXNET) As E_ConnectionStatus
 
         Dim SLS As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
-        Dim Block As Integer = SLS.GetCurrentBlock
+        Dim Block As Integer = SLS.GetCurrentBlock()
 
         Dim PeerCNT As Integer = 0
 
@@ -207,6 +209,124 @@ Module ModGlobalFunctions
 
             Return MasterKeys
         End If
+
+    End Function
+
+    ''' <summary>
+    ''' converts accountID (and publicKey) from given address (0=AccountID; 1=PublicKey)
+    ''' </summary>
+    ''' <param name="Address">the address (e.g. (T)S-2222-2222-2222-22222(-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ))</param>
+    ''' <returns>List(Of String)("12345678901234567890","a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2")</returns>
+    Function ConvertAddress(ByVal Address As String) As List(Of String)
+
+        Dim ReturnList As List(Of String) = New List(Of String)
+
+        Try
+
+            If Address.Trim = "" Then
+                Return ReturnList
+            End If
+
+            Dim PreFix As String = ""
+
+            If Address.Contains("-") Then
+                PreFix = Address.Remove(Address.IndexOf("-") + 1)
+            Else
+                Return ReturnList
+            End If
+
+
+            If PreFix.Contains("TS-") Then 'TODO: Change TS-Tag
+                Address = Address.Substring(Address.IndexOf(PreFix) + PreFix.Length)
+            End If
+
+            Select Case CharCnt(Address, "-")
+                Case 3
+
+                    If IsReedSolomon(Address) Then
+                        Dim AccID As ULong = GetAccountIDFromRS(Address)
+                        ReturnList.Add(AccID.ToString)
+                    End If
+
+                Case 4
+
+                    Dim PubKeyBase36 As String = Address.Substring(Address.LastIndexOf("-") + 1)
+                    Address = Address.Remove(Address.IndexOf(PubKeyBase36) - 1)
+
+                    If IsReedSolomon(Address) Then
+                        Dim AccID As ULong = GetAccountIDFromRS(Address)
+                        ReturnList.Add(AccID.ToString)
+
+                        Dim PubKeyHex As String = ClsBase36.DecodeBase36ToHex(PubKeyBase36)
+                        ReturnList.Add(PubKeyHex)
+                    End If
+
+            End Select
+
+        Catch ex As Exception
+
+            'ClsMsgs.MBox(ex.Message, "Error",,, ClsMsgs.Status.Erro)
+
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                Out.ErrorLog2File(Application.ProductName + "-error in ModGlobalFunctions.vb -> ConvertAddress(): -> " + ex.Message)
+            End If
+
+        End Try
+
+        Return ReturnList
+
+    End Function
+
+
+    Function IsReedSolomon(ByVal RSString As String) As Boolean
+
+        If Not RSString.Length = 20 Then
+            Return False
+        End If
+
+        Dim CharAry() As Char = RSString.ToUpper.ToCharArray
+
+        For Each Chr As Char In CharAry
+            Select Case Chr
+                Case "-"c, "2"c, "3"c, "4"c, "5"c, "6"c, "7"c, "8"c, "9"c, "A"c, "B"c, "C"c, "D"c, "E"c, "F"c, "G"c, "H"c, "J"c, "K"c, "L"c, "M"c, "N"c, "P"c, "Q"c, "R"c, "S"c, "T"c, "U"c, "V"c, "W"c, "X"c, "Y"c, "Z"c
+                Case Else
+                    Return False
+            End Select
+
+        Next
+
+        Return True
+    End Function
+    Function CharCnt(ByVal Input As String, ByVal Search As String) As Integer
+
+        Dim Cnter As Integer = 0
+        For i As Integer = 0 To Input.Length - 1
+
+            Dim Chr As String = Input.Substring(i, 1)
+
+            If Chr = Search Then
+                Cnter += 1
+            End If
+        Next
+
+        Return Cnter
+
+    End Function
+    Function IsNumber(ByVal Input As String) As Boolean
+
+        Dim CharAry() As Char = Input.ToUpper.ToCharArray
+
+        For Each Chr As Char In CharAry
+            Select Case Chr
+                Case "0"c, "1"c, "2"c, "3"c, "4"c, "5"c, "6"c, "7"c, "8"c, "9"c
+                Case Else
+                    Return False
+            End Select
+
+        Next
+
+        Return True
 
     End Function
 

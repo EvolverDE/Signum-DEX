@@ -23,6 +23,8 @@ Partial Class FrmGeneralSettings
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.CoBxPayType = New System.Windows.Forms.ComboBox()
         Me.TBDEXNETPort = New System.Windows.Forms.TextBox()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.TBTCPAPIPort = New System.Windows.Forms.TextBox()
@@ -50,8 +52,6 @@ Partial Class FrmGeneralSettings
         Me.TBPayPalAPISecret = New System.Windows.Forms.TextBox()
         Me.Label14 = New System.Windows.Forms.Label()
         Me.TBPayPalAPIUser = New System.Windows.Forms.TextBox()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.CoBxPayType = New System.Windows.Forms.ComboBox()
         Me.GroupBox3.SuspendLayout()
         Me.GrpBxSeller.SuspendLayout()
         Me.TabControl2.SuspendLayout()
@@ -86,9 +86,28 @@ Partial Class FrmGeneralSettings
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Default Settings"
         '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.ForeColor = System.Drawing.Color.White
+        Me.Label4.Location = New System.Drawing.Point(9, 45)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(48, 13)
+        Me.Label4.TabIndex = 26
+        Me.Label4.Text = "Paytype:"
+        '
+        'CoBxPayType
+        '
+        Me.CoBxPayType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CoBxPayType.FormattingEnabled = True
+        Me.CoBxPayType.Location = New System.Drawing.Point(63, 42)
+        Me.CoBxPayType.Name = "CoBxPayType"
+        Me.CoBxPayType.Size = New System.Drawing.Size(265, 21)
+        Me.CoBxPayType.TabIndex = 25
+        '
         'TBDEXNETPort
         '
-        Me.TBDEXNETPort.Location = New System.Drawing.Point(133, 165)
+        Me.TBDEXNETPort.Location = New System.Drawing.Point(136, 203)
         Me.TBDEXNETPort.Name = "TBDEXNETPort"
         Me.TBDEXNETPort.Size = New System.Drawing.Size(63, 20)
         Me.TBDEXNETPort.TabIndex = 24
@@ -97,7 +116,7 @@ Partial Class FrmGeneralSettings
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(6, 168)
+        Me.Label3.Location = New System.Drawing.Point(9, 206)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(76, 13)
         Me.Label3.TabIndex = 23
@@ -105,7 +124,7 @@ Partial Class FrmGeneralSettings
         '
         'TBTCPAPIPort
         '
-        Me.TBTCPAPIPort.Location = New System.Drawing.Point(133, 191)
+        Me.TBTCPAPIPort.Location = New System.Drawing.Point(136, 229)
         Me.TBTCPAPIPort.Name = "TBTCPAPIPort"
         Me.TBTCPAPIPort.Size = New System.Drawing.Size(63, 20)
         Me.TBTCPAPIPort.TabIndex = 22
@@ -114,7 +133,7 @@ Partial Class FrmGeneralSettings
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(6, 194)
+        Me.Label2.Location = New System.Drawing.Point(9, 232)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(73, 13)
         Me.Label2.TabIndex = 21
@@ -123,7 +142,7 @@ Partial Class FrmGeneralSettings
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(6, 65)
+        Me.Label1.Location = New System.Drawing.Point(9, 72)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(45, 13)
         Me.Label1.TabIndex = 20
@@ -132,7 +151,7 @@ Partial Class FrmGeneralSettings
         'ChBxTCPAPI
         '
         Me.ChBxTCPAPI.AutoSize = True
-        Me.ChBxTCPAPI.Location = New System.Drawing.Point(202, 193)
+        Me.ChBxTCPAPI.Location = New System.Drawing.Point(205, 231)
         Me.ChBxTCPAPI.Name = "ChBxTCPAPI"
         Me.ChBxTCPAPI.Size = New System.Drawing.Size(103, 17)
         Me.ChBxTCPAPI.TabIndex = 19
@@ -142,7 +161,7 @@ Partial Class FrmGeneralSettings
         'ChBxCheckXItemTX
         '
         Me.ChBxCheckXItemTX.AutoSize = True
-        Me.ChBxCheckXItemTX.Location = New System.Drawing.Point(6, 88)
+        Me.ChBxCheckXItemTX.Location = New System.Drawing.Point(9, 95)
         Me.ChBxCheckXItemTX.Name = "ChBxCheckXItemTX"
         Me.ChBxCheckXItemTX.Size = New System.Drawing.Size(270, 17)
         Me.ChBxCheckXItemTX.TabIndex = 16
@@ -152,7 +171,7 @@ Partial Class FrmGeneralSettings
         'Label20
         '
         Me.Label20.AutoSize = True
-        Me.Label20.Location = New System.Drawing.Point(202, 114)
+        Me.Label20.Location = New System.Drawing.Point(205, 152)
         Me.Label20.Name = "Label20"
         Me.Label20.Size = New System.Drawing.Size(44, 13)
         Me.Label20.TabIndex = 14
@@ -162,8 +181,8 @@ Partial Class FrmGeneralSettings
         '
         Me.CoBxNode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CoBxNode.FormattingEnabled = True
-        Me.CoBxNode.Items.AddRange(New Object() {"http://nivbox.co.uk:6876/burst", "https://testnet.burstcoin.network:6876/burst", "https://testnet-2.burst-alliance.org:6876/burst", "https://wallet.testnet.burstscan.net/burst", "https://wallet.dev.burst-test.net/burst", "http://localhost:6876/burst"})
-        Me.CoBxNode.Location = New System.Drawing.Point(133, 138)
+        Me.CoBxNode.Items.AddRange(New Object() {"http://lmsi.club:6876/burst", "https://testnet.burstcoin.network:6876/burst", "https://testnet-2.burst-alliance.org:6876/burst", "https://wallet.testnet.burstscan.net/burst", "https://wallet.dev.burst-test.net/burst", "http://localhost:6876/burst"})
+        Me.CoBxNode.Location = New System.Drawing.Point(136, 176)
         Me.CoBxNode.Name = "CoBxNode"
         Me.CoBxNode.Size = New System.Drawing.Size(192, 21)
         Me.CoBxNode.TabIndex = 13
@@ -173,7 +192,7 @@ Partial Class FrmGeneralSettings
         Me.CoBxRefresh.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CoBxRefresh.FormattingEnabled = True
         Me.CoBxRefresh.Items.AddRange(New Object() {"1", "4", "10"})
-        Me.CoBxRefresh.Location = New System.Drawing.Point(133, 111)
+        Me.CoBxRefresh.Location = New System.Drawing.Point(136, 149)
         Me.CoBxRefresh.Name = "CoBxRefresh"
         Me.CoBxRefresh.Size = New System.Drawing.Size(63, 21)
         Me.CoBxRefresh.TabIndex = 12
@@ -181,7 +200,7 @@ Partial Class FrmGeneralSettings
         'Label19
         '
         Me.Label19.AutoSize = True
-        Me.Label19.Location = New System.Drawing.Point(6, 141)
+        Me.Label19.Location = New System.Drawing.Point(9, 179)
         Me.Label19.Name = "Label19"
         Me.Label19.Size = New System.Drawing.Size(93, 13)
         Me.Label19.TabIndex = 11
@@ -190,7 +209,7 @@ Partial Class FrmGeneralSettings
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(6, 114)
+        Me.Label6.Location = New System.Drawing.Point(9, 152)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(65, 13)
         Me.Label6.TabIndex = 10
@@ -199,7 +218,7 @@ Partial Class FrmGeneralSettings
         'BtSaveSettings
         '
         Me.BtSaveSettings.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.BtSaveSettings.Location = New System.Drawing.Point(6, 234)
+        Me.BtSaveSettings.Location = New System.Drawing.Point(6, 255)
         Me.BtSaveSettings.Name = "BtSaveSettings"
         Me.BtSaveSettings.Size = New System.Drawing.Size(134, 23)
         Me.BtSaveSettings.TabIndex = 9
@@ -209,7 +228,7 @@ Partial Class FrmGeneralSettings
         'ChBxAutoSendPaymentInfo
         '
         Me.ChBxAutoSendPaymentInfo.AutoSize = True
-        Me.ChBxAutoSendPaymentInfo.Location = New System.Drawing.Point(6, 12)
+        Me.ChBxAutoSendPaymentInfo.Location = New System.Drawing.Point(9, 19)
         Me.ChBxAutoSendPaymentInfo.Name = "ChBxAutoSendPaymentInfo"
         Me.ChBxAutoSendPaymentInfo.Size = New System.Drawing.Size(319, 17)
         Me.ChBxAutoSendPaymentInfo.TabIndex = 4
@@ -218,8 +237,7 @@ Partial Class FrmGeneralSettings
         '
         'TBPaymentInfo
         '
-        Me.TBPaymentInfo.Enabled = False
-        Me.TBPaymentInfo.Location = New System.Drawing.Point(60, 62)
+        Me.TBPaymentInfo.Location = New System.Drawing.Point(63, 69)
         Me.TBPaymentInfo.Name = "TBPaymentInfo"
         Me.TBPaymentInfo.Size = New System.Drawing.Size(265, 20)
         Me.TBPaymentInfo.TabIndex = 7
@@ -346,25 +364,6 @@ Partial Class FrmGeneralSettings
         Me.TBPayPalAPIUser.Size = New System.Drawing.Size(296, 20)
         Me.TBPayPalAPIUser.TabIndex = 2
         '
-        'Label4
-        '
-        Me.Label4.AutoSize = True
-        Me.Label4.ForeColor = System.Drawing.Color.White
-        Me.Label4.Location = New System.Drawing.Point(6, 38)
-        Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(48, 13)
-        Me.Label4.TabIndex = 26
-        Me.Label4.Text = "Paytype:"
-        '
-        'CoBxPayType
-        '
-        Me.CoBxPayType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.CoBxPayType.FormattingEnabled = True
-        Me.CoBxPayType.Location = New System.Drawing.Point(60, 35)
-        Me.CoBxPayType.Name = "CoBxPayType"
-        Me.CoBxPayType.Size = New System.Drawing.Size(265, 21)
-        Me.CoBxPayType.TabIndex = 25
-        '
         'FrmGeneralSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -373,6 +372,7 @@ Partial Class FrmGeneralSettings
         Me.ClientSize = New System.Drawing.Size(823, 309)
         Me.Controls.Add(Me.GrpBxSeller)
         Me.Controls.Add(Me.GroupBox3)
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Name = "FrmGeneralSettings"
         Me.Text = "FrmGeneralSettings"
         Me.GroupBox3.ResumeLayout(False)

@@ -4,7 +4,7 @@ Namespace CSVTool
     Public Class CSVReader
         Private _Path As String
         Private _Splitter As String
-        Private _ListsParameter As List(Of String()) = New List(Of String())
+        Private _ListsParameter As List(Of List(Of String)) = New List(Of List(Of String))
 
 
         Sub New(Path As String, Optional ByVal Splitter As String = ";", Optional ByVal Decrypt As Boolean = False, Optional ByVal Password As String = "")
@@ -31,7 +31,7 @@ Namespace CSVTool
             End Set
         End Property
 
-        Public ReadOnly Property Lists As List(Of String())
+        Public ReadOnly Property Lists As List(Of List(Of String))
             Get
                 Return _ListsParameter
             End Get
@@ -44,7 +44,7 @@ Namespace CSVTool
                 If Decrypt Then
                     Line = AESDecrypt(Line, Password)
                 End If
-                Lists.Add(Line.Split(Splitter))
+                Lists.Add(New List(Of String)(Line.Split(Splitter)))
             Next
 
             Lists.RemoveAt(0)
@@ -56,10 +56,10 @@ Namespace CSVTool
     Public Class CSVWriter
         Private _Path As String
         Private _Splitter As String
-        Private _ListsParameter As List(Of String()) = New List(Of String())
+        Private _ListsParameter As List(Of List(Of String)) = New List(Of List(Of String))
 
 
-        Sub New(Path As String, ByVal List As List(Of String()), Optional ByVal Splitter As String = ";", Optional ByVal Mode As String = "append", Optional ByVal Encrypt As Boolean = False, Optional ByVal Password As String = "")
+        Sub New(Path As String, ByVal List As List(Of List(Of String)), Optional ByVal Splitter As String = ";", Optional ByVal Mode As String = "append", Optional ByVal Encrypt As Boolean = False, Optional ByVal Password As String = "")
             Me.Path = Path
             Me.Splitter = Splitter
             Me.Lists = List
@@ -85,8 +85,8 @@ Namespace CSVTool
             End Set
         End Property
 
-        Public WriteOnly Property Lists As List(Of String())
-            Set(ByVal value As List(Of String()))
+        Public WriteOnly Property Lists As List(Of List(Of String))
+            Set(ByVal value As List(Of List(Of String)))
                 _ListsParameter = value
             End Set
         End Property
@@ -95,18 +95,18 @@ Namespace CSVTool
             Try
 
                 Dim MaxLen As Integer = 0
-                For Each LineAry As String() In _ListsParameter
-                    If LineAry.Length > MaxLen Then
-                        MaxLen = LineAry.Length - 1
+                For Each LineAry As List(Of String) In _ListsParameter
+                    If LineAry.Count > MaxLen Then
+                        MaxLen = LineAry.Count - 1
                     End If
                 Next
 
                 Dim Lines As List(Of String) = New List(Of String)
-                For Each LineAry As String() In _ListsParameter
+                For Each LineAry As List(Of String) In _ListsParameter
 
                     Dim Line As String = ""
                     Dim LineLen As Integer = 0
-                    For i As Integer = 0 To LineAry.Length - 1
+                    For i As Integer = 0 To LineAry.Count - 1
                         Dim LineItem As String = LineAry(i)
 
                         Line += LineItem + Splitter

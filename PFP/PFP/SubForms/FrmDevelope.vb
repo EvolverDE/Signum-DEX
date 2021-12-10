@@ -103,9 +103,23 @@
             If SpecialTimer >= 10 Then
                 SpecialTimer = 0
 
+
+                Dim ActiveNodes As Integer = C_MainForm.NodeList.Count
+
+                LabActiveNodes.Text = ActiveNodes.ToString
+                LVActiveNodes.Items.Clear()
+
+                For i As Integer = 0 To C_MainForm.NodeList.Count - 1
+                    Dim NodeName As String = C_MainForm.NodeList(i)
+                    LVActiveNodes.Items.Add(NodeName)
+                Next
+
+
+
                 Dim APIReqList As List(Of PFPForm.S_APIRequest) = New List(Of PFPForm.S_APIRequest)(C_MainForm.APIRequestList.ToArray)
 
                 Dim LVIList As List(Of ListViewItem) = New List(Of ListViewItem)
+
 
                 For i As Integer = 0 To APIReqList.Count - 1
                     Dim APIRequest As PFPForm.S_APIRequest = APIReqList(i)
@@ -533,6 +547,19 @@
 
     Private Sub BtTestMultiRefresh_Click(sender As Object, e As EventArgs) Handles BtTestMultiRefresh.Click
 
+
+        Dim ActiveNodes As Integer = C_MainForm.NodeList.Count
+        LabActiveNodes.Text = ActiveNodes.ToString
+
+        LVActiveNodes.Items.Clear()
+
+        For i As Integer = 0 To C_MainForm.NodeList.Count - 1
+            Dim NodeName As String = C_MainForm.NodeList(i)
+            LVActiveNodes.Items.Add(NodeName)
+        Next
+
+
+
         Dim APIReqList As List(Of PFPForm.S_APIRequest) = New List(Of PFPForm.S_APIRequest)(C_MainForm.APIRequestList.ToArray)
 
         Dim LVIList As List(Of ListViewItem) = New List(Of ListViewItem)
@@ -754,6 +781,8 @@
     Private Sub ClearAllToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ClearAllToolStripMenuItem.Click
         LiBoDEXNETStatus.Items.Clear()
     End Sub
+
+
 
 #End Region
 

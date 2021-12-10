@@ -41,11 +41,14 @@ Public Class FrmGeneralSettings
 
     Private Sub FrmGeneralSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        C_MainForm.PrimaryNode = GetINISetting(E_Setting.DefaultNode, "http://nivbox.co.uk:6876/burst")
+        C_MainForm.PrimaryNode = GetINISetting(E_Setting.DefaultNode, "http://lmsi.club:6876/burst")
 
-        CoBxRefresh.SelectedItem = GetINISetting(E_Setting.RefreshMinutes, "1")
+        Dim RefreshMins = GetINISetting(E_Setting.RefreshMinutes, 1)
+        CoBxRefresh.SelectedItem = RefreshMins.ToString
 
-        Dim Nodes As String = GetINISetting(E_Setting.Nodes, "http://nivbox.co.uk:6876/burst;https://testnet.burstcoin.network:6876/burst") 'http://nivbox.co.uk:6876/burst;https://testnet.burstcoin.network:6876/burst;https://octalsburstnode.ddns.net:6876/burst;https://testnetwallet.burstcoin.ro/burst
+        CoBxPayType.SelectedItem = GetINISetting(E_Setting.PaymentType, "Other")
+
+        Dim Nodes As String = GetINISetting(E_Setting.Nodes, "http://lmsi.club:6876/burst;https://testnet.burstcoin.network:6876/burst") 'http://lmsi.club:6876/burst;https://testnet.burstcoin.network:6876/burst;https://octalsburstnode.ddns.net:6876/burst;https://testnetwallet.burstcoin.ro/burst
 
         Dim NodeList As List(Of String) = New List(Of String)
         If Nodes.Contains(";") Then
@@ -57,7 +60,7 @@ Public Class FrmGeneralSettings
         CoBxNode.Items.AddRange(NodeList.ToArray)
 
 
-        CoBxNode.SelectedItem = GetINISetting(E_Setting.DefaultNode, "http://nivbox.co.uk:6876/burst")
+        CoBxNode.SelectedItem = GetINISetting(E_Setting.DefaultNode, "http://http://lmsi.club:6876/burst")
         'PrimaryNode = CoBxNode.SelectedItem
 
         If CoBxNode.Text.Trim = "" Then
@@ -138,11 +141,11 @@ Public Class FrmGeneralSettings
             Changes = True
         End If
 
-        If CoBxRefresh.SelectedItem <> GetINISetting(E_Setting.RefreshMinutes, "1") Then
+        If CoBxRefresh.SelectedItem <> GetINISetting(E_Setting.RefreshMinutes, 1) Then
             Changes = True
         End If
 
-        If CoBxNode.SelectedItem <> GetINISetting(E_Setting.DefaultNode, "http://nivbox.co.uk:6876/burst") Then
+        If CoBxNode.SelectedItem <> GetINISetting(E_Setting.DefaultNode, "http://lmsi.club:6876/burst") Then
             Changes = True
         End If
 
@@ -217,7 +220,7 @@ Public Class FrmGeneralSettings
 
                 'SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
                 SetINISetting(E_Setting.LastMarketViewed, C_MainForm.CurrentMarket)
-                SetINISetting(E_Setting.RefreshMinutes, CoBxRefresh.Text)
+                SetINISetting(E_Setting.RefreshMinutes, CInt(CoBxRefresh.Text))
                 SetINISetting(E_Setting.DefaultNode, C_MainForm.PrimaryNode)
 
                 SetINISetting(E_Setting.AutoSendPaymentInfo, ChBxAutoSendPaymentInfo.Checked)
@@ -248,7 +251,7 @@ Public Class FrmGeneralSettings
 
         'SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
         SetINISetting(E_Setting.LastMarketViewed, C_MainForm.CurrentMarket)
-        SetINISetting(E_Setting.RefreshMinutes, CoBxRefresh.Text)
+        SetINISetting(E_Setting.RefreshMinutes, CInt(CoBxRefresh.Text))
         SetINISetting(E_Setting.DefaultNode, C_MainForm.PrimaryNode)
 
         Dim Nodes As String = ""
@@ -425,5 +428,67 @@ Public Class FrmGeneralSettings
 
     End Sub
 
+    Private Sub CoBxPayType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CoBxPayType.SelectedIndexChanged
+
+        'Public Enum E_PayType
+        '    Bankaccount = 0
+        '    PayPal_E_Mail = 1
+        '    PayPal_Order = 2
+        '    Self_Pickup = 3
+        '    Other = 4
+        'End Enum
+
+        Dim PayTypes As List(Of String) = ClsOrderSettings.GetPayTypes()
+
+        If Not IsNothing(CoBxPayType.SelectedItem) Then
+
+            Select Case CoBxPayType.SelectedItem
+                Case PayTypes(0)
+                    ChBxAutoSendPaymentInfo.Enabled = True
+                    ChBxAutoSendPaymentInfo.Checked = False
+
+                    ChBxCheckXItemTX.Enabled = False
+                    ChBxCheckXItemTX.Checked = False
+
+                    TBPaymentInfo.Enabled = True
+                Case PayTypes(1)
+                    ChBxAutoSendPaymentInfo.Enabled = True
+                    ChBxAutoSendPaymentInfo.Checked = False
+
+                    ChBxCheckXItemTX.Enabled = True
+                    'ChBxCheckXItemTX.Checked = False
+
+                    TBPaymentInfo.Enabled = True
+                Case PayTypes(2)
+                    ChBxAutoSendPaymentInfo.Enabled = False
+                    ChBxAutoSendPaymentInfo.Checked = True
+
+                    ChBxCheckXItemTX.Enabled = False
+                    ChBxCheckXItemTX.Checked = True
+
+                    TBPaymentInfo.Enabled = False
+                Case PayTypes(3)
+                    ChBxAutoSendPaymentInfo.Enabled = True
+                    ChBxAutoSendPaymentInfo.Checked = False
+
+                    ChBxCheckXItemTX.Enabled = False
+                    ChBxCheckXItemTX.Checked = False
+
+                    TBPaymentInfo.Enabled = True
+                Case PayTypes(4)
+                    ChBxAutoSendPaymentInfo.Enabled = True
+                    ChBxAutoSendPaymentInfo.Checked = False
+
+                    ChBxCheckXItemTX.Enabled = False
+                    ChBxCheckXItemTX.Checked = False
+
+                    TBPaymentInfo.Enabled = True
+            End Select
+
+
+        End If
+
+
+    End Sub
 
 End Class
