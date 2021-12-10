@@ -11,7 +11,7 @@ In der Entwicklungsphase wird eine PFP.EXE-Datei unter https://github.com/Evolve
 # Welche Einstellungen müssen vorgenommen werden?
 Die Einstellungen werden mit Standard-Werten neben der PFP.EXE-Datei automatisch in einer Settings.ini-Datei erstellt. Neben dem Programm können auch dort direkt Änderungen vorgenommen werden.
 # Was bedeuten die anderen Dateien, die neben der PFP.EXE erstellt werden?
-Neben der Settings.ini werden noch weitere Dateien wie z.b. "cache.dat" und "cache2.dat" sowie mögliche .LOG-Dateien erstellt. Die cache.dat enthält informationen aller auf der Signum.network blockchain befindlichen Smart Contracts. Die chache2.dat enthält Zahlungsinformationen der eigenen Aufträge.
+Neben der Settings.ini werden noch weitere Dateien wie z.b. "cache.dat" sowie mögliche .LOG-Dateien erstellt. Die cache.dat enthält informationen aller auf der Signum.network blockchain befindlichen Smart Contracts.
 
 # Hier ist eine kleine Funktionsübersicht
 - sichere Verbindung zu öffentlichen Signum-nodes aufbauen dank integrierter EC-KCDSA und Curve19255 Lösungen
@@ -19,6 +19,7 @@ Neben der Settings.ini werden noch weitere Dateien wie z.b. "cache.dat" und "cac
 - wiederverwendbare payment-channels (smart contracts) für jedermann zur Verfügung stellen
 - eine TCP API für externe Applikationen (über Standardport 8130) zur verfügung stellen
 - mit dem integriertem auf TCP basiertem DEXNET (über Standardport 8131) das Signa-Netzwerk um offchain-Lösungen erweitern um das Handels-Erlebnis zu verbessern
+- nun auch mono projekt kompatibel
 
 # Bekannte Probleme
 - dauerschleife in der PayPal-Sandbox wenn man PayPal-Orders über die Sandbox bezahlen will
