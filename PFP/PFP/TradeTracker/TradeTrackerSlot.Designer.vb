@@ -61,6 +61,7 @@ Partial Class TradeTrackerSlot
         Me.LabPair = New System.Windows.Forms.Label()
         Me.LabExch = New System.Windows.Forms.Label()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
+        Me.ChBxVolume = New System.Windows.Forms.CheckBox()
         CType(Me.SlotSplitter, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SlotSplitter.Panel1.SuspendLayout()
         Me.SlotSplitter.Panel2.SuspendLayout()
@@ -366,6 +367,7 @@ Partial Class TradeTrackerSlot
         '
         'GroupBox1
         '
+        Me.GroupBox1.Controls.Add(Me.ChBxVolume)
         Me.GroupBox1.Controls.Add(Me.ChBxMACDHis)
         Me.GroupBox1.Controls.Add(Me.ChBxLine)
         Me.GroupBox1.Controls.Add(Me.ChBxCandles)
@@ -389,8 +391,6 @@ Partial Class TradeTrackerSlot
         'ChBxMACDHis
         '
         Me.ChBxMACDHis.AutoSize = True
-        Me.ChBxMACDHis.Checked = True
-        Me.ChBxMACDHis.CheckState = System.Windows.Forms.CheckState.Checked
         Me.ChBxMACDHis.Location = New System.Drawing.Point(135, 61)
         Me.ChBxMACDHis.Margin = New System.Windows.Forms.Padding(2)
         Me.ChBxMACDHis.Name = "ChBxMACDHis"
@@ -457,7 +457,7 @@ Partial Class TradeTrackerSlot
         'ChBxRSI
         '
         Me.ChBxRSI.AutoSize = True
-        Me.ChBxRSI.Location = New System.Drawing.Point(127, 17)
+        Me.ChBxRSI.Location = New System.Drawing.Point(135, 39)
         Me.ChBxRSI.Margin = New System.Windows.Forms.Padding(2)
         Me.ChBxRSI.Name = "ChBxRSI"
         Me.ChBxRSI.Size = New System.Drawing.Size(47, 17)
@@ -549,6 +549,18 @@ Partial Class TradeTrackerSlot
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 0
         '
+        'ChBxVolume
+        '
+        Me.ChBxVolume.AutoSize = True
+        Me.ChBxVolume.Checked = True
+        Me.ChBxVolume.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChBxVolume.Location = New System.Drawing.Point(135, 17)
+        Me.ChBxVolume.Name = "ChBxVolume"
+        Me.ChBxVolume.Size = New System.Drawing.Size(67, 17)
+        Me.ChBxVolume.TabIndex = 11
+        Me.ChBxVolume.Text = "Volume"
+        Me.ChBxVolume.UseVisualStyleBackColor = True
+        '
         'TradeTrackerSlot
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -612,4 +624,5 @@ Partial Class TradeTrackerSlot
     Friend WithEvents ChBxCandles As CheckBox
     Friend WithEvents ChBxMACDHis As CheckBox
     Friend WithEvents LabExch As Label
+    Friend WithEvents ChBxVolume As CheckBox
 End Class

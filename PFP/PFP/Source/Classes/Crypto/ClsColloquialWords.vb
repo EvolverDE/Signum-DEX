@@ -1,4 +1,6 @@
-﻿
+﻿Option Strict On
+Option Explicit On
+
 Public Class ClsColloquialWords
 
     Public Property RandomWord As String = ""
@@ -29,7 +31,7 @@ Public Class ClsColloquialWords
                 CrossSection += Byta
             Next
 
-            CrossSection /= 255
+            CrossSection = Convert.ToInt32(CrossSection / 255)
 
             If CrossSection = 0 Then
                 CrossSection = 1
@@ -45,13 +47,13 @@ Public Class ClsColloquialWords
                 ExtraInt = ExtraInt.Remove(ExtraInt.LastIndexOf(","))
             End If
 
-            Dim WordLen As Integer = CInt(ExtraInt)
+            Dim WordLen As Integer = Integer.Parse(ExtraInt)
 
             If Length > 0 Then
 
                 If Seed.Length > Length Then
                     WordLen = Length
-                    CrossSection = Byt.Length / Length
+                    CrossSection = Convert.ToInt32(Byt.Length / Length)
                 End If
 
             End If
@@ -165,7 +167,7 @@ Public Class ClsColloquialWords
             If rand.Contains(",") Then
                 rand = rand.Remove(rand.IndexOf(","))
             End If
-            Dim ri As Integer = CInt(rand)
+            Dim ri As Integer = Integer.Parse(rand)
 
             Dim FlipFlop As Boolean = False
             If ri = 1 Then
@@ -235,7 +237,7 @@ Public Class ClsColloquialWords
                     T_Byt = 1
                 End If
 
-                Byt2 = Byt2 - (T_Byt * 21)
+                Byt2 = Convert.ToByte(Byt2 - (T_Byt * 21))
             End If
 
             If Byt2 = 0 Then
@@ -304,7 +306,7 @@ Public Class ClsColloquialWords
                     T_Byt = 1
                 End If
 
-                Byt2 = Byt2 - (T_Byt * 5)
+                Byt2 = Convert.ToByte(Byt2 - (T_Byt * 5))
             End If
 
             If Byt2 = 0 Then

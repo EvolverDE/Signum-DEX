@@ -1,4 +1,6 @@
-﻿
+﻿Option Strict On
+Option Explicit On
+
 Public Class FrmMyOrderSettings
 
     Dim C_MainForm As PFPForm
@@ -25,13 +27,13 @@ Public Class FrmMyOrderSettings
         Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettings()
 
         For Each T_OS As ClsOrderSettings In T_OSList
-            With LVOrders.Items.Add("TS-" + ClsReedSolomon.Encode(T_OS.ATID)) 'TODO: change TS- prefix
-                .SubItems.Add(T_OS.TXID) 'TX
+            With LVOrders.Items.Add(ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(T_OS.ATID))
+                .SubItems.Add(T_OS.TXID.ToString) 'TX
                 .SubItems.Add(T_OS.Type) 'Type
                 .SubItems.Add(T_OS.PaytypeString) 'Paytype
                 .SubItems.Add(T_OS.Infotext) 'Infotext
-                .SubItems.Add(T_OS.AutoSendInfotext) 'Autosendinfotext
-                .SubItems.Add(T_OS.AutoCompleteAT) 'AutocompleteAT
+                .SubItems.Add(T_OS.AutoSendInfotext.ToString) 'Autosendinfotext
+                .SubItems.Add(T_OS.AutoCompleteAT.ToString) 'AutocompleteAT
                 .SubItems.Add(T_OS.Status) 'Status
             End With
 
@@ -48,10 +50,10 @@ Public Class FrmMyOrderSettings
 
             'Dim AT As String = GetLVColNameFromSubItem(LVOrders, "TX", SelectedItem)
             'Dim Type As String = GetLVColNameFromSubItem(LVOrders, "Type", SelectedItem)
-            Dim Paytype As String = GetLVColNameFromSubItem(LVOrders, "Paytype", SelectedItem)
-            Dim Infotext As String = GetLVColNameFromSubItem(LVOrders, "Infotext", SelectedItem)
-            Dim AutoSendInfotext As String = GetLVColNameFromSubItem(LVOrders, "Autosend Infotext", SelectedItem)
-            Dim AutoCompleteAT As String = GetLVColNameFromSubItem(LVOrders, "Autocomplete AT", SelectedItem)
+            Dim Paytype As String = GetLVColNameFromSubItem(LVOrders, "Paytype", SelectedItem).ToString
+            Dim Infotext As String = GetLVColNameFromSubItem(LVOrders, "Infotext", SelectedItem).ToString
+            Dim AutoSendInfotext As String = GetLVColNameFromSubItem(LVOrders, "Autosend Infotext", SelectedItem).ToString
+            Dim AutoCompleteAT As String = GetLVColNameFromSubItem(LVOrders, "Autocomplete AT", SelectedItem).ToString
             'Dim Status As String = GetLVColNameFromSubItem(LVOrders, "Status", SelectedItem)
 
             Dim Autosendbool As Boolean = False
@@ -85,18 +87,18 @@ Public Class FrmMyOrderSettings
         If LVOrders.SelectedItems.Count > 0 Then
             Dim SelectedItem As ListViewItem = LVOrders.SelectedItems(0)
 
-            Dim ATRS As String = GetLVColNameFromSubItem(LVOrders, "AT", SelectedItem)
+            Dim ATRS As String = GetLVColNameFromSubItem(LVOrders, "AT", SelectedItem).ToString
             Dim ATID As ULong = ClsReedSolomon.Decode(ATRS)
 
-            Dim TXID As ULong = CULng(GetLVColNameFromSubItem(LVOrders, "Transaction", SelectedItem))
-            Dim Type As String = GetLVColNameFromSubItem(LVOrders, "Type", SelectedItem)
+            Dim TXID As ULong = Convert.ToUInt64(GetLVColNameFromSubItem(LVOrders, "Transaction", SelectedItem))
+            Dim Type As String = GetLVColNameFromSubItem(LVOrders, "Type", SelectedItem).ToString
             'Dim Paytype As String = GetLVColNameFromSubItem(LVOrders, "Paytype", SelectedItem)
             'Dim Infotext As String = GetLVColNameFromSubItem(LVOrders, "Infotext", SelectedItem)
             'Dim AutoSendInfotext As String = GetLVColNameFromSubItem(LVOrders, "Autosend Infotext", SelectedItem)
             'Dim AutoCompleteAT As String = GetLVColNameFromSubItem(LVOrders, "Autocomplete AT", SelectedItem)
-            Dim Status As String = GetLVColNameFromSubItem(LVOrders, "Status", SelectedItem)
+            Dim Status As String = GetLVColNameFromSubItem(LVOrders, "Status", SelectedItem).ToString
 
-            Dim Paytype As String = CoBxPayType.SelectedItem
+            Dim Paytype As String = CoBxPayType.SelectedItem.ToString
 
             SetLVColName2SubItem(LVOrders, SelectedItem, "Paytype", Paytype)
             SetLVColName2SubItem(LVOrders, SelectedItem, "Infotext", TBInfotext.Text.Trim)
@@ -109,9 +111,9 @@ Public Class FrmMyOrderSettings
             For i As Integer = 0 To C_MainForm.LVSellorders.Items.Count - 1
                 Dim LVISO As ListViewItem = C_MainForm.LVSellorders.Items(i)
 
-                Dim PFPAT As PFPForm.S_PFPAT = LVISO.Tag
+                Dim T_DEXContract As ClsDEXContract = DirectCast(LVISO.Tag, ClsDEXContract)
 
-                If PFPAT.ATID = ATID Then
+                If T_DEXContract.ID = ATID Then
 
                     SetLVColName2SubItem(C_MainForm.LVSellorders, C_MainForm.LVSellorders.Items(i), "Method", Paytype)
                     SetLVColName2SubItem(C_MainForm.LVSellorders, C_MainForm.LVSellorders.Items(i), "Autoinfo", ChBxAutosendInfo.Checked.ToString)
@@ -126,9 +128,9 @@ Public Class FrmMyOrderSettings
             For i As Integer = 0 To C_MainForm.LVBuyorders.Items.Count - 1
                 Dim LVISO As ListViewItem = C_MainForm.LVBuyorders.Items(i)
 
-                Dim PFPAT As PFPForm.S_PFPAT = LVISO.Tag
+                Dim T_DEXContract As ClsDEXContract = DirectCast(LVISO.Tag, ClsDEXContract)
 
-                If PFPAT.ATID = ATID Then
+                If T_DEXContract.ID = ATID Then
 
                     SetLVColName2SubItem(C_MainForm.LVBuyorders, C_MainForm.LVBuyorders.Items(i), "Method", Paytype)
                     SetLVColName2SubItem(C_MainForm.LVBuyorders, C_MainForm.LVBuyorders.Items(i), "Autoinfo", ChBxAutosendInfo.Checked.ToString)
@@ -143,9 +145,9 @@ Public Class FrmMyOrderSettings
             For i As Integer = 0 To C_MainForm.LVMyOpenOrders.Items.Count - 1
                 Dim LVISO As ListViewItem = C_MainForm.LVMyOpenOrders.Items(i)
 
-                Dim PFPOrder As PFPForm.S_Order = LVISO.Tag
+                Dim T_DEXContract As ClsDEXContract = DirectCast(LVISO.Tag, ClsDEXContract)
 
-                If PFPOrder.ATID = ATID Then
+                If T_DEXContract.ID = ATID Then
 
                     SetLVColName2SubItem(C_MainForm.LVMyOpenOrders, C_MainForm.LVMyOpenOrders.Items(i), "Method", Paytype)
                     SetLVColName2SubItem(C_MainForm.LVMyOpenOrders, C_MainForm.LVMyOpenOrders.Items(i), "Autoinfo", ChBxAutosendInfo.Checked.ToString)
@@ -163,8 +165,8 @@ Public Class FrmMyOrderSettings
                 If TT_OS.ATID = ATID And TT_OS.TXID = TXID Then
 
                     TT_OS.Infotext = TBInfotext.Text.Trim
-                    TT_OS.AutoSendInfotext = ChBxAutosendInfo.Checked.ToString
-                    TT_OS.AutoCompleteAT = ChBxAutoCompleteAT.Checked.ToString
+                    TT_OS.AutoSendInfotext = Convert.ToBoolean(ChBxAutosendInfo.Checked.ToString)
+                    TT_OS.AutoCompleteAT = Convert.ToBoolean(ChBxAutoCompleteAT.Checked.ToString)
                     TT_OS.PaytypeString = Paytype
                     TT_OS.SetPayType()
 
@@ -176,7 +178,7 @@ Public Class FrmMyOrderSettings
 
 
 #Region "refresh CSV"
-            Dim T_OS As ClsOrderSettings = New ClsOrderSettings(ATID, TXID, Type, Status)
+            Dim T_OS As ClsOrderSettings = New ClsOrderSettings(ATID.ToString, TXID.ToString, Type, Status)
 
             T_OS.PaytypeString = Paytype
             T_OS.Infotext = TBInfotext.Text.Trim
@@ -194,7 +196,7 @@ Public Class FrmMyOrderSettings
 
         If Not IsNothing(CoBxPayType.SelectedItem) Then
 
-            Select Case CoBxPayType.SelectedItem
+            Select Case CoBxPayType.SelectedItem.ToString
                 Case ClsOrderSettings.E_PayType.Bankaccount.ToString
                     LabInfo.Visible = True
                     TBInfotext.Visible = True

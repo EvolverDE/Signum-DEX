@@ -1,4 +1,7 @@
-﻿Public Class ClsOut
+﻿Option Strict On
+Option Explicit On
+
+Public Class ClsOut
 
     Public Property Path() As String
 

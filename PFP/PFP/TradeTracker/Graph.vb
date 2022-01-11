@@ -1,4 +1,6 @@
-﻿
+﻿Option Strict On
+Option Explicit On
+
 Public Class Graph
 
     'Implements IDisposable
@@ -19,6 +21,7 @@ Public Class Graph
         Signal = 6
         Line = 7
         Sticks = 8
+        Volume = 9
     End Enum
 
     Public Structure S_PieceGraph
@@ -31,6 +34,7 @@ Public Class Graph
         Dim MinValue As Double
         Dim MaxValue As Double
 
+        Dim Volume As Double
     End Structure
 
     Public Structure S_Graph

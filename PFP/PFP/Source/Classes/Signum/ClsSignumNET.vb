@@ -1,4 +1,7 @@
-﻿Public Class ClsSignumNET
+﻿Option Strict On
+Option Explicit On
+
+Public Class ClsSignumNET
 
     'Public Property C_PromptPIN() As Boolean = True
 
@@ -39,6 +42,11 @@
     Function SignHelper(ByVal UnsignedMessageHex As String, ByVal SignKeyHEX As String) As S_Signature
 
         Dim Signature As S_Signature = New S_Signature
+
+
+        If UnsignedMessageHex.Trim = "" Then
+            Return Signature
+        End If
 
         'Dim PassPhraseHash As List(Of Byte()) = GenerateMasterKeys()
 

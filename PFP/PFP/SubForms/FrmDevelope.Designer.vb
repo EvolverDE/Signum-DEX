@@ -45,6 +45,7 @@ Partial Class FrmDevelope
         Me.BtTestTimeConvert = New System.Windows.Forms.Button()
         Me.TBTestTime = New System.Windows.Forms.TextBox()
         Me.TestGrpBoxConvertings = New System.Windows.Forms.GroupBox()
+        Me.BtTestHex2ULng = New System.Windows.Forms.Button()
         Me.TBTestConvert = New System.Windows.Forms.TextBox()
         Me.BtTestConvert = New System.Windows.Forms.Button()
         Me.BtTestConvert2 = New System.Windows.Forms.Button()
@@ -93,10 +94,10 @@ Partial Class FrmDevelope
         Me.TBTestATComTempSecretKey = New System.Windows.Forms.TextBox()
         Me.BtTestATComConvertTempSecretKey = New System.Windows.Forms.Button()
         Me.Label24 = New System.Windows.Forms.Label()
-        Me.TBTestATComFinishKey2 = New System.Windows.Forms.TextBox()
+        Me.TBTestATComFinishULong2 = New System.Windows.Forms.TextBox()
         Me.Label23 = New System.Windows.Forms.Label()
         Me.BtTestATComFinishKey = New System.Windows.Forms.Button()
-        Me.TBTestATComFinishKey1 = New System.Windows.Forms.TextBox()
+        Me.TBTestATComFinishULong1 = New System.Windows.Forms.TextBox()
         Me.Label22 = New System.Windows.Forms.Label()
         Me.BtTestATComKeyOK = New System.Windows.Forms.Button()
         Me.TextBox1 = New System.Windows.Forms.TextBox()
@@ -455,7 +456,7 @@ Partial Class FrmDevelope
         '
         Me.GroupBox5.Controls.Add(Me.BtTestTimeConvert)
         Me.GroupBox5.Controls.Add(Me.TBTestTime)
-        Me.GroupBox5.Location = New System.Drawing.Point(314, 6)
+        Me.GroupBox5.Location = New System.Drawing.Point(944, 19)
         Me.GroupBox5.Name = "GroupBox5"
         Me.GroupBox5.Size = New System.Drawing.Size(114, 80)
         Me.GroupBox5.TabIndex = 36
@@ -481,16 +482,26 @@ Partial Class FrmDevelope
         '
         'TestGrpBoxConvertings
         '
+        Me.TestGrpBoxConvertings.Controls.Add(Me.BtTestHex2ULng)
         Me.TestGrpBoxConvertings.Controls.Add(Me.TBTestConvert)
         Me.TestGrpBoxConvertings.Controls.Add(Me.BtTestConvert)
         Me.TestGrpBoxConvertings.Controls.Add(Me.BtTestConvert2)
         Me.TestGrpBoxConvertings.Controls.Add(Me.BtTestDatStr2ULngList)
         Me.TestGrpBoxConvertings.Location = New System.Drawing.Point(6, 6)
         Me.TestGrpBoxConvertings.Name = "TestGrpBoxConvertings"
-        Me.TestGrpBoxConvertings.Size = New System.Drawing.Size(302, 80)
+        Me.TestGrpBoxConvertings.Size = New System.Drawing.Size(536, 80)
         Me.TestGrpBoxConvertings.TabIndex = 35
         Me.TestGrpBoxConvertings.TabStop = False
         Me.TestGrpBoxConvertings.Text = "Convertings"
+        '
+        'BtTestHex2ULng
+        '
+        Me.BtTestHex2ULng.Location = New System.Drawing.Point(300, 45)
+        Me.BtTestHex2ULng.Name = "BtTestHex2ULng"
+        Me.BtTestHex2ULng.Size = New System.Drawing.Size(91, 23)
+        Me.BtTestHex2ULng.TabIndex = 7
+        Me.BtTestHex2ULng.Text = "HEX2ULong"
+        Me.BtTestHex2ULng.UseVisualStyleBackColor = True
         '
         'TBTestConvert
         '
@@ -911,10 +922,10 @@ Partial Class FrmDevelope
         Me.TestGrpBxATCom.Controls.Add(Me.TBTestATComTempSecretKey)
         Me.TestGrpBxATCom.Controls.Add(Me.BtTestATComConvertTempSecretKey)
         Me.TestGrpBxATCom.Controls.Add(Me.Label24)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestATComFinishKey2)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestATComFinishULong2)
         Me.TestGrpBxATCom.Controls.Add(Me.Label23)
         Me.TestGrpBxATCom.Controls.Add(Me.BtTestATComFinishKey)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestATComFinishKey1)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestATComFinishULong1)
         Me.TestGrpBxATCom.Controls.Add(Me.Label22)
         Me.TestGrpBxATCom.Controls.Add(Me.BtTestATComKeyOK)
         Me.TestGrpBxATCom.Controls.Add(Me.TextBox1)
@@ -964,9 +975,9 @@ Partial Class FrmDevelope
         Me.Label34.ForeColor = System.Drawing.Color.Black
         Me.Label34.Location = New System.Drawing.Point(360, 16)
         Me.Label34.Name = "Label34"
-        Me.Label34.Size = New System.Drawing.Size(92, 13)
+        Me.Label34.Size = New System.Drawing.Size(82, 13)
         Me.Label34.TabIndex = 48
-        Me.Label34.Text = "Temp Secret Key:"
+        Me.Label34.Text = "ChainSwapKey:"
         '
         'TBTestATComTempSecretKey
         '
@@ -977,11 +988,12 @@ Partial Class FrmDevelope
         '
         'BtTestATComConvertTempSecretKey
         '
-        Me.BtTestATComConvertTempSecretKey.Location = New System.Drawing.Point(363, 58)
+        Me.BtTestATComConvertTempSecretKey.ForeColor = System.Drawing.Color.Black
+        Me.BtTestATComConvertTempSecretKey.Location = New System.Drawing.Point(363, 70)
         Me.BtTestATComConvertTempSecretKey.Name = "BtTestATComConvertTempSecretKey"
-        Me.BtTestATComConvertTempSecretKey.Size = New System.Drawing.Size(105, 23)
+        Me.BtTestATComConvertTempSecretKey.Size = New System.Drawing.Size(105, 22)
         Me.BtTestATComConvertTempSecretKey.TabIndex = 46
-        Me.BtTestATComConvertTempSecretKey.Text = "convert"
+        Me.BtTestATComConvertTempSecretKey.Text = "compute Hash"
         Me.BtTestATComConvertTempSecretKey.UseVisualStyleBackColor = True
         '
         'Label24
@@ -990,16 +1002,16 @@ Partial Class FrmDevelope
         Me.Label24.ForeColor = System.Drawing.Color.Black
         Me.Label24.Location = New System.Drawing.Point(582, 55)
         Me.Label24.Name = "Label24"
-        Me.Label24.Size = New System.Drawing.Size(93, 13)
+        Me.Label24.Size = New System.Drawing.Size(102, 13)
         Me.Label24.TabIndex = 45
-        Me.Label24.Text = "Finish Order Key2:"
+        Me.Label24.Text = "ChainSwapULong2:"
         '
-        'TBTestATComFinishKey2
+        'TBTestATComFinishULong2
         '
-        Me.TBTestATComFinishKey2.Location = New System.Drawing.Point(585, 71)
-        Me.TBTestATComFinishKey2.Name = "TBTestATComFinishKey2"
-        Me.TBTestATComFinishKey2.Size = New System.Drawing.Size(105, 20)
-        Me.TBTestATComFinishKey2.TabIndex = 44
+        Me.TBTestATComFinishULong2.Location = New System.Drawing.Point(585, 71)
+        Me.TBTestATComFinishULong2.Name = "TBTestATComFinishULong2"
+        Me.TBTestATComFinishULong2.Size = New System.Drawing.Size(105, 20)
+        Me.TBTestATComFinishULong2.TabIndex = 44
         '
         'Label23
         '
@@ -1007,26 +1019,26 @@ Partial Class FrmDevelope
         Me.Label23.ForeColor = System.Drawing.Color.Black
         Me.Label23.Location = New System.Drawing.Point(582, 15)
         Me.Label23.Name = "Label23"
-        Me.Label23.Size = New System.Drawing.Size(93, 13)
+        Me.Label23.Size = New System.Drawing.Size(102, 13)
         Me.Label23.TabIndex = 43
-        Me.Label23.Text = "Finish Order Key1:"
+        Me.Label23.Text = "ChainSwapULong1:"
         '
         'BtTestATComFinishKey
         '
         Me.BtTestATComFinishKey.ForeColor = System.Drawing.Color.Black
-        Me.BtTestATComFinishKey.Location = New System.Drawing.Point(584, 174)
+        Me.BtTestATComFinishKey.Location = New System.Drawing.Point(584, 175)
         Me.BtTestATComFinishKey.Name = "BtTestATComFinishKey"
         Me.BtTestATComFinishKey.Size = New System.Drawing.Size(105, 23)
         Me.BtTestATComFinishKey.TabIndex = 41
         Me.BtTestATComFinishKey.Text = "finish with keys"
         Me.BtTestATComFinishKey.UseVisualStyleBackColor = True
         '
-        'TBTestATComFinishKey1
+        'TBTestATComFinishULong1
         '
-        Me.TBTestATComFinishKey1.Location = New System.Drawing.Point(585, 32)
-        Me.TBTestATComFinishKey1.Name = "TBTestATComFinishKey1"
-        Me.TBTestATComFinishKey1.Size = New System.Drawing.Size(105, 20)
-        Me.TBTestATComFinishKey1.TabIndex = 42
+        Me.TBTestATComFinishULong1.Location = New System.Drawing.Point(585, 32)
+        Me.TBTestATComFinishULong1.Name = "TBTestATComFinishULong1"
+        Me.TBTestATComFinishULong1.Size = New System.Drawing.Size(105, 20)
+        Me.TBTestATComFinishULong1.TabIndex = 42
         '
         'Label22
         '
@@ -1034,9 +1046,9 @@ Partial Class FrmDevelope
         Me.Label22.ForeColor = System.Drawing.Color.Black
         Me.Label22.Location = New System.Drawing.Point(471, 16)
         Me.Label22.Name = "Label22"
-        Me.Label22.Size = New System.Drawing.Size(65, 13)
+        Me.Label22.Size = New System.Drawing.Size(99, 13)
         Me.Label22.TabIndex = 40
-        Me.Label22.Text = "Key Accept:"
+        Me.Label22.Text = "Accept SwapHash:"
         '
         'BtTestATComKeyOK
         '
@@ -1045,7 +1057,7 @@ Partial Class FrmDevelope
         Me.BtTestATComKeyOK.Name = "BtTestATComKeyOK"
         Me.BtTestATComKeyOK.Size = New System.Drawing.Size(105, 23)
         Me.BtTestATComKeyOK.TabIndex = 38
-        Me.BtTestATComKeyOK.Text = "Accept Key"
+        Me.BtTestATComKeyOK.Text = "Accept SwapHash"
         Me.BtTestATComKeyOK.UseVisualStyleBackColor = True
         '
         'TextBox1
@@ -1059,25 +1071,25 @@ Partial Class FrmDevelope
         '
         Me.Label33.AutoSize = True
         Me.Label33.ForeColor = System.Drawing.Color.Black
-        Me.Label33.Location = New System.Drawing.Point(360, 84)
+        Me.Label33.Location = New System.Drawing.Point(360, 94)
         Me.Label33.Name = "Label33"
-        Me.Label33.Size = New System.Drawing.Size(89, 13)
+        Me.Label33.Size = New System.Drawing.Size(96, 13)
         Me.Label33.TabIndex = 37
-        Me.Label33.Text = "SHA256_64 Key:"
+        Me.Label33.Text = "SHA256_64 Hash:"
         '
         'BtTestATComInjectFWDKey
         '
         Me.BtTestATComInjectFWDKey.ForeColor = System.Drawing.Color.Black
-        Me.BtTestATComInjectFWDKey.Location = New System.Drawing.Point(362, 174)
+        Me.BtTestATComInjectFWDKey.Location = New System.Drawing.Point(362, 175)
         Me.BtTestATComInjectFWDKey.Name = "BtTestATComInjectFWDKey"
         Me.BtTestATComInjectFWDKey.Size = New System.Drawing.Size(105, 23)
         Me.BtTestATComInjectFWDKey.TabIndex = 33
-        Me.BtTestATComInjectFWDKey.Text = "injectForwardKey"
+        Me.BtTestATComInjectFWDKey.Text = "injectSwapHash"
         Me.BtTestATComInjectFWDKey.UseVisualStyleBackColor = True
         '
         'TBTestATComSHA256Key
         '
-        Me.TBTestATComSHA256Key.Location = New System.Drawing.Point(363, 100)
+        Me.TBTestATComSHA256Key.Location = New System.Drawing.Point(363, 110)
         Me.TBTestATComSHA256Key.Name = "TBTestATComSHA256Key"
         Me.TBTestATComSHA256Key.ReadOnly = True
         Me.TBTestATComSHA256Key.Size = New System.Drawing.Size(105, 20)
@@ -1922,6 +1934,7 @@ Partial Class FrmDevelope
         '
         'SplitContainer11
         '
+        Me.SplitContainer11.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.SplitContainer11.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer11.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
         Me.SplitContainer11.Location = New System.Drawing.Point(0, 0)
@@ -2018,7 +2031,7 @@ Partial Class FrmDevelope
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.ClientSize = New System.Drawing.Size(1213, 548)
         Me.Controls.Add(Me.SplitContainer11)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
@@ -2266,10 +2279,10 @@ Partial Class FrmDevelope
     Friend WithEvents BtTestATComInjectFWDKey As Button
     Friend WithEvents TBTestATComSHA256Key As TextBox
     Friend WithEvents Label24 As Label
-    Friend WithEvents TBTestATComFinishKey2 As TextBox
+    Friend WithEvents TBTestATComFinishULong2 As TextBox
     Friend WithEvents Label23 As Label
     Friend WithEvents BtTestATComFinishKey As Button
-    Friend WithEvents TBTestATComFinishKey1 As TextBox
+    Friend WithEvents TBTestATComFinishULong1 As TextBox
     Friend WithEvents Label22 As Label
     Friend WithEvents BtTestATComKeyOK As Button
     Friend WithEvents TextBox1 As TextBox
@@ -2291,4 +2304,5 @@ Partial Class FrmDevelope
     Friend WithEvents LVActiveNodes As ListView
     Friend WithEvents ColumnHeader1 As ColumnHeader
     Friend WithEvents ColumnHeader15 As ColumnHeader
+    Friend WithEvents BtTestHex2ULng As Button
 End Class

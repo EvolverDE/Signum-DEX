@@ -1,4 +1,8 @@
-﻿Public Class ClsBase36
+﻿
+Option Strict On
+Option Explicit On
+
+Public Class ClsBase36
 
     Private Const Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -21,7 +25,7 @@
             ResultValue = Charay(CIdx)
         Else
             While (BigInt <> 0)
-                Dim Remainder As Integer = CInt(BigInt Mod 36)
+                Dim Remainder As Integer = Convert.ToInt32((BigInt Mod 36).ToString)
                 ResultValue = Charay(Remainder) & ResultValue
                 BigInt = BigInt / 36
             End While

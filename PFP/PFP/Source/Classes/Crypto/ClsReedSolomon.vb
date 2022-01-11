@@ -1,4 +1,7 @@
-﻿'  BigInteger replaced/removed
+﻿Option Strict On
+Option Explicit On
+
+'  BigInteger replaced/removed
 '  Original: https://github.com/umbrellacorp03/PaperBurst/blob/master/PaperBurst/ReedSolomon.vb
 ' 
 
@@ -98,9 +101,9 @@ Public Class ClsReedSolomon
 
         Try
 
-            Dim PreFix As String = cypher_string.Substring(0, 2)
+            Dim PreFix As String = cypher_string.Substring(0, 3)
 
-            If PreFix = "TS" Then 'TODO: Change TS- PreFix
+            If PreFix = ClsSignumAPI._AddressPreFix Then
                 cypher_string = cypher_string.Substring(3)
             End If
 
@@ -158,7 +161,7 @@ Public Class ClsReedSolomon
 
             Loop While length > 0
 
-            retval = CULng(plain_string_builder)
+            retval = ULong.Parse(plain_string_builder)
 
         Catch ex As Exception
 

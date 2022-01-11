@@ -236,7 +236,7 @@ Module ModGlobalFunctions
             End If
 
 
-            If PreFix.Contains("TS-") Then 'TODO: Change TS-Tag
+            If PreFix.Contains(ClsSignumAPI._AddressPreFix) Then
                 Address = Address.Substring(Address.IndexOf(PreFix) + PreFix.Length)
             End If
 
@@ -343,7 +343,7 @@ Module ModGlobalFunctions
 
         If PPOrderID.Count > 0 Then
             If PPOrderID(0).Contains("<error>") Then
-                Return Between(PPOrderID(0), "<error>", "</error>", GetType(String))
+                Return GetStringBetween(PPOrderID(0), "<error>", "</error>")
             End If
         End If
 

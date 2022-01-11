@@ -1,4 +1,7 @@
 ﻿
+Option Strict On
+Option Explicit On
+
 Public Class ClsJSON
     Private Property RecursiveRest() As List(Of Object) = New List(Of Object)
     Function JSONRecursive(ByVal Input As String) As List(Of Object)
@@ -86,15 +89,15 @@ Public Class ClsJSON
                                 Dim T_Vals As String = Input.Remove(Input.IndexOf("{"))
                                 Dim T_Rest As String = Input.Substring(Input.IndexOf("{"))
 
-                                Dim T_List As List(Of String) = T_Vals.Split(",").ToList
+                                Dim T_List As List(Of String) = T_Vals.Split(","c).ToList
                                 Dim Key As String = ""
 
                                 For i As Integer = 0 To T_List.Count - 1
                                     Dim TL As String = T_List(i)
                                     If i = T_List.Count - 1 Then
-                                        Key = TL.Split(":")(0).Replace("""", "")
+                                        Key = TL.Split(":"c)(0).Replace("""", "")
                                     Else
-                                        U_List.Add(New List(Of Object)(TL.Replace("""", "").Split(":")))
+                                        U_List.Add(New List(Of Object)(TL.Replace("""", "").Split(":"c)))
                                     End If
                                 Next
 
@@ -131,15 +134,15 @@ Public Class ClsJSON
                                 Dim T_Vals As String = Input.Remove(Input.IndexOf("["))
                                 Dim T_Rest As String = Input.Substring(Input.IndexOf("["))
 
-                                Dim T_List As List(Of String) = T_Vals.Split(",").ToList
+                                Dim T_List As List(Of String) = T_Vals.Split(","c).ToList
                                 Dim Key As String = ""
 
                                 For i As Integer = 0 To T_List.Count - 1
                                     Dim TL As String = T_List(i)
                                     If i = T_List.Count - 1 Then
-                                        Key = TL.Split(":")(0).Replace("""", "")
+                                        Key = TL.Split(":"c)(0).Replace("""", "")
                                     Else
-                                        U_List.Add(New List(Of Object)(TL.Replace("""", "").Split(":")))
+                                        U_List.Add(New List(Of Object)(TL.Replace("""", "").Split(":"c)))
                                     End If
                                 Next
 
@@ -174,10 +177,10 @@ Public Class ClsJSON
                                 End If
 
                             Else
-                                Dim T_List As List(Of String) = Input.Split(",").ToList
+                                Dim T_List As List(Of String) = Input.Split(","c).ToList
 
                                 For Each TL As String In T_List
-                                    U_List.Add(New List(Of Object)(TL.Replace("""", "").Split(":")))
+                                    U_List.Add(New List(Of Object)(TL.Replace("""", "").Split(":"c)))
                                 Next
 
                                 Return U_List
@@ -189,7 +192,7 @@ Public Class ClsJSON
 
                 Else
                     If Input.Contains(",") Then
-                        U_List.Add(Input.Replace("""", "").Split(",").ToList)
+                        U_List.Add(Input.Replace("""", "").Split(","c).ToList)
                     Else
                         U_List.Add(Input.Replace("""", ""))
                     End If
@@ -371,53 +374,53 @@ Public Class ClsJSON
         For Each T_Key_Vals As Object In JSONList
 
             If T_Key_Vals.GetType.Name = GetType(String).Name Then
-                Returner = T_Key_Vals
+                Returner = DirectCast(T_Key_Vals, String)
             ElseIf T_Key_Vals.GetType.Name = GetType(List(Of )).Name Then
 
                 Dim T_List As List(Of Object) = New List(Of Object)
 
-                T_List.AddRange(T_Key_Vals.ToArray)
+                T_List.AddRange(DirectCast(T_Key_Vals, List(Of Object)).ToArray)
 
                 If T_List.Count > 2 Then
 
                     If T_List(0).GetType.Name = GetType(String).Name Then
 
-                        Dim T_Key As String = T_List(0)
+                        Dim T_Key As String = T_List(0).ToString
 
                         For i As Integer = 0 To T_List.Count - 1
                             Dim T_Obj As Object = T_List(i)
 
                             If T_Obj.GetType.Name = GetType(String).Name Then
-                                Returner += "<" + i.ToString + ">" + T_Obj + "</" + i.ToString + ">"
+                                Returner += "<" + i.ToString + ">" + T_Obj.ToString + "</" + i.ToString + ">"
                             Else
-                                Returner += JSONListToXMLRecursive(T_Obj)
+                                Returner += JSONListToXMLRecursive(DirectCast(T_Obj, List(Of Object)))
                             End If
 
                         Next
 
                     Else
-                        Returner += JSONListToXMLRecursive(T_List(0))
+                        Returner += JSONListToXMLRecursive(DirectCast(T_List(0), List(Of Object)))
                     End If
 
                 Else
 
                     If T_List(0).GetType.Name = GetType(String).Name Then
 
-                        Dim T_Key As String = T_List(0)
+                        Dim T_Key As String = T_List(0).ToString
                         Returner += "<" + T_Key.Trim + ">"
 
                         If T_List.Count = 2 Then
                             If T_List(1).GetType.Name = GetType(String).Name Then
-                                Returner += T_List(1)
+                                Returner += T_List(1).ToString
                             Else
-                                Returner += JSONListToXMLRecursive(T_List(1))
+                                Returner += JSONListToXMLRecursive(DirectCast(T_List(1), List(Of Object)))
                             End If
                         End If
 
                         Returner += "</" + T_Key.Trim + ">"
 
                     Else
-                        Returner += JSONListToXMLRecursive(T_List(0))
+                        Returner += JSONListToXMLRecursive(DirectCast(T_List(0), List(Of Object)))
                     End If
                 End If
 
@@ -433,20 +436,20 @@ Public Class ClsJSON
 
         If Key.Contains("/") Then
 
-            Dim KeyPathList As List(Of String) = New List(Of String)(Key.Split("/"))
+            Dim KeyPathList As List(Of String) = New List(Of String)(Key.Split("/"c))
 
             Dim T_Key As String = KeyPathList(0)
             Dim T_Path As String = Key.Substring(Key.IndexOf("/") + 1)
 
             If Input.Contains("<" + T_Key + ">") Then
-                Return RecursiveXMLSearch(Between(Input, "<" + T_Key + ">", "</" + T_Key + ">", GetType(String)), T_Path)
+                Return RecursiveXMLSearch(GetStringBetween(Input, "<" + T_Key + ">", "</" + T_Key + ">"), T_Path)
             Else
                 Return ""
             End If
 
         Else
             If Input.Contains("<" + Key + ">") Then
-                Return Between(Input, "<" + Key + ">", "</" + Key + ">", GetType(String))
+                Return GetStringBetween(Input, "<" + Key + ">", "</" + Key + ">")
             Else
                 Return ""
             End If

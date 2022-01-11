@@ -1,16 +1,23 @@
 ﻿
 Option Strict On
+Option Explicit On
+
 Imports System.ComponentModel
 
 Public Class TradeTrackerTimeLine
 
     Inherits System.Windows.Forms.UserControl
 
+    Dim SignumDarkBlue As Color = Color.FromArgb(255, 0, 102, 255)
+    Dim SignumBlue As Color = Color.FromArgb(255, 0, 153, 255)
+    Dim SignumLightGreen As Color = Color.FromArgb(255, 0, 255, 136)
 
-    Private Property TL_Zoom As Int64 = -150000000
+    Dim FontStr As String = "Montserrat"
 
-    Private Property TL_StartDate As Date = Now
-    Private Property TL_EndDate As Date = Now
+    Property TL_Zoom As Int64 = -150000000
+
+    Property TL_StartDate As Date = Now
+    Property TL_EndDate As Date = Now
     Private Property TL_TimeStickList As List(Of Date) = New List(Of Date)
 
 
@@ -26,7 +33,7 @@ Public Class TradeTrackerTimeLine
         Set(ByVal Value As Single)
             If TradeTrackTimer.Interval <> Value Then
                 If Value < 10 Then Value = 10
-                TradeTrackTimer.Interval = CInt(Value)
+                TradeTrackTimer.Interval = Convert.ToInt32(Value)
                 Me.Invalidate()
             End If
         End Set
@@ -79,6 +86,16 @@ Public Class TradeTrackerTimeLine
         End Get
     End Property
 
+    Sub New()
+
+        ' Dieser Aufruf ist für den Designer erforderlich.
+        InitializeComponent()
+
+        Me.BackColor = Color.Transparent
+
+        ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
+
+    End Sub
 
     Protected Overrides Sub OnPaint(ByVal pe As System.Windows.Forms.PaintEventArgs)
         MyBase.OnPaint(pe)
@@ -86,14 +103,15 @@ Public Class TradeTrackerTimeLine
         Dim GFX_Graphics As System.Drawing.Graphics
         GFX_Graphics = pe.Graphics
 
-        GFX_Graphics.Clear(Color.White)
+        'GFX_Graphics.Clear(SignumBlue)
         Dim GFX_TimeLineY As Single = CSng(Me.Size.Height / 4)
-        GFX_Graphics.DrawLine(New Pen(Color.Black, 1), 0, GFX_TimeLineY, Me.Width, GFX_TimeLineY)
+        GFX_Graphics.DrawLine(New Pen(Color.Snow, 1), 0, GFX_TimeLineY, Me.Width, GFX_TimeLineY)
 
         Dim TS As TimeSpan = New TimeSpan
         TS = TL_EndDate - TL_StartDate
 
-        GFX_Graphics.DrawImage(GetViewRangeBMP(TS), New Point(0, 0))
+        'GFX_Graphics.DrawImage(, New Point(0, 0))
+        GetViewRangeBMP(TS, GFX_Graphics)
 
         NuDraw(GFX_Graphics, TS)
 
@@ -104,7 +122,7 @@ Public Class TradeTrackerTimeLine
         rectBorder.Height = Me.Height - 1
         rectBorder.Width = Me.Width - 1
 
-        GFX_Graphics.DrawRectangle(Pens.Black, rectBorder)
+        GFX_Graphics.DrawRectangle(Pens.Snow, rectBorder)
 
         DoubleBuffered = True
 
@@ -115,10 +133,10 @@ Public Class TradeTrackerTimeLine
     Private Property Tigger As Ticks = Ticks.Zero
 
 
-    Function GetViewRangeBMP(ByVal TS As TimeSpan) As Bitmap
-        Dim BMP As Bitmap = New Bitmap(100, 100)
-        Dim GFX As Graphics = Graphics.FromImage(BMP)
-        Dim DFont As Font = New Font("Arial", 10, FontStyle.Bold)
+    Sub GetViewRangeBMP(ByVal TS As TimeSpan, ByRef GFX As Graphics)
+        'Dim BMP As Bitmap = New Bitmap(100, 100)
+        'Dim GFX As Graphics = Graphics.FromImage(BMP)
+        Dim DFont As Font = New Font(FontStr, 10, FontStyle.Bold)
 
         Select Case TS.TotalMilliseconds / 1000
             Case Is < 1
@@ -127,13 +145,13 @@ Public Class TradeTrackerTimeLine
 
 
                 Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalMilliseconds, 2)) + " Milliseconds"
-                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+                'Dim Size As SizeF = GFX.MeasureString(DString, DFont)
 
-                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
-                GFX = Graphics.FromImage(BMP)
+                'BMP = New Bitmap(Convert.ToInt32(Size.Width), Convert.ToInt32(Size.Height))
+                'GFX = Graphics.FromImage(BMP)
 
-                GFX.Clear(Color.White)
-                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+                'GFX.Clear(Color.Transparent)
+                GFX.DrawString(DString, DFont, Brushes.Snow, New Point(0, 0))
 
             Case 1 To 60 '1 sec to 1 min
 
@@ -153,13 +171,13 @@ Public Class TradeTrackerTimeLine
                 End Select
 
                 Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalSeconds, 2)) + " Seconds"
-                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+                'Dim Size As SizeF = GFX.MeasureString(DString, DFont)
 
-                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
-                GFX = Graphics.FromImage(BMP)
+                'BMP = New Bitmap(Convert.ToInt32(Size.Width), Convert.ToInt32(Size.Height))
+                'GFX = Graphics.FromImage(BMP)
 
-                GFX.Clear(Color.White)
-                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+                'GFX.Clear(Color.Transparent)
+                GFX.DrawString(DString, DFont, Brushes.Snow, New Point(0, 0))
 
             Case 60 To 60 * 60 '1 min to 1 hour
 
@@ -181,13 +199,13 @@ Public Class TradeTrackerTimeLine
 
 
                 Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalMinutes, 2)) + " Minutes"
-                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+                'Dim Size As SizeF = GFX.MeasureString(DString, DFont)
 
-                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
-                GFX = Graphics.FromImage(BMP)
+                'BMP = New Bitmap(Convert.ToInt32(Size.Width), Convert.ToInt32(Size.Height))
+                'GFX = Graphics.FromImage(BMP)
 
-                GFX.Clear(Color.White)
-                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+                'GFX.Clear(Color.Transparent)
+                GFX.DrawString(DString, DFont, Brushes.Snow, New Point(0, 0))
 
             Case 60 * 60 To 60 * 60 * 24 '1 hour to 1 day
 
@@ -203,13 +221,13 @@ Public Class TradeTrackerTimeLine
                 End Select
 
                 Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalHours, 2)) + " Hours"
-                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+                'Dim Size As SizeF = GFX.MeasureString(DString, DFont)
 
-                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
-                GFX = Graphics.FromImage(BMP)
+                'BMP = New Bitmap(Convert.ToInt32(Size.Width), Convert.ToInt32(Size.Height))
+                'GFX = Graphics.FromImage(BMP)
 
-                GFX.Clear(Color.White)
-                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+                'GFX.Clear(Color.Transparent)
+                GFX.DrawString(DString, DFont, Brushes.Snow, New Point(0, 0))
 
 
             Case 60 * 60 * 24 To 60 * 60 * 24 * 7 '1 day to 1 week
@@ -224,13 +242,13 @@ Public Class TradeTrackerTimeLine
                 End Select
 
                 Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalDays, 2)) + " Days"
-                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+                'Dim Size As SizeF = GFX.MeasureString(DString, DFont)
 
-                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
-                GFX = Graphics.FromImage(BMP)
+                'BMP = New Bitmap(Convert.ToInt32(Size.Width), Convert.ToInt32(Size.Height))
+                'GFX = Graphics.FromImage(BMP)
 
-                GFX.Clear(Color.White)
-                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+                'GFX.Clear(Color.Transparent)
+                GFX.DrawString(DString, DFont, Brushes.Snow, New Point(0, 0))
 
 
             Case 60 * 60 * 24 * 7 To 60 * 60 * 24 * 7 * 4 '1 week to 1 month
@@ -238,13 +256,13 @@ Public Class TradeTrackerTimeLine
                 Tigger = Ticks.FiveDay
 
                 Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalDays, 2)) + " Days"
-                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+                'Dim Size As SizeF = GFX.MeasureString(DString, DFont)
 
-                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
-                GFX = Graphics.FromImage(BMP)
+                'BMP = New Bitmap(Convert.ToInt32(Size.Width), Convert.ToInt32(Size.Height))
+                'GFX = Graphics.FromImage(BMP)
 
-                GFX.Clear(Color.White)
-                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+                'GFX.Clear(Color.Transparent)
+                GFX.DrawString(DString, DFont, Brushes.Snow, New Point(0, 0))
 
             Case Is > 60 * 60 * 24 * 7 * 4 'over 1 month
 
@@ -269,32 +287,32 @@ Public Class TradeTrackerTimeLine
                 End Select
 
                 Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalDays / 7, 2)) + " Weeks"
-                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+                'Dim Size As SizeF = GFX.MeasureString(DString, DFont)
 
-                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
-                GFX = Graphics.FromImage(BMP)
+                'BMP = New Bitmap(Convert.ToInt32(Size.Width), Convert.ToInt32(Size.Height))
+                'GFX = Graphics.FromImage(BMP)
 
-                GFX.Clear(Color.White)
-                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+                'GFX.Clear(Color.Transparent)
+                GFX.DrawString(DString, DFont, Brushes.Snow, New Point(0, 0))
 
             Case Else
 
                 Tigger = Ticks.TwoDay
 
                 Dim DString As String = "View Range: " + CStr(Math.Round(TS.TotalDays)) + " error"
-                Dim Size As SizeF = GFX.MeasureString(DString, DFont)
+                'Dim Size As SizeF = GFX.MeasureString(DString, DFont)
 
-                BMP = New Bitmap(CInt(Size.Width), CInt(Size.Height))
-                GFX = Graphics.FromImage(BMP)
+                'BMP = New Bitmap(Convert.ToInt32(Size.Width), Convert.ToInt32(Size.Height))
+                'GFX = Graphics.FromImage(BMP)
 
-                GFX.Clear(Color.White)
-                GFX.DrawString(DString, DFont, Brushes.Black, New Point(0, 0))
+                'GFX.Clear(Color.Transparent)
+                GFX.DrawString(DString, DFont, Brushes.Snow, New Point(0, 0))
 
         End Select
 
-        Return BMP
+        'Return BMP
 
-    End Function
+    End Sub
 
 
 
@@ -345,7 +363,7 @@ Public Class TradeTrackerTimeLine
         Dim XFactor As Double = EndX / StartEndTimeSpan.TotalMilliseconds
         XFactor *= StartSetTimeSpan.TotalMilliseconds
 
-        Return CInt(XFactor)
+        Return Convert.ToInt32(XFactor)
 
     End Function
 
@@ -357,7 +375,7 @@ Public Class TradeTrackerTimeLine
 
 
         Dim TimeMarkPen As System.Drawing.Pen
-        TimeMarkPen = New Pen(Color.Black)
+        TimeMarkPen = New Pen(Color.Snow)
 
         Dim TimeMarkMiddlePen As System.Drawing.Pen
         TimeMarkMiddlePen = New Pen(Color.Red)
@@ -374,10 +392,10 @@ Public Class TradeTrackerTimeLine
 
         Dim YMiddlePoint As Double = 0 + (Me.Height / 3)
 
-        Dim e = CInt(YMiddlePoint * 0.5)
-        Dim f = CInt(YMiddlePoint * 1.5)
+        Dim e As Integer = Convert.ToInt32(YMiddlePoint * 0.5)
+        Dim f As Integer = Convert.ToInt32(YMiddlePoint * 1.5)
 
-        Dim fo = New Font("Arial", 10, FontStyle.Bold)
+        Dim fo = New Font(FontStr, 10, FontStyle.Bold)
 
 
         'GFX_Graphics.DrawString(TL_StartDate.ToLongTimeString, fo, Brushes.Black, 0, 20)
@@ -390,9 +408,9 @@ Public Class TradeTrackerTimeLine
 
             Dim SkalaMarkX As Integer = Time2Pixel(0, Me.Width, TL_StartDate, TL_EndDate, TimeStick)
 
-            GFX_Graphics.DrawLine(TimeMarkPen, SkalaMarkX, CInt(e * 2.5), SkalaMarkX, CInt(f / 2))
-            GFX_Graphics.DrawString(DateUSToGer(DateUSToGer(TimeStick.ToShortDateString)), fo, Brushes.Black, SkalaMarkX - 25, f)
-            GFX_Graphics.DrawString(TimeStick.ToLongTimeString, fo, Brushes.Black, SkalaMarkX - 25, f + 15)
+            GFX_Graphics.DrawLine(TimeMarkPen, SkalaMarkX, Convert.ToInt32(e * 2.5), SkalaMarkX, Convert.ToInt32(f / 2))
+            GFX_Graphics.DrawString(DateUSToGer(DateUSToGer(TimeStick.ToShortDateString)), fo, Brushes.Snow, SkalaMarkX - 25, f)
+            GFX_Graphics.DrawString(TimeStick.ToLongTimeString, fo, Brushes.Snow, SkalaMarkX - 25, f + 15)
 
         Next
 
@@ -448,7 +466,7 @@ Public Class TradeTrackerTimeLine
 
         Dim T_TimeWidth_Count As List(Of Double) = GetTimeWidth()
         Dim T_TimeWidth As Double = T_TimeWidth_Count(0)
-        Dim T_Cnt As Integer = CInt(T_TimeWidth_Count(1))
+        Dim T_Cnt As Integer = Convert.ToInt32(T_TimeWidth_Count(1))
 
         Dim T_Time As Date = SkalaEndDate
 
@@ -850,30 +868,32 @@ Public Class TradeTrackerTimeLine
 
         End Select
 
-
+        Return Time
 
     End Function
 
 
+#Region "not used"
+    'Sub ClearTimeSticks()
 
-    Sub ClearTimeSticks()
+    '    Dim DelIdx As Integer = -1
+    '    For i As Integer = 0 To TimeSticks.Count - 1
+    '        Dim TimeStick As Date = TimeSticks(i)
 
-        Dim DelIdx As Integer = -1
-        For i As Integer = 0 To TimeSticks.Count - 1
-            Dim TimeStick As Date = TimeSticks(i)
+    '        If TimeStick < SkalaStartDate Or TimeStick > SkalaEndDate Then
+    '            DelIdx = i
+    '            Exit For
+    '        End If
 
-            If TimeStick < SkalaStartDate Or TimeStick > SkalaEndDate Then
-                DelIdx = i
-                Exit For
-            End If
+    '    Next
 
-        Next
+    '    If DelIdx <> -1 Then
+    '        TimeSticks.RemoveAt(DelIdx)
+    '    End If
 
-        If DelIdx <> -1 Then
-            TimeSticks.RemoveAt(DelIdx)
-        End If
+    'End Sub
+#End Region
 
-    End Sub
 
     Function GetTimeWidth() As List(Of Double)
 
@@ -1019,21 +1039,48 @@ Public Class TradeTrackerTimeLine
 
     End Sub
 
-    Private Property MouseDownFlag As Boolean = False
+    Private Property LeftMouseDownFlag As Boolean = False
+    Private Property RightMouseDownFlag As Boolean = False
+    Private Property MiddleMouseDownFlag As Boolean = False
 
     Dim mouseXrast As Integer = 0
+    Dim mouseYrast As Integer = 0
 
 
     Private Sub TradeTrackerTimeLine_MouseDown(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
+
+        'PFPForm.MultiInvoker(PFPForm.E_MainFormControls.LabDebug, "Visible", True)
+        'PFPForm.MultiInvoker(PFPForm.E_MainFormControls.LabDebug, "Text", e.Button.ToString)
 
         If e.Button = MouseButtons.Left Then
 
             old_Timerinterval = TradeTrackTimer.Interval
             TradeTrackTimer.Interval = 10
 
-            If Not MouseDownFlag Then
-                MouseDownFlag = True
+            If Not LeftMouseDownFlag Then
+                LeftMouseDownFlag = True
                 mouseXrast = e.X
+            End If
+
+        ElseIf e.Button = MouseButtons.Right Then
+
+            old_Timerinterval = TradeTrackTimer.Interval
+            TradeTrackTimer.Interval = 10
+
+            If Not RightMouseDownFlag Then
+                RightMouseDownFlag = True
+                mouseYrast = e.Y
+            End If
+
+        ElseIf e.Button = MouseButtons.Middle Then
+
+            old_Timerinterval = TradeTrackTimer.Interval
+            TradeTrackTimer.Interval = 10
+
+            If Not MiddleMouseDownFlag Then
+                MiddleMouseDownFlag = True
+                mouseXrast = e.X
+                mouseYrast = e.Y
             End If
 
         End If
@@ -1043,7 +1090,22 @@ Public Class TradeTrackerTimeLine
     Private Sub TradeTrackerTimeLine_MouseUp(sender As Object, e As MouseEventArgs) Handles Me.MouseUp
 
         If e.Button = MouseButtons.Left Then
-            MouseDownFlag = False
+            LeftMouseDownFlag = False
+            Try
+                TradeTrackTimer.Interval = old_Timerinterval
+            Catch ex As Exception
+
+            End Try
+        ElseIf e.Button = MouseButtons.Right Then
+            RightMouseDownFlag = False
+            Try
+                TradeTrackTimer.Interval = old_Timerinterval
+            Catch ex As Exception
+
+            End Try
+        ElseIf e.Button = MouseButtons.Middle Then
+
+            MiddleMouseDownFlag = False
             Try
                 TradeTrackTimer.Interval = old_Timerinterval
             Catch ex As Exception
@@ -1054,27 +1116,128 @@ Public Class TradeTrackerTimeLine
 
     End Sub
 
-    Private Property XOffset As Integer = 0
 
     Dim old_Timerinterval As Integer
     Private Sub TradeTrackerTimeLine_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
 
-        If MouseDownFlag Then
+        If LeftMouseDownFlag Then
 
-            Dim TX As Double = CDbl(TL_Zoom * 0.15)
+            Dim TX As Double = Convert.ToDouble(TL_Zoom * 0.05)
 
             If e.X > mouseXrast Then
+                TX *= (e.X - mouseXrast - 1)
                 TL_StartDate = TL_StartDate.AddMilliseconds(-(TX))
                 TL_EndDate = TL_EndDate.AddMilliseconds(-(TX))
+                mouseXrast = e.X - 1
             Else
-                TL_StartDate = TL_StartDate.AddMilliseconds((TX * 0.9))
-                TL_EndDate = TL_EndDate.AddMilliseconds((TX * 0.9))
+                TX *= (mouseXrast - e.X)
+                TL_StartDate = TL_StartDate.AddMilliseconds((TX))
+                TL_EndDate = TL_EndDate.AddMilliseconds((TX))
+                mouseXrast = e.X
             End If
 
-            mouseXrast = e.X
+        ElseIf RightMouseDownFlag Then
+
+            Dim TS As TimeSpan = New TimeSpan
+            TS = TL_EndDate - TL_StartDate
+
+            Dim T_TL_Zoom As Long = TL_Zoom
+
+            If TS.TotalMilliseconds < 1 Then
+                T_TL_Zoom = 0
+            Else
+                T_TL_Zoom = CLng(TS.TotalMilliseconds * 0.002)
+            End If
+
+            If e.Y > mouseYrast Then
+
+                If T_TL_Zoom < 1 Then
+                    T_TL_Zoom = 50
+                End If
+
+                If T_TL_Zoom > 2000000000000 Then
+                    T_TL_Zoom = 0
+                End If
+
+                T_TL_Zoom *= (e.Y - mouseYrast - 1)
+
+                TL_StartDate = TL_StartDate.AddMilliseconds(-T_TL_Zoom)
+                TL_EndDate = TL_EndDate.AddMilliseconds(T_TL_Zoom)
+
+                mouseYrast = e.Y - 1
+
+            Else
+
+                T_TL_Zoom *= (mouseYrast - e.Y)
+
+                TL_StartDate = TL_StartDate.AddMilliseconds(T_TL_Zoom)
+                TL_EndDate = TL_EndDate.AddMilliseconds(-T_TL_Zoom)
+
+                mouseYrast = e.Y
+            End If
+
+        ElseIf MiddleMouseDownFlag Then
+
+            Dim TX As Double = Convert.ToDouble(TL_Zoom * 0.2)
+
+            If e.X > mouseXrast Then
+                TX *= (e.X - mouseXrast - 1)
+                TL_StartDate = TL_StartDate.AddMilliseconds(-(TX))
+                TL_EndDate = TL_EndDate.AddMilliseconds(-(TX))
+                mouseXrast = e.X - 1
+            ElseIf e.X < mouseXrast Then
+                TX *= (mouseXrast - e.X)
+                TL_StartDate = TL_StartDate.AddMilliseconds((TX))
+                TL_EndDate = TL_EndDate.AddMilliseconds((TX))
+                mouseXrast = e.X
+            Else
+
+            End If
+
+
+
+            Dim TS As TimeSpan = New TimeSpan
+            TS = TL_EndDate - TL_StartDate
+
+            Dim T_TL_Zoom As Long = TL_Zoom
+
+            If TS.TotalMilliseconds < 1 Then
+                T_TL_Zoom = 0
+            Else
+                T_TL_Zoom = CLng(TS.TotalMilliseconds * 0.004)
+            End If
+
+            If e.Y > mouseYrast Then
+
+                If T_TL_Zoom < 1 Then
+                    T_TL_Zoom = 50
+                End If
+
+                If T_TL_Zoom > 2000000000000 Then
+                    T_TL_Zoom = 0
+                End If
+
+                T_TL_Zoom *= (e.Y - mouseYrast - 1)
+
+                TL_StartDate = TL_StartDate.AddMilliseconds(-T_TL_Zoom)
+                TL_EndDate = TL_EndDate.AddMilliseconds(T_TL_Zoom)
+
+                mouseYrast = e.Y - 1
+
+            ElseIf e.Y < mouseYrast Then
+
+                T_TL_Zoom *= (mouseYrast - e.Y)
+
+                TL_StartDate = TL_StartDate.AddMilliseconds(T_TL_Zoom)
+                TL_EndDate = TL_EndDate.AddMilliseconds(-T_TL_Zoom)
+
+                mouseYrast = e.Y
+            Else
+
+            End If
 
         Else
-            TradeTrackTimer.Interval = CInt(TradeTrackTimerInterval)
+            TradeTrackTimer.Interval = Convert.ToInt32(TradeTrackTimerInterval)
         End If
 
     End Sub
@@ -1084,10 +1247,7 @@ Public Class TradeTrackerTimeLine
 
         RaiseEvent TimerTick(Me.GetType)
 
-        If MouseDownFlag Then
-
-        Else
-
+        If Not LeftMouseDownFlag Then
             TL_StartDate = TL_StartDate.AddMilliseconds(110)
             TL_EndDate = TL_EndDate.AddMilliseconds(110)
         End If

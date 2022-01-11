@@ -1,18 +1,22 @@
 ﻿
 Option Strict On
-Imports System.ComponentModel
+Option Explicit On
 
+Imports System.ComponentModel
 
 Public Class TradeTrackerSlot
 
     Inherits System.Windows.Forms.UserControl
 
-    Dim Chart_EMA_TR As TradeTrackerTimeRail = New TradeTrackerTimeRail
-    Dim MACD_RSI_TR As TradeTrackerTimeRail = New TradeTrackerTimeRail
+    Public Property TTTL As TradeTrackerTimeLine
+
+    Public Property Pair As String
+
+    Property Chart_EMA_TR As TradeTrackerTimeRail = New TradeTrackerTimeRail
+    Property MACD_RSI_TR As TradeTrackerTimeRail = New TradeTrackerTimeRail
 
     <Description("Wird bei einem click auf einer CheckBox ausgeführt")>
     Public Event ChBxXChange(sender As Object)
-
 
     <Description("SplitterDistanz laden oder ändern")>
     Public Property SplitterDistance() As Integer
@@ -51,8 +55,6 @@ Public Class TradeTrackerSlot
         End Set
     End Property
 
-
-
     <Description("Die Liste der Chart/EMA-Graphen in der TimeRail")>
     Public Property Chart_EMA_Graph As Graph
         Get
@@ -62,8 +64,6 @@ Public Class TradeTrackerSlot
             Chart_EMA_TR.Graph = SetGraphlist
         End Set
     End Property
-
-
 
     <Description("Startzeit des Anfangs(x-achse) der TimeLine")>
     Public Property MACD_RSI_TR_StartDate() As Date
@@ -100,26 +100,29 @@ Public Class TradeTrackerSlot
     End Property
 
 
-
     Private Sub TradeTrackerSlot_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Chart_EMA_TR.Dock = DockStyle.Fill
         MACD_RSI_TR.Dock = DockStyle.Fill
 
+        Chart_EMA_TR.TTTL = TTTL
+        MACD_RSI_TR.TTTL = TTTL
+
         Dim SC1 As SplitContainer = DirectCast(SlotSplitter.Panel2.Controls(0), SplitContainer)
-        'SC1.SplitterDistance = CInt(SC1.Height / 2) + CInt(SC1.Height / 8)
+        'SC1.SplitterDistance = Integer.Parse(SC1.Height / 2) + Integer.Parse(SC1.Height / 8)
         SC1.Panel1.Controls.Add(Chart_EMA_TR)
         SC1.Panel2.Controls.Add(MACD_RSI_TR)
-
 
         Me.Invalidate()
     End Sub
 
 
-
     Protected Overridable Sub ChBxX_CheckedChanged(sender As Object, e As EventArgs) Handles ChBxCandles.CheckedChanged, ChBxEMA1.CheckedChanged, ChBxEMA2.CheckedChanged, ChBxLine.CheckedChanged, ChBxMACD.CheckedChanged, ChBxMACDSig.CheckedChanged, ChBxRSI.CheckedChanged, ChBxMACDHis.CheckedChanged
-
         RaiseEvent ChBxXChange(Me.GetType)
+    End Sub
 
+    Public Sub Refresher()
+        Chart_EMA_TR.Pair = Pair
+        MACD_RSI_TR.Pair = Pair
     End Sub
 
 

@@ -1,4 +1,7 @@
 ﻿
+Option Strict On
+Option Explicit On
+
 Public Class FrmGeneralSettings
 
     Dim C_MainForm As PFPForm
@@ -41,18 +44,18 @@ Public Class FrmGeneralSettings
 
     Private Sub FrmGeneralSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        C_MainForm.PrimaryNode = GetINISetting(E_Setting.DefaultNode, "http://lmsi.club:6876/burst")
+        C_MainForm.PrimaryNode = GetINISetting(E_Setting.DefaultNode, ClsSignumAPI._DefaultNode)
 
         Dim RefreshMins = GetINISetting(E_Setting.RefreshMinutes, 1)
         CoBxRefresh.SelectedItem = RefreshMins.ToString
 
         CoBxPayType.SelectedItem = GetINISetting(E_Setting.PaymentType, "Other")
 
-        Dim Nodes As String = GetINISetting(E_Setting.Nodes, "http://lmsi.club:6876/burst;https://testnet.burstcoin.network:6876/burst") 'http://lmsi.club:6876/burst;https://testnet.burstcoin.network:6876/burst;https://octalsburstnode.ddns.net:6876/burst;https://testnetwallet.burstcoin.ro/burst
+        Dim Nodes As String = GetINISetting(E_Setting.Nodes, ClsSignumAPI._Nodes)
 
         Dim NodeList As List(Of String) = New List(Of String)
         If Nodes.Contains(";") Then
-            NodeList.AddRange(Nodes.Split(";"))
+            NodeList.AddRange(Nodes.Split(";"c))
         Else
             NodeList.Add(Nodes)
         End If
@@ -60,7 +63,7 @@ Public Class FrmGeneralSettings
         CoBxNode.Items.AddRange(NodeList.ToArray)
 
 
-        CoBxNode.SelectedItem = GetINISetting(E_Setting.DefaultNode, "http://http://lmsi.club:6876/burst")
+        CoBxNode.SelectedItem = GetINISetting(E_Setting.DefaultNode, ClsSignumAPI._DefaultNode)
         'PrimaryNode = CoBxNode.SelectedItem
 
         If CoBxNode.Text.Trim = "" Then
@@ -68,15 +71,15 @@ Public Class FrmGeneralSettings
             'PrimaryNode = CoBxNode.Items(0)
         End If
 
-        'RefreshTime = CInt(CoBxRefresh.Text) * 600
+        'RefreshTime = Integer.Parse(CoBxRefresh.Text) * 600
 
         ChBxAutoSendPaymentInfo.Checked = GetINISetting(E_Setting.AutoSendPaymentInfo, False)
         ChBxCheckXItemTX.Checked = GetINISetting(E_Setting.AutoCheckAndFinishAT, False)
 
 
         ChBxTCPAPI.Checked = GetINISetting(E_Setting.TCPAPIEnable, False)
-        TBTCPAPIPort.Text = GetINISetting(E_Setting.TCPAPIServerPort, 8130)
-        TBDEXNETPort.Text = GetINISetting(E_Setting.DEXNETServerPort, 8131)
+        TBTCPAPIPort.Text = GetINISetting(E_Setting.TCPAPIServerPort, 8130).ToString
+        TBDEXNETPort.Text = GetINISetting(E_Setting.DEXNETServerPort, 8131).ToString
 
         TBPaymentInfo.Text = GetINISetting(E_Setting.PaymentType, "Self Pickup")
         TBPaymentInfo.Text = GetINISetting(E_Setting.PaymentInfoText, "Infotext")
@@ -137,15 +140,15 @@ Public Class FrmGeneralSettings
         '    Changes = True
         'End If
 
-        If C_MainForm.CoBxMarket.SelectedItem <> GetINISetting(E_Setting.LastMarketViewed, "USD") Then
+        If C_MainForm.CoBxMarket.SelectedItem.ToString <> GetINISetting(E_Setting.LastMarketViewed, "USD") Then
             Changes = True
         End If
 
-        If CoBxRefresh.SelectedItem <> GetINISetting(E_Setting.RefreshMinutes, 1) Then
+        If CoBxRefresh.SelectedItem.ToString <> GetINISetting(E_Setting.RefreshMinutes, 1).ToString Then
             Changes = True
         End If
 
-        If CoBxNode.SelectedItem <> GetINISetting(E_Setting.DefaultNode, "http://lmsi.club:6876/burst") Then
+        If CoBxNode.SelectedItem.ToString <> GetINISetting(E_Setting.DefaultNode, ClsSignumAPI._DefaultNode).ToString Then
             Changes = True
         End If
 
@@ -166,11 +169,11 @@ Public Class FrmGeneralSettings
             Changes = True
         End If
 
-        If TBTCPAPIPort.Text <> GetINISetting(E_Setting.TCPAPIServerPort, 8130) Then
+        If TBTCPAPIPort.Text <> GetINISetting(E_Setting.TCPAPIServerPort, 8130).ToString Then
             Changes = True
         End If
 
-        If TBDEXNETPort.Text <> GetINISetting(E_Setting.DEXNETServerPort, 8131) Then
+        If TBDEXNETPort.Text <> GetINISetting(E_Setting.DEXNETServerPort, 8131).ToString Then
             Changes = True
         End If
 
@@ -179,7 +182,7 @@ Public Class FrmGeneralSettings
             'Changes = True
         End If
 
-        If CoBxPayType.SelectedItem <> GetINISetting(E_Setting.PaymentType, "Self Pickup") Then
+        If CoBxPayType.SelectedItem.ToString <> GetINISetting(E_Setting.PaymentType, "Self Pickup") Then
 
         End If
 
@@ -220,7 +223,7 @@ Public Class FrmGeneralSettings
 
                 'SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
                 SetINISetting(E_Setting.LastMarketViewed, C_MainForm.CurrentMarket)
-                SetINISetting(E_Setting.RefreshMinutes, CInt(CoBxRefresh.Text))
+                SetINISetting(E_Setting.RefreshMinutes, Integer.Parse(CoBxRefresh.Text))
                 SetINISetting(E_Setting.DefaultNode, C_MainForm.PrimaryNode)
 
                 SetINISetting(E_Setting.AutoSendPaymentInfo, ChBxAutoSendPaymentInfo.Checked)
@@ -230,7 +233,7 @@ Public Class FrmGeneralSettings
                 SetINISetting(E_Setting.TCPAPIServerPort, TBTCPAPIPort.Text)
                 SetINISetting(E_Setting.TCPAPIEnable, ChBxTCPAPI.Checked)
 
-                SetINISetting(E_Setting.PaymentType, CoBxPayType.SelectedItem)
+                SetINISetting(E_Setting.PaymentType, CoBxPayType.SelectedItem.ToString)
                 SetINISetting(E_Setting.PaymentInfoText, TBPaymentInfo.Text.Trim)
 
                 SetINISetting(E_Setting.PayPalChoice, RBs)
@@ -251,7 +254,7 @@ Public Class FrmGeneralSettings
 
         'SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
         SetINISetting(E_Setting.LastMarketViewed, C_MainForm.CurrentMarket)
-        SetINISetting(E_Setting.RefreshMinutes, CInt(CoBxRefresh.Text))
+        SetINISetting(E_Setting.RefreshMinutes, Integer.Parse(CoBxRefresh.Text))
         SetINISetting(E_Setting.DefaultNode, C_MainForm.PrimaryNode)
 
         Dim Nodes As String = ""
@@ -272,7 +275,7 @@ Public Class FrmGeneralSettings
         SetINISetting(E_Setting.TCPAPIServerPort, TBTCPAPIPort.Text)
         SetINISetting(E_Setting.TCPAPIEnable, ChBxTCPAPI.Checked)
 
-        SetINISetting(E_Setting.PaymentType, CoBxPayType.SelectedItem)
+        SetINISetting(E_Setting.PaymentType, CoBxPayType.SelectedItem.ToString)
         SetINISetting(E_Setting.PaymentInfoText, TBPaymentInfo.Text.Trim)
 
         Dim RBs As String = ""
@@ -442,7 +445,7 @@ Public Class FrmGeneralSettings
 
         If Not IsNothing(CoBxPayType.SelectedItem) Then
 
-            Select Case CoBxPayType.SelectedItem
+            Select Case CoBxPayType.SelectedItem.ToString
                 Case PayTypes(0)
                     ChBxAutoSendPaymentInfo.Enabled = True
                     ChBxAutoSendPaymentInfo.Checked = False

@@ -149,7 +149,7 @@ Partial Class FrmManual
         '
         'TabPage1
         '
-        Me.TabPage1.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.TabPage1.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.TabPage1.Controls.Add(Me.LabWelcome)
         Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
@@ -160,6 +160,7 @@ Partial Class FrmManual
         '
         'LabWelcome
         '
+        Me.LabWelcome.BackColor = System.Drawing.Color.Transparent
         Me.LabWelcome.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabWelcome.Location = New System.Drawing.Point(3, 3)
         Me.LabWelcome.Name = "LabWelcome"
@@ -169,7 +170,7 @@ Partial Class FrmManual
         '
         'TabPage2
         '
-        Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.TabPage2.Controls.Add(Me.SplitContainer15)
         Me.TabPage2.Location = New System.Drawing.Point(4, 22)
         Me.TabPage2.Name = "TabPage2"
@@ -180,6 +181,7 @@ Partial Class FrmManual
         '
         'SplitContainer15
         '
+        Me.SplitContainer15.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.SplitContainer15.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer15.Location = New System.Drawing.Point(3, 3)
         Me.SplitContainer15.Name = "SplitContainer15"
@@ -249,8 +251,10 @@ Partial Class FrmManual
         '
         Me.TBManualPIN.Location = New System.Drawing.Point(253, 28)
         Me.TBManualPIN.Name = "TBManualPIN"
+        Me.TBManualPIN.PasswordChar = Global.Microsoft.VisualBasic.ChrW(35)
         Me.TBManualPIN.Size = New System.Drawing.Size(163, 20)
         Me.TBManualPIN.TabIndex = 5
+        Me.TBManualPIN.UseSystemPasswordChar = True
         '
         'ChBxManualEncryptPP
         '
@@ -297,7 +301,7 @@ Partial Class FrmManual
         '
         'btManualSetPassPhrase
         '
-        Me.btManualSetPassPhrase.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.btManualSetPassPhrase.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.btManualSetPassPhrase.Dock = System.Windows.Forms.DockStyle.Fill
         Me.btManualSetPassPhrase.Location = New System.Drawing.Point(0, 0)
         Me.btManualSetPassPhrase.Name = "btManualSetPassPhrase"
@@ -309,7 +313,7 @@ Partial Class FrmManual
         'TabPage3
         '
         Me.TabPage3.AutoScroll = True
-        Me.TabPage3.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.TabPage3.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.TabPage3.Controls.Add(Me.Panel1)
         Me.TabPage3.Location = New System.Drawing.Point(4, 22)
         Me.TabPage3.Name = "TabPage3"
@@ -366,6 +370,7 @@ Partial Class FrmManual
         '
         'LabExample1
         '
+        Me.LabExample1.BackColor = System.Drawing.Color.Transparent
         Me.LabExample1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LabExample1.Location = New System.Drawing.Point(0, 0)
         Me.LabExample1.Name = "LabExample1"
@@ -686,7 +691,8 @@ Partial Class FrmManual
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
         Me.ClientSize = New System.Drawing.Size(784, 361)
         Me.Controls.Add(Me.TabControl1)
         Me.ForeColor = System.Drawing.Color.White

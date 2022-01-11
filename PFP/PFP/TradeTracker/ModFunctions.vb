@@ -1,4 +1,10 @@
-﻿Module ModFunctions
+﻿
+'TODO: Options On
+
+'Option Strict On
+'Option Explicit On
+
+Module ModFunctions
     ''' <summary>
     ''' 
     ''' </summary>
@@ -38,6 +44,10 @@
                 If DateValueList(i).Count = 4 Then
                     Candle.MaxValue = DateValueList(i)(2)
                     Candle.MinValue = DateValueList(i)(3)
+                ElseIf DateValueList(i).Count = 5 Then
+                    Candle.MaxValue = DateValueList(i)(2)
+                    Candle.MinValue = DateValueList(i)(3)
+                    Candle.Volume = DateValueList(i)(4)
                 Else
                     If Candle.OpenValue > Candle.CloseValue Then
                         Candle.MaxValue = Candle.OpenValue
@@ -81,7 +91,7 @@
 
             Dim SF As Double = 2 / (EMA + 1)
 
-            EMAList.Add(New List(Of Object)({Dat, CDbl((Valu - EMA_t_m1) * SF + EMA_t_m1)}))
+            EMAList.Add(New List(Of Object)({Dat, Double.Parse((Valu - EMA_t_m1) * SF + EMA_t_m1)}))
 
         Next
 
@@ -101,7 +111,7 @@
 
         Dim SF As Double = 2 / (EMA + 1)
 
-        Return CDbl((Value - EMA_t_m1) * SF + EMA_t_m1)
+        Return Double.Parse((Value - EMA_t_m1) * SF + EMA_t_m1)
 
     End Function
 

@@ -1,7 +1,10 @@
 ﻿
+
+Option Strict On
+Option Explicit On
+
 'Imports TradeTracker.TradeTrackerTimeRail
 'Imports TradeTracker.Graph
-
 
 Public Class TradeTrackerTestForm
 

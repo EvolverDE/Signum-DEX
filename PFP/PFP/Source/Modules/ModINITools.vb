@@ -1,4 +1,7 @@
 
+Option Strict On
+Option Explicit On
+
 Imports PFP.ClsINITool
 
 Module ModINITools
@@ -72,6 +75,9 @@ Module ModINITools
 
     End Function
 
+    Sub StopINIClass()
+        INISettings.Closer()
+    End Sub
 
     Function InitiateINI() As Boolean
 
@@ -79,26 +85,26 @@ Module ModINITools
         Temp = GetINISetting(E_Setting.PINFingerPrint, "")
         Temp = GetINISetting(E_Setting.Address, "")
         Temp = GetINISetting(E_Setting.LastMarketViewed, "USD")
-        Temp = GetINISetting(E_Setting.RefreshMinutes, 1)
-        Temp = GetINISetting(E_Setting.Nodes, "http://lmsi.club:6876/burst")
-        Temp = GetINISetting(E_Setting.DefaultNode, "http://lmsi.club:6876/burst")
-        Temp = GetINISetting(E_Setting.TCPAPIEnable, True)
-        Temp = GetINISetting(E_Setting.TCPAPIServerPort, 8130)
-        Temp = GetINISetting(E_Setting.DEXNETServerPort, 8131)
+        Temp = GetINISetting(E_Setting.RefreshMinutes, 1).ToString
+        Temp = GetINISetting(E_Setting.Nodes, ClsSignumAPI._Nodes)
+        Temp = GetINISetting(E_Setting.DefaultNode, ClsSignumAPI._DefaultNode)
+        Temp = GetINISetting(E_Setting.TCPAPIEnable, True).ToString
+        Temp = GetINISetting(E_Setting.TCPAPIServerPort, 8130).ToString
+        Temp = GetINISetting(E_Setting.DEXNETServerPort, 8131).ToString
         Temp = GetINISetting(E_Setting.DEXNETNodes, "signum.zone:8131")
         Temp = GetINISetting(E_Setting.DEXNETMyHost, "")
 
-        Temp = GetINISetting(E_Setting.AutoSendPaymentInfo, False)
-        Temp = GetINISetting(E_Setting.AutoCheckAndFinishAT, False)
-        Temp = GetINISetting(E_Setting.PaymentType, "Other")
+        Temp = GetINISetting(E_Setting.AutoSendPaymentInfo, False).ToString
+        Temp = GetINISetting(E_Setting.AutoCheckAndFinishAT, False).ToString
+        Temp = GetINISetting(E_Setting.PaymentType, "Other").ToString
         Temp = GetINISetting(E_Setting.PaymentInfoText, "self pickup")
 
-        Temp = GetINISetting(E_Setting.ShowMaxSellOrders, 10)
-        Temp = GetINISetting(E_Setting.ShowMaxBuyOrders, 10)
-        Temp = GetINISetting(E_Setting.SellFilterAutoinfo, False)
-        Temp = GetINISetting(E_Setting.BuyFilterAutoinfo, False)
-        Temp = GetINISetting(E_Setting.SellFilterAutofinish, False)
-        Temp = GetINISetting(E_Setting.BuyFilterAutofinish, False)
+        Temp = GetINISetting(E_Setting.ShowMaxSellOrders, 10).ToString
+        Temp = GetINISetting(E_Setting.ShowMaxBuyOrders, 10).ToString
+        Temp = GetINISetting(E_Setting.SellFilterAutoinfo, False).ToString
+        Temp = GetINISetting(E_Setting.BuyFilterAutoinfo, False).ToString
+        Temp = GetINISetting(E_Setting.SellFilterAutofinish, False).ToString
+        Temp = GetINISetting(E_Setting.BuyFilterAutofinish, False).ToString
 
 
         Dim DefaultMethodList As List(Of String) = New List(Of String)(ClsOrderSettings.GetPayTypes.ToArray)
@@ -112,8 +118,8 @@ Module ModINITools
 
         Temp = GetINISetting(E_Setting.SellFilterMethods, DefaultMethods)
         Temp = GetINISetting(E_Setting.BuyFilterMethods, DefaultMethods)
-        Temp = GetINISetting(E_Setting.SellFilterPayable, False)
-        Temp = GetINISetting(E_Setting.BuyFilterPayable, False)
+        Temp = GetINISetting(E_Setting.SellFilterPayable, False).ToString
+        Temp = GetINISetting(E_Setting.BuyFilterPayable, False).ToString
 
         Temp = GetINISetting(E_Setting.PayPalChoice, "EMail")
         Temp = GetINISetting(E_Setting.PayPalEMail, "test@test.com")
@@ -123,10 +129,10 @@ Module ModINITools
         Temp = GetINISetting(E_Setting.AutoSignalTransactions, "")
         Temp = GetINISetting(E_Setting.AutoInfoTransactions, "")
 
-        Temp = GetINISetting(E_Setting.InfoOut, True)
-        Temp = GetINISetting(E_Setting.TCPAPIShowStatus, False)
-        Temp = GetINISetting(E_Setting.DEXNETEnable, False)
-        Temp = GetINISetting(E_Setting.DEXNETShowStatus, False)
+        Temp = GetINISetting(E_Setting.InfoOut, True).ToString
+        Temp = GetINISetting(E_Setting.TCPAPIShowStatus, False).ToString
+        Temp = GetINISetting(E_Setting.DEXNETEnable, False).ToString
+        Temp = GetINISetting(E_Setting.DEXNETShowStatus, False).ToString
 
         Return True
 
@@ -137,7 +143,9 @@ Module ModINITools
 
         Dim Section As E_SettingSection
 
-        Select Case Setting
+        Dim Int_Setting As Integer = Convert.ToInt32(Setting)
+
+        Select Case Int_Setting
             Case 0 To 99
                 Section = E_SettingSection.Basics
             Case 100 To 199
@@ -165,29 +173,12 @@ Module ModINITools
     Private Sub INISetValueToFile(ByVal INI As String, ByVal Section As String, ByVal Key As String, ByVal Value As String)
 
         Dim Result As String = ""
-        Result = INISettings.SetValueToSectionKey(Section, Key, Value) ' WritePrivateProfileString(Section.ToUpper, Key.ToUpper, Value, INI)
+        Result = INISettings.SetValueToSectionKey(Section, Key, Value).ToString
 
     End Sub
 
     Private Function INIGetValueFromFile(ByVal File As String, ByVal Section As String, ByVal Key As String, Optional ByVal Def As String = "") As String
-
         Return INISettings.GetValueFromSectionKey(Section, Key, Def)
-
-        'Dim T As String = ""
-
-        'Dim Result As String = ""
-        'Dim Buffer As String = ""
-        'Buffer = Space(16384)
-        'Result = GetPrivateProfileString(Section.ToUpper, Key.ToUpper, vbNullString, Buffer, Len(Buffer), File)
-        'T = Left(Buffer, Result)
-
-        'If Result = 0 Then
-        '    INISetValue(File, Section.ToUpper, Key, Def)
-        '    T = Def
-        'End If
-
-        'Return T
-
     End Function
 
     Public Sub INISetValue(ByVal File As String, ByVal Section As String, ByVal Key As String, ByVal Value As String)
@@ -206,7 +197,12 @@ Module ModINITools
         Try
             T = INIGetValueFromFile(File, Section, Key, Def)
         Catch EXC As Exception
-            MsgBox(EXC.Message)
+
+            'If GetINISetting(E_Setting.InfoOut, False) Then
+            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+            Out.ErrorLog2File(Application.ProductName + "-error in INIGetValue(File=" + File + " Section=" + Section + " Key=" + Key + " Def=" + Def + "): -> " + EXC.ToString)
+            'End If
+
             T = ""
         End Try
 
@@ -225,7 +221,7 @@ Module ModINITools
         Dim Returner As Integer = DefaultValue
 
         Try
-            Returner = CInt(INIGetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, DefaultValue.ToString))
+            Returner = Integer.Parse(INIGetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, DefaultValue.ToString))
         Catch ex As Exception
 
         End Try

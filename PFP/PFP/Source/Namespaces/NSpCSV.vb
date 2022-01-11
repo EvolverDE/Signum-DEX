@@ -1,4 +1,7 @@
 ﻿
+Option Strict On
+Option Explicit On
+
 Namespace CSVTool
 
     Public Class CSVReader
@@ -44,7 +47,7 @@ Namespace CSVTool
                 If Decrypt Then
                     Line = AESDecrypt(Line, Password)
                 End If
-                Lists.Add(New List(Of String)(Line.Split(Splitter)))
+                Lists.Add(New List(Of String)(Line.Split(Convert.ToChar(Splitter))))
             Next
 
             Lists.RemoveAt(0)

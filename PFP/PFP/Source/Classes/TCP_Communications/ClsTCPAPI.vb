@@ -1,4 +1,8 @@
-﻿Imports System.Net
+﻿
+Option Strict On
+Option Explicit On
+
+Imports System.Net
 Imports System.Net.Sockets
 Imports System.Threading
 Imports System.Text
@@ -76,12 +80,12 @@ Public Class ClsTCPAPI
 
                 Dim T_Connection As S_Connection = New S_Connection
 
-                Dim T_CEP As IPEndPoint = TCPClient.Client.RemoteEndPoint
+                Dim T_CEP As IPEndPoint = DirectCast(TCPClient.Client.RemoteEndPoint, Net.IPEndPoint)
 
-                Dim IPPort() As String = T_CEP.ToString.Split(":")
+                Dim IPPort() As String = T_CEP.ToString.Split(":"c)
 
                 T_Connection.IP = IPPort(0)
-                T_Connection.Port = CInt(IPPort(1))
+                T_Connection.Port = Integer.Parse(IPPort(1))
 
                 If API_ShowStatusMSG Then
                     StatusMSG.Add("Client: " + T_Connection.IP + ":" + T_Connection.Port.ToString)
@@ -148,7 +152,7 @@ Public Class ClsTCPAPI
     End Function
 
 
-    Private Sub TCPTimer_Tick()
+    Private Sub TCPTimer_Tick(ByVal sender As Object, ByVal e As EventArgs)
         ClearList()
         ProcessRequest()
     End Sub
@@ -232,7 +236,8 @@ Public Class ClsTCPAPI
                 'MultiInvoker(ListBox1, "Items", {"Insert", 0, "HTTP Request: "})
 
                 Dim RequestList As List(Of String) = New List(Of String)
-                RequestList.AddRange(htmlReq.Split(ControlChars.CrLf))
+                Dim CarrierReturn As Char = Convert.ToChar(vbCr)
+                RequestList.AddRange(htmlReq.Split(CarrierReturn))
 
 
                 '		(0)	    "GET /API/v1.0/GetCandles?pair=USD_SIGNA&days=3&tickmin=15 HTTP/1.1"	String
@@ -256,7 +261,7 @@ Public Class ClsTCPAPI
 
                 If RequestList.Count > 0 Then
 
-                    Dim Method_Path_HTTPv As List(Of String) = New List(Of String)(RequestList(0).Split(" "))
+                    Dim Method_Path_HTTPv As List(Of String) = New List(Of String)(RequestList(0).Split(" "c))
 
                     If Method_Path_HTTPv(0).Trim.ToUpper = "GET" Then
 
@@ -265,7 +270,7 @@ Public Class ClsTCPAPI
                         Dim SubRequest As List(Of String) = New List(Of String)
 
                         If Request.Contains("/") Then
-                            SubRequest.AddRange(Request.Split("/"))
+                            SubRequest.AddRange(Request.Split("/"c))
                         End If
 
                         If SubRequest.Count > 0 Then
@@ -291,7 +296,7 @@ Public Class ClsTCPAPI
                         If APICommand.Contains("?") Then
                             Dim T_Parameters As String = APICommand.Substring(APICommand.IndexOf("?") + 1)
                             APICommand = APICommand.Remove(APICommand.IndexOf("?"))
-                            QueryParameters.AddRange(T_Parameters.Split("&").ToArray)
+                            QueryParameters.AddRange(T_Parameters.Split("&"c).ToArray)
                         End If
 
 

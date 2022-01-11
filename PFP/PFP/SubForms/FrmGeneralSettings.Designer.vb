@@ -23,20 +23,20 @@ Partial Class FrmGeneralSettings
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.CoBxPayType = New System.Windows.Forms.ComboBox()
         Me.TBDEXNETPort = New System.Windows.Forms.TextBox()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.TBTCPAPIPort = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
-        Me.Label1 = New System.Windows.Forms.Label()
         Me.ChBxTCPAPI = New System.Windows.Forms.CheckBox()
-        Me.ChBxCheckXItemTX = New System.Windows.Forms.CheckBox()
         Me.Label20 = New System.Windows.Forms.Label()
         Me.CoBxNode = New System.Windows.Forms.ComboBox()
         Me.CoBxRefresh = New System.Windows.Forms.ComboBox()
         Me.Label19 = New System.Windows.Forms.Label()
         Me.Label6 = New System.Windows.Forms.Label()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.CoBxPayType = New System.Windows.Forms.ComboBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.ChBxCheckXItemTX = New System.Windows.Forms.CheckBox()
         Me.BtSaveSettings = New System.Windows.Forms.Button()
         Me.ChBxAutoSendPaymentInfo = New System.Windows.Forms.CheckBox()
         Me.TBPaymentInfo = New System.Windows.Forms.TextBox()
@@ -52,62 +52,39 @@ Partial Class FrmGeneralSettings
         Me.TBPayPalAPISecret = New System.Windows.Forms.TextBox()
         Me.Label14 = New System.Windows.Forms.Label()
         Me.TBPayPalAPIUser = New System.Windows.Forms.TextBox()
+        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.GroupBox3.SuspendLayout()
         Me.GrpBxSeller.SuspendLayout()
         Me.TabControl2.SuspendLayout()
         Me.TabPage4.SuspendLayout()
         Me.TabPage5.SuspendLayout()
+        Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
         'GroupBox3
         '
-        Me.GroupBox3.Controls.Add(Me.Label4)
-        Me.GroupBox3.Controls.Add(Me.CoBxPayType)
+        Me.GroupBox3.BackColor = System.Drawing.Color.Transparent
         Me.GroupBox3.Controls.Add(Me.TBDEXNETPort)
         Me.GroupBox3.Controls.Add(Me.Label3)
         Me.GroupBox3.Controls.Add(Me.TBTCPAPIPort)
         Me.GroupBox3.Controls.Add(Me.Label2)
-        Me.GroupBox3.Controls.Add(Me.Label1)
         Me.GroupBox3.Controls.Add(Me.ChBxTCPAPI)
-        Me.GroupBox3.Controls.Add(Me.ChBxCheckXItemTX)
         Me.GroupBox3.Controls.Add(Me.Label20)
         Me.GroupBox3.Controls.Add(Me.CoBxNode)
         Me.GroupBox3.Controls.Add(Me.CoBxRefresh)
         Me.GroupBox3.Controls.Add(Me.Label19)
         Me.GroupBox3.Controls.Add(Me.Label6)
-        Me.GroupBox3.Controls.Add(Me.BtSaveSettings)
-        Me.GroupBox3.Controls.Add(Me.ChBxAutoSendPaymentInfo)
-        Me.GroupBox3.Controls.Add(Me.TBPaymentInfo)
         Me.GroupBox3.ForeColor = System.Drawing.Color.White
         Me.GroupBox3.Location = New System.Drawing.Point(12, 12)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(341, 285)
+        Me.GroupBox3.Size = New System.Drawing.Size(347, 124)
         Me.GroupBox3.TabIndex = 9
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Default Settings"
         '
-        'Label4
-        '
-        Me.Label4.AutoSize = True
-        Me.Label4.ForeColor = System.Drawing.Color.White
-        Me.Label4.Location = New System.Drawing.Point(9, 45)
-        Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(48, 13)
-        Me.Label4.TabIndex = 26
-        Me.Label4.Text = "Paytype:"
-        '
-        'CoBxPayType
-        '
-        Me.CoBxPayType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.CoBxPayType.FormattingEnabled = True
-        Me.CoBxPayType.Location = New System.Drawing.Point(63, 42)
-        Me.CoBxPayType.Name = "CoBxPayType"
-        Me.CoBxPayType.Size = New System.Drawing.Size(265, 21)
-        Me.CoBxPayType.TabIndex = 25
-        '
         'TBDEXNETPort
         '
-        Me.TBDEXNETPort.Location = New System.Drawing.Point(136, 203)
+        Me.TBDEXNETPort.Location = New System.Drawing.Point(133, 67)
         Me.TBDEXNETPort.Name = "TBDEXNETPort"
         Me.TBDEXNETPort.Size = New System.Drawing.Size(63, 20)
         Me.TBDEXNETPort.TabIndex = 24
@@ -116,7 +93,7 @@ Partial Class FrmGeneralSettings
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(9, 206)
+        Me.Label3.Location = New System.Drawing.Point(6, 70)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(76, 13)
         Me.Label3.TabIndex = 23
@@ -124,7 +101,7 @@ Partial Class FrmGeneralSettings
         '
         'TBTCPAPIPort
         '
-        Me.TBTCPAPIPort.Location = New System.Drawing.Point(136, 229)
+        Me.TBTCPAPIPort.Location = New System.Drawing.Point(133, 93)
         Me.TBTCPAPIPort.Name = "TBTCPAPIPort"
         Me.TBTCPAPIPort.Size = New System.Drawing.Size(63, 20)
         Me.TBTCPAPIPort.TabIndex = 22
@@ -133,45 +110,26 @@ Partial Class FrmGeneralSettings
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(9, 232)
+        Me.Label2.Location = New System.Drawing.Point(6, 96)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(73, 13)
         Me.Label2.TabIndex = 21
         Me.Label2.Text = "TCP API Port:"
         '
-        'Label1
-        '
-        Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(9, 72)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(45, 13)
-        Me.Label1.TabIndex = 20
-        Me.Label1.Text = "Infotext:"
-        '
         'ChBxTCPAPI
         '
         Me.ChBxTCPAPI.AutoSize = True
-        Me.ChBxTCPAPI.Location = New System.Drawing.Point(205, 231)
+        Me.ChBxTCPAPI.Location = New System.Drawing.Point(202, 95)
         Me.ChBxTCPAPI.Name = "ChBxTCPAPI"
         Me.ChBxTCPAPI.Size = New System.Drawing.Size(103, 17)
         Me.ChBxTCPAPI.TabIndex = 19
         Me.ChBxTCPAPI.Text = "TCP API Enable"
         Me.ChBxTCPAPI.UseVisualStyleBackColor = True
         '
-        'ChBxCheckXItemTX
-        '
-        Me.ChBxCheckXItemTX.AutoSize = True
-        Me.ChBxCheckXItemTX.Location = New System.Drawing.Point(9, 95)
-        Me.ChBxCheckXItemTX.Name = "ChBxCheckXItemTX"
-        Me.ChBxCheckXItemTX.Size = New System.Drawing.Size(270, 17)
-        Me.ChBxCheckXItemTX.TabIndex = 16
-        Me.ChBxCheckXItemTX.Text = "automatically check XItem transaction and finish AT"
-        Me.ChBxCheckXItemTX.UseVisualStyleBackColor = True
-        '
         'Label20
         '
         Me.Label20.AutoSize = True
-        Me.Label20.Location = New System.Drawing.Point(205, 152)
+        Me.Label20.Location = New System.Drawing.Point(202, 16)
         Me.Label20.Name = "Label20"
         Me.Label20.Size = New System.Drawing.Size(44, 13)
         Me.Label20.TabIndex = 14
@@ -181,8 +139,7 @@ Partial Class FrmGeneralSettings
         '
         Me.CoBxNode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CoBxNode.FormattingEnabled = True
-        Me.CoBxNode.Items.AddRange(New Object() {"http://lmsi.club:6876/burst", "https://testnet.burstcoin.network:6876/burst", "https://testnet-2.burst-alliance.org:6876/burst", "https://wallet.testnet.burstscan.net/burst", "https://wallet.dev.burst-test.net/burst", "http://localhost:6876/burst"})
-        Me.CoBxNode.Location = New System.Drawing.Point(136, 176)
+        Me.CoBxNode.Location = New System.Drawing.Point(133, 40)
         Me.CoBxNode.Name = "CoBxNode"
         Me.CoBxNode.Size = New System.Drawing.Size(192, 21)
         Me.CoBxNode.TabIndex = 13
@@ -192,7 +149,7 @@ Partial Class FrmGeneralSettings
         Me.CoBxRefresh.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CoBxRefresh.FormattingEnabled = True
         Me.CoBxRefresh.Items.AddRange(New Object() {"1", "4", "10"})
-        Me.CoBxRefresh.Location = New System.Drawing.Point(136, 149)
+        Me.CoBxRefresh.Location = New System.Drawing.Point(133, 13)
         Me.CoBxRefresh.Name = "CoBxRefresh"
         Me.CoBxRefresh.Size = New System.Drawing.Size(63, 21)
         Me.CoBxRefresh.TabIndex = 12
@@ -200,7 +157,7 @@ Partial Class FrmGeneralSettings
         'Label19
         '
         Me.Label19.AutoSize = True
-        Me.Label19.Location = New System.Drawing.Point(9, 179)
+        Me.Label19.Location = New System.Drawing.Point(6, 43)
         Me.Label19.Name = "Label19"
         Me.Label19.Size = New System.Drawing.Size(93, 13)
         Me.Label19.TabIndex = 11
@@ -209,18 +166,57 @@ Partial Class FrmGeneralSettings
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(9, 152)
+        Me.Label6.Location = New System.Drawing.Point(6, 16)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(65, 13)
         Me.Label6.TabIndex = 10
         Me.Label6.Text = "Refreshrate:"
         '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.ForeColor = System.Drawing.Color.White
+        Me.Label4.Location = New System.Drawing.Point(6, 45)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(48, 13)
+        Me.Label4.TabIndex = 26
+        Me.Label4.Text = "Paytype:"
+        '
+        'CoBxPayType
+        '
+        Me.CoBxPayType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CoBxPayType.FormattingEnabled = True
+        Me.CoBxPayType.Location = New System.Drawing.Point(60, 42)
+        Me.CoBxPayType.Name = "CoBxPayType"
+        Me.CoBxPayType.Size = New System.Drawing.Size(265, 21)
+        Me.CoBxPayType.TabIndex = 25
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(6, 72)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(45, 13)
+        Me.Label1.TabIndex = 20
+        Me.Label1.Text = "Infotext:"
+        '
+        'ChBxCheckXItemTX
+        '
+        Me.ChBxCheckXItemTX.AutoSize = True
+        Me.ChBxCheckXItemTX.Location = New System.Drawing.Point(6, 95)
+        Me.ChBxCheckXItemTX.Name = "ChBxCheckXItemTX"
+        Me.ChBxCheckXItemTX.Size = New System.Drawing.Size(270, 17)
+        Me.ChBxCheckXItemTX.TabIndex = 16
+        Me.ChBxCheckXItemTX.Text = "automatically check XItem transaction and finish AT"
+        Me.ChBxCheckXItemTX.UseVisualStyleBackColor = True
+        '
         'BtSaveSettings
         '
-        Me.BtSaveSettings.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.BtSaveSettings.Location = New System.Drawing.Point(6, 255)
+        Me.BtSaveSettings.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BtSaveSettings.ForeColor = System.Drawing.Color.White
+        Me.BtSaveSettings.Location = New System.Drawing.Point(12, 267)
         Me.BtSaveSettings.Name = "BtSaveSettings"
-        Me.BtSaveSettings.Size = New System.Drawing.Size(134, 23)
+        Me.BtSaveSettings.Size = New System.Drawing.Size(758, 30)
         Me.BtSaveSettings.TabIndex = 9
         Me.BtSaveSettings.Text = "save settings"
         Me.BtSaveSettings.UseVisualStyleBackColor = False
@@ -228,7 +224,7 @@ Partial Class FrmGeneralSettings
         'ChBxAutoSendPaymentInfo
         '
         Me.ChBxAutoSendPaymentInfo.AutoSize = True
-        Me.ChBxAutoSendPaymentInfo.Location = New System.Drawing.Point(9, 19)
+        Me.ChBxAutoSendPaymentInfo.Location = New System.Drawing.Point(6, 19)
         Me.ChBxAutoSendPaymentInfo.Name = "ChBxAutoSendPaymentInfo"
         Me.ChBxAutoSendPaymentInfo.Size = New System.Drawing.Size(319, 17)
         Me.ChBxAutoSendPaymentInfo.TabIndex = 4
@@ -237,18 +233,19 @@ Partial Class FrmGeneralSettings
         '
         'TBPaymentInfo
         '
-        Me.TBPaymentInfo.Location = New System.Drawing.Point(63, 69)
+        Me.TBPaymentInfo.Location = New System.Drawing.Point(60, 69)
         Me.TBPaymentInfo.Name = "TBPaymentInfo"
         Me.TBPaymentInfo.Size = New System.Drawing.Size(265, 20)
         Me.TBPaymentInfo.TabIndex = 7
         '
         'GrpBxSeller
         '
+        Me.GrpBxSeller.BackColor = System.Drawing.Color.Transparent
         Me.GrpBxSeller.Controls.Add(Me.TabControl2)
         Me.GrpBxSeller.ForeColor = System.Drawing.Color.White
-        Me.GrpBxSeller.Location = New System.Drawing.Point(387, 12)
+        Me.GrpBxSeller.Location = New System.Drawing.Point(365, 12)
         Me.GrpBxSeller.Name = "GrpBxSeller"
-        Me.GrpBxSeller.Size = New System.Drawing.Size(405, 285)
+        Me.GrpBxSeller.Size = New System.Drawing.Size(405, 249)
         Me.GrpBxSeller.TabIndex = 10
         Me.GrpBxSeller.TabStop = False
         Me.GrpBxSeller.Text = "PayPal Settings (Sandbox)"
@@ -261,19 +258,19 @@ Partial Class FrmGeneralSettings
         Me.TabControl2.Location = New System.Drawing.Point(3, 16)
         Me.TabControl2.Name = "TabControl2"
         Me.TabControl2.SelectedIndex = 0
-        Me.TabControl2.Size = New System.Drawing.Size(399, 266)
+        Me.TabControl2.Size = New System.Drawing.Size(399, 230)
         Me.TabControl2.TabIndex = 6
         '
         'TabPage4
         '
-        Me.TabPage4.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.TabPage4.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.TabPage4.Controls.Add(Me.RBPayPalOrder)
         Me.TabPage4.Controls.Add(Me.RBPayPalEMail)
         Me.TabPage4.Controls.Add(Me.TBPayPalEMail)
         Me.TabPage4.Location = New System.Drawing.Point(4, 22)
         Me.TabPage4.Name = "TabPage4"
         Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage4.Size = New System.Drawing.Size(391, 240)
+        Me.TabPage4.Size = New System.Drawing.Size(391, 204)
         Me.TabPage4.TabIndex = 0
         Me.TabPage4.Text = "Payment informations"
         '
@@ -308,7 +305,7 @@ Partial Class FrmGeneralSettings
         '
         'TabPage5
         '
-        Me.TabPage5.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.TabPage5.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.TabPage5.Controls.Add(Me.BtCheckPayPalBiz)
         Me.TabPage5.Controls.Add(Me.Label13)
         Me.TabPage5.Controls.Add(Me.TBPayPalAPISecret)
@@ -317,13 +314,13 @@ Partial Class FrmGeneralSettings
         Me.TabPage5.Location = New System.Drawing.Point(4, 22)
         Me.TabPage5.Name = "TabPage5"
         Me.TabPage5.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage5.Size = New System.Drawing.Size(391, 240)
+        Me.TabPage5.Size = New System.Drawing.Size(391, 204)
         Me.TabPage5.TabIndex = 1
         Me.TabPage5.Text = "Business API"
         '
         'BtCheckPayPalBiz
         '
-        Me.BtCheckPayPalBiz.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.BtCheckPayPalBiz.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtCheckPayPalBiz.Location = New System.Drawing.Point(76, 58)
         Me.BtCheckPayPalBiz.Name = "BtCheckPayPalBiz"
         Me.BtCheckPayPalBiz.Size = New System.Drawing.Size(75, 23)
@@ -364,14 +361,36 @@ Partial Class FrmGeneralSettings
         Me.TBPayPalAPIUser.Size = New System.Drawing.Size(296, 20)
         Me.TBPayPalAPIUser.TabIndex = 2
         '
+        'GroupBox1
+        '
+        Me.GroupBox1.BackColor = System.Drawing.Color.Transparent
+        Me.GroupBox1.Controls.Add(Me.Label4)
+        Me.GroupBox1.Controls.Add(Me.ChBxAutoSendPaymentInfo)
+        Me.GroupBox1.Controls.Add(Me.CoBxPayType)
+        Me.GroupBox1.Controls.Add(Me.TBPaymentInfo)
+        Me.GroupBox1.Controls.Add(Me.ChBxCheckXItemTX)
+        Me.GroupBox1.Controls.Add(Me.Label1)
+        Me.GroupBox1.ForeColor = System.Drawing.Color.White
+        Me.GroupBox1.Location = New System.Drawing.Point(12, 142)
+        Me.GroupBox1.Name = "GroupBox1"
+        Me.GroupBox1.Size = New System.Drawing.Size(347, 119)
+        Me.GroupBox1.TabIndex = 13
+        Me.GroupBox1.TabStop = False
+        Me.GroupBox1.Text = "Default Non-Cryptocurrency Settings"
+        '
         'FrmGeneralSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
-        Me.ClientSize = New System.Drawing.Size(823, 309)
+        Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
+        Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.ClientSize = New System.Drawing.Size(783, 314)
+        Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.GrpBxSeller)
         Me.Controls.Add(Me.GroupBox3)
+        Me.Controls.Add(Me.BtSaveSettings)
+        Me.DoubleBuffered = True
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Name = "FrmGeneralSettings"
         Me.Text = "FrmGeneralSettings"
@@ -383,6 +402,8 @@ Partial Class FrmGeneralSettings
         Me.TabPage4.PerformLayout()
         Me.TabPage5.ResumeLayout(False)
         Me.TabPage5.PerformLayout()
+        Me.GroupBox1.ResumeLayout(False)
+        Me.GroupBox1.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -417,4 +438,5 @@ Partial Class FrmGeneralSettings
     Friend WithEvents Label3 As Label
     Friend WithEvents Label4 As Label
     Friend WithEvents CoBxPayType As ComboBox
+    Friend WithEvents GroupBox1 As GroupBox
 End Class

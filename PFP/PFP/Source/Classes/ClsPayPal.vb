@@ -1,12 +1,17 @@
-﻿Imports System.IO
+﻿'TODO: Options On
+
+'Option Strict On
+'Option Explicit On
+
+Imports System.IO
 Imports System.Net
 Imports System.Text
 Imports System.Security.Cryptography
 
 Public Class ClsPayPal
 
-    Const SandboxURL As String = "https://www.sandbox.paypal.com"
-    Const LiveURL As String = "https://www.api.paypal.com"
+    Public Const SandboxURL As String = "https://www.sandbox.paypal.com"
+    Public Const LiveURL As String = "https://www.api.paypal.com"
 
     Property Currencys As List(Of String) = New List(Of String)({"AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"})
 
@@ -1323,115 +1328,117 @@ Public Class ClsPayPal
 
     End Function
 
-    Public Function AuthOrder()
+#Region "not used"
 
-        SetSubURL(ClsPayPal.E_SubURL._v2_checkout_orders_ID_authorize, "2NS83667T8950703G")
+    'Public Function AuthOrder()
 
-        Dim ResponseStr As String = PayPalRequest("", , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
+    '    SetSubURL(ClsPayPal.E_SubURL._v2_checkout_orders_ID_authorize, "2NS83667T8950703G")
 
-        If ResponseStr.Trim = "" Then
-            Return New List(Of String)
-        End If
+    '    Dim ResponseStr As String = PayPalRequest("", , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
-        ResponseStr = ResponseStr
+    '    If ResponseStr.Trim = "" Then
+    '        Return New List(Of String)
+    '    End If
 
-    End Function
+    '    ResponseStr = ResponseStr
 
-    Public Function GetPaymentDetails()
+    'End Function
 
-        SetSubURL(ClsPayPal.E_SubURL._v2_payments_authorizations_AUTHID, "7EJ68552ST726563J")
+    'Public Function GetPaymentDetails()
 
-        Dim ResponseStr As String = PayPalRequest("", "GET", New List(Of String)({"Authorization: Basic " + AuthCredentials}))
+    '    SetSubURL(ClsPayPal.E_SubURL._v2_payments_authorizations_AUTHID, "7EJ68552ST726563J")
 
-        If ResponseStr.Trim = "" Then
-            Return New List(Of String)
-        End If
+    '    Dim ResponseStr As String = PayPalRequest("", "GET", New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
-        ResponseStr = ResponseStr
+    '    If ResponseStr.Trim = "" Then
+    '        Return New List(Of String)
+    '    End If
 
+    '    ResponseStr = ResponseStr
 
-    End Function
-    Public Function CaptureAuthPayment()
+    'End Function
+    'Public Function CaptureAuthPayment()
 
-        SetSubURL(ClsPayPal.E_SubURL._v2_payments_authorizations_AUTHID_capture, "7EJ68552ST726563J")
+    '    SetSubURL(ClsPayPal.E_SubURL._v2_payments_authorizations_AUTHID_capture, "7EJ68552ST726563J")
 
-        Dim Request = "{"
-        Request += """amount"" {"
-        Request += """value"": ""1.23"", "
-        Request += """currency_code"": ""USD"""
-        Request += "}, "
-        Request += """invoice_id"": ""INVOICE-123"", "
-        Request += """final_capture"": true"
-        Request += "}"
+    '    Dim Request = "{"
+    '    Request += """amount"" {"
+    '    Request += """value"": ""1.23"", "
+    '    Request += """currency_code"": ""USD"""
+    '    Request += "}, "
+    '    Request += """invoice_id"": ""INVOICE-123"", "
+    '    Request += """final_capture"": true"
+    '    Request += "}"
 
-        Dim ResponseStr As String = PayPalRequest("", , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
+    '    Dim ResponseStr As String = PayPalRequest("", , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
-        If ResponseStr.Trim = "" Then
-            Return New List(Of String)
-        End If
+    '    If ResponseStr.Trim = "" Then
+    '        Return New List(Of String)
+    '    End If
 
-        ResponseStr = ResponseStr
+    '    ResponseStr = ResponseStr
 
-    End Function
-    Public Function CapturePaymentDetails()
+    'End Function
+    'Public Function CapturePaymentDetails()
 
-        SetSubURL(ClsPayPal.E_SubURL._v2_payments_captures_CAPID, "7EJ68552ST726563J")
+    '    SetSubURL(ClsPayPal.E_SubURL._v2_payments_captures_CAPID, "7EJ68552ST726563J")
 
-        Dim ResponseStr As String = PayPalRequest("", "GET", New List(Of String)({"Authorization: Basic " + AuthCredentials}))
+    '    Dim ResponseStr As String = PayPalRequest("", "GET", New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
-        If ResponseStr.Trim = "" Then
-            Return New List(Of String)
-        End If
+    '    If ResponseStr.Trim = "" Then
+    '        Return New List(Of String)
+    '    End If
 
-        ResponseStr = ResponseStr
-
-
-        '{
-        '	"id":"7EJ68552ST726563J",
-        '	"amount":
-        '	{
-        '		"currency_code":"USD",
-        '		"value":"1.23"
-        '	},
-        '	"final_capture":true,
-        '	"seller_protection":
-        '	{
-        '		"status":"ELIGIBLE",
-        '		"dispute_categories":
-        '		[
-        '			"ITEM_NOT_RECEIVED",
-        '			"UNAUTHORIZED_TRANSACTION"
-        '		]
-        '	},
-        '	"status":"PENDING",
-        '	"status_details":
-        '	{
-        '		"reason":"RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION"
-        '	},
-        '	"create_time":"2020-10-06T12:22:41Z",
-        '	"update_time":"2020-10-06T12:22:41Z",
-        '	"links":
-        '	[
-        '		{
-        '			"href":"https://api.sandbox.paypal.com/v2/payments/captures/7EJ68552ST726563J",
-        '			"rel":"self",
-        '			"method":"GET"
-        '		},{
-        '			"href":"https://api.sandbox.paypal.com/v2/payments/captures/7EJ68552ST726563J/refund",
-        '			"rel":"refund",
-        '			"method":"POST"
-        '		},{
-        '			"href":"https://api.sandbox.paypal.com/v2/checkout/orders/2NS83667T8950703G",
-        '			"rel":"up",
-        '			"method":"GET"
-        '		}
-        '	]
-        '}
+    '    ResponseStr = ResponseStr
 
 
+    '    '{
+    '    '	"id":"7EJ68552ST726563J",
+    '    '	"amount":
+    '    '	{
+    '    '		"currency_code":"USD",
+    '    '		"value":"1.23"
+    '    '	},
+    '    '	"final_capture":true,
+    '    '	"seller_protection":
+    '    '	{
+    '    '		"status":"ELIGIBLE",
+    '    '		"dispute_categories":
+    '    '		[
+    '    '			"ITEM_NOT_RECEIVED",
+    '    '			"UNAUTHORIZED_TRANSACTION"
+    '    '		]
+    '    '	},
+    '    '	"status":"PENDING",
+    '    '	"status_details":
+    '    '	{
+    '    '		"reason":"RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION"
+    '    '	},
+    '    '	"create_time":"2020-10-06T12:22:41Z",
+    '    '	"update_time":"2020-10-06T12:22:41Z",
+    '    '	"links":
+    '    '	[
+    '    '		{
+    '    '			"href":"https://api.sandbox.paypal.com/v2/payments/captures/7EJ68552ST726563J",
+    '    '			"rel":"self",
+    '    '			"method":"GET"
+    '    '		},{
+    '    '			"href":"https://api.sandbox.paypal.com/v2/payments/captures/7EJ68552ST726563J/refund",
+    '    '			"rel":"refund",
+    '    '			"method":"POST"
+    '    '		},{
+    '    '			"href":"https://api.sandbox.paypal.com/v2/checkout/orders/2NS83667T8950703G",
+    '    '			"rel":"up",
+    '    '			"method":"GET"
+    '    '		}
+    '    '	]
+    '    '}
 
-    End Function
 
+
+    'End Function
+
+#End Region
 
     Enum E_RecipientType
         EMAIL = 0
@@ -1499,79 +1506,86 @@ Public Class ClsPayPal
 
     End Function
 
-    Public Function CheckPayOuts()
+#Region "not used"
 
-        SetSubURL(ClsPayPal.E_SubURL._v1_payments_payouts)
-        Dim ResponseStr As String = PayPalRequest("", , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
+    'Public Function CheckPayOuts()
 
-        ResponseStr = ResponseStr
+    '    SetSubURL(ClsPayPal.E_SubURL._v1_payments_payouts)
+    '    Dim ResponseStr As String = PayPalRequest("", , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
-    End Function
+    '    ResponseStr = ResponseStr
+
+    'End Function
+
+#End Region
 
 #Region "Toolfunctions"
 
-    Private Structure S_Sorter
-        Dim Timestamp As ULong
-        Dim TXID As ULong
-    End Structure
+#Region "not used"
+    'Private Structure S_Sorter
+    '    Dim Timestamp As ULong
+    '    Dim TXID As ULong
+    'End Structure
 
-    Private Function SortTimeStamp(ByVal input As List(Of List(Of String))) As List(Of List(Of String))
+    'Private Function SortTimeStamp(ByVal input As List(Of List(Of String))) As List(Of List(Of String))
 
-        Dim TSSort As List(Of S_Sorter) = New List(Of S_Sorter)
+    '    Dim TSSort As List(Of S_Sorter) = New List(Of S_Sorter)
 
-        For i As Integer = 0 To input.Count - 1
+    '    For i As Integer = 0 To input.Count - 1
 
-            Dim Entry As List(Of String) = input(i)
+    '        Dim Entry As List(Of String) = input(i)
 
-            Dim T_Timestamp As ULong = BetweenFromList(Entry, "<timestamp>", "</timestamp>",, GetType(ULong))
-            Dim T_Transaction As ULong = BetweenFromList(Entry, "<transaction>", "</transaction>",, GetType(ULong))
+    '        Dim T_Timestamp As ULong = BetweenFromList(Entry, "<timestamp>", "</timestamp>",, GetType(ULong))
+    '        Dim T_Transaction As ULong = BetweenFromList(Entry, "<transaction>", "</transaction>",, GetType(ULong))
 
-            Dim NuSort As S_Sorter = New S_Sorter
-            NuSort.Timestamp = T_Timestamp
-            NuSort.TXID = T_Transaction
+    '        Dim NuSort As S_Sorter = New S_Sorter
+    '        NuSort.Timestamp = T_Timestamp
+    '        NuSort.TXID = T_Transaction
 
-            TSSort.Add(NuSort)
-        Next
+    '        TSSort.Add(NuSort)
+    '    Next
 
-        TSSort = TSSort.OrderBy(Function(s) s.Timestamp).ToList
+    '    TSSort = TSSort.OrderBy(Function(s) s.Timestamp).ToList
 
-        Dim SReturnList As List(Of List(Of String)) = New List(Of List(Of String))
+    '    Dim SReturnList As List(Of List(Of String)) = New List(Of List(Of String))
 
-        For Each sort In TSSort
+    '    For Each sort In TSSort
 
-            For i As Integer = 0 To input.Count - 1
-                Dim retent = input(i)
+    '        For i As Integer = 0 To input.Count - 1
+    '            Dim retent = input(i)
 
-                Dim T_Timestamp As ULong = BetweenFromList(retent, "<timestamp>", "</timestamp>",, GetType(ULong))
-                Dim T_Transaction As ULong = BetweenFromList(retent, "<transaction>", "</transaction>",, GetType(ULong))
+    '            Dim T_Timestamp As ULong = BetweenFromList(retent, "<timestamp>", "</timestamp>",, GetType(ULong))
+    '            Dim T_Transaction As ULong = BetweenFromList(retent, "<transaction>", "</transaction>",, GetType(ULong))
 
-                If T_Timestamp = sort.Timestamp And T_Transaction = sort.TXID Then
-                    SReturnList.Add(retent)
-                    Exit For
-                End If
+    '            If T_Timestamp = sort.Timestamp And T_Transaction = sort.TXID Then
+    '                SReturnList.Add(retent)
+    '                Exit For
+    '            End If
 
-            Next
+    '        Next
 
-        Next
+    '    Next
 
-        Return SReturnList
+    '    Return SReturnList
 
-    End Function
+    'End Function
+    'Function CreateSignature(ByVal Secret As String, ByVal Data As String)
+    '    'Return Bytes_To_String2(SignHMACSHA512(Secret, StringToByteArray(Data)))
+    '    Return ByteArrayToString(SignHMACSHA512(Secret, StringToByteArray(Data))).ToUpper
+    'End Function
 
-
-    Function CreateSignature(ByVal Secret As String, ByVal Data As String)
-        'Return Bytes_To_String2(SignHMACSHA512(Secret, StringToByteArray(Data)))
-        Return ByteArrayToString(SignHMACSHA512(Secret, StringToByteArray(Data))).ToUpper
-    End Function
+#End Region
 
     Function CreateHash(ByVal Data As String)
         Return ByteArrayToString(SignSHA512(StringToByteArray(Data))).ToUpper
     End Function
 
-    Function SignHMACSHA512(ByVal Secret As String, ByVal Data As Byte())
-        Dim SHA512Hasher As HMACSHA512 = New HMACSHA512(Encoding.ASCII.GetBytes(Secret))
-        Return SHA512Hasher.ComputeHash(Data)
-    End Function
+#Region "not used"
+    'Function SignHMACSHA512(ByVal Secret As String, ByVal Data As Byte())
+    '    Dim SHA512Hasher As HMACSHA512 = New HMACSHA512(Encoding.ASCII.GetBytes(Secret))
+    '    Return SHA512Hasher.ComputeHash(Data)
+    'End Function
+#End Region
 
     Function SignSHA512(ByVal Data As Byte())
         Dim SHA512Hasher As SHA512 = New SHA512Managed()
@@ -1586,14 +1600,16 @@ Public Class ClsPayPal
         Return BitConverter.ToString(hash).Replace("-", "").ToLower
     End Function
 
-    Function Bytes_To_String2(ByVal bytes_Input As Byte()) As String
-        Dim strTemp As New StringBuilder(bytes_Input.Length * 2)
-        For Each b As Byte In bytes_Input
-            strTemp.Append(Conversion.Hex(b))
-        Next
-        Return strTemp.ToString()
-    End Function
-
+#Region "not used"
+    'Function Bytes_To_String2(ByVal bytes_Input As Byte()) As String
+    '    Dim strTemp As New StringBuilder(bytes_Input.Length * 2)
+    '    For Each b As Byte In bytes_Input
+    '        strTemp.Append(Conversion.Hex(b))
+    '    Next
+    '    Return strTemp.ToString()
+    'End Function
+#End Region
+    
 #End Region
 
 End Class

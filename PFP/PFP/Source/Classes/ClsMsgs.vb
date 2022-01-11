@@ -1,4 +1,6 @@
-﻿
+﻿Option Strict On
+Option Explicit On
+
 Public Class ClsMsgs
 
     Shared Buttonsl As List(Of Button) = New List(Of Button)
@@ -133,7 +135,7 @@ Public Class ClsMsgs
             .FormBorderStyle = FormBorderStyle.FixedSingle
             .MaximizeBox = False
             .MinimizeBox = False
-            Dim fbr As Integer = PFPForm.Width / 3
+            Dim fbr As Integer = Convert.ToInt32(PFPForm.Width / 3)
 
             If fbr < 300 Then
                 .Width = 300
@@ -173,7 +175,7 @@ Public Class ClsMsgs
             con.BackColor = Color.LightSkyBlue
         ElseIf status = ClsMsgs.Status.Information Then
             icobmp.Image = SystemIcons.Information.ToBitmap
-            con.BackColor = Color.FromArgb(0, 87, 157)
+            con.BackColor = Color.FromArgb(0, 102, 255)
         ElseIf status = ClsMsgs.Status.Warning Then
             icobmp.Image = SystemIcons.Warning.ToBitmap
             con.BackColor = Color.Yellow
@@ -302,7 +304,7 @@ Public Class ClsMsgs
             End If
 
             Dim tex As String = lab.Text
-            Dim charN As Integer = max / wm.Width
+            Dim charN As Integer = Convert.ToInt32(max / wm.Width)
 
             Dim cnt As Integer = 1
             For i As Integer = 0 To tex.Length - 1
@@ -320,7 +322,7 @@ Public Class ClsMsgs
                 cnt = 14
             End If
 
-            lab.Height = cnt * (Math.Round(hm.Height, 0, MidpointRounding.AwayFromZero) + 0.7)
+            lab.Height = Convert.ToInt32(cnt * (Math.Round(hm.Height, 0, MidpointRounding.AwayFromZero) + 0.7))
 
         Else
             Dim cnt As Integer = 0
@@ -336,7 +338,7 @@ Public Class ClsMsgs
                 cnt = 14
             End If
             cnt += 1
-            lab.Height = cnt * Math.Round(hm.Height, 0, MidpointRounding.AwayFromZero)
+            lab.Height = Convert.ToInt32(cnt * Math.Round(hm.Height, 0, MidpointRounding.AwayFromZero))
 
         End If
 
@@ -439,7 +441,9 @@ Public Class ClsMsgs
 
     Private Shared Sub But_click(ByVal sender As Object, ByVal e As EventArgs)
 
-        CustomResult = sender.tag
+        Dim T_Control As Control = DirectCast(sender, Control)
+
+        CustomResult = DirectCast(T_Control.Tag, CustomDialogResult)
 
         If Not IsNothing(ButtonTimer) Then
             ButtonTimer.Stop()

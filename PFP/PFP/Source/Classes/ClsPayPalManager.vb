@@ -107,7 +107,7 @@
 '            parameterDetailList.Add("L_AMT" & i.ToString, Replace(Format(unitPrice, "#0.00"), ",", "."))
 '            parameterDetailList.Add("L_NUMBER" & i.ToString, item.KHKItemId)
 '            parameterDetailList.Add("L_QTY" & i.ToString, CType(CType(item.ShoppingCartInfo.Quantity, Integer), String))
-'            itemAmt += CInt(item.ShoppingCartInfo.Quantity) * unitPrice
+'            itemAmt += Integer.Parse(item.ShoppingCartInfo.Quantity) * unitPrice
 
 '            i += 1
 '        Next

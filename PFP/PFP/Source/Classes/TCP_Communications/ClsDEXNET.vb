@@ -1,4 +1,7 @@
 ﻿
+Option Strict On
+Option Explicit On
+
 ' author evolver
 ' DEXNET Class
 ' Version 1.0
@@ -161,7 +164,7 @@ Public Class ClsDEXNET
         Dim TempConnList As List(Of String) = New List(Of String)
 
         If TempConnect.Contains(";") Then
-            TempConnList.AddRange(TempConnect.Split(";"))
+            TempConnList.AddRange(TempConnect.Split(";"c))
         End If
 
         For i As Integer = 0 To TempConnList.Count - 1
@@ -198,7 +201,7 @@ Public Class ClsDEXNET
             Else
                 TempConnect += HostIP + ":" + RemotePort.ToString + ";"
                 Dim ConThread As Threading.Thread = New Threading.Thread(AddressOf ConnectThread)
-                ConThread.Start({HostIP, RemotePort, MyHost})
+                ConThread.Start(New List(Of Object)({HostIP, RemotePort, MyHost}))
             End If
         End If
 
@@ -206,9 +209,12 @@ Public Class ClsDEXNET
 
     Private Sub ConnectThread(ByVal Input As Object)
 
-        Dim RemoteHostIP As String = TryCast(Input(0), String)
-        Dim RemotePort As Integer = DirectCast(Input(1), Integer)
-        Dim MyHost As String = TryCast(Input(2), String)
+        Dim T_List As List(Of Object) = DirectCast(Input, List(Of Object))
+
+
+        Dim RemoteHostIP As String = TryCast(T_List(0), String)
+        Dim RemotePort As Integer = DirectCast(T_List(1), Integer)
+        Dim MyHost As String = TryCast(T_List(2), String)
 
         If RemotePort < 0 Then
             Exit Sub
@@ -223,7 +229,7 @@ Public Class ClsDEXNET
 
                 T_Peer.TCPClient = T_TCPClient
 
-                Dim IPEP As Net.IPEndPoint = T_TCPClient.Client.RemoteEndPoint
+                Dim IPEP As Net.IPEndPoint = DirectCast(T_TCPClient.Client.RemoteEndPoint, Net.IPEndPoint)
                 T_Peer.PossibleHost = RemoteHostIP
                 T_Peer.PossibleRemoteServerPort = RemotePort
                 T_Peer.Port = RemotePort
@@ -249,7 +255,7 @@ Public Class ClsDEXNET
                 T_Peer.MessageThread = New Threading.Thread(AddressOf ReceiveMessage)
 
                 Peers.Add(T_Peer)
-                Peers(Peers.Count - 1).MessageThread.Start(Peers.Count - 1)
+                Peers(Peers.Count - 1).MessageThread.Start(Convert.ToInt32(Peers.Count - 1))
 
                 TempConnect = TempConnect.Replace(RemoteHostIP + ":" + RemotePort.ToString + ";", "")
 
@@ -468,7 +474,7 @@ Public Class ClsDEXNET
 
                     T_Peer.TCPClient = T_TCPClient
 
-                    Dim IPEP As Net.IPEndPoint = T_TCPClient.Client.RemoteEndPoint
+                    Dim IPEP As Net.IPEndPoint = DirectCast(T_TCPClient.Client.RemoteEndPoint, Net.IPEndPoint)
 
                     T_Peer.PossibleHost = IPEP.Address.ToString
                     T_Peer.Port = IPEP.Port
@@ -538,7 +544,9 @@ Public Class ClsDEXNET
         Next
 
     End Sub
-    Private Sub ReceiveMessage(ByVal IDX As Integer)
+    Private Sub ReceiveMessage(ByVal Input As Object)
+
+        Dim IDX As Integer = DirectCast(Input, Integer)
 
         While Not DEXNETClose And Peers.Count - 1 >= IDX
 
@@ -692,7 +700,7 @@ Public Class ClsDEXNET
 
                 Dim BroadcastedMsg As String = LastBroadcastedMsgList(i)
                 Dim UnixTimestamp As String = GetXMLMessage(BroadcastedMsg, E_XMLTags.Timestamp)
-                Dim DiffTimestamp As Double = CDbl(GetUnixTimestamp()) - CDbl(UnixTimestamp)
+                Dim DiffTimestamp As Double = Double.Parse(GetUnixTimestamp()) - Double.Parse(UnixTimestamp)
                 If DiffTimestamp > 3600 Then
                     DelIdx = i
                     Exit For
@@ -733,7 +741,7 @@ Public Class ClsDEXNET
                     T_Process.PossibleRemoteServerPort = T_Peer.PossibleRemoteServerPort
                     T_Process.GetIP = T_Peer.TCPClient.Client.RemoteEndPoint.ToString
 
-                    Dim IPEP As Net.IPEndPoint = T_Peer.TCPClient.Client.RemoteEndPoint
+                    Dim IPEP As Net.IPEndPoint = DirectCast(T_Peer.TCPClient.Client.RemoteEndPoint, Net.IPEndPoint)
                     T_Process.GetPort = IPEP.Port
 
                     T_Process.GetMsgs = TempMsgs
@@ -832,7 +840,7 @@ Public Class ClsDEXNET
 
                                                 Dim T_NuMessage = T_Message.Replace("<NewPeer></NewPeer>", "<NewPeer>" + T_Process.GetIP + "</NewPeer>")
                                                 If CheckXMLTag(T_Message, "PSPort") Then
-                                                    T_Process.PossibleRemoteServerPort = Between(T_Message, "<PSPort>", "</PSPort>", GetType(Integer))
+                                                    T_Process.PossibleRemoteServerPort = GetIntegerBetween(T_Message, "<PSPort>", "</PSPort>")
                                                 End If
 
                                                 T_GetMsg = T_GetMsg.Replace(T_Message, T_NuMessage)
@@ -842,13 +850,13 @@ Public Class ClsDEXNET
 
                                             ElseIf CheckXMLTag(T_Message, "NewPeer") Then
 
-                                                Dim T_HostIP As String = Between(T_Message, "<NewPeer>", "</NewPeer>", GetType(String))
+                                                Dim T_HostIP As String = GetStringBetween(T_Message, "<NewPeer>", "</NewPeer>")
                                                 If T_HostIP.Contains(":") Then
                                                     T_HostIP = T_HostIP.Remove(T_HostIP.IndexOf(":"))
                                                 End If
 
-                                                Dim T_Port As Integer = Between(T_Message, "<PSPort>", "</PSPort>", GetType(Integer))
-                                                Dim T_PPublicKey As String = Between(T_Message, "<PPublicKey>", "</PPublicKey>", GetType(String))
+                                                Dim T_Port As Integer = GetIntegerBetween(T_Message, "<PSPort>", "</PSPort>")
+                                                Dim T_PPublicKey As String = GetStringBetween(T_Message, "<PPublicKey>", "</PPublicKey>")
 
                                                 Dim T_GetIP As String = T_Process.GetIP
                                                 If T_GetIP.Contains(":") Then
@@ -1003,7 +1011,7 @@ Public Class ClsDEXNET
 
                                                     If Not PeersPublicKey.Trim = "" And Not PeersPublicKey = DEXNET_PublicKeyHEX Then
                                                         If Not PeersPort.Trim = "" And Not PeersPort.Trim = "-1" Then
-                                                            Dim PeersPortInt As Integer = CInt(PeersPort)
+                                                            Dim PeersPortInt As Integer = Integer.Parse(PeersPort)
 
                                                             Dim Founded As Boolean = False
                                                             For c As Integer = 0 To Peers.Count - 1
@@ -1250,7 +1258,7 @@ Public Class ClsDEXNET
                 If BCMessage.Contains(RevMsg.RelevantKey) Then
                     ExpectedMessage = True
                     RevMsg.RelevantMessage = BCMessage
-                    RevMsg.Timestamp = GetUnixTimestamp()
+                    RevMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
                     RelevantMsgs(ii) = RevMsg
                     Exit For
                 End If
@@ -1268,7 +1276,7 @@ Public Class ClsDEXNET
                 T_RelevantMsg.Lifetime = 240
                 T_RelevantMsg.RelevantKey = "Unexpected" + ShortID
                 T_RelevantMsg.RelevantMessage = BCMessage
-                T_RelevantMsg.Timestamp = GetUnixTimestamp()
+                T_RelevantMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
 
                 RelevantMsgs.Add(T_RelevantMsg)
 
@@ -1367,7 +1375,7 @@ Public Class ClsDEXNET
                 If Notfound Then
                     Dim T_RelevantMsg As S_RelevantMessage = New S_RelevantMessage
                     T_RelevantMsg.RelevantKey = RelevantKey
-                    T_RelevantMsg.Timestamp = GetUnixTimestamp()
+                    T_RelevantMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
                     T_RelevantMsg.Lifetime = 240.0
                     T_RelevantMsg.RelevantMessage = ""
 
@@ -1381,13 +1389,13 @@ Public Class ClsDEXNET
             Dim DelTempKey As String = ""
             For i As Integer = 0 To RelevantMsgs.Count - 1
                 Dim RevMsg As S_RelevantMessage = RelevantMsgs(i)
-                Dim DiffTimestamp As Double = CDbl(GetUnixTimestamp()) - RevMsg.Timestamp
+                Dim DiffTimestamp As Double = Double.Parse(GetUnixTimestamp()) - RevMsg.Timestamp
                 If DiffTimestamp > RevMsg.Lifetime Then
                     If RevMsg.RelevantMessage.Trim = "" Then ' RevMsg.RelevantKey.Contains("Unexpected") Or
                         DelTempKey = RevMsg.RelevantKey
                     End If
                     RevMsg.RelevantMessage = ""
-                    RevMsg.Timestamp = GetUnixTimestamp()
+                    RevMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
                     RelevantMsgs(i) = RevMsg
                 End If
             Next
@@ -1456,15 +1464,15 @@ Public Class ClsDEXNET
     Function CreateXMLMessage(ByVal Message As String, ByVal Key As E_XMLTags) As String
         Return "<" + Key.ToString + ">" + Message + "</" + Key.ToString + ">"
     End Function
-    Function CreateXMLMessage(ByVal Message As String, ByVal Key As String) As String
+    Public Shared Function CreateXMLMessage(ByVal Message As String, ByVal Key As String) As String
         Return "<" + Key + ">" + Message + "</" + Key + ">"
     End Function
 
     Function GetXMLMessage(ByVal Message As String, ByVal Key As E_XMLTags) As String
-        Return Between(Message, "<" + Key.ToString + ">", "</" + Key.ToString + ">", GetType(String))
+        Return GetStringBetween(Message, "<" + Key.ToString + ">", "</" + Key.ToString + ">")
     End Function
-    Function GetXMLMessage(ByVal Message As String, ByVal Key As String) As String
-        Return Between(Message, "<" + Key.Trim + ">", "</" + Key.Trim + ">", GetType(String))
+    Public Shared Function GetXMLMessage(ByVal Message As String, ByVal Key As String) As String
+        Return GetStringBetween(Message, "<" + Key.Trim + ">", "</" + Key.Trim + ">")
     End Function
     Function CheckXMLTag(ByVal Message As String, ByVal Tag As String) As Boolean
 

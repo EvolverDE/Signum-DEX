@@ -144,6 +144,7 @@ Partial Class FrmEnterPIN
         '
         'SplitContainer2
         '
+        Me.SplitContainer2.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
         Me.SplitContainer2.Location = New System.Drawing.Point(0, 0)
@@ -163,7 +164,7 @@ Partial Class FrmEnterPIN
         '
         'SplitContainer3
         '
-        Me.SplitContainer3.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.SplitContainer3.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer3.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer3.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
         Me.SplitContainer3.Location = New System.Drawing.Point(0, 0)
@@ -178,7 +179,7 @@ Partial Class FrmEnterPIN
         '
         'BtOK
         '
-        Me.BtOK.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.BtOK.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtOK.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.BtOK.ForeColor = System.Drawing.Color.White
         Me.BtOK.Location = New System.Drawing.Point(3, 8)
@@ -192,6 +193,7 @@ Partial Class FrmEnterPIN
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
         Me.ClientSize = New System.Drawing.Size(246, 156)
         Me.Controls.Add(Me.SplitContainer2)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow

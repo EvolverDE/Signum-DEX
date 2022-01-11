@@ -28,13 +28,6 @@ Partial Class PFPForm
         Dim TreeNode3 As System.Windows.Forms.TreeNode = New System.Windows.Forms.TreeNode("Develope")
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(PFPForm))
         Me.BlockTimer = New System.Windows.Forms.Timer(Me.components)
-        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
-        Me.StatusLabel = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.StatusBar = New System.Windows.Forms.ToolStripProgressBar()
-        Me.StatusBlockLabel = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.StatusFeeLabel = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.TSSStatusImage = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.TSSCryptStatus = New System.Windows.Forms.ToolStripStatusLabel()
         Me.LVSellorders = New System.Windows.Forms.ListView()
         Me.ColumnHeader1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Label1 = New System.Windows.Forms.Label()
@@ -125,12 +118,20 @@ Partial Class PFPForm
         Me.SCSettings = New System.Windows.Forms.SplitContainer()
         Me.TVSettings = New System.Windows.Forms.TreeView()
         Me.SplitContainer12 = New System.Windows.Forms.SplitContainer()
+        Me.LabDebug = New System.Windows.Forms.Label()
         Me.BtSetPIN = New System.Windows.Forms.Button()
         Me.TBSNOBalance = New System.Windows.Forms.TextBox()
         Me.BtChartGFXOnOff = New System.Windows.Forms.Button()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.StatusStrip1.SuspendLayout()
+        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
+        Me.StatusLabel = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.SubStatusLabel = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusBar = New System.Windows.Forms.ToolStripProgressBar()
+        Me.StatusBlockLabel = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusFeeLabel = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.TSSStatusImage = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.TSSCryptStatus = New System.Windows.Forms.ToolStripStatusLabel()
         Me.GroupBox1.SuspendLayout()
         CType(Me.TBarCollateralPercent, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NUDSNOTXFee, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -219,69 +220,13 @@ Partial Class PFPForm
         Me.SplitContainer12.Panel2.SuspendLayout()
         Me.SplitContainer12.SuspendLayout()
         Me.Panel1.SuspendLayout()
+        Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
         'BlockTimer
         '
         Me.BlockTimer.Enabled = True
         Me.BlockTimer.Interval = 1000
-        '
-        'StatusStrip1
-        '
-        Me.StatusStrip1.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.StatusStrip1.ImageScalingSize = New System.Drawing.Size(24, 24)
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.StatusBar, Me.StatusBlockLabel, Me.StatusFeeLabel, Me.TSSStatusImage, Me.TSSCryptStatus})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 734)
-        Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.ShowItemToolTips = True
-        Me.StatusStrip1.Size = New System.Drawing.Size(1554, 22)
-        Me.StatusStrip1.TabIndex = 1
-        Me.StatusStrip1.Text = "StatusStrip1"
-        '
-        'StatusLabel
-        '
-        Me.StatusLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.StatusLabel.Name = "StatusLabel"
-        Me.StatusLabel.Size = New System.Drawing.Size(1349, 17)
-        Me.StatusLabel.Spring = True
-        Me.StatusLabel.Text = " "
-        Me.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'StatusBar
-        '
-        Me.StatusBar.Name = "StatusBar"
-        Me.StatusBar.Size = New System.Drawing.Size(117, 16)
-        Me.StatusBar.Visible = False
-        '
-        'StatusBlockLabel
-        '
-        Me.StatusBlockLabel.Name = "StatusBlockLabel"
-        Me.StatusBlockLabel.Size = New System.Drawing.Size(36, 17)
-        Me.StatusBlockLabel.Text = "Block"
-        '
-        'StatusFeeLabel
-        '
-        Me.StatusFeeLabel.Name = "StatusFeeLabel"
-        Me.StatusFeeLabel.Size = New System.Drawing.Size(25, 17)
-        Me.StatusFeeLabel.Text = "Fee"
-        '
-        'TSSStatusImage
-        '
-        Me.TSSStatusImage.Image = Global.PFP.My.Resources.Resources.status_offline
-        Me.TSSStatusImage.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
-        Me.TSSStatusImage.Name = "TSSStatusImage"
-        Me.TSSStatusImage.Size = New System.Drawing.Size(57, 17)
-        Me.TSSStatusImage.Text = "offline"
-        '
-        'TSSCryptStatus
-        '
-        Me.TSSCryptStatus.AutoToolTip = True
-        Me.TSSCryptStatus.Image = Global.PFP.My.Resources.Resources.status_decrypted
-        Me.TSSCryptStatus.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
-        Me.TSSCryptStatus.Name = "TSSCryptStatus"
-        Me.TSSCryptStatus.Size = New System.Drawing.Size(72, 17)
-        Me.TSSCryptStatus.Text = "Click Me!"
-        Me.TSSCryptStatus.ToolTipText = "test" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
         '
         'LVSellorders
         '
@@ -296,7 +241,7 @@ Partial Class PFPForm
         Me.LVSellorders.Name = "LVSellorders"
         Me.LVSellorders.RightToLeft = System.Windows.Forms.RightToLeft.Yes
         Me.LVSellorders.RightToLeftLayout = True
-        Me.LVSellorders.Size = New System.Drawing.Size(762, 127)
+        Me.LVSellorders.Size = New System.Drawing.Size(762, 140)
         Me.LVSellorders.TabIndex = 2
         Me.LVSellorders.UseCompatibleStateImageBehavior = False
         Me.LVSellorders.View = System.Windows.Forms.View.Details
@@ -317,7 +262,7 @@ Partial Class PFPForm
         '
         'LVBuyorders
         '
-        Me.LVBuyorders.BackColor = System.Drawing.Color.PaleGreen
+        Me.LVBuyorders.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(136, Byte), Integer))
         Me.LVBuyorders.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader18})
         Me.LVBuyorders.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LVBuyorders.FullRowSelect = True
@@ -326,7 +271,7 @@ Partial Class PFPForm
         Me.LVBuyorders.Location = New System.Drawing.Point(0, 0)
         Me.LVBuyorders.MultiSelect = False
         Me.LVBuyorders.Name = "LVBuyorders"
-        Me.LVBuyorders.Size = New System.Drawing.Size(764, 127)
+        Me.LVBuyorders.Size = New System.Drawing.Size(764, 139)
         Me.LVBuyorders.TabIndex = 5
         Me.LVBuyorders.UseCompatibleStateImageBehavior = False
         Me.LVBuyorders.View = System.Windows.Forms.View.Details
@@ -348,7 +293,7 @@ Partial Class PFPForm
         'BtBuy
         '
         Me.BtBuy.BackColor = System.Drawing.Color.Crimson
-        Me.BtBuy.Location = New System.Drawing.Point(1, -1)
+        Me.BtBuy.Location = New System.Drawing.Point(0, -1)
         Me.BtBuy.Name = "BtBuy"
         Me.BtBuy.Size = New System.Drawing.Size(75, 23)
         Me.BtBuy.TabIndex = 7
@@ -357,8 +302,8 @@ Partial Class PFPForm
         '
         'BtSell
         '
-        Me.BtSell.BackColor = System.Drawing.Color.PaleGreen
-        Me.BtSell.Location = New System.Drawing.Point(6, -1)
+        Me.BtSell.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(136, Byte), Integer))
+        Me.BtSell.Location = New System.Drawing.Point(6, 0)
         Me.BtSell.Name = "BtSell"
         Me.BtSell.Size = New System.Drawing.Size(75, 23)
         Me.BtSell.TabIndex = 8
@@ -367,7 +312,7 @@ Partial Class PFPForm
         '
         'LVOpenChannels
         '
-        Me.LVOpenChannels.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.LVOpenChannels.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.LVOpenChannels.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader9, Me.ColumnHeader34})
         Me.LVOpenChannels.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LVOpenChannels.ForeColor = System.Drawing.Color.White
@@ -377,7 +322,7 @@ Partial Class PFPForm
         Me.LVOpenChannels.Location = New System.Drawing.Point(0, 0)
         Me.LVOpenChannels.MultiSelect = False
         Me.LVOpenChannels.Name = "LVOpenChannels"
-        Me.LVOpenChannels.Size = New System.Drawing.Size(371, 63)
+        Me.LVOpenChannels.Size = New System.Drawing.Size(371, 68)
         Me.LVOpenChannels.TabIndex = 9
         Me.LVOpenChannels.UseCompatibleStateImageBehavior = False
         Me.LVOpenChannels.View = System.Windows.Forms.View.Details
@@ -402,7 +347,7 @@ Partial Class PFPForm
         '
         'BtSNOSetOrder
         '
-        Me.BtSNOSetOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.BtSNOSetOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtSNOSetOrder.Location = New System.Drawing.Point(124, 225)
         Me.BtSNOSetOrder.Name = "BtSNOSetOrder"
         Me.BtSNOSetOrder.Size = New System.Drawing.Size(82, 23)
@@ -412,6 +357,7 @@ Partial Class PFPForm
         '
         'GroupBox1
         '
+        Me.GroupBox1.BackColor = System.Drawing.Color.Transparent
         Me.GroupBox1.Controls.Add(Me.LabColPercentage)
         Me.GroupBox1.Controls.Add(Me.TBarCollateralPercent)
         Me.GroupBox1.Controls.Add(Me.Label18)
@@ -434,7 +380,7 @@ Partial Class PFPForm
         Me.GroupBox1.Location = New System.Drawing.Point(0, 0)
         Me.GroupBox1.MinimumSize = New System.Drawing.Size(371, 253)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(371, 263)
+        Me.GroupBox1.Size = New System.Drawing.Size(371, 260)
         Me.GroupBox1.TabIndex = 12
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Set New Order"
@@ -450,6 +396,7 @@ Partial Class PFPForm
         '
         'TBarCollateralPercent
         '
+        Me.TBarCollateralPercent.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.TBarCollateralPercent.Cursor = System.Windows.Forms.Cursors.Default
         Me.TBarCollateralPercent.Location = New System.Drawing.Point(93, 92)
         Me.TBarCollateralPercent.Maximum = 11
@@ -534,7 +481,7 @@ Partial Class PFPForm
         '
         'BtSNOSetCurFee
         '
-        Me.BtSNOSetCurFee.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.BtSNOSetCurFee.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtSNOSetCurFee.Location = New System.Drawing.Point(331, 197)
         Me.BtSNOSetCurFee.Name = "BtSNOSetCurFee"
         Me.BtSNOSetCurFee.Size = New System.Drawing.Size(32, 23)
@@ -661,7 +608,7 @@ Partial Class PFPForm
         '
         'BtCreateNewAT
         '
-        Me.BtCreateNewAT.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.BtCreateNewAT.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtCreateNewAT.Location = New System.Drawing.Point(1, 1)
         Me.BtCreateNewAT.Name = "BtCreateNewAT"
         Me.BtCreateNewAT.Size = New System.Drawing.Size(118, 23)
@@ -671,7 +618,7 @@ Partial Class PFPForm
         '
         'SplitContainer1
         '
-        Me.SplitContainer1.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.SplitContainer1.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer1.Location = New System.Drawing.Point(3, 3)
@@ -680,17 +627,20 @@ Partial Class PFPForm
         '
         'SplitContainer1.Panel1
         '
+        Me.SplitContainer1.Panel1.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer1.Panel1.Controls.Add(Me.SplitContainer2)
         '
         'SplitContainer1.Panel2
         '
+        Me.SplitContainer1.Panel2.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer1.Panel2.Controls.Add(Me.SplitContainer6)
         Me.SplitContainer1.Size = New System.Drawing.Size(1540, 673)
-        Me.SplitContainer1.SplitterDistance = 396
+        Me.SplitContainer1.SplitterDistance = 394
         Me.SplitContainer1.TabIndex = 14
         '
         'SplitContainer2
         '
+        Me.SplitContainer2.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.SplitContainer2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
@@ -699,19 +649,20 @@ Partial Class PFPForm
         '
         'SplitContainer2.Panel1
         '
-        Me.SplitContainer2.Panel1.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.SplitContainer2.Panel1.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer2.Panel1.ForeColor = System.Drawing.Color.White
         '
         'SplitContainer2.Panel2
         '
+        Me.SplitContainer2.Panel2.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer2.Panel2.Controls.Add(Me.SplitContainer3)
-        Me.SplitContainer2.Size = New System.Drawing.Size(1540, 396)
+        Me.SplitContainer2.Size = New System.Drawing.Size(1540, 394)
         Me.SplitContainer2.SplitterDistance = 1163
         Me.SplitContainer2.TabIndex = 14
         '
         'SplitContainer3
         '
-        Me.SplitContainer3.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.SplitContainer3.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.SplitContainer3.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -729,8 +680,8 @@ Partial Class PFPForm
         Me.SplitContainer3.Panel2.AutoScroll = True
         Me.SplitContainer3.Panel2.AutoScrollMinSize = New System.Drawing.Size(371, 254)
         Me.SplitContainer3.Panel2.Controls.Add(Me.GroupBox1)
-        Me.SplitContainer3.Size = New System.Drawing.Size(373, 396)
-        Me.SplitContainer3.SplitterDistance = 127
+        Me.SplitContainer3.Size = New System.Drawing.Size(373, 394)
+        Me.SplitContainer3.SplitterDistance = 128
         Me.SplitContainer3.TabIndex = 13
         '
         'SplitContainer4
@@ -749,7 +700,7 @@ Partial Class PFPForm
         'SplitContainer4.Panel2
         '
         Me.SplitContainer4.Panel2.Controls.Add(Me.SplitContainer5)
-        Me.SplitContainer4.Size = New System.Drawing.Size(371, 125)
+        Me.SplitContainer4.Size = New System.Drawing.Size(371, 126)
         Me.SplitContainer4.SplitterDistance = 25
         Me.SplitContainer4.TabIndex = 0
         '
@@ -769,13 +720,13 @@ Partial Class PFPForm
         'SplitContainer5.Panel2
         '
         Me.SplitContainer5.Panel2.Controls.Add(Me.BtCreateNewAT)
-        Me.SplitContainer5.Size = New System.Drawing.Size(371, 96)
-        Me.SplitContainer5.SplitterDistance = 63
+        Me.SplitContainer5.Size = New System.Drawing.Size(371, 97)
+        Me.SplitContainer5.SplitterDistance = 68
         Me.SplitContainer5.TabIndex = 0
         '
         'SplitContainer6
         '
-        Me.SplitContainer6.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.SplitContainer6.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.SplitContainer6.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer6.Location = New System.Drawing.Point(0, 0)
@@ -788,7 +739,7 @@ Partial Class PFPForm
         'SplitContainer6.Panel2
         '
         Me.SplitContainer6.Panel2.Controls.Add(Me.SplitContainer10)
-        Me.SplitContainer6.Size = New System.Drawing.Size(1538, 271)
+        Me.SplitContainer6.Size = New System.Drawing.Size(1538, 273)
         Me.SplitContainer6.SplitterDistance = 766
         Me.SplitContainer6.TabIndex = 9
         '
@@ -812,7 +763,7 @@ Partial Class PFPForm
         'SplitContainer7.Panel2
         '
         Me.SplitContainer7.Panel2.Controls.Add(Me.SplitContainer8)
-        Me.SplitContainer7.Size = New System.Drawing.Size(762, 267)
+        Me.SplitContainer7.Size = New System.Drawing.Size(762, 269)
         Me.SplitContainer7.SplitterDistance = 25
         Me.SplitContainer7.TabIndex = 0
         '
@@ -861,8 +812,8 @@ Partial Class PFPForm
         'SplitContainer8.Panel2
         '
         Me.SplitContainer8.Panel2.Controls.Add(Me.SplitContainer9)
-        Me.SplitContainer8.Size = New System.Drawing.Size(762, 238)
-        Me.SplitContainer8.SplitterDistance = 209
+        Me.SplitContainer8.Size = New System.Drawing.Size(762, 240)
+        Me.SplitContainer8.SplitterDistance = 211
         Me.SplitContainer8.TabIndex = 0
         '
         'SplitContainerSellFilter
@@ -883,8 +834,8 @@ Partial Class PFPForm
         'SplitContainerSellFilter.Panel2
         '
         Me.SplitContainerSellFilter.Panel2.Controls.Add(Me.LVSellorders)
-        Me.SplitContainerSellFilter.Size = New System.Drawing.Size(762, 209)
-        Me.SplitContainerSellFilter.SplitterDistance = 78
+        Me.SplitContainerSellFilter.Size = New System.Drawing.Size(762, 211)
+        Me.SplitContainerSellFilter.SplitterDistance = 67
         Me.SplitContainerSellFilter.TabIndex = 3
         '
         'ChBxSellFilterShowPayable
@@ -904,7 +855,7 @@ Partial Class PFPForm
         Me.ChLBSellFilterMethods.Items.AddRange(New Object() {"Loading..."})
         Me.ChLBSellFilterMethods.Location = New System.Drawing.Point(3, 3)
         Me.ChLBSellFilterMethods.Name = "ChLBSellFilterMethods"
-        Me.ChLBSellFilterMethods.Size = New System.Drawing.Size(158, 94)
+        Me.ChLBSellFilterMethods.Size = New System.Drawing.Size(158, 64)
         Me.ChLBSellFilterMethods.TabIndex = 8
         '
         'ChBxSellFilterShowAutofinish
@@ -931,6 +882,7 @@ Partial Class PFPForm
         '
         Me.SplitContainer9.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer9.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
+        Me.SplitContainer9.IsSplitterFixed = True
         Me.SplitContainer9.Location = New System.Drawing.Point(0, 0)
         Me.SplitContainer9.Name = "SplitContainer9"
         '
@@ -938,12 +890,12 @@ Partial Class PFPForm
         '
         Me.SplitContainer9.Panel2.Controls.Add(Me.BtBuy)
         Me.SplitContainer9.Size = New System.Drawing.Size(762, 25)
-        Me.SplitContainer9.SplitterDistance = 673
+        Me.SplitContainer9.SplitterDistance = 678
         Me.SplitContainer9.TabIndex = 0
         '
         'SplitContainer10
         '
-        Me.SplitContainer10.BackColor = System.Drawing.Color.PaleGreen
+        Me.SplitContainer10.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(136, Byte), Integer))
         Me.SplitContainer10.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer10.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
         Me.SplitContainer10.IsSplitterFixed = True
@@ -961,7 +913,7 @@ Partial Class PFPForm
         'SplitContainer10.Panel2
         '
         Me.SplitContainer10.Panel2.Controls.Add(Me.SplitContainer11)
-        Me.SplitContainer10.Size = New System.Drawing.Size(764, 267)
+        Me.SplitContainer10.Size = New System.Drawing.Size(764, 269)
         Me.SplitContainer10.SplitterDistance = 25
         Me.SplitContainer10.TabIndex = 0
         '
@@ -986,7 +938,7 @@ Partial Class PFPForm
         '
         'BtShowBuyFilter
         '
-        Me.BtShowBuyFilter.BackColor = System.Drawing.Color.PaleGreen
+        Me.BtShowBuyFilter.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(136, Byte), Integer))
         Me.BtShowBuyFilter.Location = New System.Drawing.Point(66, 1)
         Me.BtShowBuyFilter.Name = "BtShowBuyFilter"
         Me.BtShowBuyFilter.Size = New System.Drawing.Size(75, 23)
@@ -1010,8 +962,8 @@ Partial Class PFPForm
         'SplitContainer11.Panel2
         '
         Me.SplitContainer11.Panel2.Controls.Add(Me.BtSell)
-        Me.SplitContainer11.Size = New System.Drawing.Size(764, 238)
-        Me.SplitContainer11.SplitterDistance = 209
+        Me.SplitContainer11.Size = New System.Drawing.Size(764, 240)
+        Me.SplitContainer11.SplitterDistance = 210
         Me.SplitContainer11.TabIndex = 0
         '
         'SplitContainerBuyFilter
@@ -1032,8 +984,8 @@ Partial Class PFPForm
         'SplitContainerBuyFilter.Panel2
         '
         Me.SplitContainerBuyFilter.Panel2.Controls.Add(Me.LVBuyorders)
-        Me.SplitContainerBuyFilter.Size = New System.Drawing.Size(764, 209)
-        Me.SplitContainerBuyFilter.SplitterDistance = 78
+        Me.SplitContainerBuyFilter.Size = New System.Drawing.Size(764, 210)
+        Me.SplitContainerBuyFilter.SplitterDistance = 67
         Me.SplitContainerBuyFilter.TabIndex = 6
         '
         'ChBxBuyFilterShowPayable
@@ -1063,7 +1015,7 @@ Partial Class PFPForm
         Me.ChLBBuyFilterMethods.Items.AddRange(New Object() {"Loading..."})
         Me.ChLBBuyFilterMethods.Location = New System.Drawing.Point(3, 3)
         Me.ChLBBuyFilterMethods.Name = "ChLBBuyFilterMethods"
-        Me.ChLBBuyFilterMethods.Size = New System.Drawing.Size(158, 94)
+        Me.ChLBBuyFilterMethods.Size = New System.Drawing.Size(158, 64)
         Me.ChLBBuyFilterMethods.TabIndex = 9
         '
         'ChBxBuyFilterShowAutoinfo
@@ -1091,7 +1043,9 @@ Partial Class PFPForm
         '
         'TabPage1
         '
-        Me.TabPage1.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.TabPage1.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.TabPage1.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
+        Me.TabPage1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
         Me.TabPage1.Controls.Add(Me.SplitContainer1)
         Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
@@ -1102,6 +1056,9 @@ Partial Class PFPForm
         '
         'TabPage2
         '
+        Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.TabPage2.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
+        Me.TabPage2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
         Me.TabPage2.Controls.Add(Me.SplitContainer13)
         Me.TabPage2.Location = New System.Drawing.Point(4, 22)
         Me.TabPage2.Name = "TabPage2"
@@ -1109,11 +1066,10 @@ Partial Class PFPForm
         Me.TabPage2.Size = New System.Drawing.Size(1546, 679)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "MyOrders"
-        Me.TabPage2.UseVisualStyleBackColor = True
         '
         'SplitContainer13
         '
-        Me.SplitContainer13.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.SplitContainer13.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.SplitContainer13.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer13.ForeColor = System.Drawing.Color.White
@@ -1123,17 +1079,19 @@ Partial Class PFPForm
         '
         'SplitContainer13.Panel1
         '
+        Me.SplitContainer13.Panel1.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer13.Panel1.Controls.Add(Me.SplitContainer14)
         '
         'SplitContainer13.Panel2
         '
         Me.SplitContainer13.Panel2.Controls.Add(Me.SplitContainer15)
         Me.SplitContainer13.Size = New System.Drawing.Size(1540, 673)
-        Me.SplitContainer13.SplitterDistance = 388
+        Me.SplitContainer13.SplitterDistance = 387
         Me.SplitContainer13.TabIndex = 5
         '
         'SplitContainer14
         '
+        Me.SplitContainer14.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer14.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer14.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
         Me.SplitContainer14.IsSplitterFixed = True
@@ -1148,7 +1106,7 @@ Partial Class PFPForm
         'SplitContainer14.Panel2
         '
         Me.SplitContainer14.Panel2.Controls.Add(Me.SplitContainer16)
-        Me.SplitContainer14.Size = New System.Drawing.Size(1538, 386)
+        Me.SplitContainer14.Size = New System.Drawing.Size(1538, 385)
         Me.SplitContainer14.SplitterDistance = 25
         Me.SplitContainer14.TabIndex = 0
         '
@@ -1163,6 +1121,7 @@ Partial Class PFPForm
         '
         'SplitContainer16
         '
+        Me.SplitContainer16.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer16.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer16.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
         Me.SplitContainer16.IsSplitterFixed = True
@@ -1183,13 +1142,13 @@ Partial Class PFPForm
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtReCreatePayPalOrder)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtPayOrder)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtExecuteOrder)
-        Me.SplitContainer16.Size = New System.Drawing.Size(1538, 357)
-        Me.SplitContainer16.SplitterDistance = 274
+        Me.SplitContainer16.Size = New System.Drawing.Size(1538, 356)
+        Me.SplitContainer16.SplitterDistance = 273
         Me.SplitContainer16.TabIndex = 0
         '
         'LVMyOpenOrders
         '
-        Me.LVMyOpenOrders.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.LVMyOpenOrders.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.LVMyOpenOrders.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader41})
         Me.LVMyOpenOrders.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LVMyOpenOrders.ForeColor = System.Drawing.Color.White
@@ -1199,7 +1158,7 @@ Partial Class PFPForm
         Me.LVMyOpenOrders.Location = New System.Drawing.Point(0, 0)
         Me.LVMyOpenOrders.MultiSelect = False
         Me.LVMyOpenOrders.Name = "LVMyOpenOrders"
-        Me.LVMyOpenOrders.Size = New System.Drawing.Size(1538, 274)
+        Me.LVMyOpenOrders.Size = New System.Drawing.Size(1538, 273)
         Me.LVMyOpenOrders.TabIndex = 0
         Me.LVMyOpenOrders.UseCompatibleStateImageBehavior = False
         Me.LVMyOpenOrders.View = System.Windows.Forms.View.Details
@@ -1211,7 +1170,7 @@ Partial Class PFPForm
         '
         'BtSendMsg
         '
-        Me.BtSendMsg.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.BtSendMsg.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtSendMsg.Location = New System.Drawing.Point(206, 53)
         Me.BtSendMsg.Name = "BtSendMsg"
         Me.BtSendMsg.Size = New System.Drawing.Size(94, 23)
@@ -1253,7 +1212,7 @@ Partial Class PFPForm
         '
         'BtReCreatePayPalOrder
         '
-        Me.BtReCreatePayPalOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.BtReCreatePayPalOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtReCreatePayPalOrder.Location = New System.Drawing.Point(206, 3)
         Me.BtReCreatePayPalOrder.Name = "BtReCreatePayPalOrder"
         Me.BtReCreatePayPalOrder.Size = New System.Drawing.Size(94, 23)
@@ -1264,7 +1223,7 @@ Partial Class PFPForm
         '
         'BtPayOrder
         '
-        Me.BtPayOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.BtPayOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtPayOrder.Location = New System.Drawing.Point(106, 3)
         Me.BtPayOrder.Name = "BtPayOrder"
         Me.BtPayOrder.Size = New System.Drawing.Size(94, 23)
@@ -1275,7 +1234,7 @@ Partial Class PFPForm
         '
         'BtExecuteOrder
         '
-        Me.BtExecuteOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.BtExecuteOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtExecuteOrder.Location = New System.Drawing.Point(6, 3)
         Me.BtExecuteOrder.Name = "BtExecuteOrder"
         Me.BtExecuteOrder.Size = New System.Drawing.Size(94, 23)
@@ -1286,6 +1245,7 @@ Partial Class PFPForm
         '
         'SplitContainer15
         '
+        Me.SplitContainer15.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer15.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer15.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
         Me.SplitContainer15.IsSplitterFixed = True
@@ -1300,7 +1260,7 @@ Partial Class PFPForm
         'SplitContainer15.Panel2
         '
         Me.SplitContainer15.Panel2.Controls.Add(Me.SplitContainer17)
-        Me.SplitContainer15.Size = New System.Drawing.Size(1538, 279)
+        Me.SplitContainer15.Size = New System.Drawing.Size(1538, 280)
         Me.SplitContainer15.SplitterDistance = 25
         Me.SplitContainer15.TabIndex = 0
         '
@@ -1325,13 +1285,13 @@ Partial Class PFPForm
         'SplitContainer17.Panel1
         '
         Me.SplitContainer17.Panel1.Controls.Add(Me.LVMyClosedOrders)
-        Me.SplitContainer17.Size = New System.Drawing.Size(1538, 250)
-        Me.SplitContainer17.SplitterDistance = 219
+        Me.SplitContainer17.Size = New System.Drawing.Size(1538, 251)
+        Me.SplitContainer17.SplitterDistance = 220
         Me.SplitContainer17.TabIndex = 0
         '
         'LVMyClosedOrders
         '
-        Me.LVMyClosedOrders.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.LVMyClosedOrders.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.LVMyClosedOrders.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader16})
         Me.LVMyClosedOrders.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LVMyClosedOrders.ForeColor = System.Drawing.Color.White
@@ -1341,7 +1301,7 @@ Partial Class PFPForm
         Me.LVMyClosedOrders.Location = New System.Drawing.Point(0, 0)
         Me.LVMyClosedOrders.MultiSelect = False
         Me.LVMyClosedOrders.Name = "LVMyClosedOrders"
-        Me.LVMyClosedOrders.Size = New System.Drawing.Size(1538, 219)
+        Me.LVMyClosedOrders.Size = New System.Drawing.Size(1538, 220)
         Me.LVMyClosedOrders.TabIndex = 3
         Me.LVMyClosedOrders.UseCompatibleStateImageBehavior = False
         Me.LVMyClosedOrders.View = System.Windows.Forms.View.Details
@@ -1352,7 +1312,9 @@ Partial Class PFPForm
         '
         'TabPage3
         '
-        Me.TabPage3.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.TabPage3.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.TabPage3.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
+        Me.TabPage3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
         Me.TabPage3.Controls.Add(Me.SCSettings)
         Me.TabPage3.ForeColor = System.Drawing.Color.White
         Me.TabPage3.Location = New System.Drawing.Point(4, 22)
@@ -1363,6 +1325,7 @@ Partial Class PFPForm
         '
         'SCSettings
         '
+        Me.SCSettings.BackColor = System.Drawing.Color.Transparent
         Me.SCSettings.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SCSettings.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
         Me.SCSettings.Location = New System.Drawing.Point(0, 0)
@@ -1377,7 +1340,7 @@ Partial Class PFPForm
         '
         'TVSettings
         '
-        Me.TVSettings.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(87, Byte), Integer), CType(CType(157, Byte), Integer))
+        Me.TVSettings.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.TVSettings.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TVSettings.ForeColor = System.Drawing.Color.White
         Me.TVSettings.Location = New System.Drawing.Point(0, 0)
@@ -1394,6 +1357,7 @@ Partial Class PFPForm
         '
         'SplitContainer12
         '
+        Me.SplitContainer12.BackColor = System.Drawing.SystemColors.Control
         Me.SplitContainer12.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer12.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
         Me.SplitContainer12.IsSplitterFixed = True
@@ -1404,6 +1368,7 @@ Partial Class PFPForm
         'SplitContainer12.Panel1
         '
         Me.SplitContainer12.Panel1.AutoScroll = True
+        Me.SplitContainer12.Panel1.Controls.Add(Me.LabDebug)
         Me.SplitContainer12.Panel1.Controls.Add(Me.BtSetPIN)
         Me.SplitContainer12.Panel1.Controls.Add(Me.TBSNOBalance)
         Me.SplitContainer12.Panel1.Controls.Add(Me.BtChartGFXOnOff)
@@ -1421,6 +1386,16 @@ Partial Class PFPForm
         Me.SplitContainer12.Size = New System.Drawing.Size(1554, 734)
         Me.SplitContainer12.SplitterDistance = 25
         Me.SplitContainer12.TabIndex = 15
+        '
+        'LabDebug
+        '
+        Me.LabDebug.AutoSize = True
+        Me.LabDebug.Location = New System.Drawing.Point(904, 6)
+        Me.LabDebug.Name = "LabDebug"
+        Me.LabDebug.Size = New System.Drawing.Size(59, 13)
+        Me.LabDebug.TabIndex = 35
+        Me.LabDebug.Text = "Debugging"
+        Me.LabDebug.Visible = False
         '
         'BtSetPIN
         '
@@ -1468,6 +1443,65 @@ Partial Class PFPForm
         Me.Panel1.Size = New System.Drawing.Size(1554, 734)
         Me.Panel1.TabIndex = 16
         '
+        'StatusStrip1
+        '
+        Me.StatusStrip1.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.SubStatusLabel, Me.StatusBar, Me.StatusBlockLabel, Me.StatusFeeLabel, Me.TSSStatusImage, Me.TSSCryptStatus})
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 734)
+        Me.StatusStrip1.Name = "StatusStrip1"
+        Me.StatusStrip1.ShowItemToolTips = True
+        Me.StatusStrip1.Size = New System.Drawing.Size(1554, 22)
+        Me.StatusStrip1.TabIndex = 1
+        Me.StatusStrip1.Text = "StatusStrip1"
+        '
+        'StatusLabel
+        '
+        Me.StatusLabel.Name = "StatusLabel"
+        Me.StatusLabel.Size = New System.Drawing.Size(1118, 17)
+        Me.StatusLabel.Spring = True
+        Me.StatusLabel.Text = "Status"
+        Me.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'SubStatusLabel
+        '
+        Me.SubStatusLabel.Name = "SubStatusLabel"
+        Me.SubStatusLabel.Size = New System.Drawing.Size(59, 17)
+        Me.SubStatusLabel.Text = "SubStatus"
+        Me.SubStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'StatusBar
+        '
+        Me.StatusBar.Name = "StatusBar"
+        Me.StatusBar.Size = New System.Drawing.Size(150, 16)
+        '
+        'StatusBlockLabel
+        '
+        Me.StatusBlockLabel.Name = "StatusBlockLabel"
+        Me.StatusBlockLabel.Size = New System.Drawing.Size(79, 17)
+        Me.StatusBlockLabel.Text = "Blockheight..."
+        '
+        'StatusFeeLabel
+        '
+        Me.StatusFeeLabel.Name = "StatusFeeLabel"
+        Me.StatusFeeLabel.Size = New System.Drawing.Size(54, 17)
+        Me.StatusFeeLabel.Text = "SlotFee..."
+        Me.StatusFeeLabel.Visible = False
+        '
+        'TSSStatusImage
+        '
+        Me.TSSStatusImage.Image = Global.PFP.My.Resources.Resources.status_offline
+        Me.TSSStatusImage.Margin = New System.Windows.Forms.Padding(0)
+        Me.TSSStatusImage.Name = "TSSStatusImage"
+        Me.TSSStatusImage.Size = New System.Drawing.Size(59, 22)
+        Me.TSSStatusImage.Text = "Offline"
+        '
+        'TSSCryptStatus
+        '
+        Me.TSSCryptStatus.Image = Global.PFP.My.Resources.Resources.status_decrypted
+        Me.TSSCryptStatus.Name = "TSSCryptStatus"
+        Me.TSSCryptStatus.Size = New System.Drawing.Size(72, 17)
+        Me.TSSCryptStatus.Text = "Click Me!"
+        '
         'PFPForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1481,8 +1515,6 @@ Partial Class PFPForm
         Me.Name = "PFPForm"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Codename: Perls for Pigs (TestNet)"
-        Me.StatusStrip1.ResumeLayout(False)
-        Me.StatusStrip1.PerformLayout()
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
         CType(Me.TBarCollateralPercent, System.ComponentModel.ISupportInitialize).EndInit()
@@ -1582,16 +1614,17 @@ Partial Class PFPForm
         CType(Me.SplitContainer12, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer12.ResumeLayout(False)
         Me.Panel1.ResumeLayout(False)
+        Me.StatusStrip1.ResumeLayout(False)
+        Me.StatusStrip1.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
     Friend WithEvents BlockTimer As Timer
-    Friend WithEvents StatusStrip1 As StatusStrip
-    Friend WithEvents StatusLabel As ToolStripStatusLabel
-    Friend WithEvents StatusBlockLabel As ToolStripStatusLabel
-    Friend WithEvents StatusFeeLabel As ToolStripStatusLabel
-    Friend WithEvents StatusBar As ToolStripProgressBar
+    'Friend WithEvents StatusLabel As ToolStripStatusLabel
+    'Friend WithEvents StatusBlockLabel As ToolStripStatusLabel
+    'Friend WithEvents StatusFeeLabel As ToolStripStatusLabel
+    'Friend WithEvents StatusBar As ToolStripProgressBar
     Friend WithEvents LVSellorders As ListView
     Friend WithEvents ColumnHeader1 As ColumnHeader
     Friend WithEvents Label1 As Label
@@ -1684,9 +1717,18 @@ Partial Class PFPForm
     Friend WithEvents ChLBBuyFilterMethods As CheckedListBox
     Friend WithEvents ChBxSellFilterShowPayable As CheckBox
     Friend WithEvents ChBxBuyFilterShowPayable As CheckBox
-    Friend WithEvents TSSStatusImage As ToolStripStatusLabel
+    'Friend WithEvents TSSStatusImage As ToolStripStatusLabel
     Friend WithEvents TBSNOBalance As TextBox
     Friend WithEvents BtSetPIN As Button
-    Friend WithEvents TSSCryptStatus As ToolStripStatusLabel
+    'Friend WithEvents TSSCryptStatus As ToolStripStatusLabel
     Friend WithEvents Panel1 As Panel
+    Friend WithEvents LabDebug As Label
+    Friend WithEvents StatusStrip1 As StatusStrip
+    Friend WithEvents StatusLabel As ToolStripStatusLabel
+    Friend WithEvents StatusBar As ToolStripProgressBar
+    Friend WithEvents StatusBlockLabel As ToolStripStatusLabel
+    Friend WithEvents StatusFeeLabel As ToolStripStatusLabel
+    Friend WithEvents TSSStatusImage As ToolStripStatusLabel
+    Friend WithEvents TSSCryptStatus As ToolStripStatusLabel
+    Friend WithEvents SubStatusLabel As ToolStripStatusLabel
 End Class

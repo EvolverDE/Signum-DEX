@@ -171,6 +171,19 @@ Module ModCrypto
         Return ByteArrayToHEXString(T_DecryptedBytes)
 
     End Function
+
+
+    Function AESEncrypt2ByteArray(ByVal Input As String, ByVal Password As String) As Byte()
+
+        Dim T_AES As ClsAES = New ClsAES
+
+        Dim T_DecryptedBytes() As Byte = T_AES.AES_Encrypt(System.Text.Encoding.UTF8.GetBytes(Input), System.Text.Encoding.UTF8.GetBytes(Password))
+
+        Return T_DecryptedBytes
+
+    End Function
+
+
     Function AESDecrypt(ByVal Input As String, ByVal Password As String) As String
 
         If Input.Trim = "" Then
@@ -183,6 +196,24 @@ Module ModCrypto
 
         If IsNothing(T_EncryptedBytes) Then
             Return Input
+        Else
+            Return System.Text.Encoding.UTF8.GetString(T_EncryptedBytes)
+        End If
+
+    End Function
+
+    Function AESDecrypt(ByVal Input As Byte(), ByVal Password As String) As String
+
+        If Input.Length = 0 Then
+            Return ""
+        End If
+
+        Dim T_AES As ClsAES = New ClsAES
+
+        Dim T_EncryptedBytes() As Byte = T_AES.AES_Decrypt(Input, System.Text.Encoding.UTF8.GetBytes(Password))
+
+        If IsNothing(T_EncryptedBytes) Then
+            Return ""
         Else
             Return System.Text.Encoding.UTF8.GetString(T_EncryptedBytes)
         End If

@@ -1,4 +1,7 @@
 ﻿
+Option Strict On
+Option Explicit On
+
 Imports System.Security.Cryptography
 
 Public Class FrmManual
@@ -23,7 +26,7 @@ Public Class FrmManual
 
     End Sub
 
-    Public Shared Function MBox(Optional ByVal test As Integer = 0)
+    Public Shared Function MBox(Optional ByVal test As Integer = 0) As CustomDialogResult
 
         ' Dim ms As FrmManual = New FrmManual
         Dim Result As CustomDialogResult = ShowManuDialog()
@@ -39,7 +42,7 @@ Public Class FrmManual
         e.Cancel = False
     End Sub
 
-    Public Shared Function ShowManuDialog()
+    Public Shared Function ShowManuDialog() As CustomDialogResult
 
         AddHandler frmManual.FormClosing, AddressOf frmMSG_closing
 
@@ -189,7 +192,7 @@ Public Class FrmManual
 
             Dim MasterKeys As List(Of String) = GetMasterKeys(TBManualPassPhrase.Text.Trim)
 
-            Dim T_Address As String = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
+            Dim T_Address As String = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0)))
             Dim T_AddressExtended As String = T_Address + "-" + ClsBase36.EncodeHexToBase36(MasterKeys(0))
 
             TBManualAddress.Text = T_AddressExtended
@@ -227,7 +230,7 @@ Public Class FrmManual
         Else
 
             Dim MasterKeys As List(Of String) = GetMasterKeys(TBManualPassPhrase.Text.Trim)
-            Dim T_Address As String = "TS-" + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0))) 'TODO: remove TS- Prefix
+            Dim T_Address As String = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0)))
             Dim T_AddressExtended As String = T_Address + "-" + ClsBase36.EncodeHexToBase36(MasterKeys(0))
 
 

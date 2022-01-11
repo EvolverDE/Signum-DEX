@@ -1,5 +1,10 @@
 ﻿
+Option Strict On
+Option Explicit On
+
 Module ModCSV
+
+    Dim CSVTool As ClsCSV = New ClsCSV(Application.StartupPath + "/cache.dat",, True, Application.ProductName) 'TODO: debug encrypt=false
 
 #Region "AT CSV Specials"
     Function ConvertCSVATs2StrucATs(ByVal CSVATs As List(Of List(Of String))) As List(Of PFPForm.S_AT)
@@ -12,9 +17,9 @@ Module ModCSV
 
                 If ItemAry.Count >= 2 Then
                     Dim T_AT As PFPForm.S_AT = New PFPForm.S_AT
-                    T_AT.AT = ItemAry(0)
-                    T_AT.ATRS = ItemAry(1)
-                    T_AT.IsDEX_AT = ItemAry(2)
+                    T_AT.ID = Convert.ToUInt64(ItemAry(0))
+                    'T_AT.ATRS = ItemAry(1)
+                    T_AT.IsDEX_AT = Convert.ToBoolean(ItemAry(1))
                     New_CSV_ATList.Add(T_AT)
                 End If
             Next
@@ -33,8 +38,11 @@ Module ModCSV
             Dim AT_CSV_FilePath As String = Application.StartupPath + "/" + "cache.dat"
 
             If IO.File.Exists(AT_CSV_FilePath) Then
-                Dim CSV_ATList As CSVTool.CSVReader = New CSVTool.CSVReader(AT_CSV_FilePath,, False, Application.ProductName) 'TODO: debug encrypt=false
-                Return CSV_ATList.Lists
+                'Dim CSV_ATList As CSVTool.CSVReader = New CSVTool.CSVReader(AT_CSV_FilePath,, False, Application.ProductName) 'TODO: debug encrypt=false
+                'Return CSV_ATList.Lists
+
+                Return CSVTool.RowList
+
             End If
 
             Return New List(Of List(Of String))
@@ -52,7 +60,7 @@ Module ModCSV
 
         For Each AT As List(Of String) In ATList
 
-            If AT(2) = "True" Then
+            If AT(1) = "True" Then
                 DEXATList.Add(AT)
             End If
 
@@ -67,11 +75,9 @@ Module ModCSV
             T_MyOrdersList = OrderSettingsBuffer
         End If
 
-
         Dim AT_CSV_FilePath As String = Application.StartupPath + "/" + "cache.dat"
 
 #Region "deprecated"
-
 
         'If T_ATList.Count = 0 Then
         '    Dim x As CSVTool.CSVWriter = New CSVTool.CSVWriter(AT_CSV_FilePath, New List(Of String()),, "create", False, Application.ProductName) 'TODO: debug encrypt=false
@@ -118,6 +124,7 @@ Module ModCSV
         '    New_CSV_ATList.Add(T_AT)
 
         'Next
+
 #End Region
 
         Dim CSVATList As List(Of List(Of String))
@@ -133,13 +140,13 @@ Module ModCSV
         Dim CSVMyOrders As List(Of List(Of String)) = ConvertOrderSettingsToListList(T_MyOrdersList)
         'CSVMyOrders.Insert(0, New List(Of String)({"AT",######### "TX", "Type", "Paytype", "Infotext", "AutoSendInfotext", "AutoCompleteAT", "Status"}))
 
-        Dim NuATCSV As List(Of List(Of String)) = New List(Of List(Of String))({New List(Of String)({"ATID", "ATRS", "PFPAT", "OrderTX", "Type", "Paytype", "Infotext", "AutoSendInfotext", "AutoCompleteAT", "Status"})})
+        Dim NuATCSV As List(Of List(Of String)) = New List(Of List(Of String))
 
         'NuATCSV.Add(New List(Of String)({"ATID", "ATRS", "PFPAT", "OrderTX", "Type", "Paytype", "Infotext", "AutoSendInfotext", "AutoCompleteAT", "Status"}))
 
         For Each SAT As List(Of String) In CSVATList
 
-            Dim LineEntrys As List(Of String) = New List(Of String)({SAT(0), SAT(1), SAT(2)})
+            Dim LineEntrys As List(Of String) = New List(Of String)({SAT(0), SAT(1), SAT(2)}) ', SAT(3)
             For Each MyOrder As List(Of String) In CSVMyOrders
 
                 If SAT(0) = MyOrder(0) Then
@@ -154,7 +161,10 @@ Module ModCSV
         Next
 
         If NuATCSV.Count > 0 Then
-            Dim x As CSVTool.CSVWriter = New CSVTool.CSVWriter(AT_CSV_FilePath, NuATCSV,, "create", False, Application.ProductName) 'TODO: debug encrypt=false
+            'Dim x As CSVTool.CSVWriter = New CSVTool.CSVWriter(AT_CSV_FilePath, NuATCSV,, "create", False, Application.ProductName) 'TODO: debug encrypt=false
+            CSVTool.RowList = NuATCSV
+            CSVTool.WriteCSV(ClsCSV.E_WriteMode.Create, True, Application.ProductName)
+
         End If
 
         Return True
@@ -176,7 +186,7 @@ Module ModCSV
             Dim NewAT As Boolean = True
             For Each AT As PFPForm.S_AT In CSV_ATList
 
-                If NEW_AT.AT = AT.AT Then
+                If NEW_AT.ID = AT.ID Then
                     NewAT = False
                     Exit For
                 End If
@@ -193,12 +203,18 @@ Module ModCSV
             Dim T_AT As PFPForm.S_AT = CSV_AT
 
             For Each NEW_AT As PFPForm.S_AT In T_ATList
-                If T_AT.AT = NEW_AT.AT Then
+                If T_AT.ID = NEW_AT.ID Then
 
                     If T_AT.IsDEX_AT = NEW_AT.IsDEX_AT Then
 
                     Else
                         T_AT.IsDEX_AT = NEW_AT.IsDEX_AT
+                    End If
+
+                    If T_AT.HistoryOrders = NEW_AT.HistoryOrders Then
+
+                    Else
+                        T_AT.HistoryOrders = NEW_AT.HistoryOrders
                     End If
 
                 End If
@@ -212,7 +228,14 @@ Module ModCSV
         'CSVList.Add({"ATID", "ATRS", "PFPAT"})
 
         For Each SAT As PFPForm.S_AT In New_CSV_ATList
-            Dim LineArray As List(Of String) = New List(Of String)({SAT.AT, SAT.ATRS, SAT.IsDEX_AT.ToString})
+
+            Dim HisOrd As String = ""
+
+            If Not IsNothing(SAT.HistoryOrders) Then
+                HisOrd = SAT.HistoryOrders
+            End If
+
+            Dim LineArray As List(Of String) = New List(Of String)({SAT.ID.ToString, SAT.IsDEX_AT.ToString, HisOrd}) ', SAT.ATRS
             CSVList.Add(LineArray)
         Next
 
@@ -278,6 +301,23 @@ Module ModCSV
                     If ItemAry(3).Trim = TX.Trim Then
 
                         '0=ATID, 1=ATRS, 2=PFPAT, 3=OrderTX, 4=Type, 5=Paytype, 6=Infotext, 7=AutoSendInfotext, 8=AutoCompleteAT, 9=Status
+                        'Dim ATID As ULong = ULong.Parse(ItemAry(0))
+                        'Dim T_TX As ULong = ULong.Parse(ItemAry(3))
+
+                        'Dim T_Type As Boolean = True
+                        'If Not ItemAry(4).Trim = "SellOrder" Then
+                        '    T_Type = False
+                        'End If
+
+                        'Dim T_Status As ClsDEXContract.E_Status = ClsDEXContract.E_Status.ERROR_
+
+                        'Dim T_Stadi As List(Of ClsDEXContract.E_Status) = New List(Of ClsDEXContract.E_Status)(System.Enum.GetValues(GetType(ClsDEXContract.E_Status)))
+                        'For Each Status As ClsDEXContract.E_Status In T_Stadi
+                        '    If ItemAry(9) = Status.ToString Then
+                        '        T_Status = Status
+                        '        Exit For
+                        '    End If
+                        'Next
 
                         Dim T_OS As ClsOrderSettings = New ClsOrderSettings(ItemAry(0), ItemAry(3), ItemAry(4), ItemAry(9))
                         'T_OS.AT = ItemAry(0)
@@ -285,8 +325,8 @@ Module ModCSV
                         'T_OS.Type = ItemAry(2)
                         T_OS.PaytypeString = ItemAry(5)
                         T_OS.Infotext = ItemAry(6)
-                        T_OS.AutoSendInfotext = CBool(ItemAry(7))
-                        T_OS.AutoCompleteAT = CBool(ItemAry(8))
+                        T_OS.AutoSendInfotext = Boolean.Parse(ItemAry(7))
+                        T_OS.AutoCompleteAT = Boolean.Parse(ItemAry(8))
                         'T_OS.Status = ItemAry(7)
 
                         New_CSV_OrderSettings.Add(T_OS)
@@ -297,14 +337,33 @@ Module ModCSV
                 Else
 
                     If ItemAry.Count >= 10 Then
+
+                        'Dim ATID As ULong = ULong.Parse(ItemAry(0))
+                        'Dim T_TX As ULong = ULong.Parse(ItemAry(3))
+
+                        'Dim T_Type As Boolean = True
+                        'If Not ItemAry(4).Trim = "SellOrder" Then
+                        '    T_Type = False
+                        'End If
+
+                        'Dim T_Status As ClsDEXContract.E_Status = ClsDEXContract.E_Status.ERROR_
+
+                        'Dim T_Stadi = New List(Of ClsDEXContract.E_Status)(System.Enum.GetValues(GetType(ClsDEXContract.E_Status)))
+                        'For Each Status As ClsDEXContract.E_Status In T_Stadi
+                        '    If ItemAry(9) = Status.ToString Then
+                        '        T_Status = Status
+                        '        Exit For
+                        '    End If
+                        'Next
+
                         Dim T_OS As ClsOrderSettings = New ClsOrderSettings(ItemAry(0), ItemAry(3), ItemAry(4), ItemAry(9))
                         'T_OS.AT = ItemAry(0)
                         'T_OS.ATX = ItemAry(1)
                         'T_OS.Type = ItemAry(2)
                         T_OS.PaytypeString = ItemAry(5)
                         T_OS.Infotext = ItemAry(6)
-                        T_OS.AutoSendInfotext = CBool(ItemAry(7))
-                        T_OS.AutoCompleteAT = CBool(ItemAry(8))
+                        T_OS.AutoSendInfotext = Boolean.Parse(ItemAry(7))
+                        T_OS.AutoCompleteAT = Boolean.Parse(ItemAry(8))
                         'T_OS.Status = ItemAry(7)
 
                         New_CSV_OrderSettings.Add(T_OS)
@@ -501,7 +560,7 @@ Module ModCSV
         'CSVList.Add({"AT", "TX", "Type", "Paytype", "Infotext", "AutoSendInfotext", "AutoCompleteAT", "Status"})
         For Each TOS As ClsOrderSettings In New_CSV_OrderSettingList
             If Not TOS.Status = "DELETED" Then
-                Dim LineArray As List(Of String) = New List(Of String)({TOS.ATID, TOS.TXID, TOS.Type, TOS.PaytypeString, TOS.Infotext, TOS.AutoSendInfotext.ToString, TOS.AutoCompleteAT.ToString, TOS.Status})
+                Dim LineArray As List(Of String) = New List(Of String)({TOS.ATID.ToString, TOS.TXID.ToString, TOS.Type, TOS.PaytypeString, TOS.Infotext, TOS.AutoSendInfotext.ToString, TOS.AutoCompleteAT.ToString, TOS.Status})
                 CSVList.Add(LineArray)
             End If
         Next
