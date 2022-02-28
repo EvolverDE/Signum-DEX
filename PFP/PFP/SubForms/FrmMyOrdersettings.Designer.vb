@@ -108,7 +108,7 @@ Partial Class FrmMyOrderSettings
         '
         'ColumnHeader8
         '
-        Me.ColumnHeader8.Text = "AT"
+        Me.ColumnHeader8.Text = "Smart Contract"
         '
         'ColumnHeader1
         '

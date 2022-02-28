@@ -72,7 +72,7 @@ Public Class ClsINITool
 
     Public Function ReadINI() As Boolean
 
-        Dim SectionKeys As S_Section = Nothing
+        Dim SectionKeys As S_Section = New S_Section With {.Section_Name = Nothing}
 
         If System.IO.File.Exists(Path + File) Then
 
@@ -82,7 +82,7 @@ Public Class ClsINITool
 
                 If Line.Contains("[") And Line.Contains("]") Then
 
-                    If Not IsNothing(SectionKeys.Keys) Then
+                    If Not SectionKeys.Keys Is Nothing Then
                         T_Entrys.Add(SectionKeys)
                     End If
 
@@ -94,9 +94,9 @@ Public Class ClsINITool
                     T_Key.Key_Name = Line.Remove(Line.IndexOf("=")).ToUpper
                     T_Key.Value = Line.Substring(Line.IndexOf("=") + 1)
 
-                    If Not IsNothing(SectionKeys) Then
+                    If Not SectionKeys.Section_Name Is Nothing Then
 
-                        If IsNothing(SectionKeys.Keys) Then
+                        If SectionKeys.Keys Is Nothing Then
                             SectionKeys.Keys = New List(Of S_Key)
                         End If
 
@@ -179,7 +179,7 @@ Public Class ClsINITool
 
                     Lines.Add("[" + T_Section.Section_Name + "]")
 
-                    If Not IsNothing(T_Section.Keys) Then
+                    If Not T_Section.Keys Is Nothing Then
 
                         Dim T_KeyList As List(Of S_Key) = New List(Of S_Key)(T_Section.Keys.ToArray)
 
@@ -216,11 +216,11 @@ Public Class ClsINITool
         For i As Integer = 0 To T_Entrys.Count - 1
             Dim T_Section As S_Section = T_Entrys(i)
 
-            If Not IsNothing(T_Section.Section_Name) Then
+            If Not T_Section.Section_Name Is Nothing Then
 
                 If T_Section.Section_Name = Section Then
 
-                    If Not IsNothing(T_Section.Keys) Then
+                    If Not T_Section.Keys Is Nothing Then
 
                         Dim T_Keys As List(Of S_Key) = New List(Of S_Key)(T_Section.Keys.ToArray)
 
@@ -283,7 +283,7 @@ Public Class ClsINITool
                     T_Key.Key_Name = Key
                     T_Key.Value = Value
 
-                    If IsNothing(T_Section.Keys) Then
+                    If T_Section.Keys Is Nothing Then
                         T_Section.Keys = New List(Of S_Key)
                     End If
 
@@ -303,7 +303,7 @@ Public Class ClsINITool
             T_Key.Key_Name = Key
             T_Key.Value = Value
 
-            If IsNothing(T_Section.Keys) Then
+            If T_Section.Keys Is Nothing Then
                 T_Section.Keys = New List(Of S_Key)
             End If
 

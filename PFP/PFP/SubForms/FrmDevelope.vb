@@ -6,6 +6,8 @@ Public Class FrmDevelope
     Dim C_MainForm As PFPForm = CType(Me.ParentForm, PFPForm)
     Dim SpecialTimer As Integer = 0
 
+    Dim CurrentContract As ClsDEXContract = Nothing
+
     Sub New(ByVal MainForm As PFPForm)
 
         ' Dieser Aufruf ist für den Designer erforderlich.
@@ -14,12 +16,24 @@ Public Class FrmDevelope
         ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
         C_MainForm = MainForm
 
+
+        CoBxTestATComATID.Items.Clear()
+
+        For Each x In C_MainForm.DEXContractList
+            CoBxTestATComATID.Items.Add(x.Address)
+        Next
+
+        If CoBxTestATComATID.Items.Count > 0 Then
+            CoBxTestATComATID.SelectedItem = CoBxTestATComATID.Items(0)
+            CurrentContract = C_MainForm.DEXContractList(0)
+        End If
+
     End Sub
     Private Sub FrmDevelope_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         CoBxTestATComATID.Items.Clear()
-        For i As Integer = 0 To C_MainForm.DEXATList.Count - 1
-            Dim DEXAT As String = C_MainForm.DEXATList(i)
+        For i As Integer = 0 To C_MainForm.DEXSmartContractList.Count - 1
+            Dim DEXAT As String = C_MainForm.DEXSmartContractList(i)
             CoBxTestATComATID.Items.Add(ClsReedSolomon.Encode(ULong.Parse(DEXAT)))
         Next
 
@@ -46,7 +60,7 @@ Public Class FrmDevelope
     End Sub
     Private Sub DevTimer_Tick(sender As Object, e As EventArgs) Handles DevTimer.Tick
 
-        If Not IsNothing(C_MainForm.DEXNET) Then
+        If Not C_MainForm.DEXNET Is Nothing Then
 
             Dim DEXNETStatusMsgs As List(Of String) = C_MainForm.DEXNET.GetStatusMessages
 
@@ -132,7 +146,7 @@ Public Class FrmDevelope
                     T_LVI.Text = APIRequest.Node
                     T_LVI.SubItems.Add(APIRequest.Command) 'Command
 
-                    If Not IsNothing(APIRequest.RequestThread) Then
+                    If Not APIRequest.RequestThread Is Nothing Then
                         T_LVI.SubItems.Add(APIRequest.RequestThread.ManagedThreadId.ToString) 'ThreadID
                     Else
                         T_LVI.SubItems.Add("no Thread")
@@ -141,7 +155,7 @@ Public Class FrmDevelope
                     T_LVI.SubItems.Add(APIRequest.Status) 'Status
                     If APIRequest.Status = "Ready" Then
 
-                        If Not IsNothing(APIRequest.Result) Then
+                        If Not APIRequest.Result Is Nothing Then
                             T_LVI.SubItems.Add(APIRequest.Result.ToString) 'Result
                         Else
                             T_LVI.SubItems.Add("Nothing") 'Result
@@ -354,15 +368,12 @@ Public Class FrmDevelope
 
         PPAPI.CreateBatchPayOut(TBTestPPPORecipient.Text, Double.Parse(TBTestPPPOAmount.Text), TBTestPPPOCurrency.Text, TBTestPPPONote.Text)
 
-
-
-
     End Sub
 
 
     Private Sub LiBoPayPalComs_DoubleClick(sender As Object, e As EventArgs) Handles LiBoPayPalComs.DoubleClick
 
-        If Not IsNothing(LiBoPayPalComs.SelectedItem) Then
+        If Not LiBoPayPalComs.SelectedItem Is Nothing Then
 
             Dim T_Frm As Form = New Form With {.Name = "FrmMessage", .Text = "FrmMessage", .StartPosition = FormStartPosition.CenterScreen}
             Dim RTB As RichTextBox = New RichTextBox
@@ -379,170 +390,182 @@ Public Class FrmDevelope
 #End Region
 
 #Region "AT Communications"
+
+    Private Sub BtTestDeActivateDeniability_Click(sender As Object, e As EventArgs) Handles BtTestDeActivateDeniability.Click
+        If Not CurrentContract Is Nothing Then
+            Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
+            Dim TXID As String = CurrentContract.DeActivateDeniability(Masterkeys(0),, Masterkeys(1))
+            With LVTestDEXContractBasic.Items.Add("TXID")
+                .SubItems.Add("" + TXID)
+            End With
+        End If
+    End Sub
+
     Private Sub BtTestCreate_Click(sender As Object, e As EventArgs) Handles BtTestCreate.Click
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
+        If Not CurrentContract Is Nothing Then
 
-        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetTXFee) '.GetSlotFee)
+            Dim Collateral As Double = Convert.ToDouble(NUDTestCollateral.Value)
+            Dim Amount As Double = Convert.ToDouble(NUDTestAmount.Value)
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceCreateOrder, ULong.Parse(TBTestATComCollateral.Text), 100000000, ClsSignumAPI.String2ULng("USD")})
-        Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
-        Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem.ToString).ToString.Trim + "&amountNQT=" + TBTestATComAmount.Text + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+            Dim XAmount As Double = Convert.ToDouble(NUDTestXAmount.Value)
+            Dim Price As Double = XAmount / Convert.ToDouble(NUDTestAmount.Value)
 
-        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
+            Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
+            Dim TXID As String = ""
 
-        LiBoATComms.Items.Add(Response)
+            If ChBxSellOrder.Checked Then
+                TXID = CurrentContract.CreateSellOrder(Masterkeys(0), Amount, Collateral, TBTestXItem.Text, XAmount,, Masterkeys(1))
+            Else
+                TXID = CurrentContract.CreateBuyOrder(Masterkeys(0), Amount, Collateral, TBTestXItem.Text, XAmount,, Masterkeys(1))
+            End If
 
+            With LVTestDEXContractBasic.Items.Add("TXID")
+                .SubItems.Add("" + TXID)
+            End With
+
+        End If
     End Sub
+
     Private Sub BtTestAccept_Click(sender As Object, e As EventArgs) Handles BtTestAccept.Click
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
+        If Not CurrentContract Is Nothing Then
 
-        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetTXFee) '.GetSlotFee)
+            Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
+            Dim TXID As String = ""
 
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceAcceptOrder})
-        Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
-        Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem.ToString).ToString.Trim + "&amountNQT=" + TBTestATComAmount.Text + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+            If CurrentContract.IsSellOrder Then
+                TXID = CurrentContract.AcceptSellOrder(Masterkeys(0),,, Masterkeys(1))
+            Else
+                TXID = CurrentContract.AcceptBuyOrder(Masterkeys(0),,,, Masterkeys(1))
+            End If
 
-        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
-
-        LiBoATComms.Items.Add(Response)
+            With LVTestDEXContractBasic.Items.Add("TXID")
+                .SubItems.Add("" + TXID)
+            End With
+        End If
 
     End Sub
+
+    Private Sub BtTestInjectResponder_Click(sender As Object, e As EventArgs) Handles BtTestInjectResponder.Click
+        If Not CurrentContract Is Nothing Then
+            Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
+            Dim TXID As String = CurrentContract.InjectResponder(Masterkeys(0), ULong.Parse(TBTestResponder.Text),, Masterkeys(1))
+            With LVTestDEXContractBasic.Items.Add("TXID")
+                .SubItems.Add("" + TXID)
+            End With
+        End If
+    End Sub
+
+    Private Sub BtTestOpenDispute_Click(sender As Object, e As EventArgs) Handles BtTestOpenDispute.Click
+        If Not CurrentContract Is Nothing Then
+            Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
+            Dim TXID As String = CurrentContract.OpenDispute(Masterkeys(0),, Masterkeys(1))
+            With LVTestDEXContractBasic.Items.Add("TXID")
+                .SubItems.Add("" + TXID)
+            End With
+        End If
+    End Sub
+
+    Private Sub BtTestMediateDispute_Click(sender As Object, e As EventArgs) Handles BtTestMediateDispute.Click
+        If Not CurrentContract Is Nothing Then
+            Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
+
+            Dim TXID As String = CurrentContract.MediateDispute(Masterkeys(0), NUDTestMediateAmount.Value,, Masterkeys(1))
+            With LVTestDEXContractBasic.Items.Add("TXID")
+                .SubItems.Add("" + TXID)
+            End With
+        End If
+    End Sub
+
+    Private Sub BtTestAppeal_Click(sender As Object, e As EventArgs) Handles BtTestAppeal.Click
+        If Not CurrentContract Is Nothing Then
+            Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
+            Dim TXID As String = CurrentContract.Appeal(Masterkeys(0),, Masterkeys(1))
+            With LVTestDEXContractBasic.Items.Add("TXID")
+                .SubItems.Add("" + TXID)
+            End With
+        End If
+    End Sub
+
+    Private Sub BtTestCheckCloseDispute_Click(sender As Object, e As EventArgs) Handles BtTestCheckCloseDispute.Click
+        If Not CurrentContract Is Nothing Then
+            Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
+            Dim TXID As String = CurrentContract.CheckCloseDispute(Masterkeys(0),, Masterkeys(1))
+            With LVTestDEXContractBasic.Items.Add("TXID")
+                .SubItems.Add("" + TXID)
+            End With
+        End If
+    End Sub
+
     Private Sub BtTestFinish_Click(sender As Object, e As EventArgs) Handles BtTestFinish.Click
-
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
-
-        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetTXFee) '.GetSlotFee)
-
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceFinishOrder})
-        Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
-        Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem.ToString).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
-
-        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
-
-        LiBoATComms.Items.Add(Response)
-
-    End Sub
-    Private Sub BtTestInject_Click(sender As Object, e As EventArgs) Handles BtTestInject.Click
-
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
-
-        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetTXFee) '.GetSlotFee)
-
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceInjectResponder, ULong.Parse(TBTestResponder.Text)})
-        Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
-        Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem.ToString).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
-
-        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
-
-        LiBoATComms.Items.Add(Response)
-
+        If Not CurrentContract Is Nothing Then
+            Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
+            Dim TXID As String = CurrentContract.FinishOrder(Masterkeys(0),, Masterkeys(1))
+            With LVTestDEXContractBasic.Items.Add("TXID")
+                .SubItems.Add("" + TXID)
+            End With
+        End If
     End Sub
 
-    Private Sub BtTestATComInjectFWDKey_Click(sender As Object, e As EventArgs) Handles BtTestATComInjectFWDKey.Click
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
-        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetTXFee) '.GetSlotFee)
+    Private Sub BtTestInjectChainSwapHash_Click(sender As Object, e As EventArgs) Handles BtTestInjectChainSwapHash.Click
 
-        If TBTestATComSHA256Key.Text.Trim = "" Then
+        If Not CurrentContract Is Nothing Then
 
-            If TBTestATComTempSecretKey.Text.Trim = "" Then
+            Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
+
+            If TBTesChainSwapHash.Text.Trim = "" Then
                 Exit Sub
             End If
 
-            Dim SecretKeyList As List(Of ULong) = ClsSignumAPI.GetSHA256_64(TBTestATComTempSecretKey.Text)
-            TBTestATComSHA256Key.Text = SecretKeyList(0).ToString
+            Dim ChainSwapHash As ULong = ULong.Parse(TBTesChainSwapHash.Text)
+
+            Dim TXID As String = CurrentContract.InjectChainSwapHash(Masterkeys(0), ChainSwapHash,, Masterkeys(1))
+
+            With LVTestDEXContractBasic.Items.Add("TXID")
+                .SubItems.Add("" + TXID)
+            End With
+
         End If
-
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceInjectChainSwapHash, ULong.Parse(TBTestATComSHA256Key.Text)})
-        Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
-        Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem.ToString).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
-
-        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
-
-        LiBoATComms.Items.Add(Response)
-
     End Sub
 
-    'Private Sub BtTestATComKeyOK_Click(sender As Object, e As EventArgs) Handles BtTestATComKeyOK.Click
+    Private Sub BtTestFinishWithChainSwapKey_Click(sender As Object, e As EventArgs) Handles BtTestFinishWithChainSwapKey.Click
+        If Not CurrentContract Is Nothing Then
 
-    '    Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
+            Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
 
-    '    Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetTXFee) '.GetSlotFee)
+            If TBTestChainSwapULong1.Text.Trim = "" Or TBTestChainSwapULong2.Text.Trim = "" Then
 
-    '    Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceAcceptChainSwapHash, 1UL})
-    '    Dim MsgStr As String = SignumAPI.ULngList2DataStr(ULngList)
-    '    Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-    '    Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
+                If TBTestChainSwapKey.Text.Trim = "" Then
+                    Exit Sub
+                End If
 
-    '    Dim Response As String = SignumAPI.SignumRequest(postDataRL)
+                Dim SecretKeyList As List(Of ULong) = ClsSignumAPI.GetSHA256_64(TBTestChainSwapKey.Text)
+                TBTestChainSwapULong1.Text = SecretKeyList(0).ToString
+                TBTestChainSwapULong2.Text = SecretKeyList(1).ToString
 
-    '    LiBoATComms.Items.Add(Response)
-
-    'End Sub
-
-    Private Sub BtTestATComConvertTempSecretKey_Click(sender As Object, e As EventArgs) Handles BtTestATComConvertTempSecretKey.Click
-
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
-        Dim SecretKeyList As List(Of ULong) = ClsSignumAPI.GetSHA256_64(TBTestATComTempSecretKey.Text)
-
-        TBTestATComFinishULong1.Text = SecretKeyList(0).ToString
-        TBTestATComFinishULong2.Text = SecretKeyList(1).ToString
-        TBTestATComSHA256Key.Text = SecretKeyList(2).ToString
-
-    End Sub
-
-    Private Sub BtTestATComFinishKey_Click(sender As Object, e As EventArgs) Handles BtTestATComFinishKey.Click
-
-        'TODO: it will be marked as CANCELED if the Buyer sends ChainSwapKey to Contract
-
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
-
-        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(SignumAPI.GetTXFee) '.GetSlotFee)
-
-        If TBTestATComFinishULong1.Text.Trim = "" Or TBTestATComFinishULong2.Text.Trim = "" Then
-
-            If TBTestATComTempSecretKey.Text.Trim = "" Then
-                Exit Sub
             End If
 
-            Dim SecretKeyList As List(Of ULong) = ClsSignumAPI.GetSHA256_64(TBTestATComTempSecretKey.Text)
-            TBTestATComFinishULong1.Text = SecretKeyList(0).ToString
-            TBTestATComFinishULong2.Text = SecretKeyList(1).ToString
+            Dim TXID As String = CurrentContract.FinishOrderWithChainSwapKey(Masterkeys(0), ULong.Parse(TBTestChainSwapULong1.Text), ULong.Parse(TBTestChainSwapULong2.Text),, Masterkeys(1))
+
+            With LVTestDEXContractBasic.Items.Add("TXID")
+                .SubItems.Add("" + TXID)
+            End With
+
         End If
-
-        Dim Finish As List(Of ULong) = ClsSignumAPI.GetSHA256_64(TBTestATComSHA256Key.Text)
-
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceFinishOrderWithChainSwapKey, ULong.Parse(TBTestATComFinishULong1.Text), ULong.Parse(TBTestATComFinishULong2.Text)})
-        Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
-        Dim TextMsg As String = "&message=" + MsgStr.Trim + "&messageIsText=False"
-        Dim postDataRL As String = "requestType=sendMoney&recipient=" + ClsReedSolomon.Decode(CoBxTestATComATID.SelectedItem.ToString).ToString.Trim + "&amountNQT=" + "100000000" + "&secretPhrase=" + TBTestPP.Text + "&feeNQT=" + FeeNQT.ToString.Trim + "&deadline=60" + TextMsg
-
-        Dim Response As String = SignumAPI.SignumRequest(postDataRL)
-
-        LiBoATComms.Items.Add(Response)
-
     End Sub
 
-    Private Sub TBTestATID_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TBTestResponder.KeyPress
+    Private Sub CoBxTestATComATID_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CoBxTestATComATID.SelectedIndexChanged
 
-        Dim keys As Integer = Asc(e.KeyChar)
-
-        Select Case keys
-            Case 48 To 57, 8
-                ' Zahlen, 8=Backspace und 32=Space 46=Punkt 44=Komma zulassen
-            Case 13
-                ' ENTER
-                e.Handled = True
-            Case Else
-                ' alle anderen Eingaben unterdrücken
-                e.Handled = True
-        End Select
+        If Not CoBxTestATComATID.SelectedItem Is Nothing Then
+            Dim ItemAddress As String = CoBxTestATComATID.SelectedItem.ToString
+            For Each T_Contract As ClsDEXContract In C_MainForm.DEXContractList
+                If T_Contract.Address.Trim = ItemAddress.Trim Then
+                    CurrentContract = T_Contract
+                    Exit For
+                End If
+            Next
+        End If
 
     End Sub
 
@@ -577,7 +600,7 @@ Public Class FrmDevelope
             T_LVI.Text = APIRequest.Node
             T_LVI.SubItems.Add(APIRequest.Command) 'Command
 
-            If Not IsNothing(APIRequest.RequestThread) Then
+            If Not APIRequest.RequestThread Is Nothing Then
                 T_LVI.SubItems.Add(APIRequest.RequestThread.ManagedThreadId.ToString) 'ThreadID
             Else
                 T_LVI.SubItems.Add("no Thread")
@@ -586,7 +609,7 @@ Public Class FrmDevelope
             T_LVI.SubItems.Add(APIRequest.Status) 'Status
             If APIRequest.Status = "Ready" Then
 
-                If Not IsNothing(APIRequest.Result) Then
+                If Not APIRequest.Result Is Nothing Then
                     T_LVI.SubItems.Add(APIRequest.Result.ToString) 'Result
                 Else
                     T_LVI.SubItems.Add("Nothing") 'Result
@@ -666,7 +689,7 @@ Public Class FrmDevelope
 
         If ChBxTestDEXNETEnable.Checked Then
 
-            If Not IsNothing(C_MainForm.DEXNET) Then
+            If Not C_MainForm.DEXNET Is Nothing Then
                 If C_MainForm.DEXNET.DEXNETClose Then
                     C_MainForm.InitiateDEXNET()
                 End If
@@ -675,7 +698,7 @@ Public Class FrmDevelope
             End If
 
         Else
-            If Not IsNothing(C_MainForm.DEXNET) Then
+            If Not C_MainForm.DEXNET Is Nothing Then
                 C_MainForm.DEXNET.StopServer()
             End If
         End If
@@ -686,7 +709,7 @@ Public Class FrmDevelope
 
         SetINISetting(E_Setting.DEXNETShowStatus, ChBxTestDEXNETShowStatus.Checked)
 
-        If Not IsNothing(C_MainForm.DEXNET) Then
+        If Not C_MainForm.DEXNET Is Nothing Then
             If ChBxTestDEXNETShowStatus.Checked Then
                 C_MainForm.DEXNET.ShowStatus = True
             Else
@@ -698,7 +721,7 @@ Public Class FrmDevelope
 
     Private Sub LiBoDEXNETStatus_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LiBoDEXNETStatus.DoubleClick
 
-        If Not IsNothing(LiBoDEXNETStatus.SelectedItem) Then
+        If Not LiBoDEXNETStatus.SelectedItem Is Nothing Then
 
             Dim T_Frm As Form = New Form With {.Name = "FrmMessage", .Text = "FrmMessage", .StartPosition = FormStartPosition.CenterScreen}
             Dim RTB As RichTextBox = New RichTextBox
@@ -759,7 +782,7 @@ Public Class FrmDevelope
 
     Private Sub LiBoTestRelKeys_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LiBoTestRelKeys.DoubleClick
 
-        If Not IsNothing(LiBoTestRelKeys.SelectedItem) Then
+        If Not LiBoTestRelKeys.SelectedItem Is Nothing Then
             C_MainForm.DEXNET.DelRelevantKey(LiBoTestRelKeys.SelectedItem.ToString)
             LiBoTestRelKeys.Items.Remove(LiBoTestRelKeys.SelectedItem)
         End If
@@ -796,9 +819,189 @@ Public Class FrmDevelope
 
     End Sub
 
+    Private Sub BtTestLoadDEXContract_Click(sender As Object, e As EventArgs) Handles BtTestLoadDEXContract.Click
+
+        If Not CurrentContract Is Nothing Then
+
+            CurrentContract.Refresh(False)
+
+            Dim k = New ClsSignumAPI
+            Dim CurrentBlockHeight As Integer = k.GetCurrentBlock()
 
 
+            LVTestDEXContractBasic.Items.Clear()
+            LVTestCurrentOrder.Items.Clear()
 
+            With LVTestDEXContractBasic.Items.Add("Node")
+                .SubItems.Add(CurrentContract.Node)
+            End With
+
+            With LVTestDEXContractBasic.Items.Add("CreatorID")
+                .SubItems.Add("" + CurrentContract.CreatorID.ToString)
+            End With
+            With LVTestDEXContractBasic.Items.Add("CreatorAddress")
+                .SubItems.Add("" + CurrentContract.CreatorAddress)
+            End With
+            With LVTestDEXContractBasic.Items.Add("ID")
+                .SubItems.Add("" + CurrentContract.ID.ToString)
+            End With
+            With LVTestDEXContractBasic.Items.Add("Address")
+                .SubItems.Add("" + CurrentContract.Address)
+            End With
+            With LVTestDEXContractBasic.Items.Add("Name")
+                .SubItems.Add("" + CurrentContract.Name)
+            End With
+            With LVTestDEXContractBasic.Items.Add("Description")
+                .SubItems.Add("" + CurrentContract.Description)
+            End With
+
+            With LVTestDEXContractBasic.Items.Add("Balance")
+                .SubItems.Add("" + CurrentContract.CurrentBalance.ToString)
+            End With
+
+            With LVTestDEXContractBasic.Items.Add("isDEXContract")
+                .SubItems.Add("" + CurrentContract.IsDEXContract.ToString)
+            End With
+
+            With LVTestDEXContractBasic.Items.Add("Deniability")
+                .SubItems.Add("" + CurrentContract.Deniability.ToString)
+            End With
+
+            With LVTestDEXContractBasic.Items.Add("HistoryOrders")
+                .SubItems.Add("" + CurrentContract.ContractOrderHistoryList.Count.ToString)
+            End With
+
+            With LVTestDEXContractBasic.Items.Add("")
+                .BackColor = Color.LightGray
+            End With
+
+            With LVTestDEXContractBasic.Items.Add("isFrozen")
+                .SubItems.Add("" + CurrentContract.IsFrozen.ToString)
+            End With
+            With LVTestDEXContractBasic.Items.Add("isRunning")
+                .SubItems.Add("" + CurrentContract.IsRunning.ToString)
+            End With
+            With LVTestDEXContractBasic.Items.Add("isStopped")
+                .SubItems.Add("" + CurrentContract.IsStopped.ToString)
+            End With
+            With LVTestDEXContractBasic.Items.Add("isFinished")
+                .SubItems.Add("" + CurrentContract.IsFinished.ToString)
+            End With
+            With LVTestDEXContractBasic.Items.Add("isDead")
+                .SubItems.Add("" + CurrentContract.IsDead.ToString)
+            End With
+
+            'LVTestDEXContractBasic.Items.Add("--------------------")
+
+            With LVTestCurrentOrder.Items.Add("CurrentCreationTransaction")
+                .SubItems.Add("" + CurrentContract.CurrentCreationTransaction.ToString)
+            End With
+            With LVTestCurrentOrder.Items.Add("CurrentConfirmations")
+                .SubItems.Add("" + CurrentContract.CurrentConfirmations.ToString)
+            End With
+
+            With LVTestCurrentOrder.Items.Add("isCurrentSellOrder")
+                .SubItems.Add("" + CurrentContract.IsSellOrder.ToString)
+            End With
+
+            With LVTestCurrentOrder.Items.Add("isInDispute")
+                .SubItems.Add("" + CurrentContract.Dispute.ToString)
+            End With
+
+            With LVTestCurrentOrder.Items.Add("CurrentSeller")
+                .SubItems.Add("" + CurrentContract.CurrentSellerAddress)
+            End With
+            With LVTestCurrentOrder.Items.Add("CurrentBuyer")
+                .SubItems.Add("" + CurrentContract.CurrentBuyerAddress)
+            End With
+            With LVTestCurrentOrder.Items.Add("CurrentInitiatorsCollateral")
+                .SubItems.Add("" + Math.Round(CurrentContract.CurrentInitiatorsCollateral, 2).ToString("0.00") + " Signa")
+            End With
+            With LVTestCurrentOrder.Items.Add("CurrentRespondersCollateral")
+                .SubItems.Add("" + Math.Round(CurrentContract.CurrentRespondersCollateral, 2).ToString("0.00") + " Signa")
+            End With
+
+            If CurrentContract.IsSellOrder Then
+                With LVTestCurrentOrder.Items.Add("CurrentSellAmount")
+                    .SubItems.Add("" + Math.Round(CurrentContract.CurrentBuySellAmount, 2).ToString("0.00") + " Signa")
+                End With
+            Else
+                With LVTestCurrentOrder.Items.Add("CurrentBuyAmount")
+                    .SubItems.Add("" + Math.Round(CurrentContract.CurrentBuySellAmount, 2).ToString("0.00") + " Signa")
+                End With
+            End If
+
+            With LVTestCurrentOrder.Items.Add("CurrentMediatorsDeposit")
+                .SubItems.Add("" + Math.Round(CurrentContract.CurrentMediatorsDeposit, 2).ToString("0.00") + " Signa")
+            End With
+
+            With LVTestCurrentOrder.Items.Add("CurrentDisputeTimeoutBlock")
+
+                Dim diffblock As Long = 0
+
+                If CurrentContract.CurrentDisputeTimeout <> 0UL Then
+                    diffblock = CLng(CurrentContract.CurrentDisputeTimeout) - CLng(CurrentBlockHeight)
+                End If
+
+                .SubItems.Add(CurrentBlockHeight.ToString + " / " + CurrentContract.CurrentDisputeTimeout.ToString + " (in " + diffblock.ToString + " Blocks)")
+            End With
+
+            With LVTestCurrentOrder.Items.Add("CurrentObjection")
+                .SubItems.Add("" + CurrentContract.CurrentObjection.ToString)
+            End With
+
+
+            With LVTestCurrentOrder.Items.Add("CurrentConciliationAmount")
+
+                Dim percentage As Double = 100 / CurrentContract.CurrentBuySellAmount * CurrentContract.CurrentConciliationAmount
+
+                .SubItems.Add("" + Math.Round(CurrentContract.CurrentConciliationAmount, 2).ToString("0.00") + " Signa / " + percentage.ToString + "%")
+            End With
+
+            With LVTestCurrentOrder.Items.Add("CurrentChainSwapHash")
+                .SubItems.Add("" + CurrentContract.CurrentChainSwapHash.ToString)
+            End With
+
+            With LVTestCurrentOrder.Items.Add("CurrentXItem")
+                .SubItems.Add("" + Math.Round(CurrentContract.CurrentXAmount, 2).ToString("0.00") + " " + CurrentContract.CurrentXItem)
+            End With
+            With LVTestCurrentOrder.Items.Add("CurrentPrice")
+                .SubItems.Add("" + Math.Round(CurrentContract.CurrentPrice, 2).ToString("0.00") + " " + CurrentContract.CurrentXItem)
+            End With
+            With LVTestCurrentOrder.Items.Add("CurrentStatus")
+                .SubItems.Add("" + CurrentContract.Status.ToString)
+            End With
+
+            If CurrentContract.IsSellOrder Then
+                NUDTestCollateral.Value = CDec(CurrentContract.CurrentInitiatorsCollateral)
+            Else
+                NUDTestAmount.Value = CDec(CurrentContract.CurrentBuySellAmount)
+                NUDTestCollateral.Value = CDec(CurrentContract.CurrentInitiatorsCollateral)
+            End If
+
+            LVTestDEXContractBasic.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
+            LVTestCurrentOrder.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
+
+            'LiBoHistoryOrders.Items.Clear()
+
+            'For Each HisOrd As S_Order In T_SignumContract.ContractOrderHistoryList
+
+            '    LiBoHistoryOrders.Items.Add("CreationTransaction= " + HisOrd.CreationTransaction.ToString)
+            '    LiBoHistoryOrders.Items.Add("Confirmations= " + HisOrd.Confirmations.ToString)
+            '    LiBoHistoryOrders.Items.Add("StartTimestamp= " + HisOrd.StartTimestamp.ToString)
+            '    LiBoHistoryOrders.Items.Add("EndTimestamp= " + HisOrd.EndTimestamp.ToString)
+            '    LiBoHistoryOrders.Items.Add("Seller= " + HisOrd.SellerRS)
+            '    LiBoHistoryOrders.Items.Add("Buyer= " + HisOrd.BuyerRS)
+            '    LiBoHistoryOrders.Items.Add("Collateral= " + HisOrd.Collateral.ToString)
+            '    LiBoHistoryOrders.Items.Add("Amount= " + Math.Round(HisOrd.Amount, 2).ToString("0.00") + " Signa")
+            '    LiBoHistoryOrders.Items.Add("XItem= " + Math.Round(HisOrd.XAmount, 2).ToString("0.00") + " " + HisOrd.XItem)
+            '    LiBoHistoryOrders.Items.Add("Price= " + Math.Round(HisOrd.Price, 2).ToString("0.00") + " " + HisOrd.XItem)
+            '    LiBoHistoryOrders.Items.Add("Status= " + HisOrd.Status.ToString)
+            '    LiBoHistoryOrders.Items.Add("--------------------")
+
+            'Next
+        End If
+    End Sub
 
 #End Region
 

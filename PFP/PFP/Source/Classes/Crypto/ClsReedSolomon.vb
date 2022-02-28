@@ -30,7 +30,8 @@ Public Class ClsReedSolomon
             Next
 
             Dim codeword_length As Integer = 0
-            Dim codeword(UBound(initial_codeword.ToArray)) As Integer
+            'Dim codeword(UBound(initial_codeword.ToArray)) As Integer
+            Dim codeword(initial_codeword.Count - 1) As Integer
 
             Dim new_length As Integer
             Dim digit_32 As Integer
@@ -101,15 +102,16 @@ Public Class ClsReedSolomon
 
         Try
 
-            Dim PreFix As String = cypher_string.Substring(0, 3)
+            Dim PreFix As String = cypher_string.Substring(0, ClsSignumAPI._AddressPreFix.Length)
 
             If PreFix = ClsSignumAPI._AddressPreFix Then
-                cypher_string = cypher_string.Substring(3)
+                cypher_string = cypher_string.Substring(ClsSignumAPI._AddressPreFix.Length)
             End If
 
             cypher_string = cypher_string.Replace("-", "") 'lets remove the - in the address
 
-            Dim codeword(UBound(initial_codeword.ToArray)) As Integer
+            'Dim codeword(UBound(initial_codeword.ToArray)) As Integer
+            Dim codeword(initial_codeword.Count - 1) As Integer
             Array.Copy(initial_codeword.ToArray, 0, codeword, 0, initial_codeword.Count)
             Dim codeword_length As Integer = 0
 

@@ -94,7 +94,7 @@ Module ModGlobalFunctions
 
         Dim PeerCNT As Integer = 0
 
-        If Not IsNothing(DEXNET) Then
+        If Not DEXNET Is Nothing Then
             PeerCNT = DEXNET.Peers.Count
         End If
 

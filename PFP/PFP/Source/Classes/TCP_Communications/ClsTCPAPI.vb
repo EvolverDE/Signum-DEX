@@ -169,7 +169,7 @@ Public Class ClsTCPAPI
 
                 For Each SCon2 As S_Connection In ConnectionList
 
-                    If IsNothing(SCon2.TCPClient.Client) Then
+                    If SCon2.TCPClient.Client Is Nothing Then
 
                         DeadFound = True
                         SCon2.TCPClient.Close()
@@ -265,7 +265,6 @@ Public Class ClsTCPAPI
 
                     If Method_Path_HTTPv(0).Trim.ToUpper = "GET" Then
 
-
                         Dim Request As String = Method_Path_HTTPv(1).Trim
                         Dim SubRequest As List(Of String) = New List(Of String)
 
@@ -299,21 +298,86 @@ Public Class ClsTCPAPI
                             QueryParameters.AddRange(T_Parameters.Split("&"c).ToArray)
                         End If
 
-
+                        Dim FoundStatic As Boolean = False
                         For Each Response As API_Response In ResponseMSGList
                             If Response.API_Interface = APIInterface And Response.API_Version = APIVersion And Response.API_Command = APICommand Then
 
                                 If QueryParameters.Count > 0 Then
-
                                     If CheckLists(QueryParameters, Response.API_Parameters) Then
                                         ResponseHTML = Response.API_Response
+                                        FoundStatic = True
                                     End If
                                 Else
                                     ResponseHTML = Response.API_Response
+                                    FoundStatic = True
                                 End If
 
                             End If
                         Next
+
+                        If Not FoundStatic Then
+
+                            If APICommand = "AcceptOrder" Then
+
+                                If QueryParameters.Count > 0 Then
+
+                                    Dim ReqID As String = ""
+                                    Dim PublicKey As String = ""
+
+                                    For Each Query As String In QueryParameters
+
+                                        Dim T_ReqKey As String = Query.Split("="c)(0)
+                                        Dim T_ReqValue As String = Query.Split("="c)(1)
+
+                                        If T_ReqKey = "DEXContractAddress" Then
+                                            ReqID = ClsReedSolomon.Decode(T_ReqValue).ToString
+                                        End If
+
+
+                                        If T_ReqKey = "DEXContractID" Then
+                                            ReqID = T_ReqValue
+                                        End If
+
+                                        If T_ReqKey = "PublicKey" Then
+                                            PublicKey = T_ReqValue
+                                        End If
+
+                                    Next
+
+
+
+                                    If Not ReqID = "" And Not ReqID = "0" And Not PublicKey = "" And MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
+                                        For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                            If T_DEXContract.ID.ToString = ReqID Then
+                                                'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
+                                                'publickey = 6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
+                                                'http://127.0.0.1:8130/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
+
+                                                If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
+                                                    Dim T_UnsignedTransactionBytes As String = T_DEXContract.AcceptSellOrder(PublicKey)
+
+                                                    If T_UnsignedTransactionBytes.Contains("errorCode") Then
+                                                        ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
+                                                    ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
+
+                                                    Else
+                                                        ResponseHTML = "{""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                    End If
+
+                                                End If
+
+                                            End If
+                                        Next
+                                    End If
+
+
+
+                                End If
+
+                            End If
+
+                        End If
+
 
 
                         'ResponseHTML += "<form action = ""GetCandles"" id=""person"" method=""POST"">"

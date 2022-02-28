@@ -133,7 +133,7 @@ Public Class ClsDEXNET
         DEXNET_ServerPort = PPort
         DEXNETClose = False
 
-        If IsNothing(TCPListener) Then
+        If TCPListener Is Nothing Then
             TCPListener = New Net.Sockets.TcpListener(Net.IPAddress.Any, DEXNET_ServerPort)
 
             ListenerThread = New Threading.Thread(AddressOf Listen)
@@ -321,7 +321,7 @@ Public Class ClsDEXNET
 
         DEXNETClose = True
 
-        If Not IsNothing(TCPListener) Then
+        If Not TCPListener Is Nothing Then
             TCPListener.Server.Close()
             TCPListener = Nothing
         End If
@@ -552,14 +552,14 @@ Public Class ClsDEXNET
 
             Try
                 Dim T_Peer As S_Peer = Peers(IDX)
-                If Not IsNothing(T_Peer.TCPClient) Then
+                If Not T_Peer.TCPClient Is Nothing Then
 
                     Dim NetStream As Net.Sockets.NetworkStream = T_Peer.TCPClient.GetStream
                     If NetStream.CanRead Then
 
                         Dim TempMsg As String = T_Peer.StreamReader.ReadLine()
 
-                        If Not IsNothing(TempMsg) Then
+                        If Not TempMsg Is Nothing Then
                             T_Peer = Peers(IDX)
                             T_Peer.GetMsgs.Add(TempMsg)
                             Peers(IDX) = T_Peer
@@ -886,8 +886,8 @@ Public Class ClsDEXNET
 
                                                 Dim T_AT As String = ""
 
-                                                If CheckXMLTag(T_Message, "AT") Then
-                                                    T_AT = GetXMLMessage(T_Message, "AT")
+                                                If CheckXMLTag(T_Message, "Smart Contract") Then
+                                                    T_AT = GetXMLMessage(T_Message, "Smart Contract")
                                                 End If
 
                                                 Dim T_Type As String = ""

@@ -279,4 +279,7 @@ Public Class FrmManual
         Me.Hide()
     End Sub
 
+    Private Sub BtClose_Click(sender As Object, e As EventArgs) Handles BtClose.Click
+        Me.Close()
+    End Sub
 End Class

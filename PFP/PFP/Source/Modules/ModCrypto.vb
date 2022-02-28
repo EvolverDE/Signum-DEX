@@ -194,7 +194,7 @@ Module ModCrypto
 
         Dim T_EncryptedBytes() As Byte = T_AES.AES_Decrypt(HEXStringToByteArray(Input), System.Text.Encoding.UTF8.GetBytes(Password))
 
-        If IsNothing(T_EncryptedBytes) Then
+        If T_EncryptedBytes Is Nothing Then
             Return Input
         Else
             Return System.Text.Encoding.UTF8.GetString(T_EncryptedBytes)
@@ -212,7 +212,7 @@ Module ModCrypto
 
         Dim T_EncryptedBytes() As Byte = T_AES.AES_Decrypt(Input, System.Text.Encoding.UTF8.GetBytes(Password))
 
-        If IsNothing(T_EncryptedBytes) Then
+        If T_EncryptedBytes Is Nothing Then
             Return ""
         Else
             Return System.Text.Encoding.UTF8.GetString(T_EncryptedBytes)

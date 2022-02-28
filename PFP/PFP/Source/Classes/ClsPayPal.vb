@@ -105,7 +105,7 @@ Public Class ClsPayPal
             request.Method = Method
             request.ContentType = "application/json" 'x-www-form-urlencoded"
 
-            If Not IsNothing(HeaderList) Then
+            If Not HeaderList Is Nothing Then
                 For Each Header As String In HeaderList
                     request.Headers.Add(Header)
                 Next

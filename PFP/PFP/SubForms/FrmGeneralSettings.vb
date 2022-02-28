@@ -74,7 +74,7 @@ Public Class FrmGeneralSettings
         'RefreshTime = Integer.Parse(CoBxRefresh.Text) * 600
 
         ChBxAutoSendPaymentInfo.Checked = GetINISetting(E_Setting.AutoSendPaymentInfo, False)
-        ChBxCheckXItemTX.Checked = GetINISetting(E_Setting.AutoCheckAndFinishAT, False)
+        ChBxCheckXItemTX.Checked = GetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False)
 
 
         ChBxTCPAPI.Checked = GetINISetting(E_Setting.TCPAPIEnable, False)
@@ -157,7 +157,7 @@ Public Class FrmGeneralSettings
             Changes = True
         End If
 
-        If ChBxCheckXItemTX.Checked <> GetINISetting(E_Setting.AutoCheckAndFinishAT, False) Then
+        If ChBxCheckXItemTX.Checked <> GetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False) Then
             Changes = True
         End If
 
@@ -227,7 +227,7 @@ Public Class FrmGeneralSettings
                 SetINISetting(E_Setting.DefaultNode, C_MainForm.PrimaryNode)
 
                 SetINISetting(E_Setting.AutoSendPaymentInfo, ChBxAutoSendPaymentInfo.Checked)
-                SetINISetting(E_Setting.AutoCheckAndFinishAT, ChBxCheckXItemTX.Checked)
+                SetINISetting(E_Setting.AutoCheckAndFinishSmartContract, ChBxCheckXItemTX.Checked)
 
                 SetINISetting(E_Setting.DEXNETServerPort, TBDEXNETPort.Text)
                 SetINISetting(E_Setting.TCPAPIServerPort, TBTCPAPIPort.Text)
@@ -269,7 +269,7 @@ Public Class FrmGeneralSettings
 
 
         SetINISetting(E_Setting.AutoSendPaymentInfo, ChBxAutoSendPaymentInfo.Checked)
-        SetINISetting(E_Setting.AutoCheckAndFinishAT, ChBxCheckXItemTX.Checked)
+        SetINISetting(E_Setting.AutoCheckAndFinishSmartContract, ChBxCheckXItemTX.Checked)
 
         SetINISetting(E_Setting.DEXNETServerPort, TBDEXNETPort.Text)
         SetINISetting(E_Setting.TCPAPIServerPort, TBTCPAPIPort.Text)
@@ -416,7 +416,7 @@ Public Class FrmGeneralSettings
             Case 13
                 ' ENTER
                 SetINISetting(E_Setting.DEXNETServerPort, TBDEXNETPort.Text)
-                If Not IsNothing(C_MainForm.DEXNET) Then
+                If Not C_MainForm.DEXNET Is Nothing Then
                     C_MainForm.DEXNET.StopServer()
                     C_MainForm.InitiateDEXNET()
                 Else
@@ -443,7 +443,7 @@ Public Class FrmGeneralSettings
 
         Dim PayTypes As List(Of String) = ClsOrderSettings.GetPayTypes()
 
-        If Not IsNothing(CoBxPayType.SelectedItem) Then
+        If Not CoBxPayType.SelectedItem Is Nothing Then
 
             Select Case CoBxPayType.SelectedItem.ToString
                 Case PayTypes(0)

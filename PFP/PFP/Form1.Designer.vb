@@ -39,9 +39,11 @@ Partial Class PFPForm
         Me.LVOpenChannels = New System.Windows.Forms.ListView()
         Me.ColumnHeader9 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader34 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader2 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.Label3 = New System.Windows.Forms.Label()
         Me.BtSNOSetOrder = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.ChBxDeniability = New System.Windows.Forms.CheckBox()
         Me.LabColPercentage = New System.Windows.Forms.Label()
         Me.TBarCollateralPercent = New System.Windows.Forms.TrackBar()
         Me.Label18 = New System.Windows.Forms.Label()
@@ -65,7 +67,7 @@ Partial Class PFPForm
         Me.TBSNOAddress = New System.Windows.Forms.TextBox()
         Me.Label10 = New System.Windows.Forms.Label()
         Me.CoBxMarket = New System.Windows.Forms.ComboBox()
-        Me.BtCreateNewAT = New System.Windows.Forms.Button()
+        Me.BtCreateNewSmartContract = New System.Windows.Forms.Button()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer2 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer3 = New System.Windows.Forms.SplitContainer()
@@ -96,16 +98,35 @@ Partial Class PFPForm
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.SplitContainer18 = New System.Windows.Forms.SplitContainer()
+        Me.SplitContainer19 = New System.Windows.Forms.SplitContainer()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.SplitContainer20 = New System.Windows.Forms.SplitContainer()
+        Me.LVMySmartContracts = New System.Windows.Forms.ListView()
+        Me.ColumnHeader3 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.BtMediatorDeActivateDeniability = New System.Windows.Forms.Button()
+        Me.CoBxMediatorCandidateToSend = New System.Windows.Forms.ComboBox()
+        Me.LabProposalPercent = New System.Windows.Forms.Label()
+        Me.NUDMediatePercentage = New System.Windows.Forms.NumericUpDown()
+        Me.LabProposal = New System.Windows.Forms.Label()
+        Me.BtSendMediatorMsg = New System.Windows.Forms.Button()
+        Me.ChBxMediatorEncMsg = New System.Windows.Forms.CheckBox()
+        Me.TBMediatorManuMsg = New System.Windows.Forms.TextBox()
+        Me.LabMediatorMsg = New System.Windows.Forms.Label()
+        Me.BtMediateDispute = New System.Windows.Forms.Button()
         Me.SplitContainer13 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer14 = New System.Windows.Forms.SplitContainer()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.SplitContainer16 = New System.Windows.Forms.SplitContainer()
         Me.LVMyOpenOrders = New System.Windows.Forms.ListView()
         Me.ColumnHeader41 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.BtAppeal = New System.Windows.Forms.Button()
+        Me.CoBxCandidateToSend = New System.Windows.Forms.ComboBox()
+        Me.BtOpenDispute = New System.Windows.Forms.Button()
         Me.BtSendMsg = New System.Windows.Forms.Button()
         Me.ChBxEncMsg = New System.Windows.Forms.CheckBox()
         Me.TBManuMsg = New System.Windows.Forms.TextBox()
-        Me.Label15 = New System.Windows.Forms.Label()
+        Me.LabMsg = New System.Windows.Forms.Label()
         Me.BtReCreatePayPalOrder = New System.Windows.Forms.Button()
         Me.BtPayOrder = New System.Windows.Forms.Button()
         Me.BtExecuteOrder = New System.Windows.Forms.Button()
@@ -192,6 +213,19 @@ Partial Class PFPForm
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
+        CType(Me.SplitContainer18, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer18.Panel1.SuspendLayout()
+        Me.SplitContainer18.Panel2.SuspendLayout()
+        Me.SplitContainer18.SuspendLayout()
+        CType(Me.SplitContainer19, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer19.Panel1.SuspendLayout()
+        Me.SplitContainer19.Panel2.SuspendLayout()
+        Me.SplitContainer19.SuspendLayout()
+        CType(Me.SplitContainer20, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer20.Panel1.SuspendLayout()
+        Me.SplitContainer20.Panel2.SuspendLayout()
+        Me.SplitContainer20.SuspendLayout()
+        CType(Me.NUDMediatePercentage, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.SplitContainer13, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer13.Panel1.SuspendLayout()
         Me.SplitContainer13.Panel2.SuspendLayout()
@@ -313,7 +347,7 @@ Partial Class PFPForm
         'LVOpenChannels
         '
         Me.LVOpenChannels.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.LVOpenChannels.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader9, Me.ColumnHeader34})
+        Me.LVOpenChannels.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader9, Me.ColumnHeader34, Me.ColumnHeader2})
         Me.LVOpenChannels.Dock = System.Windows.Forms.DockStyle.Fill
         Me.LVOpenChannels.ForeColor = System.Drawing.Color.White
         Me.LVOpenChannels.FullRowSelect = True
@@ -329,12 +363,17 @@ Partial Class PFPForm
         '
         'ColumnHeader9
         '
-        Me.ColumnHeader9.Text = "AT"
+        Me.ColumnHeader9.Text = "Smart Contract"
         Me.ColumnHeader9.Width = 114
         '
         'ColumnHeader34
         '
         Me.ColumnHeader34.Text = "Status"
+        '
+        'ColumnHeader2
+        '
+        Me.ColumnHeader2.Text = "Deniable"
+        Me.ColumnHeader2.Width = 75
         '
         'Label3
         '
@@ -348,16 +387,17 @@ Partial Class PFPForm
         'BtSNOSetOrder
         '
         Me.BtSNOSetOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtSNOSetOrder.Location = New System.Drawing.Point(124, 225)
+        Me.BtSNOSetOrder.Location = New System.Drawing.Point(93, 225)
         Me.BtSNOSetOrder.Name = "BtSNOSetOrder"
-        Me.BtSNOSetOrder.Size = New System.Drawing.Size(82, 23)
+        Me.BtSNOSetOrder.Size = New System.Drawing.Size(113, 23)
         Me.BtSNOSetOrder.TabIndex = 11
-        Me.BtSNOSetOrder.Text = "Set Order"
+        Me.BtSNOSetOrder.Text = "set Order"
         Me.BtSNOSetOrder.UseVisualStyleBackColor = False
         '
         'GroupBox1
         '
         Me.GroupBox1.BackColor = System.Drawing.Color.Transparent
+        Me.GroupBox1.Controls.Add(Me.ChBxDeniability)
         Me.GroupBox1.Controls.Add(Me.LabColPercentage)
         Me.GroupBox1.Controls.Add(Me.TBarCollateralPercent)
         Me.GroupBox1.Controls.Add(Me.Label18)
@@ -384,6 +424,16 @@ Partial Class PFPForm
         Me.GroupBox1.TabIndex = 12
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Set New Order"
+        '
+        'ChBxDeniability
+        '
+        Me.ChBxDeniability.AutoSize = True
+        Me.ChBxDeniability.Location = New System.Drawing.Point(125, 37)
+        Me.ChBxDeniability.Name = "ChBxDeniability"
+        Me.ChBxDeniability.Size = New System.Drawing.Size(185, 17)
+        Me.ChBxDeniability.TabIndex = 14
+        Me.ChBxDeniability.Text = "only use Deniable Contracts"
+        Me.ChBxDeniability.UseVisualStyleBackColor = True
         '
         'LabColPercentage
         '
@@ -606,15 +656,15 @@ Partial Class PFPForm
         Me.CoBxMarket.Size = New System.Drawing.Size(97, 21)
         Me.CoBxMarket.TabIndex = 26
         '
-        'BtCreateNewAT
+        'BtCreateNewSmartContract
         '
-        Me.BtCreateNewAT.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtCreateNewAT.Location = New System.Drawing.Point(1, 1)
-        Me.BtCreateNewAT.Name = "BtCreateNewAT"
-        Me.BtCreateNewAT.Size = New System.Drawing.Size(118, 23)
-        Me.BtCreateNewAT.TabIndex = 13
-        Me.BtCreateNewAT.Text = "Create New AT"
-        Me.BtCreateNewAT.UseVisualStyleBackColor = False
+        Me.BtCreateNewSmartContract.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BtCreateNewSmartContract.Location = New System.Drawing.Point(1, 1)
+        Me.BtCreateNewSmartContract.Name = "BtCreateNewSmartContract"
+        Me.BtCreateNewSmartContract.Size = New System.Drawing.Size(171, 23)
+        Me.BtCreateNewSmartContract.TabIndex = 13
+        Me.BtCreateNewSmartContract.Text = "create new Smart Contract"
+        Me.BtCreateNewSmartContract.UseVisualStyleBackColor = False
         '
         'SplitContainer1
         '
@@ -719,7 +769,7 @@ Partial Class PFPForm
         '
         'SplitContainer5.Panel2
         '
-        Me.SplitContainer5.Panel2.Controls.Add(Me.BtCreateNewAT)
+        Me.SplitContainer5.Panel2.Controls.Add(Me.BtCreateNewSmartContract)
         Me.SplitContainer5.Size = New System.Drawing.Size(371, 97)
         Me.SplitContainer5.SplitterDistance = 68
         Me.SplitContainer5.TabIndex = 0
@@ -863,9 +913,9 @@ Partial Class PFPForm
         Me.ChBxSellFilterShowAutofinish.AutoSize = True
         Me.ChBxSellFilterShowAutofinish.Location = New System.Drawing.Point(167, 26)
         Me.ChBxSellFilterShowAutofinish.Name = "ChBxSellFilterShowAutofinish"
-        Me.ChBxSellFilterShowAutofinish.Size = New System.Drawing.Size(145, 17)
+        Me.ChBxSellFilterShowAutofinish.Size = New System.Drawing.Size(151, 17)
         Me.ChBxSellFilterShowAutofinish.TabIndex = 6
-        Me.ChBxSellFilterShowAutofinish.Text = "show only autofinish=true"
+        Me.ChBxSellFilterShowAutofinish.Text = "show only autofinish = true"
         Me.ChBxSellFilterShowAutofinish.UseVisualStyleBackColor = True
         '
         'ChBxSellFilterShowAutoinfo
@@ -873,9 +923,9 @@ Partial Class PFPForm
         Me.ChBxSellFilterShowAutoinfo.AutoSize = True
         Me.ChBxSellFilterShowAutoinfo.Location = New System.Drawing.Point(167, 3)
         Me.ChBxSellFilterShowAutoinfo.Name = "ChBxSellFilterShowAutoinfo"
-        Me.ChBxSellFilterShowAutoinfo.Size = New System.Drawing.Size(138, 17)
+        Me.ChBxSellFilterShowAutoinfo.Size = New System.Drawing.Size(144, 17)
         Me.ChBxSellFilterShowAutoinfo.TabIndex = 5
-        Me.ChBxSellFilterShowAutoinfo.Text = "show only autoinfo=true"
+        Me.ChBxSellFilterShowAutoinfo.Text = "show only autoinfo = true"
         Me.ChBxSellFilterShowAutoinfo.UseVisualStyleBackColor = True
         '
         'SplitContainer9
@@ -1003,9 +1053,9 @@ Partial Class PFPForm
         Me.ChBxBuyFilterShowAutofinish.AutoSize = True
         Me.ChBxBuyFilterShowAutofinish.Location = New System.Drawing.Point(167, 26)
         Me.ChBxBuyFilterShowAutofinish.Name = "ChBxBuyFilterShowAutofinish"
-        Me.ChBxBuyFilterShowAutofinish.Size = New System.Drawing.Size(145, 17)
+        Me.ChBxBuyFilterShowAutofinish.Size = New System.Drawing.Size(151, 17)
         Me.ChBxBuyFilterShowAutofinish.TabIndex = 9
-        Me.ChBxBuyFilterShowAutofinish.Text = "show only autofinish=true"
+        Me.ChBxBuyFilterShowAutofinish.Text = "show only autofinish = true"
         Me.ChBxBuyFilterShowAutofinish.UseVisualStyleBackColor = True
         '
         'ChLBBuyFilterMethods
@@ -1023,9 +1073,9 @@ Partial Class PFPForm
         Me.ChBxBuyFilterShowAutoinfo.AutoSize = True
         Me.ChBxBuyFilterShowAutoinfo.Location = New System.Drawing.Point(167, 3)
         Me.ChBxBuyFilterShowAutoinfo.Name = "ChBxBuyFilterShowAutoinfo"
-        Me.ChBxBuyFilterShowAutoinfo.Size = New System.Drawing.Size(138, 17)
+        Me.ChBxBuyFilterShowAutoinfo.Size = New System.Drawing.Size(144, 17)
         Me.ChBxBuyFilterShowAutoinfo.TabIndex = 8
-        Me.ChBxBuyFilterShowAutoinfo.Text = "show only autoinfo=true"
+        Me.ChBxBuyFilterShowAutoinfo.Text = "show only autoinfo = true"
         Me.ChBxBuyFilterShowAutoinfo.UseVisualStyleBackColor = True
         '
         'TabControl1
@@ -1059,13 +1109,228 @@ Partial Class PFPForm
         Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.TabPage2.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
         Me.TabPage2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.TabPage2.Controls.Add(Me.SplitContainer13)
+        Me.TabPage2.Controls.Add(Me.SplitContainer18)
         Me.TabPage2.Location = New System.Drawing.Point(4, 22)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage2.Size = New System.Drawing.Size(1546, 679)
         Me.TabPage2.TabIndex = 1
-        Me.TabPage2.Text = "MyOrders"
+        Me.TabPage2.Text = "MySmartContracts & Orders"
+        '
+        'SplitContainer18
+        '
+        Me.SplitContainer18.BackColor = System.Drawing.Color.Transparent
+        Me.SplitContainer18.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.SplitContainer18.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer18.Location = New System.Drawing.Point(3, 3)
+        Me.SplitContainer18.Name = "SplitContainer18"
+        Me.SplitContainer18.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer18.Panel1
+        '
+        Me.SplitContainer18.Panel1.Controls.Add(Me.SplitContainer19)
+        '
+        'SplitContainer18.Panel2
+        '
+        Me.SplitContainer18.Panel2.BackColor = System.Drawing.Color.Transparent
+        Me.SplitContainer18.Panel2.Controls.Add(Me.SplitContainer13)
+        Me.SplitContainer18.Size = New System.Drawing.Size(1540, 673)
+        Me.SplitContainer18.SplitterDistance = 242
+        Me.SplitContainer18.TabIndex = 6
+        '
+        'SplitContainer19
+        '
+        Me.SplitContainer19.BackColor = System.Drawing.Color.Transparent
+        Me.SplitContainer19.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer19.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer19.IsSplitterFixed = True
+        Me.SplitContainer19.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer19.Name = "SplitContainer19"
+        Me.SplitContainer19.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer19.Panel1
+        '
+        Me.SplitContainer19.Panel1.Controls.Add(Me.Label9)
+        '
+        'SplitContainer19.Panel2
+        '
+        Me.SplitContainer19.Panel2.Controls.Add(Me.SplitContainer20)
+        Me.SplitContainer19.Size = New System.Drawing.Size(1538, 240)
+        Me.SplitContainer19.SplitterDistance = 25
+        Me.SplitContainer19.TabIndex = 1
+        '
+        'Label9
+        '
+        Me.Label9.AutoSize = True
+        Me.Label9.ForeColor = System.Drawing.Color.White
+        Me.Label9.Location = New System.Drawing.Point(3, 6)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(96, 13)
+        Me.Label9.TabIndex = 2
+        Me.Label9.Text = "MySmartContracts:"
+        '
+        'SplitContainer20
+        '
+        Me.SplitContainer20.BackColor = System.Drawing.Color.Transparent
+        Me.SplitContainer20.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer20.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
+        Me.SplitContainer20.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer20.Name = "SplitContainer20"
+        Me.SplitContainer20.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer20.Panel1
+        '
+        Me.SplitContainer20.Panel1.Controls.Add(Me.LVMySmartContracts)
+        '
+        'SplitContainer20.Panel2
+        '
+        Me.SplitContainer20.Panel2.Controls.Add(Me.BtMediatorDeActivateDeniability)
+        Me.SplitContainer20.Panel2.Controls.Add(Me.CoBxMediatorCandidateToSend)
+        Me.SplitContainer20.Panel2.Controls.Add(Me.LabProposalPercent)
+        Me.SplitContainer20.Panel2.Controls.Add(Me.NUDMediatePercentage)
+        Me.SplitContainer20.Panel2.Controls.Add(Me.LabProposal)
+        Me.SplitContainer20.Panel2.Controls.Add(Me.BtSendMediatorMsg)
+        Me.SplitContainer20.Panel2.Controls.Add(Me.ChBxMediatorEncMsg)
+        Me.SplitContainer20.Panel2.Controls.Add(Me.TBMediatorManuMsg)
+        Me.SplitContainer20.Panel2.Controls.Add(Me.LabMediatorMsg)
+        Me.SplitContainer20.Panel2.Controls.Add(Me.BtMediateDispute)
+        Me.SplitContainer20.Size = New System.Drawing.Size(1538, 211)
+        Me.SplitContainer20.SplitterDistance = 122
+        Me.SplitContainer20.TabIndex = 0
+        '
+        'LVMySmartContracts
+        '
+        Me.LVMySmartContracts.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.LVMySmartContracts.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader3})
+        Me.LVMySmartContracts.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LVMySmartContracts.ForeColor = System.Drawing.Color.White
+        Me.LVMySmartContracts.FullRowSelect = True
+        Me.LVMySmartContracts.GridLines = True
+        Me.LVMySmartContracts.HideSelection = False
+        Me.LVMySmartContracts.Location = New System.Drawing.Point(0, 0)
+        Me.LVMySmartContracts.MultiSelect = False
+        Me.LVMySmartContracts.Name = "LVMySmartContracts"
+        Me.LVMySmartContracts.Size = New System.Drawing.Size(1538, 122)
+        Me.LVMySmartContracts.TabIndex = 0
+        Me.LVMySmartContracts.UseCompatibleStateImageBehavior = False
+        Me.LVMySmartContracts.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader3
+        '
+        Me.ColumnHeader3.Text = "Loading..."
+        Me.ColumnHeader3.Width = 90
+        '
+        'BtMediatorDeActivateDeniability
+        '
+        Me.BtMediatorDeActivateDeniability.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BtMediatorDeActivateDeniability.ForeColor = System.Drawing.Color.White
+        Me.BtMediatorDeActivateDeniability.Location = New System.Drawing.Point(4, 3)
+        Me.BtMediatorDeActivateDeniability.Name = "BtMediatorDeActivateDeniability"
+        Me.BtMediatorDeActivateDeniability.Size = New System.Drawing.Size(124, 23)
+        Me.BtMediatorDeActivateDeniability.TabIndex = 12
+        Me.BtMediatorDeActivateDeniability.Text = "de/activate Deniability"
+        Me.BtMediatorDeActivateDeniability.UseVisualStyleBackColor = False
+        Me.BtMediatorDeActivateDeniability.Visible = False
+        '
+        'CoBxMediatorCandidateToSend
+        '
+        Me.CoBxMediatorCandidateToSend.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CoBxMediatorCandidateToSend.FormattingEnabled = True
+        Me.CoBxMediatorCandidateToSend.Location = New System.Drawing.Point(135, 55)
+        Me.CoBxMediatorCandidateToSend.Name = "CoBxMediatorCandidateToSend"
+        Me.CoBxMediatorCandidateToSend.Size = New System.Drawing.Size(330, 21)
+        Me.CoBxMediatorCandidateToSend.TabIndex = 11
+        Me.CoBxMediatorCandidateToSend.Visible = False
+        '
+        'LabProposalPercent
+        '
+        Me.LabProposalPercent.AutoSize = True
+        Me.LabProposalPercent.ForeColor = System.Drawing.Color.White
+        Me.LabProposalPercent.Location = New System.Drawing.Point(407, 8)
+        Me.LabProposalPercent.Name = "LabProposalPercent"
+        Me.LabProposalPercent.Size = New System.Drawing.Size(57, 13)
+        Me.LabProposalPercent.TabIndex = 10
+        Me.LabProposalPercent.Text = "% to Buyer"
+        Me.LabProposalPercent.Visible = False
+        '
+        'NUDMediatePercentage
+        '
+        Me.NUDMediatePercentage.DecimalPlaces = 2
+        Me.NUDMediatePercentage.Location = New System.Drawing.Point(324, 3)
+        Me.NUDMediatePercentage.Name = "NUDMediatePercentage"
+        Me.NUDMediatePercentage.Size = New System.Drawing.Size(80, 20)
+        Me.NUDMediatePercentage.TabIndex = 9
+        Me.NUDMediatePercentage.Value = New Decimal(New Integer() {50, 0, 0, 0})
+        Me.NUDMediatePercentage.Visible = False
+        '
+        'LabProposal
+        '
+        Me.LabProposal.AutoSize = True
+        Me.LabProposal.ForeColor = System.Drawing.Color.White
+        Me.LabProposal.Location = New System.Drawing.Point(264, 6)
+        Me.LabProposal.Name = "LabProposal"
+        Me.LabProposal.Size = New System.Drawing.Size(51, 13)
+        Me.LabProposal.TabIndex = 8
+        Me.LabProposal.Text = "Proposal:"
+        Me.LabProposal.Visible = False
+        '
+        'BtSendMediatorMsg
+        '
+        Me.BtSendMediatorMsg.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BtSendMediatorMsg.ForeColor = System.Drawing.Color.White
+        Me.BtSendMediatorMsg.Location = New System.Drawing.Point(470, 53)
+        Me.BtSendMediatorMsg.Name = "BtSendMediatorMsg"
+        Me.BtSendMediatorMsg.Size = New System.Drawing.Size(94, 23)
+        Me.BtSendMediatorMsg.TabIndex = 7
+        Me.BtSendMediatorMsg.Text = "send Message"
+        Me.BtSendMediatorMsg.UseVisualStyleBackColor = False
+        Me.BtSendMediatorMsg.Visible = False
+        '
+        'ChBxMediatorEncMsg
+        '
+        Me.ChBxMediatorEncMsg.AutoSize = True
+        Me.ChBxMediatorEncMsg.Checked = True
+        Me.ChBxMediatorEncMsg.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChBxMediatorEncMsg.ForeColor = System.Drawing.Color.White
+        Me.ChBxMediatorEncMsg.Location = New System.Drawing.Point(8, 57)
+        Me.ChBxMediatorEncMsg.Name = "ChBxMediatorEncMsg"
+        Me.ChBxMediatorEncMsg.Size = New System.Drawing.Size(120, 17)
+        Me.ChBxMediatorEncMsg.TabIndex = 6
+        Me.ChBxMediatorEncMsg.Text = "Encrypt Message to"
+        Me.ChBxMediatorEncMsg.UseVisualStyleBackColor = True
+        Me.ChBxMediatorEncMsg.Visible = False
+        '
+        'TBMediatorManuMsg
+        '
+        Me.TBMediatorManuMsg.ForeColor = System.Drawing.Color.Black
+        Me.TBMediatorManuMsg.Location = New System.Drawing.Point(64, 29)
+        Me.TBMediatorManuMsg.Name = "TBMediatorManuMsg"
+        Me.TBMediatorManuMsg.Size = New System.Drawing.Size(500, 20)
+        Me.TBMediatorManuMsg.TabIndex = 5
+        Me.TBMediatorManuMsg.Visible = False
+        '
+        'LabMediatorMsg
+        '
+        Me.LabMediatorMsg.AutoSize = True
+        Me.LabMediatorMsg.ForeColor = System.Drawing.Color.White
+        Me.LabMediatorMsg.Location = New System.Drawing.Point(5, 32)
+        Me.LabMediatorMsg.Name = "LabMediatorMsg"
+        Me.LabMediatorMsg.Size = New System.Drawing.Size(53, 13)
+        Me.LabMediatorMsg.TabIndex = 4
+        Me.LabMediatorMsg.Text = "Message:"
+        Me.LabMediatorMsg.Visible = False
+        '
+        'BtMediateDispute
+        '
+        Me.BtMediateDispute.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BtMediateDispute.ForeColor = System.Drawing.Color.White
+        Me.BtMediateDispute.Location = New System.Drawing.Point(470, 3)
+        Me.BtMediateDispute.Name = "BtMediateDispute"
+        Me.BtMediateDispute.Size = New System.Drawing.Size(94, 23)
+        Me.BtMediateDispute.TabIndex = 1
+        Me.BtMediateDispute.Text = "mediate dispute"
+        Me.BtMediateDispute.UseVisualStyleBackColor = False
+        Me.BtMediateDispute.Visible = False
         '
         'SplitContainer13
         '
@@ -1073,7 +1338,7 @@ Partial Class PFPForm
         Me.SplitContainer13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.SplitContainer13.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer13.ForeColor = System.Drawing.Color.White
-        Me.SplitContainer13.Location = New System.Drawing.Point(3, 3)
+        Me.SplitContainer13.Location = New System.Drawing.Point(0, 0)
         Me.SplitContainer13.Name = "SplitContainer13"
         Me.SplitContainer13.Orientation = System.Windows.Forms.Orientation.Horizontal
         '
@@ -1085,8 +1350,8 @@ Partial Class PFPForm
         'SplitContainer13.Panel2
         '
         Me.SplitContainer13.Panel2.Controls.Add(Me.SplitContainer15)
-        Me.SplitContainer13.Size = New System.Drawing.Size(1540, 673)
-        Me.SplitContainer13.SplitterDistance = 387
+        Me.SplitContainer13.Size = New System.Drawing.Size(1540, 427)
+        Me.SplitContainer13.SplitterDistance = 235
         Me.SplitContainer13.TabIndex = 5
         '
         'SplitContainer14
@@ -1106,7 +1371,7 @@ Partial Class PFPForm
         'SplitContainer14.Panel2
         '
         Me.SplitContainer14.Panel2.Controls.Add(Me.SplitContainer16)
-        Me.SplitContainer14.Size = New System.Drawing.Size(1538, 385)
+        Me.SplitContainer14.Size = New System.Drawing.Size(1538, 233)
         Me.SplitContainer14.SplitterDistance = 25
         Me.SplitContainer14.TabIndex = 0
         '
@@ -1135,15 +1400,18 @@ Partial Class PFPForm
         '
         'SplitContainer16.Panel2
         '
+        Me.SplitContainer16.Panel2.Controls.Add(Me.BtAppeal)
+        Me.SplitContainer16.Panel2.Controls.Add(Me.CoBxCandidateToSend)
+        Me.SplitContainer16.Panel2.Controls.Add(Me.BtOpenDispute)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtSendMsg)
         Me.SplitContainer16.Panel2.Controls.Add(Me.ChBxEncMsg)
         Me.SplitContainer16.Panel2.Controls.Add(Me.TBManuMsg)
-        Me.SplitContainer16.Panel2.Controls.Add(Me.Label15)
+        Me.SplitContainer16.Panel2.Controls.Add(Me.LabMsg)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtReCreatePayPalOrder)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtPayOrder)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtExecuteOrder)
-        Me.SplitContainer16.Size = New System.Drawing.Size(1538, 356)
-        Me.SplitContainer16.SplitterDistance = 273
+        Me.SplitContainer16.Size = New System.Drawing.Size(1538, 204)
+        Me.SplitContainer16.SplitterDistance = 121
         Me.SplitContainer16.TabIndex = 0
         '
         'LVMyOpenOrders
@@ -1158,7 +1426,7 @@ Partial Class PFPForm
         Me.LVMyOpenOrders.Location = New System.Drawing.Point(0, 0)
         Me.LVMyOpenOrders.MultiSelect = False
         Me.LVMyOpenOrders.Name = "LVMyOpenOrders"
-        Me.LVMyOpenOrders.Size = New System.Drawing.Size(1538, 273)
+        Me.LVMyOpenOrders.Size = New System.Drawing.Size(1538, 121)
         Me.LVMyOpenOrders.TabIndex = 0
         Me.LVMyOpenOrders.UseCompatibleStateImageBehavior = False
         Me.LVMyOpenOrders.View = System.Windows.Forms.View.Details
@@ -1168,10 +1436,42 @@ Partial Class PFPForm
         Me.ColumnHeader41.Text = "Loading..."
         Me.ColumnHeader41.Width = 90
         '
+        'BtAppeal
+        '
+        Me.BtAppeal.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BtAppeal.Location = New System.Drawing.Point(234, 3)
+        Me.BtAppeal.Name = "BtAppeal"
+        Me.BtAppeal.Size = New System.Drawing.Size(94, 23)
+        Me.BtAppeal.TabIndex = 13
+        Me.BtAppeal.Text = "appeal"
+        Me.BtAppeal.UseVisualStyleBackColor = False
+        Me.BtAppeal.Visible = False
+        '
+        'CoBxCandidateToSend
+        '
+        Me.CoBxCandidateToSend.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CoBxCandidateToSend.FormattingEnabled = True
+        Me.CoBxCandidateToSend.Location = New System.Drawing.Point(134, 55)
+        Me.CoBxCandidateToSend.Name = "CoBxCandidateToSend"
+        Me.CoBxCandidateToSend.Size = New System.Drawing.Size(330, 21)
+        Me.CoBxCandidateToSend.TabIndex = 12
+        Me.CoBxCandidateToSend.Visible = False
+        '
+        'BtOpenDispute
+        '
+        Me.BtOpenDispute.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BtOpenDispute.Location = New System.Drawing.Point(134, 3)
+        Me.BtOpenDispute.Name = "BtOpenDispute"
+        Me.BtOpenDispute.Size = New System.Drawing.Size(94, 23)
+        Me.BtOpenDispute.TabIndex = 8
+        Me.BtOpenDispute.Text = "open dispute"
+        Me.BtOpenDispute.UseVisualStyleBackColor = False
+        Me.BtOpenDispute.Visible = False
+        '
         'BtSendMsg
         '
         Me.BtSendMsg.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtSendMsg.Location = New System.Drawing.Point(206, 53)
+        Me.BtSendMsg.Location = New System.Drawing.Point(469, 53)
         Me.BtSendMsg.Name = "BtSendMsg"
         Me.BtSendMsg.Size = New System.Drawing.Size(94, 23)
         Me.BtSendMsg.TabIndex = 7
@@ -1184,36 +1484,37 @@ Partial Class PFPForm
         Me.ChBxEncMsg.AutoSize = True
         Me.ChBxEncMsg.Checked = True
         Me.ChBxEncMsg.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.ChBxEncMsg.Location = New System.Drawing.Point(8, 59)
+        Me.ChBxEncMsg.Location = New System.Drawing.Point(8, 57)
         Me.ChBxEncMsg.Name = "ChBxEncMsg"
-        Me.ChBxEncMsg.Size = New System.Drawing.Size(108, 17)
+        Me.ChBxEncMsg.Size = New System.Drawing.Size(120, 17)
         Me.ChBxEncMsg.TabIndex = 6
-        Me.ChBxEncMsg.Text = "Encrypt Message"
+        Me.ChBxEncMsg.Text = "Encrypt Message to"
         Me.ChBxEncMsg.UseVisualStyleBackColor = True
         Me.ChBxEncMsg.Visible = False
         '
         'TBManuMsg
         '
+        Me.TBManuMsg.ForeColor = System.Drawing.Color.Black
         Me.TBManuMsg.Location = New System.Drawing.Point(64, 29)
         Me.TBManuMsg.Name = "TBManuMsg"
-        Me.TBManuMsg.Size = New System.Drawing.Size(236, 20)
+        Me.TBManuMsg.Size = New System.Drawing.Size(500, 20)
         Me.TBManuMsg.TabIndex = 5
         Me.TBManuMsg.Visible = False
         '
-        'Label15
+        'LabMsg
         '
-        Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(5, 32)
-        Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(53, 13)
-        Me.Label15.TabIndex = 4
-        Me.Label15.Text = "Message:"
-        Me.Label15.Visible = False
+        Me.LabMsg.AutoSize = True
+        Me.LabMsg.Location = New System.Drawing.Point(5, 32)
+        Me.LabMsg.Name = "LabMsg"
+        Me.LabMsg.Size = New System.Drawing.Size(53, 13)
+        Me.LabMsg.TabIndex = 4
+        Me.LabMsg.Text = "Message:"
+        Me.LabMsg.Visible = False
         '
         'BtReCreatePayPalOrder
         '
         Me.BtReCreatePayPalOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtReCreatePayPalOrder.Location = New System.Drawing.Point(206, 3)
+        Me.BtReCreatePayPalOrder.Location = New System.Drawing.Point(470, 3)
         Me.BtReCreatePayPalOrder.Name = "BtReCreatePayPalOrder"
         Me.BtReCreatePayPalOrder.Size = New System.Drawing.Size(94, 23)
         Me.BtReCreatePayPalOrder.TabIndex = 3
@@ -1224,7 +1525,7 @@ Partial Class PFPForm
         'BtPayOrder
         '
         Me.BtPayOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtPayOrder.Location = New System.Drawing.Point(106, 3)
+        Me.BtPayOrder.Location = New System.Drawing.Point(370, 3)
         Me.BtPayOrder.Name = "BtPayOrder"
         Me.BtPayOrder.Size = New System.Drawing.Size(94, 23)
         Me.BtPayOrder.TabIndex = 2
@@ -1237,7 +1538,7 @@ Partial Class PFPForm
         Me.BtExecuteOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtExecuteOrder.Location = New System.Drawing.Point(6, 3)
         Me.BtExecuteOrder.Name = "BtExecuteOrder"
-        Me.BtExecuteOrder.Size = New System.Drawing.Size(94, 23)
+        Me.BtExecuteOrder.Size = New System.Drawing.Size(122, 23)
         Me.BtExecuteOrder.TabIndex = 1
         Me.BtExecuteOrder.Text = "execute/cancel"
         Me.BtExecuteOrder.UseVisualStyleBackColor = False
@@ -1260,7 +1561,7 @@ Partial Class PFPForm
         'SplitContainer15.Panel2
         '
         Me.SplitContainer15.Panel2.Controls.Add(Me.SplitContainer17)
-        Me.SplitContainer15.Size = New System.Drawing.Size(1538, 280)
+        Me.SplitContainer15.Size = New System.Drawing.Size(1538, 186)
         Me.SplitContainer15.SplitterDistance = 25
         Me.SplitContainer15.TabIndex = 0
         '
@@ -1285,8 +1586,8 @@ Partial Class PFPForm
         'SplitContainer17.Panel1
         '
         Me.SplitContainer17.Panel1.Controls.Add(Me.LVMyClosedOrders)
-        Me.SplitContainer17.Size = New System.Drawing.Size(1538, 251)
-        Me.SplitContainer17.SplitterDistance = 220
+        Me.SplitContainer17.Size = New System.Drawing.Size(1538, 157)
+        Me.SplitContainer17.SplitterDistance = 126
         Me.SplitContainer17.TabIndex = 0
         '
         'LVMyClosedOrders
@@ -1301,7 +1602,7 @@ Partial Class PFPForm
         Me.LVMyClosedOrders.Location = New System.Drawing.Point(0, 0)
         Me.LVMyClosedOrders.MultiSelect = False
         Me.LVMyClosedOrders.Name = "LVMyClosedOrders"
-        Me.LVMyClosedOrders.Size = New System.Drawing.Size(1538, 220)
+        Me.LVMyClosedOrders.Size = New System.Drawing.Size(1538, 126)
         Me.LVMyClosedOrders.TabIndex = 3
         Me.LVMyClosedOrders.UseCompatibleStateImageBehavior = False
         Me.LVMyClosedOrders.View = System.Windows.Forms.View.Details
@@ -1582,6 +1883,21 @@ Partial Class PFPForm
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
         Me.TabPage2.ResumeLayout(False)
+        Me.SplitContainer18.Panel1.ResumeLayout(False)
+        Me.SplitContainer18.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer18, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer18.ResumeLayout(False)
+        Me.SplitContainer19.Panel1.ResumeLayout(False)
+        Me.SplitContainer19.Panel1.PerformLayout()
+        Me.SplitContainer19.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer19, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer19.ResumeLayout(False)
+        Me.SplitContainer20.Panel1.ResumeLayout(False)
+        Me.SplitContainer20.Panel2.ResumeLayout(False)
+        Me.SplitContainer20.Panel2.PerformLayout()
+        CType(Me.SplitContainer20, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer20.ResumeLayout(False)
+        CType(Me.NUDMediatePercentage, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer13.Panel1.ResumeLayout(False)
         Me.SplitContainer13.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer13, System.ComponentModel.ISupportInitialize).EndInit()
@@ -1646,7 +1962,7 @@ Partial Class PFPForm
     Friend WithEvents GroupBox2 As GroupBox
     Friend WithEvents RBSNOBuy As RadioButton
     Friend WithEvents RBSNOSell As RadioButton
-    Friend WithEvents BtCreateNewAT As Button
+    Friend WithEvents BtCreateNewSmartContract As Button
     Friend WithEvents BtCheckAddress As Button
     Friend WithEvents Label11 As Label
     Friend WithEvents TBSNOAddress As TextBox
@@ -1682,7 +1998,7 @@ Partial Class PFPForm
     Friend WithEvents ColumnHeader41 As ColumnHeader
     Friend WithEvents BtPayOrder As Button
     Friend WithEvents TBManuMsg As TextBox
-    Friend WithEvents Label15 As Label
+    Friend WithEvents LabMsg As Label
     Friend WithEvents BtReCreatePayPalOrder As Button
     Friend WithEvents BtSendMsg As Button
     Friend WithEvents ChBxEncMsg As CheckBox
@@ -1731,4 +2047,25 @@ Partial Class PFPForm
     Friend WithEvents TSSStatusImage As ToolStripStatusLabel
     Friend WithEvents TSSCryptStatus As ToolStripStatusLabel
     Friend WithEvents SubStatusLabel As ToolStripStatusLabel
+    Friend WithEvents ColumnHeader2 As ColumnHeader
+    Friend WithEvents ChBxDeniability As CheckBox
+    Friend WithEvents SplitContainer18 As SplitContainer
+    Friend WithEvents SplitContainer19 As SplitContainer
+    Friend WithEvents Label9 As Label
+    Friend WithEvents SplitContainer20 As SplitContainer
+    Friend WithEvents LVMySmartContracts As ListView
+    Friend WithEvents ColumnHeader3 As ColumnHeader
+    Friend WithEvents BtSendMediatorMsg As Button
+    Friend WithEvents ChBxMediatorEncMsg As CheckBox
+    Friend WithEvents TBMediatorManuMsg As TextBox
+    Friend WithEvents LabMediatorMsg As Label
+    Friend WithEvents BtMediateDispute As Button
+    Friend WithEvents LabProposalPercent As Label
+    Friend WithEvents NUDMediatePercentage As NumericUpDown
+    Friend WithEvents LabProposal As Label
+    Friend WithEvents BtOpenDispute As Button
+    Friend WithEvents CoBxMediatorCandidateToSend As ComboBox
+    Friend WithEvents CoBxCandidateToSend As ComboBox
+    Friend WithEvents BtAppeal As Button
+    Friend WithEvents BtMediatorDeActivateDeniability As Button
 End Class

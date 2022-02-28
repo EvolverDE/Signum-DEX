@@ -87,36 +87,6 @@ Partial Class FrmDevelope
         Me.BtTestPPCheckAPI = New System.Windows.Forms.Button()
         Me.LiBoPayPalComs = New System.Windows.Forms.ListBox()
         Me.TabPage9 = New System.Windows.Forms.TabPage()
-        Me.TestGrpBxATCom = New System.Windows.Forms.GroupBox()
-        Me.Label35 = New System.Windows.Forms.Label()
-        Me.TBTestATComCollateral = New System.Windows.Forms.TextBox()
-        Me.Label34 = New System.Windows.Forms.Label()
-        Me.TBTestATComTempSecretKey = New System.Windows.Forms.TextBox()
-        Me.BtTestATComConvertTempSecretKey = New System.Windows.Forms.Button()
-        Me.Label24 = New System.Windows.Forms.Label()
-        Me.TBTestATComFinishULong2 = New System.Windows.Forms.TextBox()
-        Me.Label23 = New System.Windows.Forms.Label()
-        Me.BtTestATComFinishKey = New System.Windows.Forms.Button()
-        Me.TBTestATComFinishULong1 = New System.Windows.Forms.TextBox()
-        Me.Label22 = New System.Windows.Forms.Label()
-        Me.BtTestATComKeyOK = New System.Windows.Forms.Button()
-        Me.TextBox1 = New System.Windows.Forms.TextBox()
-        Me.Label33 = New System.Windows.Forms.Label()
-        Me.BtTestATComInjectFWDKey = New System.Windows.Forms.Button()
-        Me.TBTestATComSHA256Key = New System.Windows.Forms.TextBox()
-        Me.Label31 = New System.Windows.Forms.Label()
-        Me.TBTestATComAmount = New System.Windows.Forms.TextBox()
-        Me.CoBxTestATComATID = New System.Windows.Forms.ComboBox()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.Label25 = New System.Windows.Forms.Label()
-        Me.BtTestCreate = New System.Windows.Forms.Button()
-        Me.BtTestAccept = New System.Windows.Forms.Button()
-        Me.BtTestFinish = New System.Windows.Forms.Button()
-        Me.LiBoATComms = New System.Windows.Forms.ListBox()
-        Me.BtTestInject = New System.Windows.Forms.Button()
-        Me.TBTestPP = New System.Windows.Forms.TextBox()
-        Me.TBTestResponder = New System.Windows.Forms.TextBox()
-        Me.Label21 = New System.Windows.Forms.Label()
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.TestGrpBoxMultithreadings = New System.Windows.Forms.GroupBox()
         Me.SplitContainer9 = New System.Windows.Forms.SplitContainer()
@@ -195,6 +165,63 @@ Partial Class FrmDevelope
         Me.Label29 = New System.Windows.Forms.Label()
         Me.TBTestMyPublicKey = New System.Windows.Forms.TextBox()
         Me.Label28 = New System.Windows.Forms.Label()
+        Me.TestGrpBxATCom = New System.Windows.Forms.GroupBox()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.Label21 = New System.Windows.Forms.Label()
+        Me.LVTestCurrentOrder = New System.Windows.Forms.ListView()
+        Me.ColumnHeader9 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader12 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.TBTestXItem = New System.Windows.Forms.TextBox()
+        Me.Label22 = New System.Windows.Forms.Label()
+        Me.NUDTestXAmount = New System.Windows.Forms.NumericUpDown()
+        Me.Label23 = New System.Windows.Forms.Label()
+        Me.LVTestDEXContractBasic = New System.Windows.Forms.ListView()
+        Me.ColumnHeader13 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader14 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.BtTestCheckCloseDispute = New System.Windows.Forms.Button()
+        Me.BtTestAppeal = New System.Windows.Forms.Button()
+        Me.BtTestMediateDispute = New System.Windows.Forms.Button()
+        Me.BtTestOpenDispute = New System.Windows.Forms.Button()
+        Me.BtTestDeActivateDeniability = New System.Windows.Forms.Button()
+        Me.ChBxSellOrder = New System.Windows.Forms.CheckBox()
+        Me.NUDTestCollateral = New System.Windows.Forms.NumericUpDown()
+        Me.NUDTestAmount = New System.Windows.Forms.NumericUpDown()
+        Me.Label35 = New System.Windows.Forms.Label()
+        Me.Label34 = New System.Windows.Forms.Label()
+        Me.TBTestChainSwapKey = New System.Windows.Forms.TextBox()
+        Me.BtTestChainSwapKeyToHash = New System.Windows.Forms.Button()
+        Me.Label24 = New System.Windows.Forms.Label()
+        Me.TBTestChainSwapULong2 = New System.Windows.Forms.TextBox()
+        Me.Label25 = New System.Windows.Forms.Label()
+        Me.BtTestFinishWithChainSwapKey = New System.Windows.Forms.Button()
+        Me.TBTestChainSwapULong1 = New System.Windows.Forms.TextBox()
+        Me.Label33 = New System.Windows.Forms.Label()
+        Me.BtTestInjectChainSwapHash = New System.Windows.Forms.Button()
+        Me.TBTesChainSwapHash = New System.Windows.Forms.TextBox()
+        Me.LabAmount = New System.Windows.Forms.Label()
+        Me.CoBxTestATComATID = New System.Windows.Forms.ComboBox()
+        Me.Label31 = New System.Windows.Forms.Label()
+        Me.Label39 = New System.Windows.Forms.Label()
+        Me.BtTestCreate = New System.Windows.Forms.Button()
+        Me.BtTestAccept = New System.Windows.Forms.Button()
+        Me.BtTestFinish = New System.Windows.Forms.Button()
+        Me.BtTestInjectResponder = New System.Windows.Forms.Button()
+        Me.TBTestPP = New System.Windows.Forms.TextBox()
+        Me.TBTestResponder = New System.Windows.Forms.TextBox()
+        Me.Label40 = New System.Windows.Forms.Label()
+        Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.Panel3 = New System.Windows.Forms.Panel()
+        Me.Panel5 = New System.Windows.Forms.Panel()
+        Me.Panel6 = New System.Windows.Forms.Panel()
+        Me.Label41 = New System.Windows.Forms.Label()
+        Me.Label42 = New System.Windows.Forms.Label()
+        Me.TBTestChainSwapLong2 = New System.Windows.Forms.TextBox()
+        Me.TBTestChainSwapLong1 = New System.Windows.Forms.TextBox()
+        Me.Panel7 = New System.Windows.Forms.Panel()
+        Me.Label43 = New System.Windows.Forms.Label()
+        Me.NUDTestMediateAmount = New System.Windows.Forms.NumericUpDown()
+        Me.BtTestLoadDEXContract = New System.Windows.Forms.Button()
         Me.TestTabControl.SuspendLayout()
         Me.TabPage6.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
@@ -212,7 +239,6 @@ Partial Class FrmDevelope
         Me.GroupBox6.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
         Me.TabPage9.SuspendLayout()
-        Me.TestGrpBxATCom.SuspendLayout()
         Me.TabPage10.SuspendLayout()
         Me.TestGrpBoxMultithreadings.SuspendLayout()
         CType(Me.SplitContainer9, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -271,6 +297,13 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel1.SuspendLayout()
         Me.SplitContainer11.Panel2.SuspendLayout()
         Me.SplitContainer11.SuspendLayout()
+        Me.TestGrpBxATCom.SuspendLayout()
+        CType(Me.NUDTestXAmount, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NUDTestCollateral, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NUDTestAmount, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.Panel6.SuspendLayout()
+        Me.Panel7.SuspendLayout()
+        CType(Me.NUDTestMediateAmount, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'TestTabControl
@@ -287,7 +320,7 @@ Partial Class FrmDevelope
         Me.TestTabControl.Location = New System.Drawing.Point(0, 0)
         Me.TestTabControl.Name = "TestTabControl"
         Me.TestTabControl.SelectedIndex = 0
-        Me.TestTabControl.Size = New System.Drawing.Size(1213, 461)
+        Me.TestTabControl.Size = New System.Drawing.Size(1213, 669)
         Me.TestTabControl.TabIndex = 39
         '
         'TabPage6
@@ -496,6 +529,7 @@ Partial Class FrmDevelope
         '
         'BtTestHex2ULng
         '
+        Me.BtTestHex2ULng.ForeColor = System.Drawing.Color.Black
         Me.BtTestHex2ULng.Location = New System.Drawing.Point(300, 45)
         Me.BtTestHex2ULng.Name = "BtTestHex2ULng"
         Me.BtTestHex2ULng.Size = New System.Drawing.Size(91, 23)
@@ -906,312 +940,18 @@ Partial Class FrmDevelope
         '
         'TabPage9
         '
+        Me.TabPage9.AutoScroll = True
         Me.TabPage9.Controls.Add(Me.TestGrpBxATCom)
+        Me.TabPage9.Controls.Add(Me.Label1)
+        Me.TabPage9.Controls.Add(Me.Label21)
+        Me.TabPage9.Controls.Add(Me.LVTestDEXContractBasic)
+        Me.TabPage9.Controls.Add(Me.LVTestCurrentOrder)
         Me.TabPage9.Location = New System.Drawing.Point(4, 22)
         Me.TabPage9.Name = "TabPage9"
-        Me.TabPage9.Size = New System.Drawing.Size(1205, 435)
+        Me.TabPage9.Size = New System.Drawing.Size(1205, 643)
         Me.TabPage9.TabIndex = 3
         Me.TabPage9.Text = "AT Communication"
         Me.TabPage9.UseVisualStyleBackColor = True
-        '
-        'TestGrpBxATCom
-        '
-        Me.TestGrpBxATCom.Controls.Add(Me.Label35)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestATComCollateral)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label34)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestATComTempSecretKey)
-        Me.TestGrpBxATCom.Controls.Add(Me.BtTestATComConvertTempSecretKey)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label24)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestATComFinishULong2)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label23)
-        Me.TestGrpBxATCom.Controls.Add(Me.BtTestATComFinishKey)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestATComFinishULong1)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label22)
-        Me.TestGrpBxATCom.Controls.Add(Me.BtTestATComKeyOK)
-        Me.TestGrpBxATCom.Controls.Add(Me.TextBox1)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label33)
-        Me.TestGrpBxATCom.Controls.Add(Me.BtTestATComInjectFWDKey)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestATComSHA256Key)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label31)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestATComAmount)
-        Me.TestGrpBxATCom.Controls.Add(Me.CoBxTestATComATID)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label1)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label25)
-        Me.TestGrpBxATCom.Controls.Add(Me.BtTestCreate)
-        Me.TestGrpBxATCom.Controls.Add(Me.BtTestAccept)
-        Me.TestGrpBxATCom.Controls.Add(Me.BtTestFinish)
-        Me.TestGrpBxATCom.Controls.Add(Me.LiBoATComms)
-        Me.TestGrpBxATCom.Controls.Add(Me.BtTestInject)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestPP)
-        Me.TestGrpBxATCom.Controls.Add(Me.TBTestResponder)
-        Me.TestGrpBxATCom.Controls.Add(Me.Label21)
-        Me.TestGrpBxATCom.Location = New System.Drawing.Point(3, 3)
-        Me.TestGrpBxATCom.Name = "TestGrpBxATCom"
-        Me.TestGrpBxATCom.Size = New System.Drawing.Size(696, 385)
-        Me.TestGrpBxATCom.TabIndex = 34
-        Me.TestGrpBxATCom.TabStop = False
-        Me.TestGrpBxATCom.Text = "AT Communication"
-        '
-        'Label35
-        '
-        Me.Label35.AutoSize = True
-        Me.Label35.ForeColor = System.Drawing.Color.Black
-        Me.Label35.Location = New System.Drawing.Point(6, 94)
-        Me.Label35.Name = "Label35"
-        Me.Label35.Size = New System.Drawing.Size(53, 13)
-        Me.Label35.TabIndex = 50
-        Me.Label35.Text = "Collateral:"
-        '
-        'TBTestATComCollateral
-        '
-        Me.TBTestATComCollateral.Location = New System.Drawing.Point(9, 110)
-        Me.TBTestATComCollateral.Name = "TBTestATComCollateral"
-        Me.TBTestATComCollateral.Size = New System.Drawing.Size(73, 20)
-        Me.TBTestATComCollateral.TabIndex = 49
-        '
-        'Label34
-        '
-        Me.Label34.AutoSize = True
-        Me.Label34.ForeColor = System.Drawing.Color.Black
-        Me.Label34.Location = New System.Drawing.Point(360, 16)
-        Me.Label34.Name = "Label34"
-        Me.Label34.Size = New System.Drawing.Size(82, 13)
-        Me.Label34.TabIndex = 48
-        Me.Label34.Text = "ChainSwapKey:"
-        '
-        'TBTestATComTempSecretKey
-        '
-        Me.TBTestATComTempSecretKey.Location = New System.Drawing.Point(363, 32)
-        Me.TBTestATComTempSecretKey.Name = "TBTestATComTempSecretKey"
-        Me.TBTestATComTempSecretKey.Size = New System.Drawing.Size(105, 20)
-        Me.TBTestATComTempSecretKey.TabIndex = 47
-        '
-        'BtTestATComConvertTempSecretKey
-        '
-        Me.BtTestATComConvertTempSecretKey.ForeColor = System.Drawing.Color.Black
-        Me.BtTestATComConvertTempSecretKey.Location = New System.Drawing.Point(363, 70)
-        Me.BtTestATComConvertTempSecretKey.Name = "BtTestATComConvertTempSecretKey"
-        Me.BtTestATComConvertTempSecretKey.Size = New System.Drawing.Size(105, 22)
-        Me.BtTestATComConvertTempSecretKey.TabIndex = 46
-        Me.BtTestATComConvertTempSecretKey.Text = "compute Hash"
-        Me.BtTestATComConvertTempSecretKey.UseVisualStyleBackColor = True
-        '
-        'Label24
-        '
-        Me.Label24.AutoSize = True
-        Me.Label24.ForeColor = System.Drawing.Color.Black
-        Me.Label24.Location = New System.Drawing.Point(582, 55)
-        Me.Label24.Name = "Label24"
-        Me.Label24.Size = New System.Drawing.Size(102, 13)
-        Me.Label24.TabIndex = 45
-        Me.Label24.Text = "ChainSwapULong2:"
-        '
-        'TBTestATComFinishULong2
-        '
-        Me.TBTestATComFinishULong2.Location = New System.Drawing.Point(585, 71)
-        Me.TBTestATComFinishULong2.Name = "TBTestATComFinishULong2"
-        Me.TBTestATComFinishULong2.Size = New System.Drawing.Size(105, 20)
-        Me.TBTestATComFinishULong2.TabIndex = 44
-        '
-        'Label23
-        '
-        Me.Label23.AutoSize = True
-        Me.Label23.ForeColor = System.Drawing.Color.Black
-        Me.Label23.Location = New System.Drawing.Point(582, 15)
-        Me.Label23.Name = "Label23"
-        Me.Label23.Size = New System.Drawing.Size(102, 13)
-        Me.Label23.TabIndex = 43
-        Me.Label23.Text = "ChainSwapULong1:"
-        '
-        'BtTestATComFinishKey
-        '
-        Me.BtTestATComFinishKey.ForeColor = System.Drawing.Color.Black
-        Me.BtTestATComFinishKey.Location = New System.Drawing.Point(584, 175)
-        Me.BtTestATComFinishKey.Name = "BtTestATComFinishKey"
-        Me.BtTestATComFinishKey.Size = New System.Drawing.Size(105, 23)
-        Me.BtTestATComFinishKey.TabIndex = 41
-        Me.BtTestATComFinishKey.Text = "finish with keys"
-        Me.BtTestATComFinishKey.UseVisualStyleBackColor = True
-        '
-        'TBTestATComFinishULong1
-        '
-        Me.TBTestATComFinishULong1.Location = New System.Drawing.Point(585, 32)
-        Me.TBTestATComFinishULong1.Name = "TBTestATComFinishULong1"
-        Me.TBTestATComFinishULong1.Size = New System.Drawing.Size(105, 20)
-        Me.TBTestATComFinishULong1.TabIndex = 42
-        '
-        'Label22
-        '
-        Me.Label22.AutoSize = True
-        Me.Label22.ForeColor = System.Drawing.Color.Black
-        Me.Label22.Location = New System.Drawing.Point(471, 16)
-        Me.Label22.Name = "Label22"
-        Me.Label22.Size = New System.Drawing.Size(99, 13)
-        Me.Label22.TabIndex = 40
-        Me.Label22.Text = "Accept SwapHash:"
-        '
-        'BtTestATComKeyOK
-        '
-        Me.BtTestATComKeyOK.ForeColor = System.Drawing.Color.Black
-        Me.BtTestATComKeyOK.Location = New System.Drawing.Point(473, 175)
-        Me.BtTestATComKeyOK.Name = "BtTestATComKeyOK"
-        Me.BtTestATComKeyOK.Size = New System.Drawing.Size(105, 23)
-        Me.BtTestATComKeyOK.TabIndex = 38
-        Me.BtTestATComKeyOK.Text = "Accept SwapHash"
-        Me.BtTestATComKeyOK.UseVisualStyleBackColor = True
-        '
-        'TextBox1
-        '
-        Me.TextBox1.Location = New System.Drawing.Point(474, 32)
-        Me.TextBox1.Name = "TextBox1"
-        Me.TextBox1.Size = New System.Drawing.Size(105, 20)
-        Me.TextBox1.TabIndex = 39
-        '
-        'Label33
-        '
-        Me.Label33.AutoSize = True
-        Me.Label33.ForeColor = System.Drawing.Color.Black
-        Me.Label33.Location = New System.Drawing.Point(360, 94)
-        Me.Label33.Name = "Label33"
-        Me.Label33.Size = New System.Drawing.Size(96, 13)
-        Me.Label33.TabIndex = 37
-        Me.Label33.Text = "SHA256_64 Hash:"
-        '
-        'BtTestATComInjectFWDKey
-        '
-        Me.BtTestATComInjectFWDKey.ForeColor = System.Drawing.Color.Black
-        Me.BtTestATComInjectFWDKey.Location = New System.Drawing.Point(362, 175)
-        Me.BtTestATComInjectFWDKey.Name = "BtTestATComInjectFWDKey"
-        Me.BtTestATComInjectFWDKey.Size = New System.Drawing.Size(105, 23)
-        Me.BtTestATComInjectFWDKey.TabIndex = 33
-        Me.BtTestATComInjectFWDKey.Text = "injectSwapHash"
-        Me.BtTestATComInjectFWDKey.UseVisualStyleBackColor = True
-        '
-        'TBTestATComSHA256Key
-        '
-        Me.TBTestATComSHA256Key.Location = New System.Drawing.Point(363, 110)
-        Me.TBTestATComSHA256Key.Name = "TBTestATComSHA256Key"
-        Me.TBTestATComSHA256Key.ReadOnly = True
-        Me.TBTestATComSHA256Key.Size = New System.Drawing.Size(105, 20)
-        Me.TBTestATComSHA256Key.TabIndex = 35
-        '
-        'Label31
-        '
-        Me.Label31.AutoSize = True
-        Me.Label31.ForeColor = System.Drawing.Color.Black
-        Me.Label31.Location = New System.Drawing.Point(6, 55)
-        Me.Label31.Name = "Label31"
-        Me.Label31.Size = New System.Drawing.Size(46, 13)
-        Me.Label31.TabIndex = 32
-        Me.Label31.Text = "Amount:"
-        '
-        'TBTestATComAmount
-        '
-        Me.TBTestATComAmount.Location = New System.Drawing.Point(9, 71)
-        Me.TBTestATComAmount.Name = "TBTestATComAmount"
-        Me.TBTestATComAmount.Size = New System.Drawing.Size(155, 20)
-        Me.TBTestATComAmount.TabIndex = 31
-        '
-        'CoBxTestATComATID
-        '
-        Me.CoBxTestATComATID.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.CoBxTestATComATID.FormattingEnabled = True
-        Me.CoBxTestATComATID.Location = New System.Drawing.Point(9, 31)
-        Me.CoBxTestATComATID.Name = "CoBxTestATComATID"
-        Me.CoBxTestATComATID.Size = New System.Drawing.Size(155, 21)
-        Me.CoBxTestATComATID.TabIndex = 30
-        '
-        'Label1
-        '
-        Me.Label1.AutoSize = True
-        Me.Label1.ForeColor = System.Drawing.Color.Black
-        Me.Label1.Location = New System.Drawing.Point(6, 16)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(38, 13)
-        Me.Label1.TabIndex = 28
-        Me.Label1.Text = "AT ID:"
-        '
-        'Label25
-        '
-        Me.Label25.AutoSize = True
-        Me.Label25.ForeColor = System.Drawing.Color.Black
-        Me.Label25.Location = New System.Drawing.Point(249, 16)
-        Me.Label25.Name = "Label25"
-        Me.Label25.Size = New System.Drawing.Size(94, 13)
-        Me.Label25.TabIndex = 27
-        Me.Label25.Text = "TestResponderID:"
-        '
-        'BtTestCreate
-        '
-        Me.BtTestCreate.ForeColor = System.Drawing.Color.Black
-        Me.BtTestCreate.Location = New System.Drawing.Point(7, 175)
-        Me.BtTestCreate.Name = "BtTestCreate"
-        Me.BtTestCreate.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestCreate.TabIndex = 0
-        Me.BtTestCreate.Text = "create"
-        Me.BtTestCreate.UseVisualStyleBackColor = True
-        '
-        'BtTestAccept
-        '
-        Me.BtTestAccept.ForeColor = System.Drawing.Color.Black
-        Me.BtTestAccept.Location = New System.Drawing.Point(88, 175)
-        Me.BtTestAccept.Name = "BtTestAccept"
-        Me.BtTestAccept.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestAccept.TabIndex = 1
-        Me.BtTestAccept.Text = "accept"
-        Me.BtTestAccept.UseVisualStyleBackColor = True
-        '
-        'BtTestFinish
-        '
-        Me.BtTestFinish.ForeColor = System.Drawing.Color.Black
-        Me.BtTestFinish.Location = New System.Drawing.Point(169, 175)
-        Me.BtTestFinish.Name = "BtTestFinish"
-        Me.BtTestFinish.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestFinish.TabIndex = 2
-        Me.BtTestFinish.Text = "finish"
-        Me.BtTestFinish.UseVisualStyleBackColor = True
-        '
-        'LiBoATComms
-        '
-        Me.LiBoATComms.FormattingEnabled = True
-        Me.LiBoATComms.Location = New System.Drawing.Point(9, 206)
-        Me.LiBoATComms.Name = "LiBoATComms"
-        Me.LiBoATComms.Size = New System.Drawing.Size(681, 173)
-        Me.LiBoATComms.TabIndex = 8
-        '
-        'BtTestInject
-        '
-        Me.BtTestInject.ForeColor = System.Drawing.Color.Black
-        Me.BtTestInject.Location = New System.Drawing.Point(251, 175)
-        Me.BtTestInject.Name = "BtTestInject"
-        Me.BtTestInject.Size = New System.Drawing.Size(105, 23)
-        Me.BtTestInject.TabIndex = 17
-        Me.BtTestInject.Text = "injectResponder"
-        Me.BtTestInject.UseVisualStyleBackColor = True
-        '
-        'TBTestPP
-        '
-        Me.TBTestPP.Location = New System.Drawing.Point(8, 149)
-        Me.TBTestPP.Name = "TBTestPP"
-        Me.TBTestPP.Size = New System.Drawing.Size(681, 20)
-        Me.TBTestPP.TabIndex = 18
-        '
-        'TBTestResponder
-        '
-        Me.TBTestResponder.Location = New System.Drawing.Point(252, 32)
-        Me.TBTestResponder.Name = "TBTestResponder"
-        Me.TBTestResponder.Size = New System.Drawing.Size(105, 20)
-        Me.TBTestResponder.TabIndex = 22
-        '
-        'Label21
-        '
-        Me.Label21.AutoSize = True
-        Me.Label21.ForeColor = System.Drawing.Color.Black
-        Me.Label21.Location = New System.Drawing.Point(6, 133)
-        Me.Label21.Name = "Label21"
-        Me.Label21.Size = New System.Drawing.Size(66, 13)
-        Me.Label21.TabIndex = 23
-        Me.Label21.Text = "PassPhrase:"
         '
         'TabPage10
         '
@@ -1955,7 +1695,7 @@ Partial Class FrmDevelope
         'SplitContainer11.Panel2
         '
         Me.SplitContainer11.Panel2.Controls.Add(Me.TestTabControl)
-        Me.SplitContainer11.Size = New System.Drawing.Size(1213, 548)
+        Me.SplitContainer11.Size = New System.Drawing.Size(1213, 756)
         Me.SplitContainer11.SplitterDistance = 83
         Me.SplitContainer11.TabIndex = 11
         '
@@ -2027,12 +1767,569 @@ Partial Class FrmDevelope
         Me.Label28.TabIndex = 0
         Me.Label28.Text = "My Public Key:"
         '
+        'TestGrpBxATCom
+        '
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestLoadDEXContract)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestXItem)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label22)
+        Me.TestGrpBxATCom.Controls.Add(Me.NUDTestXAmount)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label23)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestCheckCloseDispute)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestAppeal)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestMediateDispute)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestOpenDispute)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestDeActivateDeniability)
+        Me.TestGrpBxATCom.Controls.Add(Me.ChBxSellOrder)
+        Me.TestGrpBxATCom.Controls.Add(Me.NUDTestCollateral)
+        Me.TestGrpBxATCom.Controls.Add(Me.NUDTestAmount)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label35)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label34)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestChainSwapKey)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestChainSwapKeyToHash)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label24)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestChainSwapULong2)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label25)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestFinishWithChainSwapKey)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestChainSwapULong1)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label33)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestInjectChainSwapHash)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTesChainSwapHash)
+        Me.TestGrpBxATCom.Controls.Add(Me.LabAmount)
+        Me.TestGrpBxATCom.Controls.Add(Me.CoBxTestATComATID)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label31)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label39)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestCreate)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestAccept)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestFinish)
+        Me.TestGrpBxATCom.Controls.Add(Me.BtTestInjectResponder)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestPP)
+        Me.TestGrpBxATCom.Controls.Add(Me.TBTestResponder)
+        Me.TestGrpBxATCom.Controls.Add(Me.Label40)
+        Me.TestGrpBxATCom.Controls.Add(Me.Panel1)
+        Me.TestGrpBxATCom.Controls.Add(Me.Panel2)
+        Me.TestGrpBxATCom.Controls.Add(Me.Panel3)
+        Me.TestGrpBxATCom.Controls.Add(Me.Panel5)
+        Me.TestGrpBxATCom.Controls.Add(Me.Panel6)
+        Me.TestGrpBxATCom.Controls.Add(Me.Panel7)
+        Me.TestGrpBxATCom.Location = New System.Drawing.Point(8, 3)
+        Me.TestGrpBxATCom.Name = "TestGrpBxATCom"
+        Me.TestGrpBxATCom.Size = New System.Drawing.Size(1108, 314)
+        Me.TestGrpBxATCom.TabIndex = 36
+        Me.TestGrpBxATCom.TabStop = False
+        Me.TestGrpBxATCom.Text = "AT Communication"
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(412, 320)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(73, 13)
+        Me.Label1.TabIndex = 70
+        Me.Label1.Text = "Current Order:"
+        '
+        'Label21
+        '
+        Me.Label21.AutoSize = True
+        Me.Label21.Location = New System.Drawing.Point(15, 320)
+        Me.Label21.Name = "Label21"
+        Me.Label21.Size = New System.Drawing.Size(106, 13)
+        Me.Label21.TabIndex = 69
+        Me.Label21.Text = "DEXContract Basics:"
+        '
+        'LVTestCurrentOrder
+        '
+        Me.LVTestCurrentOrder.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader9, Me.ColumnHeader12})
+        Me.LVTestCurrentOrder.FullRowSelect = True
+        Me.LVTestCurrentOrder.GridLines = True
+        Me.LVTestCurrentOrder.HideSelection = False
+        Me.LVTestCurrentOrder.Location = New System.Drawing.Point(415, 336)
+        Me.LVTestCurrentOrder.Name = "LVTestCurrentOrder"
+        Me.LVTestCurrentOrder.Size = New System.Drawing.Size(377, 343)
+        Me.LVTestCurrentOrder.TabIndex = 68
+        Me.LVTestCurrentOrder.UseCompatibleStateImageBehavior = False
+        Me.LVTestCurrentOrder.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader9
+        '
+        Me.ColumnHeader9.Text = "Property"
+        '
+        'ColumnHeader12
+        '
+        Me.ColumnHeader12.Text = "Value"
+        '
+        'TBTestXItem
+        '
+        Me.TBTestXItem.Location = New System.Drawing.Point(136, 173)
+        Me.TBTestXItem.Name = "TBTestXItem"
+        Me.TBTestXItem.Size = New System.Drawing.Size(73, 20)
+        Me.TBTestXItem.TabIndex = 67
+        Me.TBTestXItem.Text = "USD"
+        '
+        'Label22
+        '
+        Me.Label22.AutoSize = True
+        Me.Label22.Location = New System.Drawing.Point(135, 157)
+        Me.Label22.Name = "Label22"
+        Me.Label22.Size = New System.Drawing.Size(37, 13)
+        Me.Label22.TabIndex = 66
+        Me.Label22.Text = "XItem:"
+        '
+        'NUDTestXAmount
+        '
+        Me.NUDTestXAmount.DecimalPlaces = 2
+        Me.NUDTestXAmount.Location = New System.Drawing.Point(136, 212)
+        Me.NUDTestXAmount.Maximum = New Decimal(New Integer() {1000000, 0, 0, 0})
+        Me.NUDTestXAmount.Name = "NUDTestXAmount"
+        Me.NUDTestXAmount.Size = New System.Drawing.Size(73, 20)
+        Me.NUDTestXAmount.TabIndex = 65
+        Me.NUDTestXAmount.Value = New Decimal(New Integer() {20, 0, 0, 0})
+        '
+        'Label23
+        '
+        Me.Label23.AutoSize = True
+        Me.Label23.Location = New System.Drawing.Point(135, 196)
+        Me.Label23.Name = "Label23"
+        Me.Label23.Size = New System.Drawing.Size(53, 13)
+        Me.Label23.TabIndex = 64
+        Me.Label23.Text = "XAmount:"
+        '
+        'LVTestDEXContractBasic
+        '
+        Me.LVTestDEXContractBasic.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader13, Me.ColumnHeader14})
+        Me.LVTestDEXContractBasic.FullRowSelect = True
+        Me.LVTestDEXContractBasic.GridLines = True
+        Me.LVTestDEXContractBasic.HideSelection = False
+        Me.LVTestDEXContractBasic.Location = New System.Drawing.Point(15, 336)
+        Me.LVTestDEXContractBasic.Name = "LVTestDEXContractBasic"
+        Me.LVTestDEXContractBasic.Size = New System.Drawing.Size(394, 343)
+        Me.LVTestDEXContractBasic.TabIndex = 63
+        Me.LVTestDEXContractBasic.UseCompatibleStateImageBehavior = False
+        Me.LVTestDEXContractBasic.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader13
+        '
+        Me.ColumnHeader13.Text = "Property"
+        '
+        'ColumnHeader14
+        '
+        Me.ColumnHeader14.Text = "Value"
+        '
+        'BtTestCheckCloseDispute
+        '
+        Me.BtTestCheckCloseDispute.ForeColor = System.Drawing.Color.Black
+        Me.BtTestCheckCloseDispute.Location = New System.Drawing.Point(679, 279)
+        Me.BtTestCheckCloseDispute.Name = "BtTestCheckCloseDispute"
+        Me.BtTestCheckCloseDispute.Size = New System.Drawing.Size(110, 23)
+        Me.BtTestCheckCloseDispute.TabIndex = 62
+        Me.BtTestCheckCloseDispute.Text = "checkCloseDispute"
+        Me.BtTestCheckCloseDispute.UseVisualStyleBackColor = True
+        '
+        'BtTestAppeal
+        '
+        Me.BtTestAppeal.ForeColor = System.Drawing.Color.Black
+        Me.BtTestAppeal.Location = New System.Drawing.Point(598, 279)
+        Me.BtTestAppeal.Name = "BtTestAppeal"
+        Me.BtTestAppeal.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestAppeal.TabIndex = 61
+        Me.BtTestAppeal.Text = "appeal"
+        Me.BtTestAppeal.UseVisualStyleBackColor = True
+        '
+        'BtTestMediateDispute
+        '
+        Me.BtTestMediateDispute.ForeColor = System.Drawing.Color.Black
+        Me.BtTestMediateDispute.Location = New System.Drawing.Point(496, 279)
+        Me.BtTestMediateDispute.Name = "BtTestMediateDispute"
+        Me.BtTestMediateDispute.Size = New System.Drawing.Size(96, 23)
+        Me.BtTestMediateDispute.TabIndex = 54
+        Me.BtTestMediateDispute.Text = "mediateDispute"
+        Me.BtTestMediateDispute.UseVisualStyleBackColor = True
+        '
+        'BtTestOpenDispute
+        '
+        Me.BtTestOpenDispute.ForeColor = System.Drawing.Color.Black
+        Me.BtTestOpenDispute.Location = New System.Drawing.Point(407, 279)
+        Me.BtTestOpenDispute.Name = "BtTestOpenDispute"
+        Me.BtTestOpenDispute.Size = New System.Drawing.Size(83, 23)
+        Me.BtTestOpenDispute.TabIndex = 53
+        Me.BtTestOpenDispute.Text = "openDispute"
+        Me.BtTestOpenDispute.UseVisualStyleBackColor = True
+        '
+        'BtTestDeActivateDeniability
+        '
+        Me.BtTestDeActivateDeniability.ForeColor = System.Drawing.Color.Black
+        Me.BtTestDeActivateDeniability.Location = New System.Drawing.Point(9, 279)
+        Me.BtTestDeActivateDeniability.Name = "BtTestDeActivateDeniability"
+        Me.BtTestDeActivateDeniability.Size = New System.Drawing.Size(121, 23)
+        Me.BtTestDeActivateDeniability.TabIndex = 52
+        Me.BtTestDeActivateDeniability.Text = "deActivateDeniability"
+        Me.BtTestDeActivateDeniability.UseVisualStyleBackColor = True
+        '
+        'ChBxSellOrder
+        '
+        Me.ChBxSellOrder.AutoSize = True
+        Me.ChBxSellOrder.Checked = True
+        Me.ChBxSellOrder.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChBxSellOrder.Location = New System.Drawing.Point(136, 58)
+        Me.ChBxSellOrder.Name = "ChBxSellOrder"
+        Me.ChBxSellOrder.Size = New System.Drawing.Size(69, 17)
+        Me.ChBxSellOrder.TabIndex = 51
+        Me.ChBxSellOrder.Text = "SellOrder"
+        Me.ChBxSellOrder.UseVisualStyleBackColor = True
+        '
+        'NUDTestCollateral
+        '
+        Me.NUDTestCollateral.DecimalPlaces = 8
+        Me.NUDTestCollateral.Location = New System.Drawing.Point(136, 134)
+        Me.NUDTestCollateral.Maximum = New Decimal(New Integer() {1410065408, 2, 0, 0})
+        Me.NUDTestCollateral.Name = "NUDTestCollateral"
+        Me.NUDTestCollateral.Size = New System.Drawing.Size(154, 20)
+        Me.NUDTestCollateral.TabIndex = 2
+        Me.NUDTestCollateral.Value = New Decimal(New Integer() {30, 0, 0, 0})
+        '
+        'NUDTestAmount
+        '
+        Me.NUDTestAmount.DecimalPlaces = 8
+        Me.NUDTestAmount.Location = New System.Drawing.Point(136, 94)
+        Me.NUDTestAmount.Maximum = New Decimal(New Integer() {1410065408, 2, 0, 0})
+        Me.NUDTestAmount.Name = "NUDTestAmount"
+        Me.NUDTestAmount.Size = New System.Drawing.Size(154, 20)
+        Me.NUDTestAmount.TabIndex = 1
+        Me.NUDTestAmount.Value = New Decimal(New Integer() {100, 0, 0, 0})
+        '
+        'Label35
+        '
+        Me.Label35.AutoSize = True
+        Me.Label35.ForeColor = System.Drawing.Color.Black
+        Me.Label35.Location = New System.Drawing.Point(135, 117)
+        Me.Label35.Name = "Label35"
+        Me.Label35.Size = New System.Drawing.Size(53, 13)
+        Me.Label35.TabIndex = 50
+        Me.Label35.Text = "Collateral:"
+        '
+        'Label34
+        '
+        Me.Label34.AutoSize = True
+        Me.Label34.ForeColor = System.Drawing.Color.Black
+        Me.Label34.Location = New System.Drawing.Point(875, 16)
+        Me.Label34.Name = "Label34"
+        Me.Label34.Size = New System.Drawing.Size(82, 13)
+        Me.Label34.TabIndex = 48
+        Me.Label34.Text = "ChainSwapKey:"
+        '
+        'TBTestChainSwapKey
+        '
+        Me.TBTestChainSwapKey.Location = New System.Drawing.Point(876, 32)
+        Me.TBTestChainSwapKey.Name = "TBTestChainSwapKey"
+        Me.TBTestChainSwapKey.Size = New System.Drawing.Size(105, 20)
+        Me.TBTestChainSwapKey.TabIndex = 9
+        '
+        'BtTestChainSwapKeyToHash
+        '
+        Me.BtTestChainSwapKeyToHash.ForeColor = System.Drawing.Color.Black
+        Me.BtTestChainSwapKeyToHash.Location = New System.Drawing.Point(876, 70)
+        Me.BtTestChainSwapKeyToHash.Name = "BtTestChainSwapKeyToHash"
+        Me.BtTestChainSwapKeyToHash.Size = New System.Drawing.Size(105, 22)
+        Me.BtTestChainSwapKeyToHash.TabIndex = 10
+        Me.BtTestChainSwapKeyToHash.Text = "compute Hash"
+        Me.BtTestChainSwapKeyToHash.UseVisualStyleBackColor = True
+        '
+        'Label24
+        '
+        Me.Label24.AutoSize = True
+        Me.Label24.ForeColor = System.Drawing.Color.Black
+        Me.Label24.Location = New System.Drawing.Point(986, 55)
+        Me.Label24.Name = "Label24"
+        Me.Label24.Size = New System.Drawing.Size(102, 13)
+        Me.Label24.TabIndex = 45
+        Me.Label24.Text = "ChainSwapULong2:"
+        '
+        'TBTestChainSwapULong2
+        '
+        Me.TBTestChainSwapULong2.Location = New System.Drawing.Point(987, 71)
+        Me.TBTestChainSwapULong2.Name = "TBTestChainSwapULong2"
+        Me.TBTestChainSwapULong2.Size = New System.Drawing.Size(112, 20)
+        Me.TBTestChainSwapULong2.TabIndex = 14
+        '
+        'Label25
+        '
+        Me.Label25.AutoSize = True
+        Me.Label25.ForeColor = System.Drawing.Color.Black
+        Me.Label25.Location = New System.Drawing.Point(986, 15)
+        Me.Label25.Name = "Label25"
+        Me.Label25.Size = New System.Drawing.Size(102, 13)
+        Me.Label25.TabIndex = 43
+        Me.Label25.Text = "ChainSwapULong1:"
+        '
+        'BtTestFinishWithChainSwapKey
+        '
+        Me.BtTestFinishWithChainSwapKey.ForeColor = System.Drawing.Color.Black
+        Me.BtTestFinishWithChainSwapKey.Location = New System.Drawing.Point(987, 279)
+        Me.BtTestFinishWithChainSwapKey.Name = "BtTestFinishWithChainSwapKey"
+        Me.BtTestFinishWithChainSwapKey.Size = New System.Drawing.Size(112, 23)
+        Me.BtTestFinishWithChainSwapKey.TabIndex = 15
+        Me.BtTestFinishWithChainSwapKey.Text = "finishWithSwapULs"
+        Me.BtTestFinishWithChainSwapKey.UseVisualStyleBackColor = True
+        '
+        'TBTestChainSwapULong1
+        '
+        Me.TBTestChainSwapULong1.Location = New System.Drawing.Point(987, 32)
+        Me.TBTestChainSwapULong1.Name = "TBTestChainSwapULong1"
+        Me.TBTestChainSwapULong1.Size = New System.Drawing.Size(112, 20)
+        Me.TBTestChainSwapULong1.TabIndex = 13
+        '
+        'Label33
+        '
+        Me.Label33.AutoSize = True
+        Me.Label33.ForeColor = System.Drawing.Color.Black
+        Me.Label33.Location = New System.Drawing.Point(875, 94)
+        Me.Label33.Name = "Label33"
+        Me.Label33.Size = New System.Drawing.Size(96, 13)
+        Me.Label33.TabIndex = 37
+        Me.Label33.Text = "SHA256_64 Hash:"
+        '
+        'BtTestInjectChainSwapHash
+        '
+        Me.BtTestInjectChainSwapHash.ForeColor = System.Drawing.Color.Black
+        Me.BtTestInjectChainSwapHash.Location = New System.Drawing.Point(876, 279)
+        Me.BtTestInjectChainSwapHash.Name = "BtTestInjectChainSwapHash"
+        Me.BtTestInjectChainSwapHash.Size = New System.Drawing.Size(105, 23)
+        Me.BtTestInjectChainSwapHash.TabIndex = 12
+        Me.BtTestInjectChainSwapHash.Text = "injectSwapHash"
+        Me.BtTestInjectChainSwapHash.UseVisualStyleBackColor = True
+        '
+        'TBTesChainSwapHash
+        '
+        Me.TBTesChainSwapHash.Location = New System.Drawing.Point(876, 110)
+        Me.TBTesChainSwapHash.Name = "TBTesChainSwapHash"
+        Me.TBTesChainSwapHash.ReadOnly = True
+        Me.TBTesChainSwapHash.Size = New System.Drawing.Size(105, 20)
+        Me.TBTesChainSwapHash.TabIndex = 11
+        '
+        'LabAmount
+        '
+        Me.LabAmount.AutoSize = True
+        Me.LabAmount.ForeColor = System.Drawing.Color.Black
+        Me.LabAmount.Location = New System.Drawing.Point(135, 78)
+        Me.LabAmount.Name = "LabAmount"
+        Me.LabAmount.Size = New System.Drawing.Size(66, 13)
+        Me.LabAmount.TabIndex = 32
+        Me.LabAmount.Text = "WantToSell:"
+        '
+        'CoBxTestATComATID
+        '
+        Me.CoBxTestATComATID.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.CoBxTestATComATID.FormattingEnabled = True
+        Me.CoBxTestATComATID.Location = New System.Drawing.Point(9, 31)
+        Me.CoBxTestATComATID.Name = "CoBxTestATComATID"
+        Me.CoBxTestATComATID.Size = New System.Drawing.Size(200, 21)
+        Me.CoBxTestATComATID.TabIndex = 0
+        '
+        'Label31
+        '
+        Me.Label31.AutoSize = True
+        Me.Label31.ForeColor = System.Drawing.Color.Black
+        Me.Label31.Location = New System.Drawing.Point(6, 16)
+        Me.Label31.Name = "Label31"
+        Me.Label31.Size = New System.Drawing.Size(38, 13)
+        Me.Label31.TabIndex = 28
+        Me.Label31.Text = "AT ID:"
+        '
+        'Label39
+        '
+        Me.Label39.AutoSize = True
+        Me.Label39.ForeColor = System.Drawing.Color.Black
+        Me.Label39.Location = New System.Drawing.Point(295, 16)
+        Me.Label39.Name = "Label39"
+        Me.Label39.Size = New System.Drawing.Size(99, 13)
+        Me.Label39.TabIndex = 27
+        Me.Label39.Text = "InjectResponderID:"
+        '
+        'BtTestCreate
+        '
+        Me.BtTestCreate.ForeColor = System.Drawing.Color.Black
+        Me.BtTestCreate.Location = New System.Drawing.Point(136, 279)
+        Me.BtTestCreate.Name = "BtTestCreate"
+        Me.BtTestCreate.Size = New System.Drawing.Size(73, 23)
+        Me.BtTestCreate.TabIndex = 4
+        Me.BtTestCreate.Text = "create"
+        Me.BtTestCreate.UseVisualStyleBackColor = True
+        '
+        'BtTestAccept
+        '
+        Me.BtTestAccept.ForeColor = System.Drawing.Color.Black
+        Me.BtTestAccept.Location = New System.Drawing.Point(215, 279)
+        Me.BtTestAccept.Name = "BtTestAccept"
+        Me.BtTestAccept.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestAccept.TabIndex = 5
+        Me.BtTestAccept.Text = "accept"
+        Me.BtTestAccept.UseVisualStyleBackColor = True
+        '
+        'BtTestFinish
+        '
+        Me.BtTestFinish.ForeColor = System.Drawing.Color.Black
+        Me.BtTestFinish.Location = New System.Drawing.Point(795, 279)
+        Me.BtTestFinish.Name = "BtTestFinish"
+        Me.BtTestFinish.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestFinish.TabIndex = 6
+        Me.BtTestFinish.Text = "finish"
+        Me.BtTestFinish.UseVisualStyleBackColor = True
+        '
+        'BtTestInjectResponder
+        '
+        Me.BtTestInjectResponder.ForeColor = System.Drawing.Color.Black
+        Me.BtTestInjectResponder.Location = New System.Drawing.Point(296, 279)
+        Me.BtTestInjectResponder.Name = "BtTestInjectResponder"
+        Me.BtTestInjectResponder.Size = New System.Drawing.Size(104, 23)
+        Me.BtTestInjectResponder.TabIndex = 8
+        Me.BtTestInjectResponder.Text = "injectResponder"
+        Me.BtTestInjectResponder.UseVisualStyleBackColor = True
+        '
+        'TBTestPP
+        '
+        Me.TBTestPP.Location = New System.Drawing.Point(9, 253)
+        Me.TBTestPP.Name = "TBTestPP"
+        Me.TBTestPP.Size = New System.Drawing.Size(1090, 20)
+        Me.TBTestPP.TabIndex = 3
+        '
+        'TBTestResponder
+        '
+        Me.TBTestResponder.Location = New System.Drawing.Point(296, 32)
+        Me.TBTestResponder.Name = "TBTestResponder"
+        Me.TBTestResponder.Size = New System.Drawing.Size(104, 20)
+        Me.TBTestResponder.TabIndex = 7
+        '
+        'Label40
+        '
+        Me.Label40.AutoSize = True
+        Me.Label40.ForeColor = System.Drawing.Color.Black
+        Me.Label40.Location = New System.Drawing.Point(6, 237)
+        Me.Label40.Name = "Label40"
+        Me.Label40.Size = New System.Drawing.Size(66, 13)
+        Me.Label40.TabIndex = 23
+        Me.Label40.Text = "PassPhrase:"
+        '
+        'Panel1
+        '
+        Me.Panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Panel1.Location = New System.Drawing.Point(134, 9)
+        Me.Panel1.Name = "Panel1"
+        Me.Panel1.Size = New System.Drawing.Size(77, 295)
+        Me.Panel1.TabIndex = 71
+        '
+        'Panel2
+        '
+        Me.Panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Panel2.Location = New System.Drawing.Point(213, 9)
+        Me.Panel2.Name = "Panel2"
+        Me.Panel2.Size = New System.Drawing.Size(79, 295)
+        Me.Panel2.TabIndex = 72
+        '
+        'Panel3
+        '
+        Me.Panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Panel3.Location = New System.Drawing.Point(294, 9)
+        Me.Panel3.Name = "Panel3"
+        Me.Panel3.Size = New System.Drawing.Size(108, 295)
+        Me.Panel3.TabIndex = 73
+        '
+        'Panel5
+        '
+        Me.Panel5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Panel5.Location = New System.Drawing.Point(874, 9)
+        Me.Panel5.Name = "Panel5"
+        Me.Panel5.Size = New System.Drawing.Size(109, 295)
+        Me.Panel5.TabIndex = 75
+        '
+        'Panel6
+        '
+        Me.Panel6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Panel6.Controls.Add(Me.Label41)
+        Me.Panel6.Controls.Add(Me.Label42)
+        Me.Panel6.Controls.Add(Me.TBTestChainSwapLong2)
+        Me.Panel6.Controls.Add(Me.TBTestChainSwapLong1)
+        Me.Panel6.Location = New System.Drawing.Point(985, 9)
+        Me.Panel6.Name = "Panel6"
+        Me.Panel6.Size = New System.Drawing.Size(116, 295)
+        Me.Panel6.TabIndex = 76
+        '
+        'Label41
+        '
+        Me.Label41.AutoSize = True
+        Me.Label41.ForeColor = System.Drawing.Color.Black
+        Me.Label41.Location = New System.Drawing.Point(1, 124)
+        Me.Label41.Name = "Label41"
+        Me.Label41.Size = New System.Drawing.Size(94, 13)
+        Me.Label41.TabIndex = 80
+        Me.Label41.Text = "ChainSwapLong2:"
+        '
+        'Label42
+        '
+        Me.Label42.AutoSize = True
+        Me.Label42.ForeColor = System.Drawing.Color.Black
+        Me.Label42.Location = New System.Drawing.Point(1, 84)
+        Me.Label42.Name = "Label42"
+        Me.Label42.Size = New System.Drawing.Size(94, 13)
+        Me.Label42.TabIndex = 79
+        Me.Label42.Text = "ChainSwapLong1:"
+        '
+        'TBTestChainSwapLong2
+        '
+        Me.TBTestChainSwapLong2.Location = New System.Drawing.Point(1, 140)
+        Me.TBTestChainSwapLong2.Name = "TBTestChainSwapLong2"
+        Me.TBTestChainSwapLong2.Size = New System.Drawing.Size(112, 20)
+        Me.TBTestChainSwapLong2.TabIndex = 78
+        '
+        'TBTestChainSwapLong1
+        '
+        Me.TBTestChainSwapLong1.Location = New System.Drawing.Point(1, 101)
+        Me.TBTestChainSwapLong1.Name = "TBTestChainSwapLong1"
+        Me.TBTestChainSwapLong1.Size = New System.Drawing.Size(112, 20)
+        Me.TBTestChainSwapLong1.TabIndex = 77
+        '
+        'Panel7
+        '
+        Me.Panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Panel7.Controls.Add(Me.Label43)
+        Me.Panel7.Controls.Add(Me.NUDTestMediateAmount)
+        Me.Panel7.Location = New System.Drawing.Point(494, 7)
+        Me.Panel7.Name = "Panel7"
+        Me.Panel7.Size = New System.Drawing.Size(100, 297)
+        Me.Panel7.TabIndex = 74
+        '
+        'Label43
+        '
+        Me.Label43.AutoSize = True
+        Me.Label43.Location = New System.Drawing.Point(0, 7)
+        Me.Label43.Name = "Label43"
+        Me.Label43.Size = New System.Drawing.Size(47, 13)
+        Me.Label43.TabIndex = 57
+        Me.Label43.Text = "Percent:"
+        '
+        'NUDTestMediateAmount
+        '
+        Me.NUDTestMediateAmount.DecimalPlaces = 2
+        Me.NUDTestMediateAmount.Location = New System.Drawing.Point(1, 23)
+        Me.NUDTestMediateAmount.Name = "NUDTestMediateAmount"
+        Me.NUDTestMediateAmount.Size = New System.Drawing.Size(96, 20)
+        Me.NUDTestMediateAmount.TabIndex = 59
+        Me.NUDTestMediateAmount.Value = New Decimal(New Integer() {50, 0, 0, 0})
+        '
+        'BtTestLoadDEXContract
+        '
+        Me.BtTestLoadDEXContract.ForeColor = System.Drawing.Color.Black
+        Me.BtTestLoadDEXContract.Location = New System.Drawing.Point(9, 58)
+        Me.BtTestLoadDEXContract.Name = "BtTestLoadDEXContract"
+        Me.BtTestLoadDEXContract.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestLoadDEXContract.TabIndex = 77
+        Me.BtTestLoadDEXContract.Text = "load"
+        Me.BtTestLoadDEXContract.UseVisualStyleBackColor = True
+        '
         'FrmDevelope
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.ClientSize = New System.Drawing.Size(1213, 548)
+        Me.ClientSize = New System.Drawing.Size(1213, 756)
         Me.Controls.Add(Me.SplitContainer11)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Name = "FrmDevelope"
@@ -2062,8 +2359,7 @@ Partial Class FrmDevelope
         Me.GroupBox3.ResumeLayout(False)
         Me.GroupBox3.PerformLayout()
         Me.TabPage9.ResumeLayout(False)
-        Me.TestGrpBxATCom.ResumeLayout(False)
-        Me.TestGrpBxATCom.PerformLayout()
+        Me.TabPage9.PerformLayout()
         Me.TabPage10.ResumeLayout(False)
         Me.TestGrpBoxMultithreadings.ResumeLayout(False)
         Me.SplitContainer9.Panel1.ResumeLayout(False)
@@ -2131,6 +2427,16 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer11, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer11.ResumeLayout(False)
+        Me.TestGrpBxATCom.ResumeLayout(False)
+        Me.TestGrpBxATCom.PerformLayout()
+        CType(Me.NUDTestXAmount, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NUDTestCollateral, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NUDTestAmount, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.Panel6.ResumeLayout(False)
+        Me.Panel6.PerformLayout()
+        Me.Panel7.ResumeLayout(False)
+        Me.Panel7.PerformLayout()
+        CType(Me.NUDTestMediateAmount, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -2156,16 +2462,6 @@ Partial Class FrmDevelope
     Friend WithEvents BtTestPPGetAllTX As Button
     Friend WithEvents BtTestCreatePPOrder As Button
     Friend WithEvents TabPage9 As TabPage
-    Friend WithEvents TestGrpBxATCom As GroupBox
-    Friend WithEvents Label25 As Label
-    Friend WithEvents BtTestCreate As Button
-    Friend WithEvents BtTestAccept As Button
-    Friend WithEvents BtTestFinish As Button
-    Friend WithEvents LiBoATComms As ListBox
-    Friend WithEvents BtTestInject As Button
-    Friend WithEvents TBTestPP As TextBox
-    Friend WithEvents TBTestResponder As TextBox
-    Friend WithEvents Label21 As Label
     Friend WithEvents TabPage10 As TabPage
     Friend WithEvents TestGrpBoxMultithreadings As GroupBox
     Friend WithEvents LVTestMulti As ListView
@@ -2185,7 +2481,6 @@ Partial Class FrmDevelope
     Friend WithEvents ColumnHeader10 As ColumnHeader
     Friend WithEvents ColumnHeader11 As ColumnHeader
     Friend WithEvents BtTestMultiInvokeSetInLV As Button
-    Friend WithEvents Label1 As Label
     Friend WithEvents GroupBox1 As GroupBox
     Friend WithEvents BtTestCreateCollWord As Button
     Friend WithEvents TBTestCollWordOutput As TextBox
@@ -2271,26 +2566,7 @@ Partial Class FrmDevelope
     Friend WithEvents TBTestMyPublicKey As TextBox
     Friend WithEvents Label28 As Label
     Friend WithEvents TBTestMyPassPhrase As TextBox
-    Friend WithEvents CoBxTestATComATID As ComboBox
-    Friend WithEvents Label31 As Label
-    Friend WithEvents TBTestATComAmount As TextBox
     Friend WithEvents Label32 As Label
-    Friend WithEvents Label33 As Label
-    Friend WithEvents BtTestATComInjectFWDKey As Button
-    Friend WithEvents TBTestATComSHA256Key As TextBox
-    Friend WithEvents Label24 As Label
-    Friend WithEvents TBTestATComFinishULong2 As TextBox
-    Friend WithEvents Label23 As Label
-    Friend WithEvents BtTestATComFinishKey As Button
-    Friend WithEvents TBTestATComFinishULong1 As TextBox
-    Friend WithEvents Label22 As Label
-    Friend WithEvents BtTestATComKeyOK As Button
-    Friend WithEvents TextBox1 As TextBox
-    Friend WithEvents Label34 As Label
-    Friend WithEvents TBTestATComTempSecretKey As TextBox
-    Friend WithEvents BtTestATComConvertTempSecretKey As Button
-    Friend WithEvents Label35 As Label
-    Friend WithEvents TBTestATComCollateral As TextBox
     Friend WithEvents CMSTestLiBoDEXNETStatus As ContextMenuStrip
     Friend WithEvents ClearEntryToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ClearAllToolStripMenuItem As ToolStripMenuItem
@@ -2305,4 +2581,61 @@ Partial Class FrmDevelope
     Friend WithEvents ColumnHeader1 As ColumnHeader
     Friend WithEvents ColumnHeader15 As ColumnHeader
     Friend WithEvents BtTestHex2ULng As Button
+    Friend WithEvents TestGrpBxATCom As GroupBox
+    Friend WithEvents Label1 As Label
+    Friend WithEvents Label21 As Label
+    Friend WithEvents LVTestCurrentOrder As ListView
+    Friend WithEvents ColumnHeader9 As ColumnHeader
+    Friend WithEvents ColumnHeader12 As ColumnHeader
+    Friend WithEvents TBTestXItem As TextBox
+    Friend WithEvents Label22 As Label
+    Friend WithEvents NUDTestXAmount As NumericUpDown
+    Friend WithEvents Label23 As Label
+    Friend WithEvents LVTestDEXContractBasic As ListView
+    Friend WithEvents ColumnHeader13 As ColumnHeader
+    Friend WithEvents ColumnHeader14 As ColumnHeader
+    Friend WithEvents BtTestCheckCloseDispute As Button
+    Friend WithEvents BtTestAppeal As Button
+    Friend WithEvents BtTestMediateDispute As Button
+    Friend WithEvents BtTestOpenDispute As Button
+    Friend WithEvents BtTestDeActivateDeniability As Button
+    Friend WithEvents ChBxSellOrder As CheckBox
+    Friend WithEvents NUDTestCollateral As NumericUpDown
+    Friend WithEvents NUDTestAmount As NumericUpDown
+    Friend WithEvents Label35 As Label
+    Friend WithEvents Label34 As Label
+    Friend WithEvents TBTestChainSwapKey As TextBox
+    Friend WithEvents BtTestChainSwapKeyToHash As Button
+    Friend WithEvents Label24 As Label
+    Friend WithEvents TBTestChainSwapULong2 As TextBox
+    Friend WithEvents Label25 As Label
+    Friend WithEvents BtTestFinishWithChainSwapKey As Button
+    Friend WithEvents TBTestChainSwapULong1 As TextBox
+    Friend WithEvents Label33 As Label
+    Friend WithEvents BtTestInjectChainSwapHash As Button
+    Friend WithEvents TBTesChainSwapHash As TextBox
+    Friend WithEvents LabAmount As Label
+    Friend WithEvents CoBxTestATComATID As ComboBox
+    Friend WithEvents Label31 As Label
+    Friend WithEvents Label39 As Label
+    Friend WithEvents BtTestCreate As Button
+    Friend WithEvents BtTestAccept As Button
+    Friend WithEvents BtTestFinish As Button
+    Friend WithEvents BtTestInjectResponder As Button
+    Friend WithEvents TBTestPP As TextBox
+    Friend WithEvents TBTestResponder As TextBox
+    Friend WithEvents Label40 As Label
+    Friend WithEvents Panel1 As Panel
+    Friend WithEvents Panel2 As Panel
+    Friend WithEvents Panel3 As Panel
+    Friend WithEvents Panel5 As Panel
+    Friend WithEvents Panel6 As Panel
+    Friend WithEvents Label41 As Label
+    Friend WithEvents Label42 As Label
+    Friend WithEvents TBTestChainSwapLong2 As TextBox
+    Friend WithEvents TBTestChainSwapLong1 As TextBox
+    Friend WithEvents Panel7 As Panel
+    Friend WithEvents Label43 As Label
+    Friend WithEvents NUDTestMediateAmount As NumericUpDown
+    Friend WithEvents BtTestLoadDEXContract As Button
 End Class

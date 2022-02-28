@@ -4,14 +4,14 @@ Option Explicit On
 
 Public Class ClsOrderSettings
 
-    Public Property ATID As ULong
-    Public Property TXID As ULong
+    Public Property SmartContractID As ULong
+    Public Property TransactionID As ULong
     Public Property Type As String
     Public Property PaytypeString As String
     Public Property PayType As E_PayType
     Public Property Infotext As String
     Public Property AutoSendInfotext As Boolean
-    Public Property AutoCompleteAT As Boolean
+    Public Property AutoCompleteSmartContract As Boolean
     Public Property Status As String
 
     Public Enum E_PayType
@@ -63,10 +63,10 @@ Public Class ClsOrderSettings
 
     End Sub
 
-    Sub New(ByVal T_AT As ULong, ByVal T_TX As ULong, T_isSellOrder As Boolean, T_Status As ClsDEXContract.E_Status)
+    Sub New(ByVal T_SmartContract As ULong, ByVal T_Transaction As ULong, T_isSellOrder As Boolean, T_Status As ClsDEXContract.E_Status)
 
-        ATID = T_AT
-        TXID = T_TX
+        SmartContractID = T_SmartContract
+        TransactionID = T_Transaction
 
         If T_isSellOrder Then
             Type = "SellOrder"
@@ -80,20 +80,20 @@ Public Class ClsOrderSettings
 
         Try
             AutoSendInfotext = CBool(GetINISetting(E_Setting.AutoSendPaymentInfo, False))
-            AutoCompleteAT = CBool(GetINISetting(E_Setting.AutoCheckAndFinishAT, False))
+            AutoCompleteSmartContract = CBool(GetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False))
         Catch ex As Exception
             AutoSendInfotext = False
-            AutoCompleteAT = False
+            AutoCompleteSmartContract = False
         End Try
 
         Status = T_Status.ToString
 
     End Sub
 
-    Sub New(ByVal T_AT As String, ByVal T_TX As String, ByVal T_Type As String, T_Status As String)
+    Sub New(ByVal T_SmartContract As String, ByVal T_Transaction As String, ByVal T_Type As String, T_Status As String)
 
-        ATID = ULong.Parse(T_AT)
-        TXID = ULong.Parse(T_TX)
+        SmartContractID = ULong.Parse(T_SmartContract)
+        TransactionID = ULong.Parse(T_Transaction)
         Type = T_Type
 
         PaytypeString = GetINISetting(E_Setting.PayPalChoice, "")
@@ -102,10 +102,10 @@ Public Class ClsOrderSettings
 
         Try
             AutoSendInfotext = CBool(GetINISetting(E_Setting.AutoSendPaymentInfo, False))
-            AutoCompleteAT = CBool(GetINISetting(E_Setting.AutoCheckAndFinishAT, False))
+            AutoCompleteSmartContract = CBool(GetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False))
         Catch ex As Exception
             AutoSendInfotext = False
-            AutoCompleteAT = False
+            AutoCompleteSmartContract = False
         End Try
 
         Status = ""

@@ -35,7 +35,7 @@ Public Class ClsAES
             Dim IV(15) As Byte
             Dim Buffer(EncryptedValue.Length - 1 - 16) As Byte
 
-            If IsNothing(IVs) Then
+            If IVs Is Nothing Then
 
                 'Extract first 16 bytes of input stream as IV.  Copy remaining bytes into encrypted buffer
                 Array.Copy(EncryptedValue, IV, 16)

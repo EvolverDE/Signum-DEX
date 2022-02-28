@@ -29,7 +29,7 @@ Module ModINITools
         DEXNETMyHost = 11
         'Default
         AutoSendPaymentInfo = 100
-        AutoCheckAndFinishAT = 101
+        AutoCheckAndFinishSmartContract = 101
         PaymentType = 102
         PaymentInfoText = 103
         'Filter
@@ -95,7 +95,7 @@ Module ModINITools
         Temp = GetINISetting(E_Setting.DEXNETMyHost, "")
 
         Temp = GetINISetting(E_Setting.AutoSendPaymentInfo, False).ToString
-        Temp = GetINISetting(E_Setting.AutoCheckAndFinishAT, False).ToString
+        Temp = GetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False).ToString
         Temp = GetINISetting(E_Setting.PaymentType, "Other").ToString
         Temp = GetINISetting(E_Setting.PaymentInfoText, "self pickup")
 

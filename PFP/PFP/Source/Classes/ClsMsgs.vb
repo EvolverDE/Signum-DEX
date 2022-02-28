@@ -28,7 +28,7 @@ Public Class ClsMsgs
             .Tag = ClsMsgs.CustomDialogResult.OK
         End With
 
-        If IsNothing(buttons) Then
+        If buttons Is Nothing Then
             DefBut = but
             buts.Add(but)
         Else
@@ -75,8 +75,8 @@ Public Class ClsMsgs
 
     End Function
 
-
     Sub New(Optional ByVal title As String = "", Optional ByVal msg As String = "", Optional ByVal Buttons As List(Of Button) = Nothing, Optional ByVal colorr As Color = Nothing, Optional ByVal status As Status = Status.Standard, Optional ByVal t_timer As Integer = -1, Optional ByVal timer_type As Timer_Type = Timer_Type.ButtonEnable)
+
 
         Buttonsl.Clear()
         CustomResult = CustomDialogResult.Close
@@ -101,7 +101,7 @@ Public Class ClsMsgs
             c_Color = Color.Black
         End If
 
-        If Not IsNothing(Buttons) Then
+        If Not Buttons Is Nothing Then
             Buttonsl.AddRange(Buttons)
         Else
             Dim button As Button = New Button
@@ -445,7 +445,7 @@ Public Class ClsMsgs
 
         CustomResult = DirectCast(T_Control.Tag, CustomDialogResult)
 
-        If Not IsNothing(ButtonTimer) Then
+        If Not ButtonTimer Is Nothing Then
             ButtonTimer.Stop()
             ButtonTimer.Enabled = False
             ButtonTimer.Dispose()

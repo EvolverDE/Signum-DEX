@@ -4,45 +4,41 @@ Option Explicit On
 
 Module ModCSV
 
-    Dim CSVTool As ClsCSV = New ClsCSV(Application.StartupPath + "/cache.dat",, True, Application.ProductName) 'TODO: debug encrypt=false
+    Dim CSVTool As ClsCSV = New ClsCSV(Application.StartupPath + "/cache.dat",, True, Application.ProductName)
 
-#Region "AT CSV Specials"
-    Function ConvertCSVATs2StrucATs(ByVal CSVATs As List(Of List(Of String))) As List(Of PFPForm.S_AT)
+#Region "SmartContract CSV Specials"
+    Function ConvertCSVSmartContracts2StrucSmartContracts(ByVal CSVSmartContracts As List(Of List(Of String))) As List(Of PFPForm.S_SmartContract)
 
         Try
 
-            Dim New_CSV_ATList As List(Of PFPForm.S_AT) = New List(Of PFPForm.S_AT)
+            Dim New_CSV_SmartContractList As List(Of PFPForm.S_SmartContract) = New List(Of PFPForm.S_SmartContract)
 
-            For Each ItemAry As List(Of String) In CSVATs
+            For Each ItemAry As List(Of String) In CSVSmartContracts
 
                 If ItemAry.Count >= 2 Then
-                    Dim T_AT As PFPForm.S_AT = New PFPForm.S_AT
-                    T_AT.ID = Convert.ToUInt64(ItemAry(0))
-                    'T_AT.ATRS = ItemAry(1)
-                    T_AT.IsDEX_AT = Convert.ToBoolean(ItemAry(1))
-                    New_CSV_ATList.Add(T_AT)
+                    Dim T_SC As PFPForm.S_SmartContract = New PFPForm.S_SmartContract
+                    T_SC.ID = Convert.ToUInt64(ItemAry(0))
+
+                    T_SC.IsDEX_SC = Convert.ToBoolean(ItemAry(1))
+                    New_CSV_SmartContractList.Add(T_SC)
                 End If
             Next
 
-            Return New_CSV_ATList
+            Return New_CSV_SmartContractList
 
         Catch ex As Exception
-            Return New List(Of PFPForm.S_AT)
+            Return New List(Of PFPForm.S_SmartContract)
         End Try
 
     End Function
-    Function GetATsFromCSV() As List(Of List(Of String))
+    Function GetSmartContractsFromCSV() As List(Of List(Of String))
 
         Try
 
-            Dim AT_CSV_FilePath As String = Application.StartupPath + "/" + "cache.dat"
+            Dim SmartContract_CSV_FilePath As String = Application.StartupPath + "/" + "cache.dat"
 
-            If IO.File.Exists(AT_CSV_FilePath) Then
-                'Dim CSV_ATList As CSVTool.CSVReader = New CSVTool.CSVReader(AT_CSV_FilePath,, False, Application.ProductName) 'TODO: debug encrypt=false
-                'Return CSV_ATList.Lists
-
+            If IO.File.Exists(SmartContract_CSV_FilePath) Then
                 Return CSVTool.RowList
-
             End If
 
             Return New List(Of List(Of String))
@@ -52,104 +48,48 @@ Module ModCSV
         End Try
 
     End Function
-    Function GetDEXATsFromCSV() As List(Of List(Of String))
+    Function GetDEXContractsFromCSV() As List(Of List(Of String))
 
-        Dim ATList As List(Of List(Of String)) = GetATsFromCSV()
+        Dim SmartContractList As List(Of List(Of String)) = GetSmartContractsFromCSV()
 
-        Dim DEXATList As List(Of List(Of String)) = New List(Of List(Of String))
+        Dim DEXContractList As List(Of List(Of String)) = New List(Of List(Of String))
 
-        For Each AT As List(Of String) In ATList
+        For Each SmartContract As List(Of String) In SmartContractList
 
-            If AT(1) = "True" Then
-                DEXATList.Add(AT)
+            If SmartContract(1) = "True" Then
+                DEXContractList.Add(SmartContract)
             End If
 
         Next
 
-        Return DEXATList
+        Return DEXContractList
 
     End Function
-    Function SaveATsToCSV(Optional ByVal T_ATList As List(Of PFPForm.S_AT) = Nothing, Optional ByVal T_MyOrdersList As List(Of ClsOrderSettings) = Nothing) As Boolean
+    Function SaveSmartContractsToCSV(Optional ByVal T_SmartContractList As List(Of PFPForm.S_SmartContract) = Nothing, Optional ByVal T_MyOrdersList As List(Of ClsOrderSettings) = Nothing) As Boolean
 
-        If IsNothing(T_MyOrdersList) Then
+        If T_MyOrdersList Is Nothing Then
             T_MyOrdersList = OrderSettingsBuffer
         End If
 
-        Dim AT_CSV_FilePath As String = Application.StartupPath + "/" + "cache.dat"
+        Dim SmartContract_CSV_FilePath As String = Application.StartupPath + "/" + "cache.dat"
 
-#Region "deprecated"
+        Dim CSVSmartContractList As List(Of List(Of String))
 
-        'If T_ATList.Count = 0 Then
-        '    Dim x As CSVTool.CSVWriter = New CSVTool.CSVWriter(AT_CSV_FilePath, New List(Of String()),, "create", False, Application.ProductName) 'TODO: debug encrypt=false
-        '    PFPForm.CSVATList = New List(Of PFPForm.S_AT)
-        '    Return True
-        'End If
-
-        'Dim CSV_ATList As List(Of PFPForm.S_AT) = ConvertCSVATs2StrucATs(GetATsFromCSV())
-        'Dim New_CSV_ATList As List(Of PFPForm.S_AT) = New List(Of PFPForm.S_AT)
-
-        'For Each NEW_AT As PFPForm.S_AT In T_ATList
-
-        '    Dim NewAT As Boolean = True
-        '    For Each AT As PFPForm.S_AT In CSV_ATList
-
-        '        If NEW_AT.AT = AT.AT Then
-        '            NewAT = False
-        '            Exit For
-        '        End If
-
-        '    Next
-
-        '    If NewAT Then
-        '        New_CSV_ATList.Add(NEW_AT)
-        '    End If
-
-        'Next
-
-        'For Each CSV_AT As PFPForm.S_AT In CSV_ATList
-        '    Dim T_AT As PFPForm.S_AT = CSV_AT
-
-        '    For Each NEW_AT As PFPForm.S_AT In T_ATList
-        '        If T_AT.AT = NEW_AT.AT Then
-
-        '            If T_AT.IsBLS_AT = NEW_AT.IsBLS_AT Then
-
-        '            Else
-        '                T_AT.IsBLS_AT = NEW_AT.IsBLS_AT
-        '            End If
-
-        '        End If
-        '    Next
-
-        '    New_CSV_ATList.Add(T_AT)
-
-        'Next
-
-#End Region
-
-        Dim CSVATList As List(Of List(Of String))
-
-        If IsNothing(T_ATList) Then
-            CSVATList = GetATsFromCSV()
+        If T_SmartContractList Is Nothing Then
+            CSVSmartContractList = GetSmartContractsFromCSV()
         Else
-            CSVATList = ConvertATsToListList(T_ATList)
+            CSVSmartContractList = ConvertSmartContractsToListList(T_SmartContractList)
         End If
 
-        'CSVATList.Insert(0, New List(Of String)({"ATID", "ATRS", "PFPAT",######### "OrderTX", "Type", "Paytype", "Infotext", "AutoSendInfotext", "AutoCompleteAT", "Status"}))
-
         Dim CSVMyOrders As List(Of List(Of String)) = ConvertOrderSettingsToListList(T_MyOrdersList)
-        'CSVMyOrders.Insert(0, New List(Of String)({"AT",######### "TX", "Type", "Paytype", "Infotext", "AutoSendInfotext", "AutoCompleteAT", "Status"}))
+        Dim NuSmartContractCSV As List(Of List(Of String)) = New List(Of List(Of String))
 
-        Dim NuATCSV As List(Of List(Of String)) = New List(Of List(Of String))
+        For Each T_SmartContract As List(Of String) In CSVSmartContractList
 
-        'NuATCSV.Add(New List(Of String)({"ATID", "ATRS", "PFPAT", "OrderTX", "Type", "Paytype", "Infotext", "AutoSendInfotext", "AutoCompleteAT", "Status"}))
-
-        For Each SAT As List(Of String) In CSVATList
-
-            Dim LineEntrys As List(Of String) = New List(Of String)({SAT(0), SAT(1), SAT(2)}) ', SAT(3)
+            Dim LineEntrys As List(Of String) = New List(Of String)({T_SmartContract(0), T_SmartContract(1), T_SmartContract(2)})
             For Each MyOrder As List(Of String) In CSVMyOrders
 
-                If SAT(0) = MyOrder(0) Then
+                If T_SmartContract(0) = MyOrder(0) Then
                     MyOrder.RemoveAt(0)
                     LineEntrys.AddRange(MyOrder.ToArray)
                     Exit For
@@ -157,14 +97,12 @@ Module ModCSV
 
             Next
 
-            NuATCSV.Add(LineEntrys)
+            NuSmartContractCSV.Add(LineEntrys)
         Next
 
-        If NuATCSV.Count > 0 Then
-            'Dim x As CSVTool.CSVWriter = New CSVTool.CSVWriter(AT_CSV_FilePath, NuATCSV,, "create", False, Application.ProductName) 'TODO: debug encrypt=false
-            CSVTool.RowList = NuATCSV
+        If NuSmartContractCSV.Count > 0 Then
+            CSVTool.RowList = NuSmartContractCSV
             CSVTool.WriteCSV(ClsCSV.E_WriteMode.Create, True, Application.ProductName)
-
         End If
 
         Return True
@@ -172,70 +110,69 @@ Module ModCSV
     End Function
 
 
-    Function ConvertATsToListList(ByVal T_ATList As List(Of PFPForm.S_AT)) As List(Of List(Of String))
+    Function ConvertSmartContractsToListList(ByVal T_SmartContractList As List(Of PFPForm.S_SmartContract)) As List(Of List(Of String))
 
-        If T_ATList.Count = 0 Then
+        If T_SmartContractList.Count = 0 Then
             Return New List(Of List(Of String))
         End If
 
-        Dim CSV_ATList As List(Of PFPForm.S_AT) = ConvertCSVATs2StrucATs(GetATsFromCSV())
-        Dim New_CSV_ATList As List(Of PFPForm.S_AT) = New List(Of PFPForm.S_AT)
+        Dim CSV_SmartContractList As List(Of PFPForm.S_SmartContract) = ConvertCSVSmartContracts2StrucSmartContracts(GetSmartContractsFromCSV())
+        Dim New_CSV_SmartContractList As List(Of PFPForm.S_SmartContract) = New List(Of PFPForm.S_SmartContract)
 
-        For Each NEW_AT As PFPForm.S_AT In T_ATList
+        For Each NEW_SmartContract As PFPForm.S_SmartContract In T_SmartContractList
 
-            Dim NewAT As Boolean = True
-            For Each AT As PFPForm.S_AT In CSV_ATList
+            Dim NewSmartContract As Boolean = True
+            For Each SmartContract As PFPForm.S_SmartContract In CSV_SmartContractList
 
-                If NEW_AT.ID = AT.ID Then
-                    NewAT = False
+                If NEW_SmartContract.ID = SmartContract.ID Then
+                    NewSmartContract = False
                     Exit For
                 End If
 
             Next
 
-            If NewAT Then
-                New_CSV_ATList.Add(NEW_AT)
+            If NewSmartContract Then
+                New_CSV_SmartContractList.Add(NEW_SmartContract)
             End If
 
         Next
 
-        For Each CSV_AT As PFPForm.S_AT In CSV_ATList
-            Dim T_AT As PFPForm.S_AT = CSV_AT
+        For Each CSV_SmartContract As PFPForm.S_SmartContract In CSV_SmartContractList
+            Dim T_SmartContract As PFPForm.S_SmartContract = CSV_SmartContract
 
-            For Each NEW_AT As PFPForm.S_AT In T_ATList
-                If T_AT.ID = NEW_AT.ID Then
+            For Each NEW_SmartContract As PFPForm.S_SmartContract In T_SmartContractList
+                If T_SmartContract.ID = NEW_SmartContract.ID Then
 
-                    If T_AT.IsDEX_AT = NEW_AT.IsDEX_AT Then
+                    If T_SmartContract.IsDEX_SC = NEW_SmartContract.IsDEX_SC Then
 
                     Else
-                        T_AT.IsDEX_AT = NEW_AT.IsDEX_AT
+                        T_SmartContract.IsDEX_SC = NEW_SmartContract.IsDEX_SC
                     End If
 
-                    If T_AT.HistoryOrders = NEW_AT.HistoryOrders Then
+                    If T_SmartContract.HistoryOrders = NEW_SmartContract.HistoryOrders Then
 
                     Else
-                        T_AT.HistoryOrders = NEW_AT.HistoryOrders
+                        T_SmartContract.HistoryOrders = NEW_SmartContract.HistoryOrders
                     End If
 
                 End If
             Next
 
-            New_CSV_ATList.Add(T_AT)
+            New_CSV_SmartContractList.Add(T_SmartContract)
 
         Next
 
         Dim CSVList As List(Of List(Of String)) = New List(Of List(Of String))
-        'CSVList.Add({"ATID", "ATRS", "PFPAT"})
 
-        For Each SAT As PFPForm.S_AT In New_CSV_ATList
+        For Each T_SmartContract As PFPForm.S_SmartContract In New_CSV_SmartContractList
 
             Dim HisOrd As String = ""
 
-            If Not IsNothing(SAT.HistoryOrders) Then
-                HisOrd = SAT.HistoryOrders
+            If Not T_SmartContract.HistoryOrders Is Nothing Then
+                HisOrd = T_SmartContract.HistoryOrders
             End If
 
-            Dim LineArray As List(Of String) = New List(Of String)({SAT.ID.ToString, SAT.IsDEX_AT.ToString, HisOrd}) ', SAT.ATRS
+            Dim LineArray As List(Of String) = New List(Of String)({T_SmartContract.ID.ToString, T_SmartContract.IsDEX_SC.ToString, HisOrd})
             CSVList.Add(LineArray)
         Next
 
@@ -247,28 +184,6 @@ Module ModCSV
 
 #Region "MyOrders CSV Specials"
 
-    'Function GetOrderSettingsFromCSV() As List(Of List(Of String))
-
-    '    Dim DEXAts As List(Of List(Of String)) = GetDEXATsFromCSV()
-
-
-    '    Try
-
-    '        Dim T_OS_CSV_FilePath As String = Application.StartupPath + "/" + "cache2.dat"
-
-    '        If IO.File.Exists(T_OS_CSV_FilePath) Then
-    '            Dim CSV_ATList As CSVTool.CSVReader = New CSVTool.CSVReader(T_OS_CSV_FilePath,, False, Application.ProductName) 'TODO: debug encrypt=false
-    '            Return CSV_ATList.Lists
-    '        End If
-
-    '        Return New List(Of List(Of String))
-
-    '    Catch ex As Exception
-    '        Return New List(Of List(Of String))
-    '    End Try
-
-    'End Function
-
     Property OrderSettingsBuffer As List(Of ClsOrderSettings) = New List(Of ClsOrderSettings)
     Function GetOrderSettingsFromBuffer(ByVal TXID As ULong) As List(Of ClsOrderSettings)
 
@@ -277,7 +192,7 @@ Module ModCSV
         For i As Integer = 0 To OrderSettingsBuffer.Count - 1
             Dim T_T_OS As ClsOrderSettings = OrderSettingsBuffer(i)
 
-            If T_T_OS.TXID = TXID Then
+            If T_T_OS.TransactionID = TXID Then
                 T_OSList.Add(T_T_OS)
                 Exit For
             End If
@@ -290,7 +205,7 @@ Module ModCSV
     Function GetOrderSettings(Optional ByVal TX As String = "") As List(Of ClsOrderSettings)
 
         Try
-            Dim T_OrderSettings As List(Of List(Of String)) = GetDEXATsFromCSV()
+            Dim T_OrderSettings As List(Of List(Of String)) = GetDEXContractsFromCSV()
 
             Dim New_CSV_OrderSettings As List(Of ClsOrderSettings) = New List(Of ClsOrderSettings)
 
@@ -326,7 +241,7 @@ Module ModCSV
                         T_OS.PaytypeString = ItemAry(5)
                         T_OS.Infotext = ItemAry(6)
                         T_OS.AutoSendInfotext = Boolean.Parse(ItemAry(7))
-                        T_OS.AutoCompleteAT = Boolean.Parse(ItemAry(8))
+                        T_OS.AutoCompleteSmartContract = Boolean.Parse(ItemAry(8))
                         'T_OS.Status = ItemAry(7)
 
                         New_CSV_OrderSettings.Add(T_OS)
@@ -363,7 +278,7 @@ Module ModCSV
                         T_OS.PaytypeString = ItemAry(5)
                         T_OS.Infotext = ItemAry(6)
                         T_OS.AutoSendInfotext = Boolean.Parse(ItemAry(7))
-                        T_OS.AutoCompleteAT = Boolean.Parse(ItemAry(8))
+                        T_OS.AutoCompleteSmartContract = Boolean.Parse(ItemAry(8))
                         'T_OS.Status = ItemAry(7)
 
                         New_CSV_OrderSettings.Add(T_OS)
@@ -381,108 +296,9 @@ Module ModCSV
 
     End Function
     Function SaveOrderSettingsToCSV(ByVal T_OrderSettings As List(Of ClsOrderSettings)) As Boolean
-
-        'Dim T_ATList As List(Of PFPForm.S_AT) = ConvertCSVATs2StrucATs(GetATsFromCSV())
-
-        SaveATsToCSV(, T_OrderSettings)
-
-#Region "deprecated"
-        'Dim OrderSettings_CSV_FilePath As String = Application.StartupPath + "/" + "cache2.dat"
-
-
-        '        If T_OrderSettings.Count = 0 Then
-        '            'Dim x As CSVTool.CSVWriter = New CSVTool.CSVWriter(OrderSettings_CSV_FilePath, New List(Of String()),, "create", False, Application.ProductName) 'TODO: debug encrypt=false
-
-        '            Return True
-
-        '        End If
-
-        '        Dim CSV_OrderSettings As List(Of ClsOrderSettings) = GetOrderSettings()
-        '        Dim New_CSV_OrderSettingList As List(Of ClsOrderSettings) = New List(Of ClsOrderSettings)
-
-        '#Region "Set new OrderSetting"
-        '        For Each NEW_OrderSetting As ClsOrderSettings In T_OrderSettings
-
-        '            Dim NewOS As Boolean = True
-        '            For Each CSV_OrderSetting As ClsOrderSettings In CSV_OrderSettings
-
-        '                If NEW_OrderSetting.TXID = CSV_OrderSetting.TXID Then
-        '                    NewOS = False
-        '                    Exit For
-        '                End If
-
-        '            Next
-
-        '            If NewOS Then
-        '                New_CSV_OrderSettingList.Add(NEW_OrderSetting)
-        '            End If
-
-        '        Next
-        '#End Region
-
-        '#Region "Refresh Old OrderSetting"
-
-        '        For Each CSV_OrderSetting As ClsOrderSettings In CSV_OrderSettings
-        '            Dim T_OrderSetting As ClsOrderSettings = CSV_OrderSetting
-
-        '            For Each NEW_OrderSetting As ClsOrderSettings In T_OrderSettings
-        '                If T_OrderSetting.TXID = NEW_OrderSetting.TXID Then
-
-        '                    If Not T_OrderSetting.Type.Trim = NEW_OrderSetting.Type.Trim Then
-        '                        T_OrderSetting.Type = NEW_OrderSetting.Type
-        '                    End If
-
-        '                    If Not T_OrderSetting.PaytypeString.Trim = NEW_OrderSetting.PaytypeString.Trim Then
-        '                        T_OrderSetting.PaytypeString = NEW_OrderSetting.PaytypeString
-        '                    End If
-
-        '                    If Not T_OrderSetting.Infotext.Trim = NEW_OrderSetting.Infotext.Trim Then
-        '                        T_OrderSetting.Infotext = NEW_OrderSetting.Infotext
-        '                    End If
-
-        '                    If Not T_OrderSetting.AutoSendInfotext = NEW_OrderSetting.AutoSendInfotext Then
-        '                        T_OrderSetting.AutoSendInfotext = NEW_OrderSetting.AutoSendInfotext
-        '                    End If
-
-        '                    If Not T_OrderSetting.AutoCompleteAT = NEW_OrderSetting.AutoCompleteAT Then
-        '                        T_OrderSetting.AutoCompleteAT = NEW_OrderSetting.AutoCompleteAT
-        '                    End If
-
-        '                    If Not T_OrderSetting.Status.Trim = NEW_OrderSetting.Status.Trim Then
-        '                        T_OrderSetting.Status = NEW_OrderSetting.Status
-        '                    End If
-
-        '                    Exit For
-
-        '                End If
-        '            Next
-
-        '            New_CSV_OrderSettingList.Add(T_OrderSetting)
-
-        '        Next
-
-        '#End Region
-
-
-        'Dim CSVList As List(Of List(Of String)) = ConvertOrderSettingsToListList(T_OrderSettings) ' New List(Of String())
-        ' CSVList.Insert(0, New List(Of String)({"AT", "TX", "Type", "Paytype", "Infotext", "AutoSendInfotext", "AutoCompleteAT", "Status"}))
-        'For Each TOS As ClsOrderSettings In New_CSV_OrderSettingList
-        '    If Not TOS.Status = "DELETED" Then
-        '        Dim LineArray As String() = {TOS.ATID, TOS.TXID, TOS.Type, TOS.PaytypeString, TOS.Infotext, TOS.AutoSendInfotext.ToString, TOS.AutoCompleteAT.ToString, TOS.Status}
-        '        CSVList.Add(LineArray)
-        '    End If
-        'Next
-
-        'If CSVList.Count > 0 Then
-        '    Dim x As CSVTool.CSVWriter = New CSVTool.CSVWriter(OrderSettings_CSV_FilePath, CSVList,, "create", False, Application.ProductName) 'TODO: debug encrypt=false
-        'End If
-
-#End Region
-
+        SaveSmartContractsToCSV(, T_OrderSettings)
         Return True
-
     End Function
-
 
     Function ConvertOrderSettingsToListList(ByVal T_OrderSettings As List(Of ClsOrderSettings)) As List(Of List(Of String))
 
@@ -499,7 +315,7 @@ Module ModCSV
             Dim NewOS As Boolean = True
             For Each CSV_OrderSetting As ClsOrderSettings In CSV_OrderSettings
 
-                If NEW_OrderSetting.TXID = CSV_OrderSetting.TXID Then
+                If NEW_OrderSetting.TransactionID = CSV_OrderSetting.TransactionID Then
                     NewOS = False
                     Exit For
                 End If
@@ -519,7 +335,7 @@ Module ModCSV
             Dim T_OrderSetting As ClsOrderSettings = CSV_OrderSetting
 
             For Each NEW_OrderSetting As ClsOrderSettings In T_OrderSettings
-                If T_OrderSetting.TXID = NEW_OrderSetting.TXID Then
+                If T_OrderSetting.TransactionID = NEW_OrderSetting.TransactionID Then
 
                     If Not T_OrderSetting.Type.Trim = NEW_OrderSetting.Type.Trim Then
                         T_OrderSetting.Type = NEW_OrderSetting.Type
@@ -537,8 +353,8 @@ Module ModCSV
                         T_OrderSetting.AutoSendInfotext = NEW_OrderSetting.AutoSendInfotext
                     End If
 
-                    If Not T_OrderSetting.AutoCompleteAT = NEW_OrderSetting.AutoCompleteAT Then
-                        T_OrderSetting.AutoCompleteAT = NEW_OrderSetting.AutoCompleteAT
+                    If Not T_OrderSetting.AutoCompleteSmartContract = NEW_OrderSetting.AutoCompleteSmartContract Then
+                        T_OrderSetting.AutoCompleteSmartContract = NEW_OrderSetting.AutoCompleteSmartContract
                     End If
 
                     If Not T_OrderSetting.Status.Trim = NEW_OrderSetting.Status.Trim Then
@@ -557,10 +373,10 @@ Module ModCSV
 #End Region
 
         Dim CSVList As List(Of List(Of String)) = New List(Of List(Of String))
-        'CSVList.Add({"AT", "TX", "Type", "Paytype", "Infotext", "AutoSendInfotext", "AutoCompleteAT", "Status"})
+
         For Each TOS As ClsOrderSettings In New_CSV_OrderSettingList
             If Not TOS.Status = "DELETED" Then
-                Dim LineArray As List(Of String) = New List(Of String)({TOS.ATID.ToString, TOS.TXID.ToString, TOS.Type, TOS.PaytypeString, TOS.Infotext, TOS.AutoSendInfotext.ToString, TOS.AutoCompleteAT.ToString, TOS.Status})
+                Dim LineArray As List(Of String) = New List(Of String)({TOS.SmartContractID.ToString, TOS.TransactionID.ToString, TOS.Type, TOS.PaytypeString, TOS.Infotext, TOS.AutoSendInfotext.ToString, TOS.AutoCompleteSmartContract.ToString, TOS.Status})
                 CSVList.Add(LineArray)
             End If
         Next
@@ -569,12 +385,11 @@ Module ModCSV
 
     End Function
 
-
-    Function DelOrderSettings(ByVal ATID As ULong) As Boolean
+    Function DelOrderSettings(ByVal SmartContractID As ULong) As Boolean
 
         For Each OrderSetting As ClsOrderSettings In OrderSettingsBuffer
 
-            If OrderSetting.ATID = ATID Then
+            If OrderSetting.SmartContractID = SmartContractID Then
                 OrderSetting.Status = "DELETED"
                 Exit For
             End If

@@ -154,7 +154,13 @@ PFP
  <returns>-1, 0 oder 1 (gemäß Vergleich)</returns>
  <remarks></remarks>
 </member>
-<member name="M:PFP.ClsDEXContract.#ctor(PFP.PFPForm,System.String,System.UInt64,System.DateTime)">
+<member name="P:PFP.ClsDEXContract.CurrentDisputeTimeout">
+ <summary>
+ Gets the TimeOut in Block
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:PFP.ClsDEXContract.#ctor(PFP.PFPForm,System.String,System.UInt64,System.DateTime,System.Boolean)">
  <summary>
  Loads the entire DEXContract with its HistoryOrders
  </summary>
@@ -229,6 +235,13 @@ PFP
  Gets the Balance from the given AccountID (HTML-Tags= coin, account, address, balance, available, pending)
  </summary>
  <param name="AccountID"></param>
+ <returns></returns>
+</member>
+<member name="M:PFP.ClsSignumAPI.GetSHA256_64(System.String)">
+ <summary>
+ Hashing Inputkey and converting them into List(Of ULong)(FirstULongKey, SecondULongKey, HashULong)
+ </summary>
+ <param name="InputKey"></param>
  <returns></returns>
 </member>
 <member name="M:PFP.ModCrypto.GetMasterKeys(System.String)">

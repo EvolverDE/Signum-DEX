@@ -112,87 +112,6 @@ Module ModJSON
 
     End Function
 
-
-    'Function BetweenFromList(ByVal inputList As List(Of String), Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional ByVal GetListIndex As Boolean = False, Optional ByVal GetTyp As Object = Nothing) As Object
-
-    '    Try
-
-    '        For i As Integer = 0 To inputList.Count - 1
-    '            Dim Entry As String = inputList(i)
-    '            If Entry.Contains(startchar) Then
-
-    '                If GetListIndex Then
-    '                    Return i.ToString
-    '                Else
-    '                    Return Between(Entry, startchar, endchar, GetTyp)
-    '                End If
-
-    '            End If
-
-    '        Next
-
-    '        If GetListIndex Then
-    '            Return "-1"
-    '        Else
-
-    '            If IsNothing(GetTyp) Then
-    '                Return 0.0
-    '            Else
-
-    '                Select Case GetTyp.Name
-    '                    Case GetType(Boolean).Name
-    '                        Return False
-    '                    Case GetType(Integer).Name
-    '                        Return 0
-    '                    Case GetType(ULong).Name
-    '                        Return 0UL
-    '                    Case GetType(Double).Name
-    '                        Return 0.0
-    '                    Case GetType(Date).Name
-    '                        Return Now
-    '                    Case GetType(String).Name
-    '                        Return ""
-    '                    Case Else
-    '                        Return 0
-    '                End Select
-    '            End If
-
-    '        End If
-
-    '    Catch ex As Exception
-
-    '        If GetListIndex Then
-    '            Return "-1"
-    '        Else
-
-    '            If IsNothing(GetTyp) Then
-    '                Return 0.0
-    '            Else
-    '                Select Case GetTyp.Name
-    '                    Case GetType(Boolean).Name
-    '                        Return False
-    '                    Case GetType(Integer).Name
-    '                        Return 0
-    '                    Case GetType(ULong).Name
-    '                        Return 0UL
-    '                    Case GetType(Double).Name
-    '                        Return 0.0
-    '                    Case GetType(Date).Name
-    '                        Return Now
-    '                    Case GetType(String).Name
-    '                        Return ""
-    '                    Case Else
-    '                        Return 0
-    '                End Select
-    '            End If
-
-    '        End If
-
-    '    End Try
-
-    'End Function
-
-
     Function GetBooleanBetween(ByVal input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional LastIdxOf As Boolean = False) As Boolean
 
         'TODO: OUT from Between
@@ -365,99 +284,6 @@ Module ModJSON
 
     End Function
 
-
-    'Function Between(ByVal input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional ByVal GetTyp As Object = Nothing, Optional LastIdxOf As Boolean = False) As Object
-
-    '    'TODO: OUT from Between
-    '    'If GetINISetting(E_Setting.InfoOut, False) Then
-    '    '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-    '    '    Out.ErrorLog2File(Application.ProductName + "-error in SendMessages(): -> " + ex.Message)
-    '    'End If
-
-
-
-    '    If input.Trim <> "" Then
-    '        If input.Contains(startchar) And input.Contains(endchar) Then
-
-    '            input = input.Substring(input.IndexOf(startchar) + startchar.Length)
-
-    '            If LastIdxOf Then
-    '                input = input.Remove(input.LastIndexOf(endchar))
-    '            Else
-    '                input = input.Remove(input.IndexOf(endchar))
-    '            End If
-
-
-    '            If IsNothing(GetTyp) Then
-    '                Return input
-    '            Else
-    '                Select Case GetTyp.Name
-    '                    Case GetType(Boolean).Name
-    '                        Try
-    '                            Return CBool(input)
-    '                        Catch ex As Exception
-    '                            Return False
-    '                        End Try
-
-    '                    Case GetType(Integer).Name
-    '                        Try
-    '                            Return Integer.Parse(input)
-    '                        Catch ex As Exception
-    '                            Return 0
-    '                        End Try
-
-    '                    Case GetType(ULong).Name
-    '                        Try
-    '                            Return ULong.Parse(input)
-    '                        Catch ex As Exception
-    '                            Return 0UL
-    '                        End Try
-
-    '                    Case GetType(Double).Name
-    '                        Try
-    '                            Return Val(input.Replace(",", "."))
-    '                        Catch ex As Exception
-    '                            Return 0.0
-    '                        End Try
-
-    '                    Case GetType(Date).Name
-    '                        Try
-    '                            Return CDate(input)
-    '                        Catch ex As Exception
-    '                            Return Now
-    '                        End Try
-
-    '                    Case GetType(String).Name
-    '                        Return input
-    '                End Select
-    '            End If
-
-    '        End If
-    '    End If
-
-    '    If IsNothing(GetTyp) Then
-    '        Return 0.0
-    '    Else
-    '        Select Case GetTyp.Name
-    '            Case GetType(Boolean).Name
-    '                Return False
-    '            Case GetType(Integer).Name
-    '                Return 0
-    '            Case GetType(ULong).Name
-    '                Return 0UL
-    '            Case GetType(Double).Name
-    '                Return 0.0
-    '            Case GetType(Date).Name
-    '                Return Now
-    '            Case GetType(String).Name
-    '                Return ""
-    '            Case Else
-    '                Return 0
-    '        End Select
-    '    End If
-
-    'End Function
-
     Function Between2List(ByVal Input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")") As List(Of String)
 
         Dim Output As String = ""
@@ -571,6 +397,5 @@ Module ModJSON
         Return StartList
 
     End Function
-
 
 End Module

@@ -150,6 +150,11 @@ Public Class ClsSignumNET
         If MasterKeyList.Count > 0 Then
 
             Dim AgreementKey As String = MasterKeyList(2)
+            Dim PubKey As String = MasterKeyList(0)
+
+            If PubKey = PublicKey Then
+                Return ""
+            End If
 
             Dim DecryptedMsg As String = DecryptMessage(data, nonce, PublicKey, AgreementKey)
 

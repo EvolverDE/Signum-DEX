@@ -27,13 +27,13 @@ Public Class FrmMyOrderSettings
         Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettings()
 
         For Each T_OS As ClsOrderSettings In T_OSList
-            With LVOrders.Items.Add(ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(T_OS.ATID))
-                .SubItems.Add(T_OS.TXID.ToString) 'TX
+            With LVOrders.Items.Add(ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(T_OS.SmartContractID))
+                .SubItems.Add(T_OS.TransactionID.ToString) 'TX
                 .SubItems.Add(T_OS.Type) 'Type
                 .SubItems.Add(T_OS.PaytypeString) 'Paytype
                 .SubItems.Add(T_OS.Infotext) 'Infotext
                 .SubItems.Add(T_OS.AutoSendInfotext.ToString) 'Autosendinfotext
-                .SubItems.Add(T_OS.AutoCompleteAT.ToString) 'AutocompleteAT
+                .SubItems.Add(T_OS.AutoCompleteSmartContract.ToString) 'AutocompleteAT
                 .SubItems.Add(T_OS.Status) 'Status
             End With
 
@@ -87,7 +87,7 @@ Public Class FrmMyOrderSettings
         If LVOrders.SelectedItems.Count > 0 Then
             Dim SelectedItem As ListViewItem = LVOrders.SelectedItems(0)
 
-            Dim ATRS As String = GetLVColNameFromSubItem(LVOrders, "AT", SelectedItem).ToString
+            Dim ATRS As String = GetLVColNameFromSubItem(LVOrders, "Smart Contract", SelectedItem).ToString
             Dim ATID As ULong = ClsReedSolomon.Decode(ATRS)
 
             Dim TXID As ULong = Convert.ToUInt64(GetLVColNameFromSubItem(LVOrders, "Transaction", SelectedItem))
@@ -103,7 +103,7 @@ Public Class FrmMyOrderSettings
             SetLVColName2SubItem(LVOrders, SelectedItem, "Paytype", Paytype)
             SetLVColName2SubItem(LVOrders, SelectedItem, "Infotext", TBInfotext.Text.Trim)
             SetLVColName2SubItem(LVOrders, SelectedItem, "Autosend Infotext", ChBxAutosendInfo.Checked.ToString)
-            SetLVColName2SubItem(LVOrders, SelectedItem, "Autocomplete AT", ChBxAutoCompleteAT.Checked.ToString)
+            SetLVColName2SubItem(LVOrders, SelectedItem, "Autocomplete Smart Contract", ChBxAutoCompleteAT.Checked.ToString)
 
             LVOrders.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
 
@@ -162,11 +162,11 @@ Public Class FrmMyOrderSettings
             For i As Integer = 0 To OrderSettingsBuffer.Count - 1
                 Dim TT_OS As ClsOrderSettings = OrderSettingsBuffer(i)
 
-                If TT_OS.ATID = ATID And TT_OS.TXID = TXID Then
+                If TT_OS.SmartContractID = ATID And TT_OS.TransactionID = TXID Then
 
                     TT_OS.Infotext = TBInfotext.Text.Trim
                     TT_OS.AutoSendInfotext = Convert.ToBoolean(ChBxAutosendInfo.Checked.ToString)
-                    TT_OS.AutoCompleteAT = Convert.ToBoolean(ChBxAutoCompleteAT.Checked.ToString)
+                    TT_OS.AutoCompleteSmartContract = Convert.ToBoolean(ChBxAutoCompleteAT.Checked.ToString)
                     TT_OS.PaytypeString = Paytype
                     TT_OS.SetPayType()
 
@@ -183,7 +183,7 @@ Public Class FrmMyOrderSettings
             T_OS.PaytypeString = Paytype
             T_OS.Infotext = TBInfotext.Text.Trim
             T_OS.AutoSendInfotext = ChBxAutosendInfo.Checked
-            T_OS.AutoCompleteAT = ChBxAutoCompleteAT.Checked
+            T_OS.AutoCompleteSmartContract = ChBxAutoCompleteAT.Checked
 
             Dim Wait As Boolean = SaveOrderSettingsToCSV(New List(Of ClsOrderSettings)({T_OS}))
 #End Region
@@ -194,7 +194,7 @@ Public Class FrmMyOrderSettings
 
     Private Sub CoBxPayType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CoBxPayType.SelectedIndexChanged
 
-        If Not IsNothing(CoBxPayType.SelectedItem) Then
+        If Not CoBxPayType.SelectedItem Is Nothing Then
 
             Select Case CoBxPayType.SelectedItem.ToString
                 Case ClsOrderSettings.E_PayType.Bankaccount.ToString

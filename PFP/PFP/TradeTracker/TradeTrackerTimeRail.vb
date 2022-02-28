@@ -187,7 +187,7 @@ Public Class TradeTrackerTimeRail
 
             Dim GraphList As List(Of Graph.S_Graph) = Graphi.GraphValuesList
 
-            If IsNothing(GraphList) Then
+            If GraphList Is Nothing Then
                 Exit Sub
             End If
 
@@ -282,7 +282,7 @@ Public Class TradeTrackerTimeRail
                 Try
                     Dim Extra As List(Of S_Extra) = GF.Extra
 
-                    If Not IsNothing(Extra) Then
+                    If Not Extra Is Nothing Then
                         For Each Ex As S_Extra In Extra
                             Dim EY As Integer = GraphValue2Pixel(0 + Offset - Zoom, Me.Height + Offset + Zoom - 3, MinValue, MaxValue, Ex.Ex_Val) + 1
                             GFX_Graphics.DrawLine(New Pen(Ex.Ex_Color, Ex.Ex_Width), 0, EY, Me.Width, EY)
