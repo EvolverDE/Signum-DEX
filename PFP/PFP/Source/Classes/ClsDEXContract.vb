@@ -1185,7 +1185,12 @@ Public Class ClsDEXContract
                     Else
                         GetHistoryTransactions(C_ContractOrderHistoryList(C_ContractOrderHistoryList.Count - 1).EndTimestamp)
                     End If
+                End If
 
+                If C_ContractOrderHistoryList.Count > 0 Then
+                    If C_Status = E_Status.NEW_ Then
+                        C_Status = E_Status.FREE
+                    End If
                 End If
 
                 GetCurrentChat()
@@ -1751,7 +1756,7 @@ Public Class ClsDEXContract
             Return Application.ProductName + "-error in DeActivateDeniability(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString
         End If
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceDeActivateDeniability})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
@@ -1800,7 +1805,7 @@ Public Class ClsDEXContract
             Return Application.ProductName + "-error in CreateSellOrder(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString
         End If
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim XAmountNQT As ULong = ClsSignumAPI.Dbl2Planck(XAmount)
         Dim CollateralNQT As ULong = ClsSignumAPI.Dbl2Planck(Collateral)
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceCreateOrder, CollateralNQT, XAmountNQT, ClsSignumAPI.String2ULng(Xitem.Trim)})
@@ -1853,7 +1858,7 @@ Public Class ClsDEXContract
             Return Application.ProductName + "-error in CreateBuyOrder(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString
         End If
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
 
         'Dim AmountNQT As ULong = ClsSignumAPI.Dbl2Planck(Collateral)
         Dim XAmountNQT As ULong = ClsSignumAPI.Dbl2Planck(XAmount)
@@ -1913,7 +1918,7 @@ Public Class ClsDEXContract
             Collateral = C_CurrentInitiatorsCollateral
         End If
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceAcceptOrder})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, Collateral + (ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)), Fee, MsgStr.Trim, False)
@@ -1969,8 +1974,8 @@ Public Class ClsDEXContract
             Collateral = C_CurrentInitiatorsCollateral
         End If
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceAcceptOrder})
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceAcceptOrder, 0UL, 0UL, 0UL})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, SellAmount + Collateral + (ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)), Fee, MsgStr.Trim, False)
 
@@ -2027,7 +2032,7 @@ Public Class ClsDEXContract
             Return Application.ProductName + "-error in InjectResponder(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString
         End If
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceInjectResponder, ResponderID})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
@@ -2076,7 +2081,7 @@ Public Class ClsDEXContract
             Return Application.ProductName + "-error in OpenDispute(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString
         End If
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceOpenDispute})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
@@ -2143,7 +2148,7 @@ Public Class ClsDEXContract
             Return Application.ProductName + "-error in MediateDispute(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString
         End If
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
 
 
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceMediateDispute, Percentage, 0L, 0L})
@@ -2197,7 +2202,7 @@ Public Class ClsDEXContract
         '    Return Application.ProductName + "-error in Appeal(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString
         'End If
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceAppeal})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
@@ -2245,7 +2250,7 @@ Public Class ClsDEXContract
             Return Application.ProductName + "-error in CheckCloseDispute(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString
         End If
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceCheckCloseDispute})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
@@ -2295,7 +2300,7 @@ Public Class ClsDEXContract
         End If
 
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceFinishOrder})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT) * 3, Fee, MsgStr.Trim, False)
@@ -2348,7 +2353,7 @@ Public Class ClsDEXContract
             Return Application.ProductName + "-error in InjectChainSwapHash(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString
         End If
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceInjectChainSwapHash, ChainSwapHash})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
@@ -2400,7 +2405,7 @@ Public Class ClsDEXContract
             Return Application.ProductName + "-error in FinishOrderWithChainSwapKey(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString
         End If
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceFinishOrderWithChainSwapKey, ChainSwapKeyLong1, ChainSwapKeyLong2, 0L})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT) * 3, Fee, MsgStr.Trim, False)
@@ -2447,7 +2452,7 @@ Public Class ClsDEXContract
         End If
 
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULongMsgList)
         Response = SignumAPI.SendMoney(SenderPublicKeyHEX, C_ID, Collateral + ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
         Dim JSON As ClsJSON = New ClsJSON

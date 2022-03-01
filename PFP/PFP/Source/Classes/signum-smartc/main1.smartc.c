@@ -209,7 +209,7 @@ void CreateOrder(void) {
 			if (InitiatorsCollateral >= 0) {
 				Initiator = currentTX.sender;
 
-				if (Initiator == CREATOR && Deniability == 1 || !isFiatOrder) {
+				if (Initiator == CREATOR && Deniability == 1 || !isFiatOrder && Deniability == 1) {
 					Deniability = 3;
 				}
 

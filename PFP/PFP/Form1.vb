@@ -1031,12 +1031,12 @@ Public Class PFPForm
 
                         Else
 
-                            Dim NuSmartContract As S_SmartContract = New S_SmartContract
-                            NuSmartContract.ID = GetULongBetweenFromList(NuList, "<transaction>", "</transaction>")
-                            Dim AccRS As List(Of String) = SignumAPI.RSConvert(NuSmartContract.ID)
-                            NuSmartContract.IsDEX_SC = True
+                            'Dim NuSmartContract As S_SmartContract = New S_SmartContract
+                            'NuSmartContract.ID = GetULongBetweenFromList(NuList, "<transaction>", "</transaction>")
+                            'Dim AccRS As List(Of String) = SignumAPI.RSConvert(NuSmartContract.ID)
+                            'NuSmartContract.IsDEX_SC = True
 
-                            ClsMsgs.MBox("New Smart Contract Created" + vbCrLf + vbCrLf + "TX: " + NuSmartContract.ID.ToString, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                            ClsMsgs.MBox("New Smart Contract Created", "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
 
                         End If
 

@@ -9,7 +9,7 @@ Imports System.Text
 Public Class ClsSignumAPI
 
 #Region "SmartContract Structure"
-    'SmartContract: 110495440781486115
+    'SmartContract: 4805998757785918404
 
     'ActivateDeactivateDispute: -9199918549131231789
 
@@ -29,8 +29,8 @@ Public Class ClsSignumAPI
 
 #End Region
 
-    Public Const _ReferenceTX As ULong = 110495440781486115UL
-    Public Const _ReferenceTXFullHash As String = "23a81499048f88011b466c5f826a759fc5bef0e0cdb9bb8054132299c555b23b"
+    Public Const _ReferenceTX As ULong = 4805998757785918404UL
+    Public Const _ReferenceTXFullHash As String = "c45bcc2c6856b242eff9253e441536bb5505cfb4c181bf8695dd264400754e8c"
     Public Const _DeployFeeNQT As ULong = 147000000UL
     Public Const _GasFeeNQT As ULong = 29400000UL
     Public Const _AddressPreFix As String = "TS-"
@@ -1763,11 +1763,11 @@ Public Class ClsSignumAPI
         postDataRL += "&description=OptimizedContract"
         'postDataRL += "&creationBytes=" + C_ReferenceCreationBytes
         'postDataRL += "&code=" 
-        'postDataRL += "&data="
-        'postDataRL += "&dpages="
-        'postDataRL += "&cspages="
-        'postDataRL += "&uspages="
-        postDataRL += "&minActivationAmountNQT=100000000"
+        postDataRL += "&data=0000000000000000000000000000000000000000000000000100000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001c0000000000000000000000000000000000000000000000000000000000000000000000000000002100000000000000"
+        postDataRL += "&dpages=2"
+        postDataRL += "&cspages=1"
+        postDataRL += "&uspages=1"
+        postDataRL += "&minActivationAmountNQT=" + _GasFeeNQT.ToString
         'postDataRL += "&secretPhrase=" + C_PassPhrase
         postDataRL += "&publicKey=" + PublicKey
         postDataRL += "&feeNQT=" + _DeployFeeNQT.ToString
