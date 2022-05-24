@@ -101,6 +101,25 @@ Module ModCSV
         Next
 
         If NuSmartContractCSV.Count > 0 Then
+
+            If CSVMyOrders.Count = 0 Then
+
+                For i As Integer = 0 To NuSmartContractCSV.Count - 1
+                    Dim Nu_row As List(Of String) = NuSmartContractCSV(i)
+
+                    For ii As Integer = 0 To CSVTool.RowList.Count - 1
+                        Dim Old_row As List(Of String) = CSVTool.RowList(ii)
+
+                        If Old_row(0) = Nu_row(0) Then
+
+                            NuSmartContractCSV(i) = Old_row
+
+                        End If
+                    Next
+                Next
+
+            End If
+
             CSVTool.RowList = NuSmartContractCSV
             CSVTool.WriteCSV(ClsCSV.E_WriteMode.Create, True, Application.ProductName)
         End If

@@ -593,8 +593,8 @@ Public Class PFPForm
         DEXAPIInfo += """GetCandles"":[{""queryExample"":""/API/v1.0/GetCandles?pair=USD_SIGNA&days=3&tickmin=15""},"
         DEXAPIInfo += GetCandlesInfo
         DEXAPIInfo += "],"
-        DEXAPIInfo += """GetOpenOrders"":""shows the list of open orders"""
-        DEXAPIInfo += """AcceptOrder"":""{""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51""}"""
+        DEXAPIInfo += """GetOpenOrders"":""shows the list of open orders"","
+        DEXAPIInfo += """AcceptOrder"":{""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51""}"
         DEXAPIInfo += "}}"
 
         Dim DEXAPIGetInfoResponse As ClsTCPAPI.API_Response = New ClsTCPAPI.API_Response
@@ -5156,6 +5156,17 @@ Public Class PFPForm
                                         If T_OSList.Count = 0 Then
                                             T_OS.PaytypeString = GetINISetting(E_Setting.PaymentType, "Other")
                                             T_OS.Infotext = GetINISetting(E_Setting.PaymentInfoText, "Unknown")
+
+                                            Dim T_OrderSettingFromTX As List(Of ClsOrderSettings) = GetOrderSettings(T_OS.TransactionID.ToString)
+
+                                            If T_OrderSettingFromTX.Count > 0 Then
+                                                T_OS.AutoCompleteSmartContract = T_OrderSettingFromTX(0).AutoCompleteSmartContract
+                                                T_OS.AutoSendInfotext = T_OrderSettingFromTX(0).AutoSendInfotext
+                                                T_OS.Infotext = T_OrderSettingFromTX(0).Infotext
+                                                T_OS.PayType = T_OrderSettingFromTX(0).PayType
+                                                T_OS.PaytypeString = T_OrderSettingFromTX(0).PaytypeString
+                                            End If
+
                                             OrderSettingsBuffer.Add(T_OS)
                                         Else
                                             T_OS = T_OSList(0)

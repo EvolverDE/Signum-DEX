@@ -87,4 +87,5 @@ C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.vbproj.CoreCompileIn
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.exe
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.xml
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.pdb
-C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.vbprojAssemblyReference.cache
+C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.vbproj.AssemblyReference.cache
+C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Debug\PFP.vbproj.SuggestedBindingRedirects.cache

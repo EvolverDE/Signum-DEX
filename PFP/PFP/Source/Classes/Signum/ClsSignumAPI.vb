@@ -9,7 +9,7 @@ Imports System.Text
 Public Class ClsSignumAPI
 
 #Region "SmartContract Structure"
-    'SmartContract: 4805998757785918404
+    'SmartContract: 15564697375967316789
 
     'ActivateDeactivateDispute: -9199918549131231789
 
@@ -29,13 +29,13 @@ Public Class ClsSignumAPI
 
 #End Region
 
-    Public Const _ReferenceTX As ULong = 4805998757785918404UL
-    Public Const _ReferenceTXFullHash As String = "c45bcc2c6856b242eff9253e441536bb5505cfb4c181bf8695dd264400754e8c"
-    Public Const _DeployFeeNQT As ULong = 147000000UL
+    Public Const _ReferenceTX As ULong = 15564697375967316789UL
+    Public Const _ReferenceTXFullHash As String = "358bfc52cce900d8fb08f09375c63901a53ceb76e479749bb6be4c2e2682953a"
+    Public Const _DeployFeeNQT As ULong = 200000000UL ' 147000000UL
     Public Const _GasFeeNQT As ULong = 29400000UL
     Public Const _AddressPreFix As String = "TS-"
-    Public Const _DefaultNode As String = "https://europe3.testnet.signum.network/burst"
-    Public Const _Nodes As String = _DefaultNode + ";" + "http://tordek.ddns.net:6876/burst" + ";" + "http://lmsi.club:6876/burst" + ";" + "https://octalsburstnode.ddns.net:6876/burst"
+    Public Const _DefaultNode As String = "http://signum.zone:6876/burst"
+    Public Const _Nodes As String = _DefaultNode + ";" + "https://europe3.testnet.signum.network/burst" + ";" + "http://tordek.ddns.net:6876/burst" + ";" + "http://lmsi.club:6876/burst" + ";" + "https://octalsburstnode.ddns.net:6876/burst"
 
     'Public ReadOnly Property ReferenceCreateOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(716726961670769723L), 0)
     'Public ReadOnly Property ReferenceAcceptOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(4714436802908501638L), 0)

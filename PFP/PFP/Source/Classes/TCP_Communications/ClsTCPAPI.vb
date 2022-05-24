@@ -114,8 +114,9 @@ Public Class ClsTCPAPI
         Try
 
             StopServer = True
-
-            T_TCPServer.Stop()
+            If Not T_TCPServer Is Nothing Then
+                T_TCPServer.Stop()
+            End If
 
             AlreadyStarted = False
 

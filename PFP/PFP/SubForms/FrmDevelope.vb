@@ -1003,6 +1003,37 @@ Public Class FrmDevelope
         End If
     End Sub
 
+    Private Sub BtTestChainSwapKeyToHash_Click(sender As Object, e As EventArgs) Handles BtTestChainSwapKeyToHash.Click
+
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
+        Dim SecretKeyList As List(Of ULong) = ClsSignumAPI.GetSHA256_64(TBTestChainSwapKey.Text)
+
+        TBTestChainSwapULong1.Text = SecretKeyList(0).ToString
+        TBTestChainSwapULong2.Text = SecretKeyList(1).ToString
+        TBTesChainSwapHash.Text = SecretKeyList(2).ToString
+
+        TBTestChainSwapLong1.Text = Convert.ToInt64(SecretKeyList(0)).ToString
+        TBTestChainSwapLong2.Text = Convert.ToInt64(SecretKeyList(1)).ToString
+
+
+    End Sub
+
+    Private Sub BtExport_Click(sender As Object, e As EventArgs) Handles BtExport.Click
+
+        'Dim contractIDAddressList As List(Of List(Of String)) = New List(Of List(Of String))
+        Dim out As ClsOut = New ClsOut()
+        Dim str As String = ""
+        For Each T_Contract As ClsDEXContract In C_MainForm.DEXContractList
+            str += T_Contract.ID.ToString + ";" + T_Contract.Address + vbCrLf
+            'contractIDAddressList.Add(New List(Of String)({T_Contract.ID.ToString, T_Contract.Name}))
+        Next
+
+        out.Info2File(str)
+
+    End Sub
+
+
+
 #End Region
 
 End Class

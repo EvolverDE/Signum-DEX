@@ -94,6 +94,10 @@ Public Class ClsCSV
                 T_CSV = System.IO.File.ReadAllLines(Path, Text.Encoding.Default).ToList
             End If
 
+            If T_CSV.Count > 0 Then
+                C_RowList.Clear()
+            End If
+
             For i As Integer = 0 To T_CSV.Count - 1
                 Dim T_Row As String = T_CSV(i)
                 C_RowList.Add(New List(Of String)(T_Row.Split(Convert.ToChar(Splitter))))
@@ -152,7 +156,8 @@ Public Class ClsCSV
 
                 Dim MaxLen As Integer = 0
 
-                Dim T_RowList As List(Of List(Of String)) = New List(Of List(Of String))(C_RowList.ToArray)
+                Dim T_RowList As List(Of List(Of String)) = New List(Of List(Of String))(RowList.ToArray)
+
 
                 If C_WriteMode = E_WriteMode.Append Then
                     T_RowList = C_AppendRowList.ToList
@@ -182,7 +187,6 @@ Public Class ClsCSV
                         ColumnLine += Splitter
                     Next
                 End If
-
 
                 If C_Encrypt Then
                     FileString += ColumnLine + vbCrLf

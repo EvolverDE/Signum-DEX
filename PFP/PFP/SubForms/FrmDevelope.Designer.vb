@@ -87,6 +87,63 @@ Partial Class FrmDevelope
         Me.BtTestPPCheckAPI = New System.Windows.Forms.Button()
         Me.LiBoPayPalComs = New System.Windows.Forms.ListBox()
         Me.TabPage9 = New System.Windows.Forms.TabPage()
+        Me.TestGrpBxATCom = New System.Windows.Forms.GroupBox()
+        Me.BtTestLoadDEXContract = New System.Windows.Forms.Button()
+        Me.TBTestXItem = New System.Windows.Forms.TextBox()
+        Me.Label22 = New System.Windows.Forms.Label()
+        Me.NUDTestXAmount = New System.Windows.Forms.NumericUpDown()
+        Me.Label23 = New System.Windows.Forms.Label()
+        Me.BtTestCheckCloseDispute = New System.Windows.Forms.Button()
+        Me.BtTestAppeal = New System.Windows.Forms.Button()
+        Me.BtTestMediateDispute = New System.Windows.Forms.Button()
+        Me.BtTestOpenDispute = New System.Windows.Forms.Button()
+        Me.BtTestDeActivateDeniability = New System.Windows.Forms.Button()
+        Me.ChBxSellOrder = New System.Windows.Forms.CheckBox()
+        Me.NUDTestCollateral = New System.Windows.Forms.NumericUpDown()
+        Me.NUDTestAmount = New System.Windows.Forms.NumericUpDown()
+        Me.Label35 = New System.Windows.Forms.Label()
+        Me.Label34 = New System.Windows.Forms.Label()
+        Me.TBTestChainSwapKey = New System.Windows.Forms.TextBox()
+        Me.BtTestChainSwapKeyToHash = New System.Windows.Forms.Button()
+        Me.Label24 = New System.Windows.Forms.Label()
+        Me.TBTestChainSwapULong2 = New System.Windows.Forms.TextBox()
+        Me.Label25 = New System.Windows.Forms.Label()
+        Me.BtTestFinishWithChainSwapKey = New System.Windows.Forms.Button()
+        Me.TBTestChainSwapULong1 = New System.Windows.Forms.TextBox()
+        Me.Label33 = New System.Windows.Forms.Label()
+        Me.BtTestInjectChainSwapHash = New System.Windows.Forms.Button()
+        Me.TBTesChainSwapHash = New System.Windows.Forms.TextBox()
+        Me.LabAmount = New System.Windows.Forms.Label()
+        Me.CoBxTestATComATID = New System.Windows.Forms.ComboBox()
+        Me.Label31 = New System.Windows.Forms.Label()
+        Me.Label39 = New System.Windows.Forms.Label()
+        Me.BtTestCreate = New System.Windows.Forms.Button()
+        Me.BtTestAccept = New System.Windows.Forms.Button()
+        Me.BtTestFinish = New System.Windows.Forms.Button()
+        Me.BtTestInjectResponder = New System.Windows.Forms.Button()
+        Me.TBTestPP = New System.Windows.Forms.TextBox()
+        Me.TBTestResponder = New System.Windows.Forms.TextBox()
+        Me.Label40 = New System.Windows.Forms.Label()
+        Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.Panel3 = New System.Windows.Forms.Panel()
+        Me.Panel5 = New System.Windows.Forms.Panel()
+        Me.Panel6 = New System.Windows.Forms.Panel()
+        Me.Label41 = New System.Windows.Forms.Label()
+        Me.Label42 = New System.Windows.Forms.Label()
+        Me.TBTestChainSwapLong2 = New System.Windows.Forms.TextBox()
+        Me.TBTestChainSwapLong1 = New System.Windows.Forms.TextBox()
+        Me.Panel7 = New System.Windows.Forms.Panel()
+        Me.Label43 = New System.Windows.Forms.Label()
+        Me.NUDTestMediateAmount = New System.Windows.Forms.NumericUpDown()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.Label21 = New System.Windows.Forms.Label()
+        Me.LVTestDEXContractBasic = New System.Windows.Forms.ListView()
+        Me.ColumnHeader13 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader14 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.LVTestCurrentOrder = New System.Windows.Forms.ListView()
+        Me.ColumnHeader9 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader12 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.TestGrpBoxMultithreadings = New System.Windows.Forms.GroupBox()
         Me.SplitContainer9 = New System.Windows.Forms.SplitContainer()
@@ -165,63 +222,7 @@ Partial Class FrmDevelope
         Me.Label29 = New System.Windows.Forms.Label()
         Me.TBTestMyPublicKey = New System.Windows.Forms.TextBox()
         Me.Label28 = New System.Windows.Forms.Label()
-        Me.TestGrpBxATCom = New System.Windows.Forms.GroupBox()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.Label21 = New System.Windows.Forms.Label()
-        Me.LVTestCurrentOrder = New System.Windows.Forms.ListView()
-        Me.ColumnHeader9 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ColumnHeader12 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.TBTestXItem = New System.Windows.Forms.TextBox()
-        Me.Label22 = New System.Windows.Forms.Label()
-        Me.NUDTestXAmount = New System.Windows.Forms.NumericUpDown()
-        Me.Label23 = New System.Windows.Forms.Label()
-        Me.LVTestDEXContractBasic = New System.Windows.Forms.ListView()
-        Me.ColumnHeader13 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.ColumnHeader14 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.BtTestCheckCloseDispute = New System.Windows.Forms.Button()
-        Me.BtTestAppeal = New System.Windows.Forms.Button()
-        Me.BtTestMediateDispute = New System.Windows.Forms.Button()
-        Me.BtTestOpenDispute = New System.Windows.Forms.Button()
-        Me.BtTestDeActivateDeniability = New System.Windows.Forms.Button()
-        Me.ChBxSellOrder = New System.Windows.Forms.CheckBox()
-        Me.NUDTestCollateral = New System.Windows.Forms.NumericUpDown()
-        Me.NUDTestAmount = New System.Windows.Forms.NumericUpDown()
-        Me.Label35 = New System.Windows.Forms.Label()
-        Me.Label34 = New System.Windows.Forms.Label()
-        Me.TBTestChainSwapKey = New System.Windows.Forms.TextBox()
-        Me.BtTestChainSwapKeyToHash = New System.Windows.Forms.Button()
-        Me.Label24 = New System.Windows.Forms.Label()
-        Me.TBTestChainSwapULong2 = New System.Windows.Forms.TextBox()
-        Me.Label25 = New System.Windows.Forms.Label()
-        Me.BtTestFinishWithChainSwapKey = New System.Windows.Forms.Button()
-        Me.TBTestChainSwapULong1 = New System.Windows.Forms.TextBox()
-        Me.Label33 = New System.Windows.Forms.Label()
-        Me.BtTestInjectChainSwapHash = New System.Windows.Forms.Button()
-        Me.TBTesChainSwapHash = New System.Windows.Forms.TextBox()
-        Me.LabAmount = New System.Windows.Forms.Label()
-        Me.CoBxTestATComATID = New System.Windows.Forms.ComboBox()
-        Me.Label31 = New System.Windows.Forms.Label()
-        Me.Label39 = New System.Windows.Forms.Label()
-        Me.BtTestCreate = New System.Windows.Forms.Button()
-        Me.BtTestAccept = New System.Windows.Forms.Button()
-        Me.BtTestFinish = New System.Windows.Forms.Button()
-        Me.BtTestInjectResponder = New System.Windows.Forms.Button()
-        Me.TBTestPP = New System.Windows.Forms.TextBox()
-        Me.TBTestResponder = New System.Windows.Forms.TextBox()
-        Me.Label40 = New System.Windows.Forms.Label()
-        Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.Panel2 = New System.Windows.Forms.Panel()
-        Me.Panel3 = New System.Windows.Forms.Panel()
-        Me.Panel5 = New System.Windows.Forms.Panel()
-        Me.Panel6 = New System.Windows.Forms.Panel()
-        Me.Label41 = New System.Windows.Forms.Label()
-        Me.Label42 = New System.Windows.Forms.Label()
-        Me.TBTestChainSwapLong2 = New System.Windows.Forms.TextBox()
-        Me.TBTestChainSwapLong1 = New System.Windows.Forms.TextBox()
-        Me.Panel7 = New System.Windows.Forms.Panel()
-        Me.Label43 = New System.Windows.Forms.Label()
-        Me.NUDTestMediateAmount = New System.Windows.Forms.NumericUpDown()
-        Me.BtTestLoadDEXContract = New System.Windows.Forms.Button()
+        Me.BtExport = New System.Windows.Forms.Button()
         Me.TestTabControl.SuspendLayout()
         Me.TabPage6.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
@@ -239,6 +240,13 @@ Partial Class FrmDevelope
         Me.GroupBox6.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
         Me.TabPage9.SuspendLayout()
+        Me.TestGrpBxATCom.SuspendLayout()
+        CType(Me.NUDTestXAmount, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NUDTestCollateral, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NUDTestAmount, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.Panel6.SuspendLayout()
+        Me.Panel7.SuspendLayout()
+        CType(Me.NUDTestMediateAmount, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage10.SuspendLayout()
         Me.TestGrpBoxMultithreadings.SuspendLayout()
         CType(Me.SplitContainer9, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -297,13 +305,6 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel1.SuspendLayout()
         Me.SplitContainer11.Panel2.SuspendLayout()
         Me.SplitContainer11.SuspendLayout()
-        Me.TestGrpBxATCom.SuspendLayout()
-        CType(Me.NUDTestXAmount, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.NUDTestCollateral, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.NUDTestAmount, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.Panel6.SuspendLayout()
-        Me.Panel7.SuspendLayout()
-        CType(Me.NUDTestMediateAmount, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'TestTabControl
@@ -332,7 +333,7 @@ Partial Class FrmDevelope
         Me.TabPage6.Location = New System.Drawing.Point(4, 22)
         Me.TabPage6.Name = "TabPage6"
         Me.TabPage6.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage6.Size = New System.Drawing.Size(1205, 435)
+        Me.TabPage6.Size = New System.Drawing.Size(1205, 643)
         Me.TabPage6.TabIndex = 0
         Me.TabPage6.Text = "Convertings"
         Me.TabPage6.UseVisualStyleBackColor = True
@@ -580,7 +581,7 @@ Partial Class FrmDevelope
         Me.TabPage7.Location = New System.Drawing.Point(4, 22)
         Me.TabPage7.Name = "TabPage7"
         Me.TabPage7.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage7.Size = New System.Drawing.Size(1205, 435)
+        Me.TabPage7.Size = New System.Drawing.Size(1205, 643)
         Me.TabPage7.TabIndex = 1
         Me.TabPage7.Text = "INI-Tools-Tests"
         Me.TabPage7.UseVisualStyleBackColor = True
@@ -656,7 +657,7 @@ Partial Class FrmDevelope
         Me.TabPage8.Controls.Add(Me.SplitContainer10)
         Me.TabPage8.Location = New System.Drawing.Point(4, 22)
         Me.TabPage8.Name = "TabPage8"
-        Me.TabPage8.Size = New System.Drawing.Size(1205, 435)
+        Me.TabPage8.Size = New System.Drawing.Size(1205, 643)
         Me.TabPage8.TabIndex = 2
         Me.TabPage8.Text = "PayPal-Tests"
         Me.TabPage8.UseVisualStyleBackColor = True
@@ -678,8 +679,8 @@ Partial Class FrmDevelope
         'SplitContainer10.Panel2
         '
         Me.SplitContainer10.Panel2.Controls.Add(Me.LiBoPayPalComs)
-        Me.SplitContainer10.Size = New System.Drawing.Size(1205, 435)
-        Me.SplitContainer10.SplitterDistance = 115
+        Me.SplitContainer10.Size = New System.Drawing.Size(1205, 643)
+        Me.SplitContainer10.SplitterDistance = 169
         Me.SplitContainer10.TabIndex = 11
         '
         'GroupBox7
@@ -935,7 +936,7 @@ Partial Class FrmDevelope
         Me.LiBoPayPalComs.FormattingEnabled = True
         Me.LiBoPayPalComs.Location = New System.Drawing.Point(0, 0)
         Me.LiBoPayPalComs.Name = "LiBoPayPalComs"
-        Me.LiBoPayPalComs.Size = New System.Drawing.Size(1205, 316)
+        Me.LiBoPayPalComs.Size = New System.Drawing.Size(1205, 470)
         Me.LiBoPayPalComs.TabIndex = 0
         '
         'TabPage9
@@ -953,822 +954,9 @@ Partial Class FrmDevelope
         Me.TabPage9.Text = "AT Communication"
         Me.TabPage9.UseVisualStyleBackColor = True
         '
-        'TabPage10
-        '
-        Me.TabPage10.Controls.Add(Me.TestGrpBoxMultithreadings)
-        Me.TabPage10.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage10.Name = "TabPage10"
-        Me.TabPage10.Size = New System.Drawing.Size(1205, 435)
-        Me.TabPage10.TabIndex = 4
-        Me.TabPage10.Text = "Multithreading-Tests"
-        Me.TabPage10.UseVisualStyleBackColor = True
-        '
-        'TestGrpBoxMultithreadings
-        '
-        Me.TestGrpBoxMultithreadings.Controls.Add(Me.SplitContainer9)
-        Me.TestGrpBoxMultithreadings.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TestGrpBoxMultithreadings.Location = New System.Drawing.Point(0, 0)
-        Me.TestGrpBoxMultithreadings.Name = "TestGrpBoxMultithreadings"
-        Me.TestGrpBoxMultithreadings.Size = New System.Drawing.Size(1205, 435)
-        Me.TestGrpBoxMultithreadings.TabIndex = 38
-        Me.TestGrpBoxMultithreadings.TabStop = False
-        Me.TestGrpBoxMultithreadings.Text = "Multithreading-Tests"
-        '
-        'SplitContainer9
-        '
-        Me.SplitContainer9.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer9.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.SplitContainer9.Location = New System.Drawing.Point(3, 16)
-        Me.SplitContainer9.Name = "SplitContainer9"
-        Me.SplitContainer9.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'SplitContainer9.Panel1
-        '
-        Me.SplitContainer9.Panel1.Controls.Add(Me.LabActiveNodes)
-        Me.SplitContainer9.Panel1.Controls.Add(Me.Label36)
-        Me.SplitContainer9.Panel1.Controls.Add(Me.ChBxAutoRefreshMultiThreads)
-        Me.SplitContainer9.Panel1.Controls.Add(Me.BtTestMultiRefresh)
-        Me.SplitContainer9.Panel1.Controls.Add(Me.BtTestExit)
-        '
-        'SplitContainer9.Panel2
-        '
-        Me.SplitContainer9.Panel2.Controls.Add(Me.SplitContainer12)
-        Me.SplitContainer9.Size = New System.Drawing.Size(1199, 416)
-        Me.SplitContainer9.SplitterDistance = 55
-        Me.SplitContainer9.TabIndex = 32
-        '
-        'LabActiveNodes
-        '
-        Me.LabActiveNodes.AutoSize = True
-        Me.LabActiveNodes.ForeColor = System.Drawing.Color.Black
-        Me.LabActiveNodes.Location = New System.Drawing.Point(245, 8)
-        Me.LabActiveNodes.Name = "LabActiveNodes"
-        Me.LabActiveNodes.Size = New System.Drawing.Size(13, 13)
-        Me.LabActiveNodes.TabIndex = 34
-        Me.LabActiveNodes.Text = "0"
-        '
-        'Label36
-        '
-        Me.Label36.AutoSize = True
-        Me.Label36.ForeColor = System.Drawing.Color.Black
-        Me.Label36.Location = New System.Drawing.Point(165, 8)
-        Me.Label36.Name = "Label36"
-        Me.Label36.Size = New System.Drawing.Size(74, 13)
-        Me.Label36.TabIndex = 33
-        Me.Label36.Text = "Active Nodes:"
-        '
-        'ChBxAutoRefreshMultiThreads
-        '
-        Me.ChBxAutoRefreshMultiThreads.AutoSize = True
-        Me.ChBxAutoRefreshMultiThreads.ForeColor = System.Drawing.Color.Black
-        Me.ChBxAutoRefreshMultiThreads.Location = New System.Drawing.Point(3, 32)
-        Me.ChBxAutoRefreshMultiThreads.Name = "ChBxAutoRefreshMultiThreads"
-        Me.ChBxAutoRefreshMultiThreads.Size = New System.Drawing.Size(114, 17)
-        Me.ChBxAutoRefreshMultiThreads.TabIndex = 32
-        Me.ChBxAutoRefreshMultiThreads.Text = "autorefresh (1 sec)"
-        Me.ChBxAutoRefreshMultiThreads.UseVisualStyleBackColor = True
-        '
-        'BtTestMultiRefresh
-        '
-        Me.BtTestMultiRefresh.ForeColor = System.Drawing.Color.Black
-        Me.BtTestMultiRefresh.Location = New System.Drawing.Point(3, 3)
-        Me.BtTestMultiRefresh.Name = "BtTestMultiRefresh"
-        Me.BtTestMultiRefresh.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestMultiRefresh.TabIndex = 31
-        Me.BtTestMultiRefresh.Text = "Refresh"
-        Me.BtTestMultiRefresh.UseVisualStyleBackColor = True
-        '
-        'BtTestExit
-        '
-        Me.BtTestExit.ForeColor = System.Drawing.Color.Black
-        Me.BtTestExit.Location = New System.Drawing.Point(84, 3)
-        Me.BtTestExit.Name = "BtTestExit"
-        Me.BtTestExit.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestExit.TabIndex = 30
-        Me.BtTestExit.Text = "Exit"
-        Me.BtTestExit.UseVisualStyleBackColor = True
-        '
-        'SplitContainer12
-        '
-        Me.SplitContainer12.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer12.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer12.Name = "SplitContainer12"
-        '
-        'SplitContainer12.Panel1
-        '
-        Me.SplitContainer12.Panel1.Controls.Add(Me.SplitContainer13)
-        '
-        'SplitContainer12.Panel2
-        '
-        Me.SplitContainer12.Panel2.Controls.Add(Me.SplitContainer14)
-        Me.SplitContainer12.Size = New System.Drawing.Size(1199, 357)
-        Me.SplitContainer12.SplitterDistance = 595
-        Me.SplitContainer12.TabIndex = 29
-        '
-        'SplitContainer13
-        '
-        Me.SplitContainer13.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer13.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.SplitContainer13.IsSplitterFixed = True
-        Me.SplitContainer13.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer13.Name = "SplitContainer13"
-        Me.SplitContainer13.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'SplitContainer13.Panel1
-        '
-        Me.SplitContainer13.Panel1.Controls.Add(Me.Label37)
-        '
-        'SplitContainer13.Panel2
-        '
-        Me.SplitContainer13.Panel2.Controls.Add(Me.LVTestMulti)
-        Me.SplitContainer13.Size = New System.Drawing.Size(595, 357)
-        Me.SplitContainer13.SplitterDistance = 25
-        Me.SplitContainer13.TabIndex = 0
-        '
-        'Label37
-        '
-        Me.Label37.AutoSize = True
-        Me.Label37.Location = New System.Drawing.Point(5, 6)
-        Me.Label37.Name = "Label37"
-        Me.Label37.Size = New System.Drawing.Size(89, 13)
-        Me.Label37.TabIndex = 0
-        Me.Label37.Text = "API Request List:"
-        '
-        'LVTestMulti
-        '
-        Me.LVTestMulti.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader2, Me.ColumnHeader3, Me.ColumnHeader4, Me.ColumnHeader5, Me.ColumnHeader6})
-        Me.LVTestMulti.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LVTestMulti.FullRowSelect = True
-        Me.LVTestMulti.GridLines = True
-        Me.LVTestMulti.HideSelection = False
-        Me.LVTestMulti.Location = New System.Drawing.Point(0, 0)
-        Me.LVTestMulti.MultiSelect = False
-        Me.LVTestMulti.Name = "LVTestMulti"
-        Me.LVTestMulti.Size = New System.Drawing.Size(595, 328)
-        Me.LVTestMulti.TabIndex = 28
-        Me.LVTestMulti.UseCompatibleStateImageBehavior = False
-        Me.LVTestMulti.View = System.Windows.Forms.View.Details
-        '
-        'ColumnHeader2
-        '
-        Me.ColumnHeader2.Text = "Node"
-        '
-        'ColumnHeader3
-        '
-        Me.ColumnHeader3.Text = "Command"
-        '
-        'ColumnHeader4
-        '
-        Me.ColumnHeader4.Text = "ThreadID"
-        '
-        'ColumnHeader5
-        '
-        Me.ColumnHeader5.Text = "Status"
-        '
-        'ColumnHeader6
-        '
-        Me.ColumnHeader6.Text = "Result"
-        '
-        'SplitContainer14
-        '
-        Me.SplitContainer14.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer14.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.SplitContainer14.IsSplitterFixed = True
-        Me.SplitContainer14.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer14.Name = "SplitContainer14"
-        Me.SplitContainer14.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'SplitContainer14.Panel1
-        '
-        Me.SplitContainer14.Panel1.Controls.Add(Me.Label38)
-        '
-        'SplitContainer14.Panel2
-        '
-        Me.SplitContainer14.Panel2.Controls.Add(Me.LVActiveNodes)
-        Me.SplitContainer14.Size = New System.Drawing.Size(600, 357)
-        Me.SplitContainer14.SplitterDistance = 25
-        Me.SplitContainer14.TabIndex = 0
-        '
-        'Label38
-        '
-        Me.Label38.AutoSize = True
-        Me.Label38.Location = New System.Drawing.Point(3, 6)
-        Me.Label38.Name = "Label38"
-        Me.Label38.Size = New System.Drawing.Size(88, 13)
-        Me.Label38.TabIndex = 1
-        Me.Label38.Text = "Active Node List:"
-        '
-        'LVActiveNodes
-        '
-        Me.LVActiveNodes.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader1, Me.ColumnHeader15})
-        Me.LVActiveNodes.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LVActiveNodes.FullRowSelect = True
-        Me.LVActiveNodes.GridLines = True
-        Me.LVActiveNodes.HideSelection = False
-        Me.LVActiveNodes.Location = New System.Drawing.Point(0, 0)
-        Me.LVActiveNodes.MultiSelect = False
-        Me.LVActiveNodes.Name = "LVActiveNodes"
-        Me.LVActiveNodes.Size = New System.Drawing.Size(600, 328)
-        Me.LVActiveNodes.TabIndex = 29
-        Me.LVActiveNodes.UseCompatibleStateImageBehavior = False
-        Me.LVActiveNodes.View = System.Windows.Forms.View.Details
-        '
-        'ColumnHeader1
-        '
-        Me.ColumnHeader1.Text = "Node"
-        '
-        'ColumnHeader15
-        '
-        Me.ColumnHeader15.Text = "Status"
-        '
-        'TabPage11
-        '
-        Me.TabPage11.Controls.Add(Me.SplitContainer1)
-        Me.TabPage11.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage11.Name = "TabPage11"
-        Me.TabPage11.Size = New System.Drawing.Size(1205, 435)
-        Me.TabPage11.TabIndex = 5
-        Me.TabPage11.Text = "TCP API"
-        Me.TabPage11.UseVisualStyleBackColor = True
-        '
-        'SplitContainer1
-        '
-        Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.SplitContainer1.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer1.Name = "SplitContainer1"
-        Me.SplitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'SplitContainer1.Panel1
-        '
-        Me.SplitContainer1.Panel1.Controls.Add(Me.ChBxTestTCPAPIEnable)
-        Me.SplitContainer1.Panel1.Controls.Add(Me.ChBxTestTCPAPIShowStatus)
-        '
-        'SplitContainer1.Panel2
-        '
-        Me.SplitContainer1.Panel2.Controls.Add(Me.LiBoTCPAPIStatus)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1205, 435)
-        Me.SplitContainer1.SplitterDistance = 25
-        Me.SplitContainer1.TabIndex = 1
-        '
-        'ChBxTestTCPAPIEnable
-        '
-        Me.ChBxTestTCPAPIEnable.AutoSize = True
-        Me.ChBxTestTCPAPIEnable.ForeColor = System.Drawing.Color.Black
-        Me.ChBxTestTCPAPIEnable.Location = New System.Drawing.Point(3, 3)
-        Me.ChBxTestTCPAPIEnable.Name = "ChBxTestTCPAPIEnable"
-        Me.ChBxTestTCPAPIEnable.Size = New System.Drawing.Size(103, 17)
-        Me.ChBxTestTCPAPIEnable.TabIndex = 1
-        Me.ChBxTestTCPAPIEnable.Text = "TCP API Enable"
-        Me.ChBxTestTCPAPIEnable.UseVisualStyleBackColor = True
-        '
-        'ChBxTestTCPAPIShowStatus
-        '
-        Me.ChBxTestTCPAPIShowStatus.AutoSize = True
-        Me.ChBxTestTCPAPIShowStatus.ForeColor = System.Drawing.Color.Black
-        Me.ChBxTestTCPAPIShowStatus.Location = New System.Drawing.Point(112, 3)
-        Me.ChBxTestTCPAPIShowStatus.Name = "ChBxTestTCPAPIShowStatus"
-        Me.ChBxTestTCPAPIShowStatus.Size = New System.Drawing.Size(86, 17)
-        Me.ChBxTestTCPAPIShowStatus.TabIndex = 0
-        Me.ChBxTestTCPAPIShowStatus.Text = "Show Status"
-        Me.ChBxTestTCPAPIShowStatus.UseVisualStyleBackColor = True
-        '
-        'LiBoTCPAPIStatus
-        '
-        Me.LiBoTCPAPIStatus.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LiBoTCPAPIStatus.FormattingEnabled = True
-        Me.LiBoTCPAPIStatus.Location = New System.Drawing.Point(0, 0)
-        Me.LiBoTCPAPIStatus.Name = "LiBoTCPAPIStatus"
-        Me.LiBoTCPAPIStatus.Size = New System.Drawing.Size(1205, 406)
-        Me.LiBoTCPAPIStatus.TabIndex = 0
-        '
-        'TabPage12
-        '
-        Me.TabPage12.Controls.Add(Me.LVTestMultiInvoke)
-        Me.TabPage12.Controls.Add(Me.BtTestMultiInvokeSetInLV)
-        Me.TabPage12.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage12.Name = "TabPage12"
-        Me.TabPage12.Size = New System.Drawing.Size(1205, 435)
-        Me.TabPage12.TabIndex = 6
-        Me.TabPage12.Text = "Multiinvoke-Tests"
-        Me.TabPage12.UseVisualStyleBackColor = True
-        '
-        'LVTestMultiInvoke
-        '
-        Me.LVTestMultiInvoke.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader7, Me.ColumnHeader8, Me.ColumnHeader10, Me.ColumnHeader11})
-        Me.LVTestMultiInvoke.FullRowSelect = True
-        Me.LVTestMultiInvoke.GridLines = True
-        Me.LVTestMultiInvoke.HideSelection = False
-        Me.LVTestMultiInvoke.Location = New System.Drawing.Point(15, 67)
-        Me.LVTestMultiInvoke.Name = "LVTestMultiInvoke"
-        Me.LVTestMultiInvoke.Size = New System.Drawing.Size(747, 97)
-        Me.LVTestMultiInvoke.TabIndex = 1
-        Me.LVTestMultiInvoke.UseCompatibleStateImageBehavior = False
-        Me.LVTestMultiInvoke.View = System.Windows.Forms.View.Details
-        '
-        'BtTestMultiInvokeSetInLV
-        '
-        Me.BtTestMultiInvokeSetInLV.ForeColor = System.Drawing.Color.Black
-        Me.BtTestMultiInvokeSetInLV.Location = New System.Drawing.Point(27, 22)
-        Me.BtTestMultiInvokeSetInLV.Name = "BtTestMultiInvokeSetInLV"
-        Me.BtTestMultiInvokeSetInLV.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestMultiInvokeSetInLV.TabIndex = 0
-        Me.BtTestMultiInvokeSetInLV.Text = "Set in LV"
-        Me.BtTestMultiInvokeSetInLV.UseVisualStyleBackColor = True
-        '
-        'TabPage1
-        '
-        Me.TabPage1.Controls.Add(Me.SplitContainer6)
-        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Size = New System.Drawing.Size(1205, 435)
-        Me.TabPage1.TabIndex = 7
-        Me.TabPage1.Text = "DEXNET"
-        Me.TabPage1.UseVisualStyleBackColor = True
-        '
-        'SplitContainer6
-        '
-        Me.SplitContainer6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.SplitContainer6.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer6.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer6.Name = "SplitContainer6"
-        '
-        'SplitContainer6.Panel1
-        '
-        Me.SplitContainer6.Panel1.Controls.Add(Me.SplitContainer2)
-        '
-        'SplitContainer6.Panel2
-        '
-        Me.SplitContainer6.Panel2.Controls.Add(Me.SplitContainer7)
-        Me.SplitContainer6.Size = New System.Drawing.Size(1205, 435)
-        Me.SplitContainer6.SplitterDistance = 592
-        Me.SplitContainer6.TabIndex = 2
-        '
-        'SplitContainer2
-        '
-        Me.SplitContainer2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.SplitContainer2.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer2.Name = "SplitContainer2"
-        Me.SplitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'SplitContainer2.Panel1
-        '
-        Me.SplitContainer2.Panel1.Controls.Add(Me.ChBxDEXNETEncryptMsg)
-        Me.SplitContainer2.Panel1.Controls.Add(Me.BtTestBroadcastMsg)
-        Me.SplitContainer2.Panel1.Controls.Add(Me.TBTestRecipientPubKey)
-        Me.SplitContainer2.Panel1.Controls.Add(Me.Label11)
-        Me.SplitContainer2.Panel1.Controls.Add(Me.TBTestBroadcastMessage)
-        Me.SplitContainer2.Panel1.Controls.Add(Me.Label10)
-        Me.SplitContainer2.Panel1.Controls.Add(Me.BtTestConnect)
-        Me.SplitContainer2.Panel1.Controls.Add(Me.TBTestPeerPort)
-        Me.SplitContainer2.Panel1.Controls.Add(Me.Label5)
-        Me.SplitContainer2.Panel1.Controls.Add(Me.TBTestNewPeer)
-        Me.SplitContainer2.Panel1.Controls.Add(Me.Label4)
-        Me.SplitContainer2.Panel1.Controls.Add(Me.ChBxTestDEXNETShowStatus)
-        Me.SplitContainer2.Panel1.Controls.Add(Me.ChBxTestDEXNETEnable)
-        '
-        'SplitContainer2.Panel2
-        '
-        Me.SplitContainer2.Panel2.Controls.Add(Me.LiBoDEXNETStatus)
-        Me.SplitContainer2.Size = New System.Drawing.Size(590, 433)
-        Me.SplitContainer2.SplitterDistance = 129
-        Me.SplitContainer2.TabIndex = 0
-        '
-        'ChBxDEXNETEncryptMsg
-        '
-        Me.ChBxDEXNETEncryptMsg.AutoSize = True
-        Me.ChBxDEXNETEncryptMsg.Checked = True
-        Me.ChBxDEXNETEncryptMsg.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.ChBxDEXNETEncryptMsg.ForeColor = System.Drawing.Color.Black
-        Me.ChBxDEXNETEncryptMsg.Location = New System.Drawing.Point(319, 105)
-        Me.ChBxDEXNETEncryptMsg.Name = "ChBxDEXNETEncryptMsg"
-        Me.ChBxDEXNETEncryptMsg.Size = New System.Drawing.Size(108, 17)
-        Me.ChBxDEXNETEncryptMsg.TabIndex = 12
-        Me.ChBxDEXNETEncryptMsg.Text = "Encrypt Message"
-        Me.ChBxDEXNETEncryptMsg.UseVisualStyleBackColor = True
-        '
-        'BtTestBroadcastMsg
-        '
-        Me.BtTestBroadcastMsg.ForeColor = System.Drawing.Color.Black
-        Me.BtTestBroadcastMsg.Location = New System.Drawing.Point(433, 101)
-        Me.BtTestBroadcastMsg.Name = "BtTestBroadcastMsg"
-        Me.BtTestBroadcastMsg.Size = New System.Drawing.Size(135, 23)
-        Me.BtTestBroadcastMsg.TabIndex = 11
-        Me.BtTestBroadcastMsg.Text = "broadcast message"
-        Me.BtTestBroadcastMsg.UseVisualStyleBackColor = True
-        '
-        'TBTestRecipientPubKey
-        '
-        Me.TBTestRecipientPubKey.Location = New System.Drawing.Point(175, 75)
-        Me.TBTestRecipientPubKey.Name = "TBTestRecipientPubKey"
-        Me.TBTestRecipientPubKey.Size = New System.Drawing.Size(393, 20)
-        Me.TBTestRecipientPubKey.TabIndex = 10
-        '
-        'Label11
-        '
-        Me.Label11.AutoSize = True
-        Me.Label11.ForeColor = System.Drawing.Color.Black
-        Me.Label11.Location = New System.Drawing.Point(175, 54)
-        Me.Label11.Name = "Label11"
-        Me.Label11.Size = New System.Drawing.Size(95, 13)
-        Me.Label11.TabIndex = 9
-        Me.Label11.Text = "Recipient PubKey:"
-        '
-        'TBTestBroadcastMessage
-        '
-        Me.TBTestBroadcastMessage.Location = New System.Drawing.Point(285, 26)
-        Me.TBTestBroadcastMessage.Name = "TBTestBroadcastMessage"
-        Me.TBTestBroadcastMessage.Size = New System.Drawing.Size(283, 20)
-        Me.TBTestBroadcastMessage.TabIndex = 8
-        Me.TBTestBroadcastMessage.Text = "<ATID>1234</ATID>"
-        '
-        'Label10
-        '
-        Me.Label10.AutoSize = True
-        Me.Label10.ForeColor = System.Drawing.Color.Black
-        Me.Label10.Location = New System.Drawing.Point(175, 29)
-        Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(104, 13)
-        Me.Label10.TabIndex = 7
-        Me.Label10.Text = "Broadcast Message:"
-        '
-        'BtTestConnect
-        '
-        Me.BtTestConnect.ForeColor = System.Drawing.Color.Black
-        Me.BtTestConnect.Location = New System.Drawing.Point(69, 101)
-        Me.BtTestConnect.Name = "BtTestConnect"
-        Me.BtTestConnect.Size = New System.Drawing.Size(100, 23)
-        Me.BtTestConnect.TabIndex = 6
-        Me.BtTestConnect.Text = "connect"
-        Me.BtTestConnect.UseVisualStyleBackColor = True
-        '
-        'TBTestPeerPort
-        '
-        Me.TBTestPeerPort.Location = New System.Drawing.Point(69, 75)
-        Me.TBTestPeerPort.Name = "TBTestPeerPort"
-        Me.TBTestPeerPort.Size = New System.Drawing.Size(100, 20)
-        Me.TBTestPeerPort.TabIndex = 5
-        Me.TBTestPeerPort.Text = "8131"
-        '
-        'Label5
-        '
-        Me.Label5.AutoSize = True
-        Me.Label5.ForeColor = System.Drawing.Color.Black
-        Me.Label5.Location = New System.Drawing.Point(6, 78)
-        Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(54, 13)
-        Me.Label5.TabIndex = 4
-        Me.Label5.Text = "Peer Port:"
-        '
-        'TBTestNewPeer
-        '
-        Me.TBTestNewPeer.Location = New System.Drawing.Point(69, 49)
-        Me.TBTestNewPeer.Name = "TBTestNewPeer"
-        Me.TBTestNewPeer.Size = New System.Drawing.Size(100, 20)
-        Me.TBTestNewPeer.TabIndex = 3
-        Me.TBTestNewPeer.Text = "127.0.0.1"
-        '
-        'Label4
-        '
-        Me.Label4.AutoSize = True
-        Me.Label4.ForeColor = System.Drawing.Color.Black
-        Me.Label4.Location = New System.Drawing.Point(6, 52)
-        Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(57, 13)
-        Me.Label4.TabIndex = 2
-        Me.Label4.Text = "New Peer:"
-        '
-        'ChBxTestDEXNETShowStatus
-        '
-        Me.ChBxTestDEXNETShowStatus.AutoSize = True
-        Me.ChBxTestDEXNETShowStatus.ForeColor = System.Drawing.Color.Black
-        Me.ChBxTestDEXNETShowStatus.Location = New System.Drawing.Point(3, 26)
-        Me.ChBxTestDEXNETShowStatus.Name = "ChBxTestDEXNETShowStatus"
-        Me.ChBxTestDEXNETShowStatus.Size = New System.Drawing.Size(130, 17)
-        Me.ChBxTestDEXNETShowStatus.TabIndex = 1
-        Me.ChBxTestDEXNETShowStatus.Text = "DEXNET ShowStatus"
-        Me.ChBxTestDEXNETShowStatus.UseVisualStyleBackColor = True
-        '
-        'ChBxTestDEXNETEnable
-        '
-        Me.ChBxTestDEXNETEnable.AutoSize = True
-        Me.ChBxTestDEXNETEnable.ForeColor = System.Drawing.Color.Black
-        Me.ChBxTestDEXNETEnable.Location = New System.Drawing.Point(3, 3)
-        Me.ChBxTestDEXNETEnable.Name = "ChBxTestDEXNETEnable"
-        Me.ChBxTestDEXNETEnable.Size = New System.Drawing.Size(106, 17)
-        Me.ChBxTestDEXNETEnable.TabIndex = 0
-        Me.ChBxTestDEXNETEnable.Text = "DEXNET Enable"
-        Me.ChBxTestDEXNETEnable.UseVisualStyleBackColor = True
-        '
-        'LiBoDEXNETStatus
-        '
-        Me.LiBoDEXNETStatus.ContextMenuStrip = Me.CMSTestLiBoDEXNETStatus
-        Me.LiBoDEXNETStatus.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LiBoDEXNETStatus.FormattingEnabled = True
-        Me.LiBoDEXNETStatus.Location = New System.Drawing.Point(0, 0)
-        Me.LiBoDEXNETStatus.Name = "LiBoDEXNETStatus"
-        Me.LiBoDEXNETStatus.Size = New System.Drawing.Size(590, 300)
-        Me.LiBoDEXNETStatus.TabIndex = 0
-        '
-        'CMSTestLiBoDEXNETStatus
-        '
-        Me.CMSTestLiBoDEXNETStatus.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ClearEntryToolStripMenuItem, Me.ClearAllToolStripMenuItem})
-        Me.CMSTestLiBoDEXNETStatus.Name = "CMSTestLiBoDEXNETStatus"
-        Me.CMSTestLiBoDEXNETStatus.Size = New System.Drawing.Size(130, 48)
-        '
-        'ClearEntryToolStripMenuItem
-        '
-        Me.ClearEntryToolStripMenuItem.Name = "ClearEntryToolStripMenuItem"
-        Me.ClearEntryToolStripMenuItem.Size = New System.Drawing.Size(129, 22)
-        Me.ClearEntryToolStripMenuItem.Text = "clear entry"
-        '
-        'ClearAllToolStripMenuItem
-        '
-        Me.ClearAllToolStripMenuItem.Name = "ClearAllToolStripMenuItem"
-        Me.ClearAllToolStripMenuItem.Size = New System.Drawing.Size(129, 22)
-        Me.ClearAllToolStripMenuItem.Text = "clear all"
-        '
-        'SplitContainer7
-        '
-        Me.SplitContainer7.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer7.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer7.Name = "SplitContainer7"
-        '
-        'SplitContainer7.Panel1
-        '
-        Me.SplitContainer7.Panel1.Controls.Add(Me.SplitContainer3)
-        '
-        'SplitContainer7.Panel2
-        '
-        Me.SplitContainer7.Panel2.Controls.Add(Me.SplitContainer8)
-        Me.SplitContainer7.Size = New System.Drawing.Size(607, 433)
-        Me.SplitContainer7.SplitterDistance = 466
-        Me.SplitContainer7.TabIndex = 2
-        '
-        'SplitContainer3
-        '
-        Me.SplitContainer3.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer3.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.SplitContainer3.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer3.Name = "SplitContainer3"
-        '
-        'SplitContainer3.Panel1
-        '
-        Me.SplitContainer3.Panel1.Controls.Add(Me.SplitContainer4)
-        '
-        'SplitContainer3.Panel2
-        '
-        Me.SplitContainer3.Panel2.Controls.Add(Me.SplitContainer5)
-        Me.SplitContainer3.Size = New System.Drawing.Size(466, 433)
-        Me.SplitContainer3.SplitterDistance = 150
-        Me.SplitContainer3.TabIndex = 1
-        '
-        'SplitContainer4
-        '
-        Me.SplitContainer4.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer4.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.SplitContainer4.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer4.Name = "SplitContainer4"
-        Me.SplitContainer4.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'SplitContainer4.Panel1
-        '
-        Me.SplitContainer4.Panel1.Controls.Add(Me.BtTestAddRelKey)
-        Me.SplitContainer4.Panel1.Controls.Add(Me.Label6)
-        Me.SplitContainer4.Panel1.Controls.Add(Me.TBTestAddRelKey)
-        Me.SplitContainer4.Panel1.Controls.Add(Me.Label9)
-        '
-        'SplitContainer4.Panel2
-        '
-        Me.SplitContainer4.Panel2.Controls.Add(Me.LiBoTestRelKeys)
-        Me.SplitContainer4.Size = New System.Drawing.Size(150, 433)
-        Me.SplitContainer4.SplitterDistance = 91
-        Me.SplitContainer4.TabIndex = 0
-        '
-        'BtTestAddRelKey
-        '
-        Me.BtTestAddRelKey.ForeColor = System.Drawing.Color.Black
-        Me.BtTestAddRelKey.Location = New System.Drawing.Point(3, 49)
-        Me.BtTestAddRelKey.Name = "BtTestAddRelKey"
-        Me.BtTestAddRelKey.Size = New System.Drawing.Size(96, 23)
-        Me.BtTestAddRelKey.TabIndex = 9
-        Me.BtTestAddRelKey.Text = "Add RelKey"
-        Me.BtTestAddRelKey.UseVisualStyleBackColor = True
-        '
-        'Label6
-        '
-        Me.Label6.AutoSize = True
-        Me.Label6.ForeColor = System.Drawing.Color.Black
-        Me.Label6.Location = New System.Drawing.Point(3, 75)
-        Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(79, 13)
-        Me.Label6.TabIndex = 0
-        Me.Label6.Text = "Relevant Keys:"
-        '
-        'TBTestAddRelKey
-        '
-        Me.TBTestAddRelKey.Location = New System.Drawing.Point(3, 23)
-        Me.TBTestAddRelKey.Name = "TBTestAddRelKey"
-        Me.TBTestAddRelKey.Size = New System.Drawing.Size(96, 20)
-        Me.TBTestAddRelKey.TabIndex = 7
-        '
-        'Label9
-        '
-        Me.Label9.AutoSize = True
-        Me.Label9.ForeColor = System.Drawing.Color.Black
-        Me.Label9.Location = New System.Drawing.Point(3, 7)
-        Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(96, 13)
-        Me.Label9.TabIndex = 8
-        Me.Label9.Text = "Add Relevant Key:"
-        '
-        'LiBoTestRelKeys
-        '
-        Me.LiBoTestRelKeys.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LiBoTestRelKeys.FormattingEnabled = True
-        Me.LiBoTestRelKeys.Location = New System.Drawing.Point(0, 0)
-        Me.LiBoTestRelKeys.Name = "LiBoTestRelKeys"
-        Me.LiBoTestRelKeys.Size = New System.Drawing.Size(150, 338)
-        Me.LiBoTestRelKeys.TabIndex = 0
-        '
-        'SplitContainer5
-        '
-        Me.SplitContainer5.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer5.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.SplitContainer5.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer5.Name = "SplitContainer5"
-        Me.SplitContainer5.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'SplitContainer5.Panel1
-        '
-        Me.SplitContainer5.Panel1.Controls.Add(Me.Label7)
-        '
-        'SplitContainer5.Panel2
-        '
-        Me.SplitContainer5.Panel2.Controls.Add(Me.LiBoTestRelMsgs)
-        Me.SplitContainer5.Size = New System.Drawing.Size(312, 433)
-        Me.SplitContainer5.SplitterDistance = 25
-        Me.SplitContainer5.TabIndex = 0
-        '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.ForeColor = System.Drawing.Color.Black
-        Me.Label7.Location = New System.Drawing.Point(3, 7)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(104, 13)
-        Me.Label7.TabIndex = 0
-        Me.Label7.Text = "Relevant Messages:"
-        '
-        'LiBoTestRelMsgs
-        '
-        Me.LiBoTestRelMsgs.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LiBoTestRelMsgs.FormattingEnabled = True
-        Me.LiBoTestRelMsgs.Location = New System.Drawing.Point(0, 0)
-        Me.LiBoTestRelMsgs.Name = "LiBoTestRelMsgs"
-        Me.LiBoTestRelMsgs.Size = New System.Drawing.Size(312, 404)
-        Me.LiBoTestRelMsgs.TabIndex = 0
-        '
-        'SplitContainer8
-        '
-        Me.SplitContainer8.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer8.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.SplitContainer8.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer8.Name = "SplitContainer8"
-        Me.SplitContainer8.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'SplitContainer8.Panel1
-        '
-        Me.SplitContainer8.Panel1.Controls.Add(Me.Label8)
-        '
-        'SplitContainer8.Panel2
-        '
-        Me.SplitContainer8.Panel2.Controls.Add(Me.LiBoTestPeers)
-        Me.SplitContainer8.Size = New System.Drawing.Size(137, 433)
-        Me.SplitContainer8.SplitterDistance = 25
-        Me.SplitContainer8.TabIndex = 0
-        '
-        'Label8
-        '
-        Me.Label8.AutoSize = True
-        Me.Label8.ForeColor = System.Drawing.Color.Black
-        Me.Label8.Location = New System.Drawing.Point(3, 7)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(37, 13)
-        Me.Label8.TabIndex = 0
-        Me.Label8.Text = "Peers:"
-        '
-        'LiBoTestPeers
-        '
-        Me.LiBoTestPeers.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LiBoTestPeers.FormattingEnabled = True
-        Me.LiBoTestPeers.Location = New System.Drawing.Point(0, 0)
-        Me.LiBoTestPeers.Name = "LiBoTestPeers"
-        Me.LiBoTestPeers.Size = New System.Drawing.Size(137, 404)
-        Me.LiBoTestPeers.TabIndex = 0
-        '
-        'DevTimer
-        '
-        Me.DevTimer.Enabled = True
-        '
-        'SplitContainer11
-        '
-        Me.SplitContainer11.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.SplitContainer11.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer11.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.SplitContainer11.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer11.Name = "SplitContainer11"
-        Me.SplitContainer11.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'SplitContainer11.Panel1
-        '
-        Me.SplitContainer11.Panel1.Controls.Add(Me.Label32)
-        Me.SplitContainer11.Panel1.Controls.Add(Me.TBTestMyPassPhrase)
-        Me.SplitContainer11.Panel1.Controls.Add(Me.TBTestMyAgreeKey)
-        Me.SplitContainer11.Panel1.Controls.Add(Me.Label30)
-        Me.SplitContainer11.Panel1.Controls.Add(Me.TBTestMySignKey)
-        Me.SplitContainer11.Panel1.Controls.Add(Me.Label29)
-        Me.SplitContainer11.Panel1.Controls.Add(Me.TBTestMyPublicKey)
-        Me.SplitContainer11.Panel1.Controls.Add(Me.Label28)
-        '
-        'SplitContainer11.Panel2
-        '
-        Me.SplitContainer11.Panel2.Controls.Add(Me.TestTabControl)
-        Me.SplitContainer11.Size = New System.Drawing.Size(1213, 756)
-        Me.SplitContainer11.SplitterDistance = 83
-        Me.SplitContainer11.TabIndex = 11
-        '
-        'Label32
-        '
-        Me.Label32.AutoSize = True
-        Me.Label32.ForeColor = System.Drawing.Color.White
-        Me.Label32.Location = New System.Drawing.Point(515, 9)
-        Me.Label32.Name = "Label32"
-        Me.Label32.Size = New System.Drawing.Size(83, 13)
-        Me.Label32.TabIndex = 8
-        Me.Label32.Text = "My PassPhrase:"
-        '
-        'TBTestMyPassPhrase
-        '
-        Me.TBTestMyPassPhrase.Location = New System.Drawing.Point(604, 6)
-        Me.TBTestMyPassPhrase.Name = "TBTestMyPassPhrase"
-        Me.TBTestMyPassPhrase.Size = New System.Drawing.Size(401, 20)
-        Me.TBTestMyPassPhrase.TabIndex = 7
-        '
-        'TBTestMyAgreeKey
-        '
-        Me.TBTestMyAgreeKey.Location = New System.Drawing.Point(88, 58)
-        Me.TBTestMyAgreeKey.Name = "TBTestMyAgreeKey"
-        Me.TBTestMyAgreeKey.Size = New System.Drawing.Size(422, 20)
-        Me.TBTestMyAgreeKey.TabIndex = 6
-        '
-        'Label30
-        '
-        Me.Label30.AutoSize = True
-        Me.Label30.ForeColor = System.Drawing.Color.White
-        Me.Label30.Location = New System.Drawing.Point(5, 61)
-        Me.Label30.Name = "Label30"
-        Me.Label30.Size = New System.Drawing.Size(76, 13)
-        Me.Label30.TabIndex = 5
-        Me.Label30.Text = "My Agree Key:"
-        '
-        'TBTestMySignKey
-        '
-        Me.TBTestMySignKey.Location = New System.Drawing.Point(88, 32)
-        Me.TBTestMySignKey.Name = "TBTestMySignKey"
-        Me.TBTestMySignKey.Size = New System.Drawing.Size(422, 20)
-        Me.TBTestMySignKey.TabIndex = 4
-        '
-        'Label29
-        '
-        Me.Label29.AutoSize = True
-        Me.Label29.ForeColor = System.Drawing.Color.White
-        Me.Label29.Location = New System.Drawing.Point(5, 35)
-        Me.Label29.Name = "Label29"
-        Me.Label29.Size = New System.Drawing.Size(69, 13)
-        Me.Label29.TabIndex = 3
-        Me.Label29.Text = "My Sign Key:"
-        '
-        'TBTestMyPublicKey
-        '
-        Me.TBTestMyPublicKey.Location = New System.Drawing.Point(88, 6)
-        Me.TBTestMyPublicKey.Name = "TBTestMyPublicKey"
-        Me.TBTestMyPublicKey.Size = New System.Drawing.Size(422, 20)
-        Me.TBTestMyPublicKey.TabIndex = 2
-        '
-        'Label28
-        '
-        Me.Label28.AutoSize = True
-        Me.Label28.ForeColor = System.Drawing.Color.White
-        Me.Label28.Location = New System.Drawing.Point(5, 9)
-        Me.Label28.Name = "Label28"
-        Me.Label28.Size = New System.Drawing.Size(77, 13)
-        Me.Label28.TabIndex = 0
-        Me.Label28.Text = "My Public Key:"
-        '
         'TestGrpBxATCom
         '
+        Me.TestGrpBxATCom.Controls.Add(Me.BtExport)
         Me.TestGrpBxATCom.Controls.Add(Me.BtTestLoadDEXContract)
         Me.TestGrpBxATCom.Controls.Add(Me.TBTestXItem)
         Me.TestGrpBxATCom.Controls.Add(Me.Label22)
@@ -1818,44 +1006,15 @@ Partial Class FrmDevelope
         Me.TestGrpBxATCom.TabStop = False
         Me.TestGrpBxATCom.Text = "AT Communication"
         '
-        'Label1
+        'BtTestLoadDEXContract
         '
-        Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(412, 320)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(73, 13)
-        Me.Label1.TabIndex = 70
-        Me.Label1.Text = "Current Order:"
-        '
-        'Label21
-        '
-        Me.Label21.AutoSize = True
-        Me.Label21.Location = New System.Drawing.Point(15, 320)
-        Me.Label21.Name = "Label21"
-        Me.Label21.Size = New System.Drawing.Size(106, 13)
-        Me.Label21.TabIndex = 69
-        Me.Label21.Text = "DEXContract Basics:"
-        '
-        'LVTestCurrentOrder
-        '
-        Me.LVTestCurrentOrder.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader9, Me.ColumnHeader12})
-        Me.LVTestCurrentOrder.FullRowSelect = True
-        Me.LVTestCurrentOrder.GridLines = True
-        Me.LVTestCurrentOrder.HideSelection = False
-        Me.LVTestCurrentOrder.Location = New System.Drawing.Point(415, 336)
-        Me.LVTestCurrentOrder.Name = "LVTestCurrentOrder"
-        Me.LVTestCurrentOrder.Size = New System.Drawing.Size(377, 343)
-        Me.LVTestCurrentOrder.TabIndex = 68
-        Me.LVTestCurrentOrder.UseCompatibleStateImageBehavior = False
-        Me.LVTestCurrentOrder.View = System.Windows.Forms.View.Details
-        '
-        'ColumnHeader9
-        '
-        Me.ColumnHeader9.Text = "Property"
-        '
-        'ColumnHeader12
-        '
-        Me.ColumnHeader12.Text = "Value"
+        Me.BtTestLoadDEXContract.ForeColor = System.Drawing.Color.Black
+        Me.BtTestLoadDEXContract.Location = New System.Drawing.Point(9, 58)
+        Me.BtTestLoadDEXContract.Name = "BtTestLoadDEXContract"
+        Me.BtTestLoadDEXContract.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestLoadDEXContract.TabIndex = 77
+        Me.BtTestLoadDEXContract.Text = "load"
+        Me.BtTestLoadDEXContract.UseVisualStyleBackColor = True
         '
         'TBTestXItem
         '
@@ -1892,27 +1051,6 @@ Partial Class FrmDevelope
         Me.Label23.Size = New System.Drawing.Size(53, 13)
         Me.Label23.TabIndex = 64
         Me.Label23.Text = "XAmount:"
-        '
-        'LVTestDEXContractBasic
-        '
-        Me.LVTestDEXContractBasic.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader13, Me.ColumnHeader14})
-        Me.LVTestDEXContractBasic.FullRowSelect = True
-        Me.LVTestDEXContractBasic.GridLines = True
-        Me.LVTestDEXContractBasic.HideSelection = False
-        Me.LVTestDEXContractBasic.Location = New System.Drawing.Point(15, 336)
-        Me.LVTestDEXContractBasic.Name = "LVTestDEXContractBasic"
-        Me.LVTestDEXContractBasic.Size = New System.Drawing.Size(394, 343)
-        Me.LVTestDEXContractBasic.TabIndex = 63
-        Me.LVTestDEXContractBasic.UseCompatibleStateImageBehavior = False
-        Me.LVTestDEXContractBasic.View = System.Windows.Forms.View.Details
-        '
-        'ColumnHeader13
-        '
-        Me.ColumnHeader13.Text = "Property"
-        '
-        'ColumnHeader14
-        '
-        Me.ColumnHeader14.Text = "Value"
         '
         'BtTestCheckCloseDispute
         '
@@ -2314,15 +1452,888 @@ Partial Class FrmDevelope
         Me.NUDTestMediateAmount.TabIndex = 59
         Me.NUDTestMediateAmount.Value = New Decimal(New Integer() {50, 0, 0, 0})
         '
-        'BtTestLoadDEXContract
+        'Label1
         '
-        Me.BtTestLoadDEXContract.ForeColor = System.Drawing.Color.Black
-        Me.BtTestLoadDEXContract.Location = New System.Drawing.Point(9, 58)
-        Me.BtTestLoadDEXContract.Name = "BtTestLoadDEXContract"
-        Me.BtTestLoadDEXContract.Size = New System.Drawing.Size(75, 23)
-        Me.BtTestLoadDEXContract.TabIndex = 77
-        Me.BtTestLoadDEXContract.Text = "load"
-        Me.BtTestLoadDEXContract.UseVisualStyleBackColor = True
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(412, 320)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(73, 13)
+        Me.Label1.TabIndex = 70
+        Me.Label1.Text = "Current Order:"
+        '
+        'Label21
+        '
+        Me.Label21.AutoSize = True
+        Me.Label21.Location = New System.Drawing.Point(15, 320)
+        Me.Label21.Name = "Label21"
+        Me.Label21.Size = New System.Drawing.Size(106, 13)
+        Me.Label21.TabIndex = 69
+        Me.Label21.Text = "DEXContract Basics:"
+        '
+        'LVTestDEXContractBasic
+        '
+        Me.LVTestDEXContractBasic.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader13, Me.ColumnHeader14})
+        Me.LVTestDEXContractBasic.FullRowSelect = True
+        Me.LVTestDEXContractBasic.GridLines = True
+        Me.LVTestDEXContractBasic.HideSelection = False
+        Me.LVTestDEXContractBasic.Location = New System.Drawing.Point(15, 336)
+        Me.LVTestDEXContractBasic.Name = "LVTestDEXContractBasic"
+        Me.LVTestDEXContractBasic.Size = New System.Drawing.Size(394, 343)
+        Me.LVTestDEXContractBasic.TabIndex = 63
+        Me.LVTestDEXContractBasic.UseCompatibleStateImageBehavior = False
+        Me.LVTestDEXContractBasic.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader13
+        '
+        Me.ColumnHeader13.Text = "Property"
+        '
+        'ColumnHeader14
+        '
+        Me.ColumnHeader14.Text = "Value"
+        '
+        'LVTestCurrentOrder
+        '
+        Me.LVTestCurrentOrder.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader9, Me.ColumnHeader12})
+        Me.LVTestCurrentOrder.FullRowSelect = True
+        Me.LVTestCurrentOrder.GridLines = True
+        Me.LVTestCurrentOrder.HideSelection = False
+        Me.LVTestCurrentOrder.Location = New System.Drawing.Point(415, 336)
+        Me.LVTestCurrentOrder.Name = "LVTestCurrentOrder"
+        Me.LVTestCurrentOrder.Size = New System.Drawing.Size(377, 343)
+        Me.LVTestCurrentOrder.TabIndex = 68
+        Me.LVTestCurrentOrder.UseCompatibleStateImageBehavior = False
+        Me.LVTestCurrentOrder.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader9
+        '
+        Me.ColumnHeader9.Text = "Property"
+        '
+        'ColumnHeader12
+        '
+        Me.ColumnHeader12.Text = "Value"
+        '
+        'TabPage10
+        '
+        Me.TabPage10.Controls.Add(Me.TestGrpBoxMultithreadings)
+        Me.TabPage10.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage10.Name = "TabPage10"
+        Me.TabPage10.Size = New System.Drawing.Size(1205, 643)
+        Me.TabPage10.TabIndex = 4
+        Me.TabPage10.Text = "Multithreading-Tests"
+        Me.TabPage10.UseVisualStyleBackColor = True
+        '
+        'TestGrpBoxMultithreadings
+        '
+        Me.TestGrpBoxMultithreadings.Controls.Add(Me.SplitContainer9)
+        Me.TestGrpBoxMultithreadings.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TestGrpBoxMultithreadings.Location = New System.Drawing.Point(0, 0)
+        Me.TestGrpBoxMultithreadings.Name = "TestGrpBoxMultithreadings"
+        Me.TestGrpBoxMultithreadings.Size = New System.Drawing.Size(1205, 643)
+        Me.TestGrpBoxMultithreadings.TabIndex = 38
+        Me.TestGrpBoxMultithreadings.TabStop = False
+        Me.TestGrpBoxMultithreadings.Text = "Multithreading-Tests"
+        '
+        'SplitContainer9
+        '
+        Me.SplitContainer9.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer9.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer9.Location = New System.Drawing.Point(3, 16)
+        Me.SplitContainer9.Name = "SplitContainer9"
+        Me.SplitContainer9.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer9.Panel1
+        '
+        Me.SplitContainer9.Panel1.Controls.Add(Me.LabActiveNodes)
+        Me.SplitContainer9.Panel1.Controls.Add(Me.Label36)
+        Me.SplitContainer9.Panel1.Controls.Add(Me.ChBxAutoRefreshMultiThreads)
+        Me.SplitContainer9.Panel1.Controls.Add(Me.BtTestMultiRefresh)
+        Me.SplitContainer9.Panel1.Controls.Add(Me.BtTestExit)
+        '
+        'SplitContainer9.Panel2
+        '
+        Me.SplitContainer9.Panel2.Controls.Add(Me.SplitContainer12)
+        Me.SplitContainer9.Size = New System.Drawing.Size(1199, 624)
+        Me.SplitContainer9.SplitterDistance = 55
+        Me.SplitContainer9.TabIndex = 32
+        '
+        'LabActiveNodes
+        '
+        Me.LabActiveNodes.AutoSize = True
+        Me.LabActiveNodes.ForeColor = System.Drawing.Color.Black
+        Me.LabActiveNodes.Location = New System.Drawing.Point(245, 8)
+        Me.LabActiveNodes.Name = "LabActiveNodes"
+        Me.LabActiveNodes.Size = New System.Drawing.Size(13, 13)
+        Me.LabActiveNodes.TabIndex = 34
+        Me.LabActiveNodes.Text = "0"
+        '
+        'Label36
+        '
+        Me.Label36.AutoSize = True
+        Me.Label36.ForeColor = System.Drawing.Color.Black
+        Me.Label36.Location = New System.Drawing.Point(165, 8)
+        Me.Label36.Name = "Label36"
+        Me.Label36.Size = New System.Drawing.Size(74, 13)
+        Me.Label36.TabIndex = 33
+        Me.Label36.Text = "Active Nodes:"
+        '
+        'ChBxAutoRefreshMultiThreads
+        '
+        Me.ChBxAutoRefreshMultiThreads.AutoSize = True
+        Me.ChBxAutoRefreshMultiThreads.ForeColor = System.Drawing.Color.Black
+        Me.ChBxAutoRefreshMultiThreads.Location = New System.Drawing.Point(3, 32)
+        Me.ChBxAutoRefreshMultiThreads.Name = "ChBxAutoRefreshMultiThreads"
+        Me.ChBxAutoRefreshMultiThreads.Size = New System.Drawing.Size(114, 17)
+        Me.ChBxAutoRefreshMultiThreads.TabIndex = 32
+        Me.ChBxAutoRefreshMultiThreads.Text = "autorefresh (1 sec)"
+        Me.ChBxAutoRefreshMultiThreads.UseVisualStyleBackColor = True
+        '
+        'BtTestMultiRefresh
+        '
+        Me.BtTestMultiRefresh.ForeColor = System.Drawing.Color.Black
+        Me.BtTestMultiRefresh.Location = New System.Drawing.Point(3, 3)
+        Me.BtTestMultiRefresh.Name = "BtTestMultiRefresh"
+        Me.BtTestMultiRefresh.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestMultiRefresh.TabIndex = 31
+        Me.BtTestMultiRefresh.Text = "Refresh"
+        Me.BtTestMultiRefresh.UseVisualStyleBackColor = True
+        '
+        'BtTestExit
+        '
+        Me.BtTestExit.ForeColor = System.Drawing.Color.Black
+        Me.BtTestExit.Location = New System.Drawing.Point(84, 3)
+        Me.BtTestExit.Name = "BtTestExit"
+        Me.BtTestExit.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestExit.TabIndex = 30
+        Me.BtTestExit.Text = "Exit"
+        Me.BtTestExit.UseVisualStyleBackColor = True
+        '
+        'SplitContainer12
+        '
+        Me.SplitContainer12.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer12.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer12.Name = "SplitContainer12"
+        '
+        'SplitContainer12.Panel1
+        '
+        Me.SplitContainer12.Panel1.Controls.Add(Me.SplitContainer13)
+        '
+        'SplitContainer12.Panel2
+        '
+        Me.SplitContainer12.Panel2.Controls.Add(Me.SplitContainer14)
+        Me.SplitContainer12.Size = New System.Drawing.Size(1199, 565)
+        Me.SplitContainer12.SplitterDistance = 595
+        Me.SplitContainer12.TabIndex = 29
+        '
+        'SplitContainer13
+        '
+        Me.SplitContainer13.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer13.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer13.IsSplitterFixed = True
+        Me.SplitContainer13.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer13.Name = "SplitContainer13"
+        Me.SplitContainer13.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer13.Panel1
+        '
+        Me.SplitContainer13.Panel1.Controls.Add(Me.Label37)
+        '
+        'SplitContainer13.Panel2
+        '
+        Me.SplitContainer13.Panel2.Controls.Add(Me.LVTestMulti)
+        Me.SplitContainer13.Size = New System.Drawing.Size(595, 565)
+        Me.SplitContainer13.SplitterDistance = 25
+        Me.SplitContainer13.TabIndex = 0
+        '
+        'Label37
+        '
+        Me.Label37.AutoSize = True
+        Me.Label37.Location = New System.Drawing.Point(5, 6)
+        Me.Label37.Name = "Label37"
+        Me.Label37.Size = New System.Drawing.Size(89, 13)
+        Me.Label37.TabIndex = 0
+        Me.Label37.Text = "API Request List:"
+        '
+        'LVTestMulti
+        '
+        Me.LVTestMulti.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader2, Me.ColumnHeader3, Me.ColumnHeader4, Me.ColumnHeader5, Me.ColumnHeader6})
+        Me.LVTestMulti.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LVTestMulti.FullRowSelect = True
+        Me.LVTestMulti.GridLines = True
+        Me.LVTestMulti.HideSelection = False
+        Me.LVTestMulti.Location = New System.Drawing.Point(0, 0)
+        Me.LVTestMulti.MultiSelect = False
+        Me.LVTestMulti.Name = "LVTestMulti"
+        Me.LVTestMulti.Size = New System.Drawing.Size(595, 536)
+        Me.LVTestMulti.TabIndex = 28
+        Me.LVTestMulti.UseCompatibleStateImageBehavior = False
+        Me.LVTestMulti.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader2
+        '
+        Me.ColumnHeader2.Text = "Node"
+        '
+        'ColumnHeader3
+        '
+        Me.ColumnHeader3.Text = "Command"
+        '
+        'ColumnHeader4
+        '
+        Me.ColumnHeader4.Text = "ThreadID"
+        '
+        'ColumnHeader5
+        '
+        Me.ColumnHeader5.Text = "Status"
+        '
+        'ColumnHeader6
+        '
+        Me.ColumnHeader6.Text = "Result"
+        '
+        'SplitContainer14
+        '
+        Me.SplitContainer14.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer14.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer14.IsSplitterFixed = True
+        Me.SplitContainer14.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer14.Name = "SplitContainer14"
+        Me.SplitContainer14.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer14.Panel1
+        '
+        Me.SplitContainer14.Panel1.Controls.Add(Me.Label38)
+        '
+        'SplitContainer14.Panel2
+        '
+        Me.SplitContainer14.Panel2.Controls.Add(Me.LVActiveNodes)
+        Me.SplitContainer14.Size = New System.Drawing.Size(600, 565)
+        Me.SplitContainer14.SplitterDistance = 25
+        Me.SplitContainer14.TabIndex = 0
+        '
+        'Label38
+        '
+        Me.Label38.AutoSize = True
+        Me.Label38.Location = New System.Drawing.Point(3, 6)
+        Me.Label38.Name = "Label38"
+        Me.Label38.Size = New System.Drawing.Size(88, 13)
+        Me.Label38.TabIndex = 1
+        Me.Label38.Text = "Active Node List:"
+        '
+        'LVActiveNodes
+        '
+        Me.LVActiveNodes.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader1, Me.ColumnHeader15})
+        Me.LVActiveNodes.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LVActiveNodes.FullRowSelect = True
+        Me.LVActiveNodes.GridLines = True
+        Me.LVActiveNodes.HideSelection = False
+        Me.LVActiveNodes.Location = New System.Drawing.Point(0, 0)
+        Me.LVActiveNodes.MultiSelect = False
+        Me.LVActiveNodes.Name = "LVActiveNodes"
+        Me.LVActiveNodes.Size = New System.Drawing.Size(600, 536)
+        Me.LVActiveNodes.TabIndex = 29
+        Me.LVActiveNodes.UseCompatibleStateImageBehavior = False
+        Me.LVActiveNodes.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader1
+        '
+        Me.ColumnHeader1.Text = "Node"
+        '
+        'ColumnHeader15
+        '
+        Me.ColumnHeader15.Text = "Status"
+        '
+        'TabPage11
+        '
+        Me.TabPage11.Controls.Add(Me.SplitContainer1)
+        Me.TabPage11.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage11.Name = "TabPage11"
+        Me.TabPage11.Size = New System.Drawing.Size(1205, 643)
+        Me.TabPage11.TabIndex = 5
+        Me.TabPage11.Text = "TCP API"
+        Me.TabPage11.UseVisualStyleBackColor = True
+        '
+        'SplitContainer1
+        '
+        Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer1.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer1.Name = "SplitContainer1"
+        Me.SplitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer1.Panel1
+        '
+        Me.SplitContainer1.Panel1.Controls.Add(Me.ChBxTestTCPAPIEnable)
+        Me.SplitContainer1.Panel1.Controls.Add(Me.ChBxTestTCPAPIShowStatus)
+        '
+        'SplitContainer1.Panel2
+        '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.LiBoTCPAPIStatus)
+        Me.SplitContainer1.Size = New System.Drawing.Size(1205, 643)
+        Me.SplitContainer1.SplitterDistance = 25
+        Me.SplitContainer1.TabIndex = 1
+        '
+        'ChBxTestTCPAPIEnable
+        '
+        Me.ChBxTestTCPAPIEnable.AutoSize = True
+        Me.ChBxTestTCPAPIEnable.ForeColor = System.Drawing.Color.Black
+        Me.ChBxTestTCPAPIEnable.Location = New System.Drawing.Point(3, 3)
+        Me.ChBxTestTCPAPIEnable.Name = "ChBxTestTCPAPIEnable"
+        Me.ChBxTestTCPAPIEnable.Size = New System.Drawing.Size(103, 17)
+        Me.ChBxTestTCPAPIEnable.TabIndex = 1
+        Me.ChBxTestTCPAPIEnable.Text = "TCP API Enable"
+        Me.ChBxTestTCPAPIEnable.UseVisualStyleBackColor = True
+        '
+        'ChBxTestTCPAPIShowStatus
+        '
+        Me.ChBxTestTCPAPIShowStatus.AutoSize = True
+        Me.ChBxTestTCPAPIShowStatus.ForeColor = System.Drawing.Color.Black
+        Me.ChBxTestTCPAPIShowStatus.Location = New System.Drawing.Point(112, 3)
+        Me.ChBxTestTCPAPIShowStatus.Name = "ChBxTestTCPAPIShowStatus"
+        Me.ChBxTestTCPAPIShowStatus.Size = New System.Drawing.Size(86, 17)
+        Me.ChBxTestTCPAPIShowStatus.TabIndex = 0
+        Me.ChBxTestTCPAPIShowStatus.Text = "Show Status"
+        Me.ChBxTestTCPAPIShowStatus.UseVisualStyleBackColor = True
+        '
+        'LiBoTCPAPIStatus
+        '
+        Me.LiBoTCPAPIStatus.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LiBoTCPAPIStatus.FormattingEnabled = True
+        Me.LiBoTCPAPIStatus.Location = New System.Drawing.Point(0, 0)
+        Me.LiBoTCPAPIStatus.Name = "LiBoTCPAPIStatus"
+        Me.LiBoTCPAPIStatus.Size = New System.Drawing.Size(1205, 614)
+        Me.LiBoTCPAPIStatus.TabIndex = 0
+        '
+        'TabPage12
+        '
+        Me.TabPage12.Controls.Add(Me.LVTestMultiInvoke)
+        Me.TabPage12.Controls.Add(Me.BtTestMultiInvokeSetInLV)
+        Me.TabPage12.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage12.Name = "TabPage12"
+        Me.TabPage12.Size = New System.Drawing.Size(1205, 643)
+        Me.TabPage12.TabIndex = 6
+        Me.TabPage12.Text = "Multiinvoke-Tests"
+        Me.TabPage12.UseVisualStyleBackColor = True
+        '
+        'LVTestMultiInvoke
+        '
+        Me.LVTestMultiInvoke.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader7, Me.ColumnHeader8, Me.ColumnHeader10, Me.ColumnHeader11})
+        Me.LVTestMultiInvoke.FullRowSelect = True
+        Me.LVTestMultiInvoke.GridLines = True
+        Me.LVTestMultiInvoke.HideSelection = False
+        Me.LVTestMultiInvoke.Location = New System.Drawing.Point(15, 67)
+        Me.LVTestMultiInvoke.Name = "LVTestMultiInvoke"
+        Me.LVTestMultiInvoke.Size = New System.Drawing.Size(747, 97)
+        Me.LVTestMultiInvoke.TabIndex = 1
+        Me.LVTestMultiInvoke.UseCompatibleStateImageBehavior = False
+        Me.LVTestMultiInvoke.View = System.Windows.Forms.View.Details
+        '
+        'BtTestMultiInvokeSetInLV
+        '
+        Me.BtTestMultiInvokeSetInLV.ForeColor = System.Drawing.Color.Black
+        Me.BtTestMultiInvokeSetInLV.Location = New System.Drawing.Point(27, 22)
+        Me.BtTestMultiInvokeSetInLV.Name = "BtTestMultiInvokeSetInLV"
+        Me.BtTestMultiInvokeSetInLV.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestMultiInvokeSetInLV.TabIndex = 0
+        Me.BtTestMultiInvokeSetInLV.Text = "Set in LV"
+        Me.BtTestMultiInvokeSetInLV.UseVisualStyleBackColor = True
+        '
+        'TabPage1
+        '
+        Me.TabPage1.Controls.Add(Me.SplitContainer6)
+        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage1.Name = "TabPage1"
+        Me.TabPage1.Size = New System.Drawing.Size(1205, 643)
+        Me.TabPage1.TabIndex = 7
+        Me.TabPage1.Text = "DEXNET"
+        Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'SplitContainer6
+        '
+        Me.SplitContainer6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.SplitContainer6.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer6.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer6.Name = "SplitContainer6"
+        '
+        'SplitContainer6.Panel1
+        '
+        Me.SplitContainer6.Panel1.Controls.Add(Me.SplitContainer2)
+        '
+        'SplitContainer6.Panel2
+        '
+        Me.SplitContainer6.Panel2.Controls.Add(Me.SplitContainer7)
+        Me.SplitContainer6.Size = New System.Drawing.Size(1205, 643)
+        Me.SplitContainer6.SplitterDistance = 592
+        Me.SplitContainer6.TabIndex = 2
+        '
+        'SplitContainer2
+        '
+        Me.SplitContainer2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer2.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer2.Name = "SplitContainer2"
+        Me.SplitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer2.Panel1
+        '
+        Me.SplitContainer2.Panel1.Controls.Add(Me.ChBxDEXNETEncryptMsg)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.BtTestBroadcastMsg)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.TBTestRecipientPubKey)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.Label11)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.TBTestBroadcastMessage)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.Label10)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.BtTestConnect)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.TBTestPeerPort)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.Label5)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.TBTestNewPeer)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.Label4)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.ChBxTestDEXNETShowStatus)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.ChBxTestDEXNETEnable)
+        '
+        'SplitContainer2.Panel2
+        '
+        Me.SplitContainer2.Panel2.Controls.Add(Me.LiBoDEXNETStatus)
+        Me.SplitContainer2.Size = New System.Drawing.Size(590, 641)
+        Me.SplitContainer2.SplitterDistance = 129
+        Me.SplitContainer2.TabIndex = 0
+        '
+        'ChBxDEXNETEncryptMsg
+        '
+        Me.ChBxDEXNETEncryptMsg.AutoSize = True
+        Me.ChBxDEXNETEncryptMsg.Checked = True
+        Me.ChBxDEXNETEncryptMsg.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChBxDEXNETEncryptMsg.ForeColor = System.Drawing.Color.Black
+        Me.ChBxDEXNETEncryptMsg.Location = New System.Drawing.Point(319, 105)
+        Me.ChBxDEXNETEncryptMsg.Name = "ChBxDEXNETEncryptMsg"
+        Me.ChBxDEXNETEncryptMsg.Size = New System.Drawing.Size(108, 17)
+        Me.ChBxDEXNETEncryptMsg.TabIndex = 12
+        Me.ChBxDEXNETEncryptMsg.Text = "Encrypt Message"
+        Me.ChBxDEXNETEncryptMsg.UseVisualStyleBackColor = True
+        '
+        'BtTestBroadcastMsg
+        '
+        Me.BtTestBroadcastMsg.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBroadcastMsg.Location = New System.Drawing.Point(433, 101)
+        Me.BtTestBroadcastMsg.Name = "BtTestBroadcastMsg"
+        Me.BtTestBroadcastMsg.Size = New System.Drawing.Size(135, 23)
+        Me.BtTestBroadcastMsg.TabIndex = 11
+        Me.BtTestBroadcastMsg.Text = "broadcast message"
+        Me.BtTestBroadcastMsg.UseVisualStyleBackColor = True
+        '
+        'TBTestRecipientPubKey
+        '
+        Me.TBTestRecipientPubKey.Location = New System.Drawing.Point(175, 75)
+        Me.TBTestRecipientPubKey.Name = "TBTestRecipientPubKey"
+        Me.TBTestRecipientPubKey.Size = New System.Drawing.Size(393, 20)
+        Me.TBTestRecipientPubKey.TabIndex = 10
+        '
+        'Label11
+        '
+        Me.Label11.AutoSize = True
+        Me.Label11.ForeColor = System.Drawing.Color.Black
+        Me.Label11.Location = New System.Drawing.Point(175, 54)
+        Me.Label11.Name = "Label11"
+        Me.Label11.Size = New System.Drawing.Size(95, 13)
+        Me.Label11.TabIndex = 9
+        Me.Label11.Text = "Recipient PubKey:"
+        '
+        'TBTestBroadcastMessage
+        '
+        Me.TBTestBroadcastMessage.Location = New System.Drawing.Point(285, 26)
+        Me.TBTestBroadcastMessage.Name = "TBTestBroadcastMessage"
+        Me.TBTestBroadcastMessage.Size = New System.Drawing.Size(283, 20)
+        Me.TBTestBroadcastMessage.TabIndex = 8
+        Me.TBTestBroadcastMessage.Text = "<ATID>1234</ATID>"
+        '
+        'Label10
+        '
+        Me.Label10.AutoSize = True
+        Me.Label10.ForeColor = System.Drawing.Color.Black
+        Me.Label10.Location = New System.Drawing.Point(175, 29)
+        Me.Label10.Name = "Label10"
+        Me.Label10.Size = New System.Drawing.Size(104, 13)
+        Me.Label10.TabIndex = 7
+        Me.Label10.Text = "Broadcast Message:"
+        '
+        'BtTestConnect
+        '
+        Me.BtTestConnect.ForeColor = System.Drawing.Color.Black
+        Me.BtTestConnect.Location = New System.Drawing.Point(69, 101)
+        Me.BtTestConnect.Name = "BtTestConnect"
+        Me.BtTestConnect.Size = New System.Drawing.Size(100, 23)
+        Me.BtTestConnect.TabIndex = 6
+        Me.BtTestConnect.Text = "connect"
+        Me.BtTestConnect.UseVisualStyleBackColor = True
+        '
+        'TBTestPeerPort
+        '
+        Me.TBTestPeerPort.Location = New System.Drawing.Point(69, 75)
+        Me.TBTestPeerPort.Name = "TBTestPeerPort"
+        Me.TBTestPeerPort.Size = New System.Drawing.Size(100, 20)
+        Me.TBTestPeerPort.TabIndex = 5
+        Me.TBTestPeerPort.Text = "8131"
+        '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.ForeColor = System.Drawing.Color.Black
+        Me.Label5.Location = New System.Drawing.Point(6, 78)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(54, 13)
+        Me.Label5.TabIndex = 4
+        Me.Label5.Text = "Peer Port:"
+        '
+        'TBTestNewPeer
+        '
+        Me.TBTestNewPeer.Location = New System.Drawing.Point(69, 49)
+        Me.TBTestNewPeer.Name = "TBTestNewPeer"
+        Me.TBTestNewPeer.Size = New System.Drawing.Size(100, 20)
+        Me.TBTestNewPeer.TabIndex = 3
+        Me.TBTestNewPeer.Text = "127.0.0.1"
+        '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.ForeColor = System.Drawing.Color.Black
+        Me.Label4.Location = New System.Drawing.Point(6, 52)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(57, 13)
+        Me.Label4.TabIndex = 2
+        Me.Label4.Text = "New Peer:"
+        '
+        'ChBxTestDEXNETShowStatus
+        '
+        Me.ChBxTestDEXNETShowStatus.AutoSize = True
+        Me.ChBxTestDEXNETShowStatus.ForeColor = System.Drawing.Color.Black
+        Me.ChBxTestDEXNETShowStatus.Location = New System.Drawing.Point(3, 26)
+        Me.ChBxTestDEXNETShowStatus.Name = "ChBxTestDEXNETShowStatus"
+        Me.ChBxTestDEXNETShowStatus.Size = New System.Drawing.Size(130, 17)
+        Me.ChBxTestDEXNETShowStatus.TabIndex = 1
+        Me.ChBxTestDEXNETShowStatus.Text = "DEXNET ShowStatus"
+        Me.ChBxTestDEXNETShowStatus.UseVisualStyleBackColor = True
+        '
+        'ChBxTestDEXNETEnable
+        '
+        Me.ChBxTestDEXNETEnable.AutoSize = True
+        Me.ChBxTestDEXNETEnable.ForeColor = System.Drawing.Color.Black
+        Me.ChBxTestDEXNETEnable.Location = New System.Drawing.Point(3, 3)
+        Me.ChBxTestDEXNETEnable.Name = "ChBxTestDEXNETEnable"
+        Me.ChBxTestDEXNETEnable.Size = New System.Drawing.Size(106, 17)
+        Me.ChBxTestDEXNETEnable.TabIndex = 0
+        Me.ChBxTestDEXNETEnable.Text = "DEXNET Enable"
+        Me.ChBxTestDEXNETEnable.UseVisualStyleBackColor = True
+        '
+        'LiBoDEXNETStatus
+        '
+        Me.LiBoDEXNETStatus.ContextMenuStrip = Me.CMSTestLiBoDEXNETStatus
+        Me.LiBoDEXNETStatus.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LiBoDEXNETStatus.FormattingEnabled = True
+        Me.LiBoDEXNETStatus.Location = New System.Drawing.Point(0, 0)
+        Me.LiBoDEXNETStatus.Name = "LiBoDEXNETStatus"
+        Me.LiBoDEXNETStatus.Size = New System.Drawing.Size(590, 508)
+        Me.LiBoDEXNETStatus.TabIndex = 0
+        '
+        'CMSTestLiBoDEXNETStatus
+        '
+        Me.CMSTestLiBoDEXNETStatus.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ClearEntryToolStripMenuItem, Me.ClearAllToolStripMenuItem})
+        Me.CMSTestLiBoDEXNETStatus.Name = "CMSTestLiBoDEXNETStatus"
+        Me.CMSTestLiBoDEXNETStatus.Size = New System.Drawing.Size(130, 48)
+        '
+        'ClearEntryToolStripMenuItem
+        '
+        Me.ClearEntryToolStripMenuItem.Name = "ClearEntryToolStripMenuItem"
+        Me.ClearEntryToolStripMenuItem.Size = New System.Drawing.Size(129, 22)
+        Me.ClearEntryToolStripMenuItem.Text = "clear entry"
+        '
+        'ClearAllToolStripMenuItem
+        '
+        Me.ClearAllToolStripMenuItem.Name = "ClearAllToolStripMenuItem"
+        Me.ClearAllToolStripMenuItem.Size = New System.Drawing.Size(129, 22)
+        Me.ClearAllToolStripMenuItem.Text = "clear all"
+        '
+        'SplitContainer7
+        '
+        Me.SplitContainer7.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer7.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer7.Name = "SplitContainer7"
+        '
+        'SplitContainer7.Panel1
+        '
+        Me.SplitContainer7.Panel1.Controls.Add(Me.SplitContainer3)
+        '
+        'SplitContainer7.Panel2
+        '
+        Me.SplitContainer7.Panel2.Controls.Add(Me.SplitContainer8)
+        Me.SplitContainer7.Size = New System.Drawing.Size(607, 641)
+        Me.SplitContainer7.SplitterDistance = 466
+        Me.SplitContainer7.TabIndex = 2
+        '
+        'SplitContainer3
+        '
+        Me.SplitContainer3.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer3.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer3.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer3.Name = "SplitContainer3"
+        '
+        'SplitContainer3.Panel1
+        '
+        Me.SplitContainer3.Panel1.Controls.Add(Me.SplitContainer4)
+        '
+        'SplitContainer3.Panel2
+        '
+        Me.SplitContainer3.Panel2.Controls.Add(Me.SplitContainer5)
+        Me.SplitContainer3.Size = New System.Drawing.Size(466, 641)
+        Me.SplitContainer3.SplitterDistance = 150
+        Me.SplitContainer3.TabIndex = 1
+        '
+        'SplitContainer4
+        '
+        Me.SplitContainer4.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer4.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer4.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer4.Name = "SplitContainer4"
+        Me.SplitContainer4.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer4.Panel1
+        '
+        Me.SplitContainer4.Panel1.Controls.Add(Me.BtTestAddRelKey)
+        Me.SplitContainer4.Panel1.Controls.Add(Me.Label6)
+        Me.SplitContainer4.Panel1.Controls.Add(Me.TBTestAddRelKey)
+        Me.SplitContainer4.Panel1.Controls.Add(Me.Label9)
+        '
+        'SplitContainer4.Panel2
+        '
+        Me.SplitContainer4.Panel2.Controls.Add(Me.LiBoTestRelKeys)
+        Me.SplitContainer4.Size = New System.Drawing.Size(150, 641)
+        Me.SplitContainer4.SplitterDistance = 91
+        Me.SplitContainer4.TabIndex = 0
+        '
+        'BtTestAddRelKey
+        '
+        Me.BtTestAddRelKey.ForeColor = System.Drawing.Color.Black
+        Me.BtTestAddRelKey.Location = New System.Drawing.Point(3, 49)
+        Me.BtTestAddRelKey.Name = "BtTestAddRelKey"
+        Me.BtTestAddRelKey.Size = New System.Drawing.Size(96, 23)
+        Me.BtTestAddRelKey.TabIndex = 9
+        Me.BtTestAddRelKey.Text = "Add RelKey"
+        Me.BtTestAddRelKey.UseVisualStyleBackColor = True
+        '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.ForeColor = System.Drawing.Color.Black
+        Me.Label6.Location = New System.Drawing.Point(3, 75)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(79, 13)
+        Me.Label6.TabIndex = 0
+        Me.Label6.Text = "Relevant Keys:"
+        '
+        'TBTestAddRelKey
+        '
+        Me.TBTestAddRelKey.Location = New System.Drawing.Point(3, 23)
+        Me.TBTestAddRelKey.Name = "TBTestAddRelKey"
+        Me.TBTestAddRelKey.Size = New System.Drawing.Size(96, 20)
+        Me.TBTestAddRelKey.TabIndex = 7
+        '
+        'Label9
+        '
+        Me.Label9.AutoSize = True
+        Me.Label9.ForeColor = System.Drawing.Color.Black
+        Me.Label9.Location = New System.Drawing.Point(3, 7)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(96, 13)
+        Me.Label9.TabIndex = 8
+        Me.Label9.Text = "Add Relevant Key:"
+        '
+        'LiBoTestRelKeys
+        '
+        Me.LiBoTestRelKeys.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LiBoTestRelKeys.FormattingEnabled = True
+        Me.LiBoTestRelKeys.Location = New System.Drawing.Point(0, 0)
+        Me.LiBoTestRelKeys.Name = "LiBoTestRelKeys"
+        Me.LiBoTestRelKeys.Size = New System.Drawing.Size(150, 546)
+        Me.LiBoTestRelKeys.TabIndex = 0
+        '
+        'SplitContainer5
+        '
+        Me.SplitContainer5.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer5.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer5.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer5.Name = "SplitContainer5"
+        Me.SplitContainer5.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer5.Panel1
+        '
+        Me.SplitContainer5.Panel1.Controls.Add(Me.Label7)
+        '
+        'SplitContainer5.Panel2
+        '
+        Me.SplitContainer5.Panel2.Controls.Add(Me.LiBoTestRelMsgs)
+        Me.SplitContainer5.Size = New System.Drawing.Size(312, 641)
+        Me.SplitContainer5.SplitterDistance = 25
+        Me.SplitContainer5.TabIndex = 0
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.ForeColor = System.Drawing.Color.Black
+        Me.Label7.Location = New System.Drawing.Point(3, 7)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(104, 13)
+        Me.Label7.TabIndex = 0
+        Me.Label7.Text = "Relevant Messages:"
+        '
+        'LiBoTestRelMsgs
+        '
+        Me.LiBoTestRelMsgs.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LiBoTestRelMsgs.FormattingEnabled = True
+        Me.LiBoTestRelMsgs.Location = New System.Drawing.Point(0, 0)
+        Me.LiBoTestRelMsgs.Name = "LiBoTestRelMsgs"
+        Me.LiBoTestRelMsgs.Size = New System.Drawing.Size(312, 612)
+        Me.LiBoTestRelMsgs.TabIndex = 0
+        '
+        'SplitContainer8
+        '
+        Me.SplitContainer8.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer8.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer8.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer8.Name = "SplitContainer8"
+        Me.SplitContainer8.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer8.Panel1
+        '
+        Me.SplitContainer8.Panel1.Controls.Add(Me.Label8)
+        '
+        'SplitContainer8.Panel2
+        '
+        Me.SplitContainer8.Panel2.Controls.Add(Me.LiBoTestPeers)
+        Me.SplitContainer8.Size = New System.Drawing.Size(137, 641)
+        Me.SplitContainer8.SplitterDistance = 25
+        Me.SplitContainer8.TabIndex = 0
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.ForeColor = System.Drawing.Color.Black
+        Me.Label8.Location = New System.Drawing.Point(3, 7)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(37, 13)
+        Me.Label8.TabIndex = 0
+        Me.Label8.Text = "Peers:"
+        '
+        'LiBoTestPeers
+        '
+        Me.LiBoTestPeers.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LiBoTestPeers.FormattingEnabled = True
+        Me.LiBoTestPeers.Location = New System.Drawing.Point(0, 0)
+        Me.LiBoTestPeers.Name = "LiBoTestPeers"
+        Me.LiBoTestPeers.Size = New System.Drawing.Size(137, 612)
+        Me.LiBoTestPeers.TabIndex = 0
+        '
+        'DevTimer
+        '
+        Me.DevTimer.Enabled = True
+        '
+        'SplitContainer11
+        '
+        Me.SplitContainer11.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.SplitContainer11.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer11.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer11.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer11.Name = "SplitContainer11"
+        Me.SplitContainer11.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer11.Panel1
+        '
+        Me.SplitContainer11.Panel1.Controls.Add(Me.Label32)
+        Me.SplitContainer11.Panel1.Controls.Add(Me.TBTestMyPassPhrase)
+        Me.SplitContainer11.Panel1.Controls.Add(Me.TBTestMyAgreeKey)
+        Me.SplitContainer11.Panel1.Controls.Add(Me.Label30)
+        Me.SplitContainer11.Panel1.Controls.Add(Me.TBTestMySignKey)
+        Me.SplitContainer11.Panel1.Controls.Add(Me.Label29)
+        Me.SplitContainer11.Panel1.Controls.Add(Me.TBTestMyPublicKey)
+        Me.SplitContainer11.Panel1.Controls.Add(Me.Label28)
+        '
+        'SplitContainer11.Panel2
+        '
+        Me.SplitContainer11.Panel2.Controls.Add(Me.TestTabControl)
+        Me.SplitContainer11.Size = New System.Drawing.Size(1213, 756)
+        Me.SplitContainer11.SplitterDistance = 83
+        Me.SplitContainer11.TabIndex = 11
+        '
+        'Label32
+        '
+        Me.Label32.AutoSize = True
+        Me.Label32.ForeColor = System.Drawing.Color.White
+        Me.Label32.Location = New System.Drawing.Point(515, 9)
+        Me.Label32.Name = "Label32"
+        Me.Label32.Size = New System.Drawing.Size(83, 13)
+        Me.Label32.TabIndex = 8
+        Me.Label32.Text = "My PassPhrase:"
+        '
+        'TBTestMyPassPhrase
+        '
+        Me.TBTestMyPassPhrase.Location = New System.Drawing.Point(604, 6)
+        Me.TBTestMyPassPhrase.Name = "TBTestMyPassPhrase"
+        Me.TBTestMyPassPhrase.Size = New System.Drawing.Size(401, 20)
+        Me.TBTestMyPassPhrase.TabIndex = 7
+        '
+        'TBTestMyAgreeKey
+        '
+        Me.TBTestMyAgreeKey.Location = New System.Drawing.Point(88, 58)
+        Me.TBTestMyAgreeKey.Name = "TBTestMyAgreeKey"
+        Me.TBTestMyAgreeKey.Size = New System.Drawing.Size(422, 20)
+        Me.TBTestMyAgreeKey.TabIndex = 6
+        '
+        'Label30
+        '
+        Me.Label30.AutoSize = True
+        Me.Label30.ForeColor = System.Drawing.Color.White
+        Me.Label30.Location = New System.Drawing.Point(5, 61)
+        Me.Label30.Name = "Label30"
+        Me.Label30.Size = New System.Drawing.Size(76, 13)
+        Me.Label30.TabIndex = 5
+        Me.Label30.Text = "My Agree Key:"
+        '
+        'TBTestMySignKey
+        '
+        Me.TBTestMySignKey.Location = New System.Drawing.Point(88, 32)
+        Me.TBTestMySignKey.Name = "TBTestMySignKey"
+        Me.TBTestMySignKey.Size = New System.Drawing.Size(422, 20)
+        Me.TBTestMySignKey.TabIndex = 4
+        '
+        'Label29
+        '
+        Me.Label29.AutoSize = True
+        Me.Label29.ForeColor = System.Drawing.Color.White
+        Me.Label29.Location = New System.Drawing.Point(5, 35)
+        Me.Label29.Name = "Label29"
+        Me.Label29.Size = New System.Drawing.Size(69, 13)
+        Me.Label29.TabIndex = 3
+        Me.Label29.Text = "My Sign Key:"
+        '
+        'TBTestMyPublicKey
+        '
+        Me.TBTestMyPublicKey.Location = New System.Drawing.Point(88, 6)
+        Me.TBTestMyPublicKey.Name = "TBTestMyPublicKey"
+        Me.TBTestMyPublicKey.Size = New System.Drawing.Size(422, 20)
+        Me.TBTestMyPublicKey.TabIndex = 2
+        '
+        'Label28
+        '
+        Me.Label28.AutoSize = True
+        Me.Label28.ForeColor = System.Drawing.Color.White
+        Me.Label28.Location = New System.Drawing.Point(5, 9)
+        Me.Label28.Name = "Label28"
+        Me.Label28.Size = New System.Drawing.Size(77, 13)
+        Me.Label28.TabIndex = 0
+        Me.Label28.Text = "My Public Key:"
+        '
+        'BtExport
+        '
+        Me.BtExport.Location = New System.Drawing.Point(9, 87)
+        Me.BtExport.Name = "BtExport"
+        Me.BtExport.Size = New System.Drawing.Size(75, 23)
+        Me.BtExport.TabIndex = 78
+        Me.BtExport.Text = "export "
+        Me.BtExport.UseVisualStyleBackColor = True
         '
         'FrmDevelope
         '
@@ -2360,6 +2371,16 @@ Partial Class FrmDevelope
         Me.GroupBox3.PerformLayout()
         Me.TabPage9.ResumeLayout(False)
         Me.TabPage9.PerformLayout()
+        Me.TestGrpBxATCom.ResumeLayout(False)
+        Me.TestGrpBxATCom.PerformLayout()
+        CType(Me.NUDTestXAmount, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NUDTestCollateral, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NUDTestAmount, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.Panel6.ResumeLayout(False)
+        Me.Panel6.PerformLayout()
+        Me.Panel7.ResumeLayout(False)
+        Me.Panel7.PerformLayout()
+        CType(Me.NUDTestMediateAmount, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage10.ResumeLayout(False)
         Me.TestGrpBoxMultithreadings.ResumeLayout(False)
         Me.SplitContainer9.Panel1.ResumeLayout(False)
@@ -2427,16 +2448,6 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer11, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer11.ResumeLayout(False)
-        Me.TestGrpBxATCom.ResumeLayout(False)
-        Me.TestGrpBxATCom.PerformLayout()
-        CType(Me.NUDTestXAmount, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.NUDTestCollateral, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.NUDTestAmount, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.Panel6.ResumeLayout(False)
-        Me.Panel6.PerformLayout()
-        Me.Panel7.ResumeLayout(False)
-        Me.Panel7.PerformLayout()
-        CType(Me.NUDTestMediateAmount, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -2638,4 +2649,5 @@ Partial Class FrmDevelope
     Friend WithEvents Label43 As Label
     Friend WithEvents NUDTestMediateAmount As NumericUpDown
     Friend WithEvents BtTestLoadDEXContract As Button
+    Friend WithEvents BtExport As Button
 End Class
