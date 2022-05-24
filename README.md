@@ -14,7 +14,7 @@ Die Einstellungen werden mit Standard-Werten neben der PFP.EXE-Datei automatisch
 Neben der Settings.ini werden noch weitere Dateien wie z.b. "cache.dat" sowie mögliche .LOG-Dateien erstellt. Die cache.dat enthält informationen aller auf der Signum.network blockchain befindlichen Smart Contracts.
 
 # Hier ist eine kleine Funktionsübersicht
-- sichere Verbindung zu öffentlichen Signum-nodes aufbauen dank integrierter EC-KCDSA und Curve19255 Lösungen
+- sichere Verbindung zu öffentlichen Signum-nodes aufbauen dank integrierter EC-KCDSA und curve25519 Lösungen
 - Lastenausgleich auf externe Signum-Nodes beim Einholen der Smart Contract-Daten wie z.b. der Transaktionshistorie schaffen
 - wiederverwendbare payment-channels (smart contracts) für jedermann zur Verfügung stellen
 - eine TCP API für externe Applikationen (über Standardport 8130) zur verfügung stellen
