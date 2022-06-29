@@ -91,6 +91,7 @@ Partial Class PFPForm
         Me.BtShowBuyFilter = New System.Windows.Forms.Button()
         Me.SplitContainer11 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainerBuyFilter = New System.Windows.Forms.SplitContainer()
+        Me.ChBxBuyFilterShowOffChainOrders = New System.Windows.Forms.CheckBox()
         Me.ChBxBuyFilterShowPayable = New System.Windows.Forms.CheckBox()
         Me.ChBxBuyFilterShowAutofinish = New System.Windows.Forms.CheckBox()
         Me.ChLBBuyFilterMethods = New System.Windows.Forms.CheckedListBox()
@@ -1026,6 +1027,7 @@ Partial Class PFPForm
         'SplitContainerBuyFilter.Panel1
         '
         Me.SplitContainerBuyFilter.Panel1.AutoScroll = True
+        Me.SplitContainerBuyFilter.Panel1.Controls.Add(Me.ChBxBuyFilterShowOffChainOrders)
         Me.SplitContainerBuyFilter.Panel1.Controls.Add(Me.ChBxBuyFilterShowPayable)
         Me.SplitContainerBuyFilter.Panel1.Controls.Add(Me.ChBxBuyFilterShowAutofinish)
         Me.SplitContainerBuyFilter.Panel1.Controls.Add(Me.ChLBBuyFilterMethods)
@@ -1037,6 +1039,16 @@ Partial Class PFPForm
         Me.SplitContainerBuyFilter.Size = New System.Drawing.Size(764, 210)
         Me.SplitContainerBuyFilter.SplitterDistance = 67
         Me.SplitContainerBuyFilter.TabIndex = 6
+        '
+        'ChBxBuyFilterShowOffChainOrders
+        '
+        Me.ChBxBuyFilterShowOffChainOrders.AutoSize = True
+        Me.ChBxBuyFilterShowOffChainOrders.Location = New System.Drawing.Point(317, 3)
+        Me.ChBxBuyFilterShowOffChainOrders.Name = "ChBxBuyFilterShowOffChainOrders"
+        Me.ChBxBuyFilterShowOffChainOrders.Size = New System.Drawing.Size(124, 17)
+        Me.ChBxBuyFilterShowOffChainOrders.TabIndex = 11
+        Me.ChBxBuyFilterShowOffChainOrders.Text = "show offchain orders"
+        Me.ChBxBuyFilterShowOffChainOrders.UseVisualStyleBackColor = True
         '
         'ChBxBuyFilterShowPayable
         '
@@ -2068,4 +2080,5 @@ Partial Class PFPForm
     Friend WithEvents CoBxCandidateToSend As ComboBox
     Friend WithEvents BtAppeal As Button
     Friend WithEvents BtMediatorDeActivateDeniability As Button
+    Friend WithEvents ChBxBuyFilterShowOffChainOrders As CheckBox
 End Class

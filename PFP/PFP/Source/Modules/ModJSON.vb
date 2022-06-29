@@ -114,12 +114,6 @@ Module ModJSON
 
     Function GetBooleanBetween(ByVal input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional LastIdxOf As Boolean = False) As Boolean
 
-        'TODO: OUT from Between
-        'If GetINISetting(E_Setting.InfoOut, False) Then
-        '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-        '    Out.ErrorLog2File(Application.ProductName + "-error in SendMessages(): -> " + ex.Message)
-        'End If
-
         If input.Trim <> "" Then
             If input.Contains(startchar) And input.Contains(endchar) Then
 
@@ -140,12 +134,6 @@ Module ModJSON
 
     End Function
     Function GetIntegerBetween(ByVal input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional LastIdxOf As Boolean = False) As Integer
-
-        'TODO: OUT from Between
-        'If GetINISetting(E_Setting.InfoOut, False) Then
-        '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-        '    Out.ErrorLog2File(Application.ProductName + "-error in SendMessages(): -> " + ex.Message)
-        'End If
 
         If input.Trim <> "" Then
             If input.Contains(startchar) And input.Contains(endchar) Then
@@ -168,12 +156,6 @@ Module ModJSON
     End Function
     Function GetULongBetween(ByVal input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional LastIdxOf As Boolean = False) As ULong
 
-        'TODO: OUT from Between
-        'If GetINISetting(E_Setting.InfoOut, False) Then
-        '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-        '    Out.ErrorLog2File(Application.ProductName + "-error in SendMessages(): -> " + ex.Message)
-        'End If
-
         If input.Trim <> "" Then
             If input.Contains(startchar) And input.Contains(endchar) Then
 
@@ -195,12 +177,6 @@ Module ModJSON
     End Function
     Function GetDoubleBetween(ByVal input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional LastIdxOf As Boolean = False) As Double
 
-        'TODO: OUT from Between
-        'If GetINISetting(E_Setting.InfoOut, False) Then
-        '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-        '    Out.ErrorLog2File(Application.ProductName + "-error in SendMessages(): -> " + ex.Message)
-        'End If
-
         If input.Trim <> "" Then
             If input.Contains(startchar) And input.Contains(endchar) Then
 
@@ -221,12 +197,6 @@ Module ModJSON
 
     End Function
     Function GetDateBetween(ByVal input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional LastIdxOf As Boolean = False) As Date
-
-        'TODO: OUT from Between
-        'If GetINISetting(E_Setting.InfoOut, False) Then
-        '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-        '    Out.ErrorLog2File(Application.ProductName + "-error in SendMessages(): -> " + ex.Message)
-        'End If
 
         If input.Trim <> "" Then
             If input.Contains(startchar) And input.Contains(endchar) Then
@@ -257,12 +227,6 @@ Module ModJSON
     ''' <returns>Vorzugsweise ein Double , andernfalls z.b. ein Integer</returns>
     ''' <remarks></remarks>
     Function GetStringBetween(ByVal input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional LastIdxOf As Boolean = False) As String
-
-        'TODO: OUT from Between
-        'If GetINISetting(E_Setting.InfoOut, False) Then
-        '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-        '    Out.ErrorLog2File(Application.ProductName + "-error in SendMessages(): -> " + ex.Message)
-        'End If
 
         If input.Trim <> "" Then
             If input.Contains(startchar) And input.Contains(endchar) Then

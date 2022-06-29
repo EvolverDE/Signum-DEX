@@ -46,12 +46,12 @@ Public Class FrmManual
 
         AddHandler frmManual.FormClosing, AddressOf frmMSG_closing
 
+        CreateINI()
+
         frmManual.ShowDialog()
         Return CustomResult
 
     End Function
-
-
 
 
     Private Sub FrmManual_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -169,7 +169,7 @@ Public Class FrmManual
 
                     SetINISetting(E_Setting.Address, TBManualAddress.Text)
                     ClsMsgs.MBox("Address OK", "Check Address", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
-
+                    BtClose.Visible = True
                 Else
 
                     'PFPForm.C_Address = T_AddressList(0)
@@ -180,7 +180,7 @@ Public Class FrmManual
 
                     SetINISetting(E_Setting.Address, TBManualAddress.Text)
                     ClsMsgs.MBox("Address OK", "Check Address", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
-
+                    BtClose.Visible = True
                 End If
 
             Else
@@ -226,7 +226,7 @@ Public Class FrmManual
             End If
 
             ClsMsgs.MBox("Address OK", "Check Address", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
-
+            BtClose.Visible = True
         Else
 
             Dim MasterKeys As List(Of String) = GetMasterKeys(TBManualPassPhrase.Text.Trim)
@@ -266,7 +266,7 @@ Public Class FrmManual
                 End If
 
                 ClsMsgs.MBox("Address OK", "Check Address", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
-
+                BtClose.Visible = True
             Else
                 ClsMsgs.MBox("PassPhrase don't match Address", "Check PassPhrase/Address", ,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
             End If

@@ -26,6 +26,7 @@ Public Class PFPForm
 
     Property CSVSmartContractList() As List(Of S_SmartContract) = New List(Of S_SmartContract)
     Property DEXSmartContractList As List(Of String) = New List(Of String)
+    Property OffchainBuyOrder As S_OffchainBuyOrder = New S_OffchainBuyOrder(,,,,,,) 'TODO: clear when accepted by a seller
     Property DEXContractList As List(Of ClsDEXContract) = New List(Of ClsDEXContract)
 
     Property APIRequestList As List(Of S_APIRequest) = New List(Of S_APIRequest)
@@ -286,6 +287,28 @@ Public Class PFPForm
         Dim ID As ULong
         Dim IsDEX_SC As Boolean
         Dim HistoryOrders As String
+    End Structure
+    Structure S_OffchainBuyOrder
+
+        Sub New(Optional ByVal TSCID As String = "", Optional ByVal TPubKey As String = "", Optional ByVal TAsk As String = "", Optional ByVal TAmount As Double = 0.0, Optional ByVal TXAmount As Double = 0.0, Optional ByVal TXItem As String = "", Optional ByVal TMethod As String = "")
+            SCID = TSCID
+            PubKey = TPubKey
+            Ask = TAsk
+            Amount = TAmount
+            XAmount = TXAmount
+            XItem = TXItem
+            Method = TMethod
+        End Sub
+
+
+
+        Dim SCID As String
+        Dim PubKey As String
+        Dim Ask As String
+        Dim Amount As Double
+        Dim XAmount As Double
+        Dim XItem As String
+        Dim Method As String
     End Structure
     Structure S_APIRequest
         Dim RequestThread As Threading.Thread
@@ -551,6 +574,8 @@ Public Class PFPForm
         ChBxSellFilterShowPayable.Checked = GetINISetting(E_Setting.SellFilterPayable, False)
         ChBxBuyFilterShowPayable.Checked = GetINISetting(E_Setting.BuyFilterPayable, False)
 
+        ChBxBuyFilterShowOffChainOrders.Checked = GetINISetting(E_Setting.BuyFilterOffchainOrders, False)
+
 
         PrimaryNode = GetINISetting(E_Setting.DefaultNode, ClsSignumAPI._DefaultNode)
 
@@ -757,7 +782,6 @@ Public Class PFPForm
         'StatusBar.Maximum = RefreshTime
         'StatusBar.Value = RefreshTime - Boottime
 
-
         SetDEXNETRelevantMsgsToLVs()
 
         'MsgBox(SplitContainer2.Panel2.Width.ToString)
@@ -843,6 +867,7 @@ Public Class PFPForm
 
                 Else
                     InitiateDEXNET()
+
                 End If
 
                 Dim T_NuBlockThread As Threading.Thread = New Threading.Thread(AddressOf GetNuBlock)
@@ -862,6 +887,16 @@ Public Class PFPForm
 
                     Wait = Loading()
                     Wait = SetInLVs()
+
+                    'resend offchain order
+                    If OffchainBuyOrder.Ask = "WantToBuy" Then
+                        Dim Masterkeys As List(Of String) = GetPassPhrase()
+                        '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+                        If Masterkeys.Count > 0 Then
+                            DEXNET.BroadcastMessage("<SCID>0</SCID><Ask>" + OffchainBuyOrder.Ask + "</Ask><Amount>" + OffchainBuyOrder.Amount.ToString + "</Amount><XAmount>" + OffchainBuyOrder.XAmount.ToString + "</XAmount><XItem>" + OffchainBuyOrder.XItem + "</XItem><Method>" + OffchainBuyOrder.Method + "</Method>", Masterkeys(1), Masterkeys(2), Masterkeys(0))
+                        End If
+                    End If
+
 
                     RefreshTime = GetINISetting(E_Setting.RefreshMinutes, 1) * 60
 
@@ -1363,37 +1398,26 @@ Public Class PFPForm
             If LVOpenChannels.Items.Count > 0 Then
 
                 Dim T_DEXContract As ClsDEXContract = Nothing
-
                 Dim FoundOne As Boolean = False
-
                 For Each LVi As ListViewItem In LVOpenChannels.Items
-
                     Dim Status As String = Convert.ToString(GetLVColNameFromSubItem(LVOpenChannels, "Status", LVi))
-
                     If Status = "Reserved for you" Then
                         FoundOne = True
                         T_DEXContract = DirectCast(LVi.Tag, ClsDEXContract)
                         Exit For
                     End If
-
                 Next
 
-
                 If Not FoundOne Then
-
                     For Each LVi As ListViewItem In LVOpenChannels.Items
-
                         If Not LVi.BackColor = Color.Crimson Then
                             T_DEXContract = DirectCast(LVi.Tag, ClsDEXContract)
-
                             If T_DEXContract.CheckForUTX Or T_DEXContract.CheckForTX Or (T_DEXContract.Deniability And Not ChBxDeniability.Checked) Or (Not T_DEXContract.Deniability And ChBxDeniability.Checked) Then
-                                T_DEXContract = Nothing ' New clsDEXContract
+                                T_DEXContract = Nothing 'New clsDEXContract
                             Else
                                 Exit For
                             End If
-
                         End If
-
                     Next
                 End If
 
@@ -1418,9 +1442,8 @@ Public Class PFPForm
                 Dim Fee As Double = Convert.ToDouble(NUDSNOTXFee.Value)
                 Dim Collateral As Double = Convert.ToDouble(NUDSNOCollateral.Value)
                 Dim Item As String = CurrentMarket
-
-
                 Dim ItemAmount As Double = Convert.ToDouble(NUDSNOItemAmount.Value)
+
 
                 If RBSNOSell.Checked Then
 
@@ -1562,6 +1585,7 @@ Public Class PFPForm
                     Else
                         'not enough balance
                         ClsMsgs.MBox("not enough balance", "Error",,, ClsMsgs.Status.Erro)
+
                     End If
 
                 ElseIf RBSNOBuy.Checked Then
@@ -1702,7 +1726,22 @@ Public Class PFPForm
 
                     Else
                         'not enough balance
-                        ClsMsgs.MBox("not enough balance", "Error",,, ClsMsgs.Status.Erro)
+
+                        Dim Result As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("it seems you have not enough balance to open an order." + vbCrLf + "do you like to create the order offchain?", "not enough balance", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList.Yes_No),, ClsMsgs.Status.Question)
+
+                        If Result = ClsMsgs.CustomDialogResult.Yes Then
+
+                            Dim Masterkeys As List(Of String) = GetPassPhrase()
+                            '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+                            If Masterkeys.Count > 0 Then
+                                Dim T_Method As String = GetINISetting(E_Setting.PaymentType, "")
+                                OffchainBuyOrder = New S_OffchainBuyOrder("0", GlobalPublicKey, "WantToBuy", Amount, ItemAmount, Item, T_Method)
+                                DEXNET.BroadcastMessage("<SCID>0</SCID><Ask>WantToBuy</Ask><Amount>" + Amount.ToString + "</Amount><XAmount>" + ItemAmount.ToString + "</XAmount><XItem>" + Item + "</XItem><Method>" + T_Method + "</Method>", Masterkeys(1), Masterkeys(2), Masterkeys(0))
+                            End If
+
+                        End If
+
+
                     End If
 
                 End If
@@ -1779,40 +1818,59 @@ Public Class PFPForm
 
         If LVBuyorders.SelectedItems.Count > 0 Then
 
-            Dim T_DEXContract As ClsDEXContract = DirectCast(LVBuyorders.SelectedItems(0).Tag, ClsDEXContract)
+            Dim T_DEXContract As ClsDEXContract = TryCast(LVBuyorders.SelectedItems(0).Tag, ClsDEXContract)
+            Dim T_OffchainOrder As S_OffchainBuyOrder = New S_OffchainBuyOrder(,,,,,,)
+            If T_DEXContract Is Nothing Then
+                T_OffchainOrder = DirectCast(LVBuyorders.SelectedItems(0).Tag, S_OffchainBuyOrder)
+            End If
 
-            If T_DEXContract.CurrentInitiatorAddress = TBSNOAddress.Text Then
-                BtSell.Text = "cancel"
+            If T_DEXContract Is Nothing Then
+
+                'TODO: Offchain Rightclickmenu
+                If T_OffchainOrder.PubKey = GlobalPublicKey Then
+                    'Me
+                    BtSell.Text = "cancel"
+                Else
+                    'The other
+                    BtSell.Text = "Sell"
+                End If
+
             Else
 
-                Dim SAPI As ClsSignumAPI = New ClsSignumAPI
+                If T_DEXContract.CurrentInitiatorAddress = TBSNOAddress.Text Then
+                    BtSell.Text = "cancel"
+                Else
 
-                Dim LVContextMenu As ContextMenuStrip = New ContextMenuStrip
+                    Dim SAPI As ClsSignumAPI = New ClsSignumAPI
 
-                Dim LVCMItemSellerPubKey As ToolStripMenuItem = New ToolStripMenuItem
-                LVCMItemSellerPubKey.Text = "copy buyer public key"
-                LVCMItemSellerPubKey.Tag = SAPI.GetAccountPublicKeyFromAccountID_RS(T_DEXContract.CurrentInitiatorAddress)
+                    Dim LVContextMenu As ContextMenuStrip = New ContextMenuStrip
 
-                AddHandler LVCMItemSellerPubKey.Click, AddressOf Copy2CB
-                LVContextMenu.Items.Add(LVCMItemSellerPubKey)
+                    Dim LVCMItemSellerPubKey As ToolStripMenuItem = New ToolStripMenuItem
+                    LVCMItemSellerPubKey.Text = "copy buyer public key"
+                    LVCMItemSellerPubKey.Tag = SAPI.GetAccountPublicKeyFromAccountID_RS(T_DEXContract.CurrentInitiatorAddress)
 
-                Dim LVCMItemSellerID As ToolStripMenuItem = New ToolStripMenuItem
-                LVCMItemSellerID.Text = "copy buyerID"
-                LVCMItemSellerID.Tag = GetAccountIDFromRS(T_DEXContract.CurrentInitiatorAddress)
+                    AddHandler LVCMItemSellerPubKey.Click, AddressOf Copy2CB
+                    LVContextMenu.Items.Add(LVCMItemSellerPubKey)
 
-                AddHandler LVCMItemSellerID.Click, AddressOf Copy2CB
-                LVContextMenu.Items.Add(LVCMItemSellerID)
+                    Dim LVCMItemSellerID As ToolStripMenuItem = New ToolStripMenuItem
+                    LVCMItemSellerID.Text = "copy buyerID"
+                    LVCMItemSellerID.Tag = GetAccountIDFromRS(T_DEXContract.CurrentInitiatorAddress)
 
-                Dim LVCMItemSellerRS As ToolStripMenuItem = New ToolStripMenuItem
-                LVCMItemSellerRS.Text = "copy buyerRS"
-                LVCMItemSellerRS.Tag = T_DEXContract.CurrentInitiatorAddress
+                    AddHandler LVCMItemSellerID.Click, AddressOf Copy2CB
+                    LVContextMenu.Items.Add(LVCMItemSellerID)
 
-                AddHandler LVCMItemSellerRS.Click, AddressOf Copy2CB
-                LVContextMenu.Items.Add(LVCMItemSellerRS)
+                    Dim LVCMItemSellerRS As ToolStripMenuItem = New ToolStripMenuItem
+                    LVCMItemSellerRS.Text = "copy buyerRS"
+                    LVCMItemSellerRS.Tag = T_DEXContract.CurrentInitiatorAddress
 
-                LVBuyorders.ContextMenuStrip = LVContextMenu
+                    AddHandler LVCMItemSellerRS.Click, AddressOf Copy2CB
+                    LVContextMenu.Items.Add(LVCMItemSellerRS)
 
-                BtSell.Text = "Sell"
+                    LVBuyorders.ContextMenuStrip = LVContextMenu
+
+                    BtSell.Text = "Sell"
+                End If
+
             End If
 
         End If
@@ -1898,7 +1956,7 @@ Public Class PFPForm
 
                                 Else
                                     MBoxMsg = "SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX + vbCrLf + vbCrLf
-                                    MBoxMsg += "please wait 1-2 Blocks (4-8 minutes) to get the payment-infos from Seller"
+                                    MBoxMsg += "please wait 1-2 Blocks (4-8 minutes) to get the payment-infos from Seller" 'TODO: only if autoinfo is on
 
                                     ClsMsgs.MBox(MBoxMsg, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                                 End If
@@ -1960,7 +2018,7 @@ Public Class PFPForm
 
                                     Else
                                         MBoxMsg = "SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX + vbCrLf + vbCrLf
-                                        MBoxMsg += "please wait 1-2 Blocks (4-8 minutes) to get the payment-infos from Seller"
+                                        MBoxMsg += "please wait 1-2 Blocks (4-8 minutes) to get the payment-infos from Seller" 'TODO: only if autoinfo is on
 
                                         ClsMsgs.MBox(MBoxMsg, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                                     End If
@@ -1985,7 +2043,7 @@ Public Class PFPForm
                         Dim Masterkeys As List(Of String) = GetPassPhrase()
                         '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
                         If Masterkeys.Count > 0 Then
-                            DEXNET.BroadcastMessage("<SCID>" + T_DEXContract.ID.ToString + "</SCID><Ask>WTB</Ask>", Masterkeys(1), Masterkeys(2), Masterkeys(0), SignumAPI.GetAccountPublicKeyFromAccountID_RS(T_DEXContract.CurrentInitiatorAddress))
+                            DEXNET.BroadcastMessage("<SCID>" + T_DEXContract.ID.ToString + "</SCID><Ask>AcceptOrderRequest</Ask>", Masterkeys(1), Masterkeys(2), Masterkeys(0), SignumAPI.GetAccountPublicKeyFromAccountID_RS(T_DEXContract.CurrentInitiatorAddress))
                         End If
 
                     End If
@@ -2119,220 +2177,340 @@ Public Class PFPForm
 
         If LVBuyorders.SelectedItems.Count > 0 Then
 
-            Dim T_DEXContract As ClsDEXContract = DirectCast(LVBuyorders.SelectedItems(0).Tag, ClsDEXContract)
-
-            Dim PayInfo As String = Convert.ToString(GetLVColNameFromSubItem(LVBuyorders, "Method", LVBuyorders.SelectedItems(0)))
-            Dim AutoInfo As String = Convert.ToString(GetLVColNameFromSubItem(LVBuyorders, "Autoinfo", LVBuyorders.SelectedItems(0)))
-            Dim Autofinish As String = Convert.ToString(GetLVColNameFromSubItem(LVBuyorders, "Autofinish", LVBuyorders.SelectedItems(0)))
-
-            If T_DEXContract.CheckForUTX Then
-                ClsMsgs.MBox("One Transaction is already Pending for this Order", "Order not available",,, ClsMsgs.Status.Attention, 5, ClsMsgs.Timer_Type.AutoOK)
-                BtSell.Text = OldTxt
-                BtSell.Enabled = True
-                Exit Sub
+            Dim T_DEXContract As ClsDEXContract = TryCast(LVBuyorders.SelectedItems(0).Tag, ClsDEXContract)
+            Dim T_OffchainOrder As S_OffchainBuyOrder = New S_OffchainBuyOrder(,,,,,,)
+            If T_DEXContract Is Nothing Then
+                T_OffchainOrder = DirectCast(LVBuyorders.SelectedItems(0).Tag, S_OffchainBuyOrder)
             End If
 
+            If T_DEXContract Is Nothing Then
 
-            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+                If T_OffchainOrder.PubKey = GlobalPublicKey Then
+                    'Me
 
-            Dim BuyAmount As Double = T_DEXContract.CurrentBuySellAmount
-            Dim XItem As String = T_DEXContract.CurrentXItem
-            Dim XAmount As Double = T_DEXContract.CurrentXAmount
-
-
-            If Not T_DEXContract.CurrentInitiatorAddress = TBSNOAddress.Text Then
-
-                Dim BalList As List(Of String) = SignumAPI.GetBalance(TBSNOAddress.Text)
-
-                Dim Available As Double = 0.0
-                Dim AvaStr As String = GetStringBetweenFromList(BalList, "<available>", "</available>")
-
-                If AvaStr.Trim = "" Then
+                    OffchainBuyOrder = New S_OffchainBuyOrder(,,,,,,)
+                    Dim Masterkeys As List(Of String) = GetPassPhrase()
+                    '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+                    DEXNET.BroadcastMessage("<SCID>0</SCID><Ask>CancelBuyOrder</Ask>", Masterkeys(1), Masterkeys(2), Masterkeys(0))
+                    SetFitlteredPublicOrdersInLVs()
 
                 Else
-                    Available = Val(AvaStr.Replace(",", "."))
-                End If
+                    'The other
 
-                If Available > BuyAmount + 1.0 Then
+                    Dim founded As Boolean = False
 
-                    Dim MBoxMsg As String = "Do you really want to Sell " + Dbl2LVStr(T_DEXContract.CurrentBuySellAmount) + " Signa for " + Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + T_DEXContract.CurrentXItem + " "
-                    MBoxMsg += "to Buyer: " + T_DEXContract.CurrentInitiatorAddress + "?" + vbCrLf + vbCrLf
-                    MBoxMsg += "collateral: " + Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral) + " Signa" + vbCrLf
-                    MBoxMsg += "gas fees: " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)) + " Signa" + vbCrLf + vbCrLf
-                    MBoxMsg += "this transaction will take effect in 1-2 Blocks (4-8 minutes)" + vbCrLf
+                    For Each T_DEXCo As ClsDEXContract In DEXContractList
 
-                    If AutoInfo = "True" Then
-                        MBoxMsg += "you will also inform the buyer with payment info!" + vbCrLf
-                    End If
+                        If T_DEXCo.PendingResponderID = GetAccountID(T_OffchainOrder.PubKey) Then
+                            'already pending
+                            founded = True
+                            Exit For
+                        End If
 
-                    If Autofinish = "True" Then
-                        MBoxMsg += "you also accept the Autofinishing!" + vbCrLf
-                    End If
+                    Next
+
+                    If Not founded Then
+
+                        If LVOpenChannels.Items.Count > 0 Then
+
+                            Dim FoundOne As Boolean = False
+                            For Each LVi As ListViewItem In LVOpenChannels.Items
+                                Dim Status As String = Convert.ToString(GetLVColNameFromSubItem(LVOpenChannels, "Status", LVi))
+                                If Status = "Reserved for you" Then
+                                    FoundOne = True
+                                    T_DEXContract = DirectCast(LVi.Tag, ClsDEXContract)
+                                    Exit For
+                                End If
+                            Next
+
+                            If Not FoundOne Then
+                                For Each LVi As ListViewItem In LVOpenChannels.Items
+                                    If Not LVi.BackColor = Color.Crimson Then
+                                        T_DEXContract = DirectCast(LVi.Tag, ClsDEXContract)
+                                        If T_DEXContract.CheckForUTX Or T_DEXContract.CheckForTX Or (T_DEXContract.Deniability And Not ChBxDeniability.Checked) Or (Not T_DEXContract.Deniability And ChBxDeniability.Checked) Then
+                                            T_DEXContract = Nothing
+                                        Else
+                                            Exit For
+                                        End If
+                                    End If
+                                Next
+                            End If
+
+                            If T_DEXContract Is Nothing Then
+                                ClsMsgs.MBox("All Payment Channels are in Use.", "No free Payment Channel found",,, ClsMsgs.Status.Information)
+                                BtSNOSetOrder.Text = "Set Order"
+                                BtSNOSetOrder.Enabled = True
+                                Exit Sub
+                            Else
+                                If T_DEXContract.CheckForUTX Or T_DEXContract.CheckForTX Then
+                                    ClsMsgs.MBox("All Payment Channels are in Use.", "No free Payment Channel found",,, ClsMsgs.Status.Information)
+                                    BtSNOSetOrder.Text = "Set Order"
+                                    BtSNOSetOrder.Enabled = True
+                                    Exit Sub
+                                End If
+                            End If
+
+                            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, GlobalAccountID,)
+
+                            Dim AccAmount As Double = GetDoubleBetweenFromList(SignumAPI.GetBalance(TBSNOAddress.Text), "<available>", "</available>")
+
+                            Dim Recipient As ULong = GetAccountID(T_OffchainOrder.PubKey)
+                            Dim Amount As Double = T_OffchainOrder.Amount
+                            Dim Collateral As Double = 0.0
+                            Dim Item As String = T_OffchainOrder.XItem
+                            Dim ItemAmount As Double = T_OffchainOrder.XAmount
 
 
-                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox(MBoxMsg, "Sell Order to Smart Contract: " + T_DEXContract.Address, ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
+                            If AccAmount > Amount + Fee + Collateral Then
+                                'enough balance
 
-                    If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
+                                Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to create a new SellOrder?" + vbCrLf + vbCrLf + "Amount: " + Dbl2LVStr(Amount, 8) + " SIGNA" + vbCrLf + "XItem: " + Dbl2LVStr(ItemAmount, Decimals) + " " + Item, "Create SellOrder", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
+
+                                If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
+
+                                    Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+                                    Dim TX As String = ""
+
+                                    If MasterKeys.Count > 0 Then
+                                        Dim Response As String = T_DEXContract.CreateOrderWithResponder(MasterKeys(0), Amount, Recipient, Item, ItemAmount) '.CreateSellOrder(MasterKeys(0), Amount, Collateral, Item, ItemAmount, Fee)
+
+                                        If Response.Contains(Application.ProductName + "-error") Then
+
+                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                out.ErrorLog2File(Response)
+                                            End If
+
+                                            ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+
+                                        Else
+
+                                            Dim UTX As String = Response
+                                            Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                            Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                            TX = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                            If TX.Contains(Application.ProductName + "-error") Then
+
+                                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Sell1): -> " + vbCrLf + TX)
+                                                End If
+
+                                                ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+
+                                            Else
+                                                ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
+                                            End If
+
+                                        End If
+
+                                    Else 'no Masterkeys
+
+                                        Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                                        Dim Response As String = ""
+
+                                        If Not GlobalPublicKey.Trim = "" Then
+
+                                            Response = T_DEXContract.CreateOrderWithResponder(GlobalPublicKey, Amount, Recipient, Item, ItemAmount)
+                                            If Response.Contains(Application.ProductName + "-error") Then
+
+                                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Sell2): -> " + vbCrLf + Response)
+                                                End If
+
+                                                ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+
+                                            Else
+
+                                                Dim UTX As String = Response
+                                                PinForm.TBUnsignedBytes.Text = UTX
+
+                                            End If
+                                        End If
+
+                                        PinForm.ShowDialog()
+
+                                        If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                                            Response = T_DEXContract.CreateOrderWithResponder(PinForm.PublicKey, Amount, Recipient, Item, ItemAmount)
+
+                                            If Response.Contains(Application.ProductName + "-error") Then
+
+                                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Sell3): -> " + vbCrLf + Response)
+                                                End If
+
+                                                ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+
+                                            Else
+
+                                                Dim UTX As String = Response
+
+                                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                                TX = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                                If TX.Contains(Application.ProductName + "-error") Then
+
+                                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                        out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(Sell4): -> " + vbCrLf + TX)
+                                                    End If
+
+                                                    ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+
+                                                Else
+                                                    ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
+                                                End If
+
+                                            End If
+
+                                        ElseIf Not PinForm.TBSignedBytes.Text.Trim = "" Then
+
+                                            TX = SignumAPI.BroadcastTransaction(PinForm.TBSignedBytes.Text.Trim)
+
+                                            If TX.Contains(Application.ProductName + "-error") Then
+
+                                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(Sell5): -> " + vbCrLf + TX)
+                                                End If
+
+                                                ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+
+                                            Else
+                                                ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
+                                            End If
 
 
-                        Dim MasterKeys As List(Of String) = GetPassPhrase()
+                                        Else
+
+                                            ClsMsgs.MBox("SellOrder creation canceled.", "Canceled",,, ClsMsgs.Status.Erro)
+                                        End If
+
+                                    End If
+
+                                    'TODO: send msg to buyer and his pubkey to blockchain
+
+                                    Dim PayInfo As String = T_OffchainOrder.Method
+
+                                    If Not PayInfo.Trim = "" Then
+
+                                        If PayInfo.Contains("PayPal-E-Mail=") Then
+                                            Dim ColWords As ClsColloquialWords = New ClsColloquialWords
+                                            Dim ColWordsString As String = ColWords.GenerateColloquialWords(TX, True, "-", 5)
+
+                                            PayInfo += " Reference/Note=" + ColWordsString
+                                        End If
+
+                                        Dim TXr As String = SendBillingInfos(Recipient, PayInfo, True, True, T_OffchainOrder.PubKey) 'TODO: need offchain pubkey
+
+                                        ClsMsgs.MBox("Billing info send" + vbCrLf + vbCrLf + "TX: " + TXr, "Transaction created",,, ClsMsgs.Status.Information)
+
+                                    End If
 
 
-                        If MasterKeys.Count > 0 Then
-
-                            Dim Response As String = T_DEXContract.AcceptBuyOrder(MasterKeys(0),,, Fee)
-
-                            If Response.Contains(Application.ProductName + "-error") Then
-
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1): -> " + vbCrLf + Response)
                                 End If
 
                             Else
-
-
-                                Dim UTX As String = Response
-                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
-                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
-                                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
-
-                                If TX.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(2): -> " + vbCrLf + TX)
-                                    End If
-
-                                Else
-
-                                    MBoxMsg = "BuyOrder Accepted" + vbCrLf
-                                    MBoxMsg += "TX: " + TX + vbCrLf
-                                    MBoxMsg += "Recipient: " + T_DEXContract.Address + vbCrLf + vbCrLf
-
-                                    'Public Enum E_PayType
-                                    '    Bankaccount = 0
-                                    '    PayPal_E_Mail = 1
-                                    '    PayPal_Order = 2
-                                    '    Self_Pickup = 3
-                                    '    Other = 4
-                                    'End Enum
-
-                                    'TODO: OwnPayType 
-
-                                    Dim OwnPayType As String = GetINISetting(E_Setting.PaymentType, "Self Pickup")
-
-                                    If PayInfo.Contains(OwnPayType) Then
-
-                                        If PayInfo.Contains("PayPal-E-Mail") Then
-
-                                            Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                                            Dim ColWordsString As String = ColWords.GenerateColloquialWords(T_DEXContract.CurrentCreationTransaction.ToString, True, "-", 5)
-
-                                            PayInfo = "PayPal-E-Mail=" + GetINISetting(E_Setting.PayPalEMail, "test@test.com") + " Reference/Note=" + ColWordsString
-
-                                        ElseIf PayInfo.Contains("PayPal-Order") Then
-
-                                            Dim APIOK As String = CheckPayPalAPI()
-
-                                            If APIOK = "True" Then
-                                                Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal
-                                                PPAPI_Autoinfo.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
-                                                PPAPI_Autoinfo.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
-
-                                                Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", BuyAmount, XAmount, T_DEXContract.CurrentXItem)
-                                                Dim PPOrderID As String = GetStringBetweenFromList(PPOrderIDList, "<id>", "</id>")
-                                                PayInfo = "PayPal-Order=" + PPOrderID
-                                            End If
-
-                                        End If
-
-                                        Dim T_MsgStr As String = "SmartContract=" + T_DEXContract.Address + " Transaction=" + T_DEXContract.CurrentCreationTransaction.ToString + " " + Dbl2LVStr(XAmount, Decimals) + " " + T_DEXContract.CurrentXItem + " " + PayInfo
-
-                                        Dim TXr As String = SendBillingInfos(T_DEXContract.CurrentInitiatorID, T_MsgStr, True, True)
-
-                                        If TXr.Contains(Application.ProductName + "-error") Then
-                                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                out.ErrorLog2File(TXr)
-                                            End If
-
-                                        ElseIf TXr.Contains(Application.ProductName + "-warning") Then
-                                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                out.WarningLog2File(TXr)
-                                            End If
-                                        Else
-
-                                            MBoxMsg += "Payment instructions sended" + vbCrLf
-                                            MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
-                                            MBoxMsg += "Recipient: " + T_DEXContract.CurrentInitiatorAddress + vbCrLf
-                                            MBoxMsg += "SmartContract: " + T_DEXContract.Address + vbCrLf
-                                            MBoxMsg += "Order-Transaction: " + T_DEXContract.CurrentCreationTransaction.ToString + vbCrLf
-                                            MBoxMsg += "payment request: " + Dbl2LVStr(XAmount, Decimals) + " " + T_DEXContract.CurrentXItem + vbCrLf
-                                            MBoxMsg += PayInfo + vbCrLf + vbCrLf
-                                            MBoxMsg += "please wait for requested payment from buyer"
-                                        End If
-
-                                    End If
-
-                                    ClsMsgs.MBox(MBoxMsg, "Transaction(s) created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
-
-                                End If
+                                'not enough balance
+                                ClsMsgs.MBox("not enough balance", "Error",,, ClsMsgs.Status.Erro)
 
                             End If
 
-                        Else
+                        End If
 
-                            Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                    End If
 
-                            Dim Response As String = ""
-                            If Not GlobalPublicKey.Trim = "" Then
+                End If
 
-                                Response = T_DEXContract.AcceptBuyOrder(GlobalPublicKey,,, Fee)
-                                If Response.Contains(Application.ProductName + "-error") Then
+            Else ' DEXContract <> Nothing
 
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1aa): -> " + vbCrLf + Response)
-                                    End If
+                Dim PayInfo As String = Convert.ToString(GetLVColNameFromSubItem(LVBuyorders, "Method", LVBuyorders.SelectedItems(0)))
+                Dim AutoInfo As String = Convert.ToString(GetLVColNameFromSubItem(LVBuyorders, "Autoinfo", LVBuyorders.SelectedItems(0)))
+                Dim Autofinish As String = Convert.ToString(GetLVColNameFromSubItem(LVBuyorders, "Autofinish", LVBuyorders.SelectedItems(0)))
 
-                                    ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+                If T_DEXContract.CheckForUTX Then
+                    ClsMsgs.MBox("One Transaction is already Pending for this Order", "Order not available",,, ClsMsgs.Status.Attention, 5, ClsMsgs.Timer_Type.AutoOK)
+                    BtSell.Text = OldTxt
+                    BtSell.Enabled = True
+                    Exit Sub
+                End If
 
-                                Else
-                                    Dim UTX As String = Response
-                                    PinForm.TBUnsignedBytes.Text = UTX
 
-                                End If
-                            End If
+                Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
 
-                            PinForm.ShowDialog()
+                Dim BuyAmount As Double = T_DEXContract.CurrentBuySellAmount
+                Dim XItem As String = T_DEXContract.CurrentXItem
+                Dim XAmount As Double = T_DEXContract.CurrentXAmount
 
-                            If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
 
-                                Response = T_DEXContract.AcceptBuyOrder(PinForm.PublicKey,,, Fee)
+                If Not T_DEXContract.CurrentInitiatorAddress = TBSNOAddress.Text Then
+
+                    Dim BalList As List(Of String) = SignumAPI.GetBalance(TBSNOAddress.Text)
+
+                    Dim Available As Double = 0.0
+                    Dim AvaStr As String = GetStringBetweenFromList(BalList, "<available>", "</available>")
+
+                    If AvaStr.Trim = "" Then
+
+                    Else
+                        Available = Val(AvaStr.Replace(",", "."))
+                    End If
+
+                    If Available > BuyAmount + 1.0 Then
+
+                        Dim MBoxMsg As String = "Do you really want to Sell " + Dbl2LVStr(T_DEXContract.CurrentBuySellAmount) + " Signa for " + Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + T_DEXContract.CurrentXItem + " "
+                        MBoxMsg += "to Buyer: " + T_DEXContract.CurrentInitiatorAddress + "?" + vbCrLf + vbCrLf
+                        MBoxMsg += "collateral: " + Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral) + " Signa" + vbCrLf
+                        MBoxMsg += "gas fees: " + Dbl2LVStr(ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)) + " Signa" + vbCrLf + vbCrLf
+                        MBoxMsg += "this transaction will take effect in 1-2 Blocks (4-8 minutes)" + vbCrLf
+
+                        If AutoInfo = "True" Then
+                            MBoxMsg += "you will also inform the buyer with payment info!" + vbCrLf
+                        End If
+
+                        If Autofinish = "True" Then
+                            MBoxMsg += "you also accept the Autofinishing!" + vbCrLf
+                        End If
+
+
+                        Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox(MBoxMsg, "Sell Order to Smart Contract: " + T_DEXContract.Address, ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
+
+                        If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
+
+
+                            Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+
+                            If MasterKeys.Count > 0 Then
+
+                                Dim Response As String = T_DEXContract.AcceptBuyOrder(MasterKeys(0),,, Fee)
 
                                 If Response.Contains(Application.ProductName + "-error") Then
 
                                     If GetINISetting(E_Setting.InfoOut, False) Then
                                         Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1a): -> " + vbCrLf + Response)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1): -> " + vbCrLf + Response)
                                     End If
 
                                 Else
 
 
                                     Dim UTX As String = Response
-
                                     Dim SignumNET As ClsSignumNET = New ClsSignumNET
-                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
                                     If TX.Contains(Application.ProductName + "-error") Then
 
                                         If GetINISetting(E_Setting.InfoOut, False) Then
                                             Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1b): -> " + vbCrLf + TX)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(2): -> " + vbCrLf + TX)
                                         End If
 
                                     Else
@@ -2387,12 +2565,14 @@ Public Class PFPForm
                                                     Dim out As ClsOut = New ClsOut(Application.StartupPath)
                                                     out.ErrorLog2File(TXr)
                                                 End If
+
                                             ElseIf TXr.Contains(Application.ProductName + "-warning") Then
                                                 If GetINISetting(E_Setting.InfoOut, False) Then
                                                     Dim out As ClsOut = New ClsOut(Application.StartupPath)
                                                     out.WarningLog2File(TXr)
                                                 End If
                                             Else
+
                                                 MBoxMsg += "Payment instructions sended" + vbCrLf
                                                 MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
                                                 MBoxMsg += "Recipient: " + T_DEXContract.CurrentInitiatorAddress + vbCrLf
@@ -2412,121 +2592,252 @@ Public Class PFPForm
                                 End If
 
                             Else
-                                ClsMsgs.MBox("BuyOrder acception canceled.", "Canceled",,, ClsMsgs.Status.Erro)
-                            End If
 
-                        End If
+                                Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
 
+                                Dim Response As String = ""
+                                If Not GlobalPublicKey.Trim = "" Then
 
-                    End If
+                                    Response = T_DEXContract.AcceptBuyOrder(GlobalPublicKey,,, Fee)
+                                    If Response.Contains(Application.ProductName + "-error") Then
 
-                Else
-                    'not enough balance
-                    ClsMsgs.MBox("not enough balance", "Error",,, ClsMsgs.Status.Erro)
-                End If
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1aa): -> " + vbCrLf + Response)
+                                        End If
 
-            Else
+                                        ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
 
-                Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to cancel the BuyOrder?", "Cancel BuyOrder?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
+                                    Else
+                                        Dim UTX As String = Response
+                                        PinForm.TBUnsignedBytes.Text = UTX
 
-                If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
-
-                    Dim MasterKeys As List(Of String) = GetPassPhrase()
-
-                    If MasterKeys.Count > 0 Then
-
-                        Dim Response As String = T_DEXContract.AcceptBuyOrder(MasterKeys(0), 1.0, 1.0, Fee)
-
-                        If Response.Contains(Application.ProductName + "-error") Then
-
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel1): -> " + vbCrLf + Response)
-                            End If
-
-                        Else
-
-
-                            Dim UTX As String = Response
-                            Dim SignumNET As ClsSignumNET = New ClsSignumNET
-                            Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
-                            Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
-
-                            If TX.Contains(Application.ProductName + "-error") Then
-
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel2): -> " + vbCrLf + TX)
+                                    End If
                                 End If
 
-                            Else
-                                ClsMsgs.MBox("BuyOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                                PinForm.ShowDialog()
+
+                                If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                                    Response = T_DEXContract.AcceptBuyOrder(PinForm.PublicKey,,, Fee)
+
+                                    If Response.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1a): -> " + vbCrLf + Response)
+                                        End If
+
+                                    Else
+
+
+                                        Dim UTX As String = Response
+
+                                        Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                        Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                        Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                        If TX.Contains(Application.ProductName + "-error") Then
+
+                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1b): -> " + vbCrLf + TX)
+                                            End If
+
+                                        Else
+
+                                            MBoxMsg = "BuyOrder Accepted" + vbCrLf
+                                            MBoxMsg += "TX: " + TX + vbCrLf
+                                            MBoxMsg += "Recipient: " + T_DEXContract.Address + vbCrLf + vbCrLf
+
+                                            'Public Enum E_PayType
+                                            '    Bankaccount = 0
+                                            '    PayPal_E_Mail = 1
+                                            '    PayPal_Order = 2
+                                            '    Self_Pickup = 3
+                                            '    Other = 4
+                                            'End Enum
+
+                                            'TODO: OwnPayType 
+
+                                            Dim OwnPayType As String = GetINISetting(E_Setting.PaymentType, "Self Pickup")
+
+                                            If PayInfo.Contains(OwnPayType) Then
+
+                                                If PayInfo.Contains("PayPal-E-Mail") Then
+
+                                                    Dim ColWords As ClsColloquialWords = New ClsColloquialWords
+                                                    Dim ColWordsString As String = ColWords.GenerateColloquialWords(T_DEXContract.CurrentCreationTransaction.ToString, True, "-", 5)
+
+                                                    PayInfo = "PayPal-E-Mail=" + GetINISetting(E_Setting.PayPalEMail, "test@test.com") + " Reference/Note=" + ColWordsString
+
+                                                ElseIf PayInfo.Contains("PayPal-Order") Then
+
+                                                    Dim APIOK As String = CheckPayPalAPI()
+
+                                                    If APIOK = "True" Then
+                                                        Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal
+                                                        PPAPI_Autoinfo.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
+                                                        PPAPI_Autoinfo.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
+
+                                                        Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", BuyAmount, XAmount, T_DEXContract.CurrentXItem)
+                                                        Dim PPOrderID As String = GetStringBetweenFromList(PPOrderIDList, "<id>", "</id>")
+                                                        PayInfo = "PayPal-Order=" + PPOrderID
+                                                    End If
+
+                                                End If
+
+                                                Dim T_MsgStr As String = "SmartContract=" + T_DEXContract.Address + " Transaction=" + T_DEXContract.CurrentCreationTransaction.ToString + " " + Dbl2LVStr(XAmount, Decimals) + " " + T_DEXContract.CurrentXItem + " " + PayInfo
+
+                                                Dim TXr As String = SendBillingInfos(T_DEXContract.CurrentInitiatorID, T_MsgStr, True, True)
+
+                                                If TXr.Contains(Application.ProductName + "-error") Then
+                                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                        out.ErrorLog2File(TXr)
+                                                    End If
+                                                ElseIf TXr.Contains(Application.ProductName + "-warning") Then
+                                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                        out.WarningLog2File(TXr)
+                                                    End If
+                                                Else
+                                                    MBoxMsg += "Payment instructions sended" + vbCrLf
+                                                    MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
+                                                    MBoxMsg += "Recipient: " + T_DEXContract.CurrentInitiatorAddress + vbCrLf
+                                                    MBoxMsg += "SmartContract: " + T_DEXContract.Address + vbCrLf
+                                                    MBoxMsg += "Order-Transaction: " + T_DEXContract.CurrentCreationTransaction.ToString + vbCrLf
+                                                    MBoxMsg += "payment request: " + Dbl2LVStr(XAmount, Decimals) + " " + T_DEXContract.CurrentXItem + vbCrLf
+                                                    MBoxMsg += PayInfo + vbCrLf + vbCrLf
+                                                    MBoxMsg += "please wait for requested payment from buyer"
+                                                End If
+
+                                            End If
+
+                                            ClsMsgs.MBox(MBoxMsg, "Transaction(s) created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
+                                        End If
+
+                                    End If
+
+                                Else
+                                    ClsMsgs.MBox("BuyOrder acception canceled.", "Canceled",,, ClsMsgs.Status.Erro)
+                                End If
+
                             End If
+
 
                         End If
 
                     Else
+                        'not enough balance
+                        ClsMsgs.MBox("not enough balance", "Error",,, ClsMsgs.Status.Erro)
+                    End If
 
-                        Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                Else
 
-                        Dim Response As String = ""
-                        If Not GlobalPublicKey.Trim = "" Then
+                    Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to cancel the BuyOrder?", "Cancel BuyOrder?", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
-                            Response = T_DEXContract.AcceptBuyOrder(GlobalPublicKey,,, Fee)
-                            If Response.Contains(Application.ProductName + "-error") Then
+                    If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
 
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel2a): -> " + vbCrLf + Response)
-                                End If
+                        Dim MasterKeys As List(Of String) = GetPassPhrase()
 
-                                ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+                        If MasterKeys.Count > 0 Then
 
-                            Else
-                                Dim UTX As String = Response
-                                PinForm.TBUnsignedBytes.Text = UTX
-
-                            End If
-                        End If
-
-                        PinForm.ShowDialog()
-
-                        If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
-
-                            Response = T_DEXContract.AcceptBuyOrder(PinForm.PublicKey,,, Fee)
+                            Dim Response As String = T_DEXContract.AcceptBuyOrder(MasterKeys(0), 1.0, 1.0, Fee)
 
                             If Response.Contains(Application.ProductName + "-error") Then
 
                                 If GetINISetting(E_Setting.InfoOut, False) Then
                                     Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel1a): -> " + vbCrLf + Response)
+                                    out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel1): -> " + vbCrLf + Response)
                                 End If
 
                             Else
 
 
                                 Dim UTX As String = Response
-
                                 Dim SignumNET As ClsSignumNET = New ClsSignumNET
-                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                 Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
                                 If TX.Contains(Application.ProductName + "-error") Then
 
                                     If GetINISetting(E_Setting.InfoOut, False) Then
                                         Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel1b): -> " + vbCrLf + TX)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel2): -> " + vbCrLf + TX)
                                     End If
 
                                 Else
                                     ClsMsgs.MBox("BuyOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
-
                                 End If
 
                             End If
 
                         Else
-                            ClsMsgs.MBox("BuyOrder cancelation aborted.", "Canceled",,, ClsMsgs.Status.Erro)
+
+                            Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+
+                            Dim Response As String = ""
+                            If Not GlobalPublicKey.Trim = "" Then
+
+                                Response = T_DEXContract.AcceptBuyOrder(GlobalPublicKey,,, Fee)
+                                If Response.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel2a): -> " + vbCrLf + Response)
+                                    End If
+
+                                    ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+
+                                Else
+                                    Dim UTX As String = Response
+                                    PinForm.TBUnsignedBytes.Text = UTX
+
+                                End If
+                            End If
+
+                            PinForm.ShowDialog()
+
+                            If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                                Response = T_DEXContract.AcceptBuyOrder(PinForm.PublicKey,,, Fee)
+
+                                If Response.Contains(Application.ProductName + "-error") Then
+
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel1a): -> " + vbCrLf + Response)
+                                    End If
+
+                                Else
+
+
+                                    Dim UTX As String = Response
+
+                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                    If TX.Contains(Application.ProductName + "-error") Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                            out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel1b): -> " + vbCrLf + TX)
+                                        End If
+
+                                    Else
+                                        ClsMsgs.MBox("BuyOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+
+                                    End If
+
+                                End If
+
+                            Else
+                                ClsMsgs.MBox("BuyOrder cancelation aborted.", "Canceled",,, ClsMsgs.Status.Erro)
+                            End If
+
                         End If
 
                     End If
@@ -2574,7 +2885,7 @@ Public Class PFPForm
 
     End Sub
 
-    Private Sub ChBxFilter_CheckedChanged(sender As Object, e As EventArgs) Handles ChBxSellFilterShowAutoinfo.CheckedChanged, ChBxSellFilterShowAutofinish.CheckedChanged, ChBxSellFilterShowPayable.CheckedChanged, ChBxBuyFilterShowAutoinfo.CheckedChanged, ChBxBuyFilterShowAutofinish.CheckedChanged, ChBxBuyFilterShowPayable.CheckedChanged
+    Private Sub ChBxFilter_CheckedChanged(sender As Object, e As EventArgs) Handles ChBxSellFilterShowAutoinfo.CheckedChanged, ChBxSellFilterShowAutofinish.CheckedChanged, ChBxSellFilterShowPayable.CheckedChanged, ChBxBuyFilterShowAutoinfo.CheckedChanged, ChBxBuyFilterShowAutofinish.CheckedChanged, ChBxBuyFilterShowPayable.CheckedChanged, ChBxBuyFilterShowOffChainOrders.CheckedChanged
 
         SetFitlteredPublicOrdersInLVs()
 
@@ -2598,6 +2909,23 @@ Public Class PFPForm
 
                 Case ChBxBuyFilterShowPayable.Name
                     SetINISetting(E_Setting.BuyFilterPayable, ChBxBuyFilterShowPayable.Checked)
+                Case ChBxBuyFilterShowOffChainOrders.Name
+                    SetINISetting(E_Setting.BuyFilterOffchainOrders, ChBxBuyFilterShowOffChainOrders.Checked)
+
+                    If ChBxBuyFilterShowOffChainOrders.Checked Then
+                        If Not DEXNET Is Nothing Then
+                            DEXNET.AddRelevantKey("<Ask>WantToBuy</Ask>", True, "PublicKey")
+                            DEXNET.AddRelevantKey("<Ask>CancelBuyOrder</Ask>", True)
+
+                        End If
+                    Else
+                        If Not DEXNET Is Nothing Then
+                            DEXNET.DelRelevantKey("<Ask>WantToBuy</Ask>")
+                            DEXNET.DelRelevantKey("<Ask>CancelBuyOrder</Ask>")
+                            BuyOrderLVOffChainEList.Clear()
+
+                        End If
+                    End If
 
                 Case Else
                     'do nothing
@@ -4721,11 +5049,41 @@ Public Class PFPForm
 
         LVBuyorders.Items.Clear()
 
-        BuyOrderLVEList = BuyOrderLVEList.OrderBy(Function(T_PublicOrder As S_PublicOrdersListViewEntry) T_PublicOrder.Price).ToList
+        If Not OffchainBuyOrder.SCID = "" Then
 
-        For i As Integer = 0 To BuyOrderLVEList.Count - 1
+            Dim T_Price As Double = OffchainBuyOrder.XAmount / OffchainBuyOrder.Amount
 
-            Dim BuyOrder As S_PublicOrdersListViewEntry = BuyOrderLVEList(i)
+            Dim T_LVI As ListViewItem = New ListViewItem
+
+            T_LVI.Text = Dbl2LVStr(T_Price, 2) 'price
+            T_LVI.SubItems.Add(Dbl2LVStr(OffchainBuyOrder.XAmount, 2)) 'amount
+            T_LVI.SubItems.Add(Dbl2LVStr(OffchainBuyOrder.Amount)) 'total
+            T_LVI.SubItems.Add(Dbl2LVStr(0.0)) 'collateral
+            T_LVI.SubItems.Add(OffchainBuyOrder.Method) 'payment method
+            T_LVI.SubItems.Add("False") 'autosend infotext
+            T_LVI.SubItems.Add("False") 'autocomplete at
+            T_LVI.SubItems.Add("False") 'deniability
+            T_LVI.SubItems.Add("Me") 'buyer
+            T_LVI.SubItems.Add("0") 'at
+
+            T_LVI.BackColor = Color.Magenta
+            T_LVI.Tag = OffchainBuyOrder
+
+            MultiInvoker(LVBuyorders, "Items", New List(Of Object)({"Add", T_LVI}))
+
+        End If
+
+
+        Dim T_BuyOrderEntryList As List(Of S_PublicOrdersListViewEntry) = New List(Of S_PublicOrdersListViewEntry)
+
+        T_BuyOrderEntryList.AddRange(BuyOrderLVEList.ToArray)
+        T_BuyOrderEntryList.AddRange(BuyOrderLVOffChainEList.ToArray)
+
+        T_BuyOrderEntryList = T_BuyOrderEntryList.OrderBy(Function(T_PublicOrder As S_PublicOrdersListViewEntry) T_PublicOrder.Price).ToList
+
+        For i As Integer = 0 To T_BuyOrderEntryList.Count - 1
+
+            Dim BuyOrder As S_PublicOrdersListViewEntry = T_BuyOrderEntryList(i)
 
             If Not BuyOrder.Backcolor = Color.Magenta Then
 
@@ -4750,6 +5108,13 @@ Public Class PFPForm
                         Continue For
                     End If
                 End If
+
+                If Not ChBxBuyFilterShowOffChainOrders.Checked Then
+                    If BuyOrder.SmartContract.Contains("OffchainOrder") Then
+                        Continue For
+                    End If
+                End If
+
 
 
                 Dim ValidBuyMethods As String = LoadMethodFilterFromINI(E_Setting.BuyFilterMethods)
@@ -4980,6 +5345,7 @@ Public Class PFPForm
 
     Property SellOrderLVEList As List(Of S_PublicOrdersListViewEntry) = New List(Of S_PublicOrdersListViewEntry)
     Property BuyOrderLVEList As List(Of S_PublicOrdersListViewEntry) = New List(Of S_PublicOrdersListViewEntry)
+    Property BuyOrderLVOffChainEList As List(Of S_PublicOrdersListViewEntry) = New List(Of S_PublicOrdersListViewEntry)
 
     Property OpenChannelLVIList As List(Of ListViewItem) = New List(Of ListViewItem)
     'Property BuyOrderLVIList As List(Of ListViewItem) = New List(Of ListViewItem)
@@ -5194,7 +5560,7 @@ Public Class PFPForm
 
                                         For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
 
-                                            If RelMsg.RelevantKey = "<SCID>" + T_DEXContract.ID.ToString + "</SCID>" Then
+                                            If RelMsg.RelevantKey.Name = "<SCID>" + T_DEXContract.ID.ToString + "</SCID>" Then
                                                 RelKeyFounded = True
 
                                                 If Not RelMsg.RelevantMessage.Trim = "" Then
@@ -5217,7 +5583,6 @@ Public Class PFPForm
                                                         End If
 
                                                     End If
-
 
                                                 End If
 
@@ -5250,7 +5615,7 @@ Public Class PFPForm
                                     Dim T_LVE As S_PublicOrdersListViewEntry = New S_PublicOrdersListViewEntry
                                     T_LVE.Price = Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals)
                                     T_LVE.Amount = Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals)
-                                    T_LVE.Total = Dbl2LVStr(T_DEXContract.CurrentXAmount)
+                                    T_LVE.Total = Dbl2LVStr(T_DEXContract.CurrentBuySellAmount) 'TODO: Total = CurrentXAmount?
                                     T_LVE.Collateral = Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral)
 
                                     Dim T_BuyerRS As String = T_DEXContract.CurrentBuyerAddress ' Order.BuyerRS
@@ -5285,7 +5650,7 @@ Public Class PFPForm
                                         Dim RelKeyFounded As Boolean = False
                                         For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
 
-                                            If RelMsg.RelevantKey = "<SCID>" + T_DEXContract.ID.ToString + "</SCID>" Then
+                                            If RelMsg.RelevantKey.Name = "<SCID>" + T_DEXContract.ID.ToString + "</SCID>" Then
                                                 RelKeyFounded = True
 
                                                 If Not RelMsg.RelevantMessage.Trim = "" Then
@@ -5473,7 +5838,7 @@ Public Class PFPForm
 
                                         For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
 
-                                            If RelMsg.RelevantKey = "<SCID>" + T_DEXContract.ID.ToString + "</SCID>" Then
+                                            If RelMsg.RelevantKey.Name = "<SCID>" + T_DEXContract.ID.ToString + "</SCID>" Then
 
                                                 RelKeyFounded = True
 
@@ -5765,7 +6130,7 @@ Public Class PFPForm
 
                                 For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
 
-                                    If RelMsg.RelevantKey = "<SCID>" + T_DEXContract.ID.ToString + "</SCID>" Then
+                                    If RelMsg.RelevantKey.Name = "<SCID>" + T_DEXContract.ID.ToString + "</SCID>" Then
 
                                         RelKeyFounded = True
 
@@ -7160,10 +7525,8 @@ Public Class PFPForm
                     End If
                 End If
 
-
                 Dim DEXNETNodesString As String = GetINISetting(E_Setting.DEXNETNodes, "signum.zone:8131")
                 Dim DEXNETMyHost As String = GetINISetting(E_Setting.DEXNETMyHost, "")
-
 
                 Dim DEXNETNodes As List(Of String) = New List(Of String)
                 If DEXNETNodesString.Contains(";") Then
@@ -7191,15 +7554,20 @@ Public Class PFPForm
 
                 Next
 
-            End If
+                If ChBxBuyFilterShowOffChainOrders.Checked Then
+                    If Not DEXNET Is Nothing Then
+                        DEXNET.AddRelevantKey("<Ask>WantToBuy</Ask>", True, "PublicKey")
+                        DEXNET.AddRelevantKey("<Ask>CancelBuyOrder</Ask>", True)
+                    End If
+                End If
 
+            End If
 
         Catch ex As Exception
             If GetINISetting(E_Setting.InfoOut, False) Then
                 Dim Out As ClsOut = New ClsOut(Application.StartupPath)
                 Out.ErrorLog2File(Application.ProductName + "-error in InitiateDEXNET(): -> " + ex.Message)
             End If
-
         End Try
 
         Return True
@@ -7279,6 +7647,7 @@ Public Class PFPForm
         Next
 #End Region
 
+        BuyOrderLVOffChainEList.Clear()
 
         For ii As Integer = 0 To RelevantMsgsBuffer.Count - 1
             Dim RelMsg As S_RelevantMsg = RelevantMsgsBuffer(ii)
@@ -7408,8 +7777,6 @@ Public Class PFPForm
 
                     End If
 
-
-
                 Next
 
 #End Region
@@ -7420,108 +7787,98 @@ Public Class PFPForm
                 Dim RM_AccountPublicKey As String = GetStringBetween(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>")
                 Dim RM_AccountPublicKeyList As List(Of String) = SignumAPI.RSConvert(GetAccountID(RM_AccountPublicKey))
                 Dim RM_AccountID As ULong = GetULongBetweenFromList(RM_AccountPublicKeyList, "<account>", "</account>")
-                'Dim RM_AccIDULong As ULong = 0UL
-
-                'Try
-                '    RM_AccIDULong = RM_AccountID
-                'Catch ex As Exception
-
-                '    If GetINISetting(E_Setting.InfoOut, False) Then
-                '        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                '        out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(RM_AccointID=" + RM_AccountID.ToString + "): -> " + vbCrLf + ex.Message)
-                '    End If
-
-                'End Try
-
+                Dim RM_Address As String = GetStringBetweenFromList(RM_AccountPublicKeyList, "<accountRS>", "</accountRS>")
 
                 'TODO: Processing UnexpectedMsgs from DEXNET
 
                 Dim RM_Ask As String = GetStringBetween(RelMsg.RelevantMessage, "<Ask>", "</Ask>")
 
-                If RM_Ask = "WTB" And Not RM_AccountID = 0 And Not RM_AccountPublicKey = "" Then
+                If RM_Ask = "AcceptOrderRequest" And Not RM_AccountID = 0 And Not RM_AccountPublicKey = "" Then
 
-                    For Each LVI As ListViewItem In LVMyOpenOrders.Items
-                        Dim MyOpenDEXContract As ClsDEXContract = DirectCast(LVI.Tag, ClsDEXContract)
+                    Dim Temp_Balance As Double = GetDoubleBetweenFromList(SignumAPI.GetBalance(RM_AccountID), "<balance>", "</balance>")
+                    If Temp_Balance <= 1.0 Then
 
-                        Dim My_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(MyOpenDEXContract.CurrentCreationTransaction) '.FirstTransaction)
+                        For Each LVI As ListViewItem In LVMyOpenOrders.Items
+                            Dim MyOpenDEXContract As ClsDEXContract = DirectCast(LVI.Tag, ClsDEXContract)
 
-                        If My_OSList.Count <> 0 Then
-                            Dim My_OS As ClsOrderSettings = My_OSList(0)
+                            Dim My_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(MyOpenDEXContract.CurrentCreationTransaction)
 
-                            If My_OS.AutoSendInfotext Then
+                            If My_OSList.Count <> 0 Then
+                                Dim My_OS As ClsOrderSettings = My_OSList(0)
 
-                                If Not GetAutosignalTXFromINI(MyOpenDEXContract.CurrentCreationTransaction) Then '.FirstTransaction) Then
+                                If My_OS.AutoSendInfotext Then
 
-                                    If MyOpenDEXContract.ID = RM_SmartContractID Then
+                                    If Not GetAutosignalTXFromINI(MyOpenDEXContract.CurrentCreationTransaction) Then
 
-                                        If MyOpenDEXContract.CurrentInitiatorsCollateral = 0.0 Then
+                                        If MyOpenDEXContract.ID = RM_SmartContractID Then
 
-                                            'Dim ULngList As List(Of ULong) = New List(Of ULong)({SignumAPI.ReferenceInjectResponder, RM_AccountID})
-                                            'Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
+                                            If MyOpenDEXContract.CurrentInitiatorsCollateral = 0.0 Then
 
-                                            Dim MasterKeys As List(Of String) = GetPassPhrase()
+                                                Dim MasterKeys As List(Of String) = GetPassPhrase()
 
-                                            If MasterKeys.Count > 0 Then
+                                                If MasterKeys.Count > 0 Then
 
-                                                Dim Response As String = MyOpenDEXContract.InjectResponder(MasterKeys(0), RM_AccountID, Fee)
+                                                    Dim Response As String = MyOpenDEXContract.InjectResponder(MasterKeys(0), RM_AccountID, Fee)
 
-                                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                        out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs2): -> " + vbCrLf + Response)
-                                                    End If
-
-                                                Else
-
-                                                    Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
-                                                    Dim UTX As String = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
-                                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
-                                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
-                                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
-
-                                                    If TX.Contains(Application.ProductName + "-error") Then
+                                                    If Response.Contains(Application.ProductName + "-error") Then
 
                                                         If GetINISetting(E_Setting.InfoOut, False) Then
                                                             Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                            out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs3): -> " + vbCrLf + TX)
+                                                            out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs2): -> " + vbCrLf + Response)
                                                         End If
 
                                                     Else
 
-                                                        Dim PayInfo As String = GetPaymentInfoFromOrderSettings(MyOpenDEXContract.CurrentCreationTransaction, MyOpenDEXContract.CurrentBuySellAmount, MyOpenDEXContract.CurrentXAmount, MyOpenDEXContract.CurrentXItem)
+                                                        Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
+                                                        Dim UTX As String = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
+                                                        Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                                        Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                                        Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                                        Dim KnownAcc As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(RM_AccountID.ToString)
+                                                        If TX.Contains(Application.ProductName + "-error") Then
 
-                                                        If KnownAcc.Contains(Application.ProductName + "-error") Then
-                                                            'cant find account in blockchain, send message with pubkey to activate account
+                                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs3): -> " + vbCrLf + TX)
+                                                            End If
 
-                                                            If Not PayInfo.Trim = "" Then
+                                                        Else
 
-                                                                If PayInfo.Contains("PayPal-E-Mail=") Then
-                                                                    Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                                                                    Dim ColWordsString As String = ColWords.GenerateColloquialWords(MyOpenDEXContract.CurrentCreationTransaction.ToString, True, "-", 5)
+                                                            Dim PayInfo As String = GetPaymentInfoFromOrderSettings(MyOpenDEXContract.CurrentCreationTransaction, MyOpenDEXContract.CurrentBuySellAmount, MyOpenDEXContract.CurrentXAmount, MyOpenDEXContract.CurrentXItem)
 
-                                                                    PayInfo += " Reference/Note=" + ColWordsString
-                                                                End If
+                                                            Dim KnownAcc As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(RM_AccountID.ToString)
 
-                                                                Dim T_MsgStr As String = "Account activation"
-                                                                Dim TXr As String = SendBillingInfos(RM_AccountID, T_MsgStr, False, True)
+                                                            If KnownAcc.Contains(Application.ProductName + "-error") Then
+                                                                'cant find account in blockchain, send message with pubkey to activate account
 
+                                                                If Not PayInfo.Trim = "" Then
 
-                                                                If TXr.Contains(Application.ProductName + "-error") Then
-                                                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                                        out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf + TXr)
+                                                                    If PayInfo.Contains("PayPal-E-Mail=") Then
+                                                                        Dim ColWords As ClsColloquialWords = New ClsColloquialWords
+                                                                        Dim ColWordsString As String = ColWords.GenerateColloquialWords(MyOpenDEXContract.CurrentCreationTransaction.ToString, True, "-", 5)
+
+                                                                        PayInfo += " Reference/Note=" + ColWordsString
                                                                     End If
 
-                                                                ElseIf TXr.Contains(Application.ProductName + "-warning") Then
-                                                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                                        out.WarningLog2File(Application.ProductName + "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf + TXr)
-                                                                    End If
-                                                                Else
+                                                                    Dim T_MsgStr As String = "Account activation"
+                                                                    Dim TXr As String = SendBillingInfos(RM_AccountID, PayInfo, False, True, RM_AccountPublicKey) 'TODO: need offchain pubkey
 
+
+                                                                    If TXr.Contains(Application.ProductName + "-error") Then
+                                                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                            out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf + TXr)
+                                                                        End If
+
+                                                                    ElseIf TXr.Contains(Application.ProductName + "-warning") Then
+                                                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                            out.WarningLog2File(Application.ProductName + "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf + TXr)
+                                                                        End If
+                                                                    Else
+
+
+                                                                    End If
 
                                                                 End If
 
@@ -7531,23 +7888,23 @@ Public Class PFPForm
 
                                                     End If
 
-                                                End If
+                                                    RelMsg.Setted = True
+                                                    RelevantMsgsBuffer(ii) = RelMsg
 
-                                                RelMsg.Setted = True
-                                                RelevantMsgsBuffer(ii) = RelMsg
+                                                Else
 
-                                            Else
+                                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                        out.WarningLog2File(Application.ProductName + "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs1): -> no Keys")
+                                                    End If
 
-                                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                    out.WarningLog2File(Application.ProductName + "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs1): -> no Keys")
                                                 End If
 
                                             End If
 
-                                        End If
+                                            Exit For
 
-                                        Exit For
+                                        End If
 
                                     End If
 
@@ -7555,9 +7912,76 @@ Public Class PFPForm
 
                             End If
 
+                        Next
+
+                    End If
+
+                ElseIf RM_Ask = "WantToBuy" And Not RM_AccountID = 0 And Not RM_AccountPublicKey = "" Then
+
+                    Dim KnownAcc As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(RM_AccountID.ToString)
+
+                    If KnownAcc.Contains(Application.ProductName + "-error") Then
+                        'cant find account in blockchain
+
+                        Dim T_Amount As Double = GetDoubleBetween(RelMsg.RelevantMessage, "<Amount>", "</Amount>")
+                        Dim T_XAmount As Double = GetDoubleBetween(RelMsg.RelevantMessage, "<XAmount>", "</XAmount>")
+                        Dim T_XItem As String = GetStringBetween(RelMsg.RelevantMessage, "<XItem>", "</XItem>")
+                        Dim T_Method As String = GetStringBetween(RelMsg.RelevantMessage, "<Method>", "</Method>")
+                        Dim T_Price As Double = T_XAmount / T_Amount
+
+                        If CurrentMarket = T_XItem Then
+                            Dim T_LVE As S_PublicOrdersListViewEntry = New S_PublicOrdersListViewEntry
+                            T_LVE.Price = Dbl2LVStr(T_Price, Decimals)
+                            T_LVE.Amount = Dbl2LVStr(T_XAmount, Decimals)
+                            T_LVE.Total = Dbl2LVStr(T_Amount)
+                            T_LVE.Collateral = Dbl2LVStr(0.0)
+                            T_LVE.Method = T_Method
+                            T_LVE.AutoInfo = "False"
+                            T_LVE.AutoFinish = "False"
+                            T_LVE.Deniability = "False"
+                            T_LVE.Seller_Buyer = RM_Address
+                            T_LVE.SmartContract = "OffchainOrder"
+                            T_LVE.Tag = New S_OffchainBuyOrder(RM_SmartContractID.ToString, RM_AccountPublicKey, RM_Ask, T_Amount, T_XAmount, T_XItem, T_Method)
+
+                            Dim AddingOrder As Boolean = True
+                            For Each x As S_PublicOrdersListViewEntry In BuyOrderLVOffChainEList
+                                If x.SmartContract = "OffchainOrder" And x.Seller_Buyer = RM_Address Then
+                                    AddingOrder = False
+                                    Exit For
+                                End If
+                            Next
+
+                            If AddingOrder Then
+                                BuyOrderLVOffChainEList.Add(T_LVE)
+                            End If
+
                         End If
 
+                    Else
+                        Dim Temp_Balance As Double = GetDoubleBetweenFromList(SignumAPI.GetBalance(RM_AccountID), "<balance>", "</balance>")
+                        If Temp_Balance <= 1.0 Then
+                            'TODO: handle balance < 1.0 in OffchainOrders
+
+
+                        End If
+
+                    End If
+
+                ElseIf RM_Ask = "CancelBuyOrder" And Not RM_AccountID = 0 And Not RM_AccountPublicKey = "" Then
+
+                    Dim FoundOrder As Integer = -1
+                    For i As Integer = 0 To BuyOrderLVOffChainEList.Count - 1
+                        Dim T_Off As S_PublicOrdersListViewEntry = BuyOrderLVOffChainEList(i)
+                        If T_Off.SmartContract = "OffchainOrder" And T_Off.Seller_Buyer = RM_Address Then
+                            FoundOrder = i
+                            Exit For
+                        End If
                     Next
+
+                    If FoundOrder <> -1 Then
+                        BuyOrderLVOffChainEList.RemoveAt(FoundOrder)
+                        DEXNET.DelRelevantKey("<Ask>WantToBuy</Ask>", "<PublicKey>" + RM_AccountPublicKey + "</PublicKey>")
+                    End If
 
                 Else
 
@@ -7579,18 +8003,18 @@ Public Class PFPForm
 
 #Region "SmartContract Interactions"
 
-    Function SendBillingInfos(ByVal RecipientAddress As String, ByVal Message As String, ByVal ShowPINForm As Boolean, Optional ByVal Encrypt As Boolean = True) As String
+    Function SendBillingInfos(ByVal RecipientAddress As String, ByVal Message As String, ByVal ShowPINForm As Boolean, Optional ByVal Encrypt As Boolean = True, Optional ByVal RecipientPublicKey As String = "") As String
         Dim RecipientID As ULong = ClsReedSolomon.Decode(RecipientAddress)
-        Return SendBillingInfos(RecipientID, Message, ShowPINForm, Encrypt)
+        Return SendBillingInfos(RecipientID, Message, ShowPINForm, Encrypt, RecipientPublicKey)
     End Function
 
-    Function SendBillingInfos(ByVal RecipientID As ULong, ByVal Message As String, ByVal ShowPINForm As Boolean, Optional ByVal Encrypt As Boolean = True) As String
+    Function SendBillingInfos(ByVal RecipientID As ULong, ByVal Message As String, ByVal ShowPINForm As Boolean, Optional ByVal Encrypt As Boolean = True, Optional ByVal RecipientPublicKey As String = "") As String
         Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
 
         Dim Masterkeys As List(Of String) = GetPassPhrase()
 
         If Masterkeys.Count > 0 Then
-            Dim Response As String = SignumAPI.SendMessage(Masterkeys(0), Masterkeys(2), RecipientID, Message,, Encrypt)
+            Dim Response As String = SignumAPI.SendMessage(Masterkeys(0), Masterkeys(2), RecipientID, Message,, Encrypt,, RecipientPublicKey)
 
             Dim JSON As ClsJSON = New ClsJSON
             Dim RespList As Object = JSON.JSONRecursive(Response)
@@ -7632,7 +8056,7 @@ Public Class PFPForm
 
                 If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" And Not PinForm.AgreeKey = "" Then
 
-                    Dim Response As String = SignumAPI.SendMessage(PinForm.PublicKey, PinForm.AgreeKey, RecipientID, Message,, Encrypt)
+                    Dim Response As String = SignumAPI.SendMessage(PinForm.PublicKey, PinForm.AgreeKey, RecipientID, Message,, Encrypt,, RecipientPublicKey)
 
                     If Response.Contains(Application.ProductName + "-error") Then
                         Return Application.ProductName + "-error in SendBillingInfos(5): -> " + vbCrLf + Response

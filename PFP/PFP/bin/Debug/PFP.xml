@@ -211,7 +211,7 @@ PFP
 </member>
 <member name="M:PFP.ClsSignumAPI.RSConvert(System.UInt64)">
  <summary>
- Converts the given AccountID to Address
+ Converts the given AccountID to Address (0= account;1= address)
  </summary>
  <param name="AccountID"></param>
  <returns></returns>

@@ -43,6 +43,8 @@ Module ModINITools
         BuyFilterMethods = 207
         SellFilterPayable = 208
         BuyFilterPayable = 209
+        'SellFilterOffChainOrders = 210
+        BuyFilterOffchainOrders = 211
         'PayPal
         PayPalChoice = 300
         PayPalEMail = 301
@@ -78,6 +80,72 @@ Module ModINITools
     Sub StopINIClass()
         INISettings.Closer()
     End Sub
+
+    Function CreateINI() As Boolean
+
+        If Not IO.File.Exists(Application.StartupPath + "/Settings.ini") Then
+
+            Dim Temp As Boolean = SetINISetting(E_Setting.PassPhrase, "")
+            Temp = SetINISetting(E_Setting.PINFingerPrint, "")
+            Temp = SetINISetting(E_Setting.Address, "")
+            Temp = SetINISetting(E_Setting.LastMarketViewed, "USD")
+            Temp = SetINISetting(E_Setting.RefreshMinutes, 1)
+            Temp = SetINISetting(E_Setting.Nodes, ClsSignumAPI._Nodes)
+            Temp = SetINISetting(E_Setting.DefaultNode, ClsSignumAPI._DefaultNode)
+            Temp = SetINISetting(E_Setting.TCPAPIEnable, True)
+            Temp = SetINISetting(E_Setting.TCPAPIServerPort, 8130)
+            Temp = SetINISetting(E_Setting.DEXNETServerPort, 8131)
+            Temp = SetINISetting(E_Setting.DEXNETNodes, "signum.zone:8131")
+            Temp = SetINISetting(E_Setting.DEXNETMyHost, "")
+
+            Temp = SetINISetting(E_Setting.AutoSendPaymentInfo, False)
+            Temp = SetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False)
+            Temp = SetINISetting(E_Setting.PaymentType, "Other")
+            Temp = SetINISetting(E_Setting.PaymentInfoText, "self pickup")
+
+            Temp = SetINISetting(E_Setting.ShowMaxSellOrders, 10)
+            Temp = SetINISetting(E_Setting.ShowMaxBuyOrders, 10)
+            Temp = SetINISetting(E_Setting.SellFilterAutoinfo, False)
+            Temp = SetINISetting(E_Setting.BuyFilterAutoinfo, False)
+            Temp = SetINISetting(E_Setting.SellFilterAutofinish, False)
+            Temp = SetINISetting(E_Setting.BuyFilterAutofinish, False)
+
+
+            Dim DefaultMethodList As List(Of String) = New List(Of String)(ClsOrderSettings.GetPayTypes.ToArray)
+
+            Dim DefaultMethods As String = "Unknown;"
+            For Each DefMet As String In DefaultMethodList
+                DefaultMethods += DefMet + ";"
+            Next
+
+            DefaultMethods = DefaultMethods.Remove(DefaultMethods.Length - 1)
+
+            Temp = SetINISetting(E_Setting.SellFilterMethods, DefaultMethods)
+            Temp = SetINISetting(E_Setting.BuyFilterMethods, DefaultMethods)
+            Temp = SetINISetting(E_Setting.SellFilterPayable, False)
+            Temp = SetINISetting(E_Setting.BuyFilterPayable, False)
+
+            Temp = SetINISetting(E_Setting.PayPalChoice, "EMail")
+            Temp = SetINISetting(E_Setting.PayPalEMail, "test@test.com")
+            Temp = SetINISetting(E_Setting.PayPalAPIUser, "")
+            Temp = SetINISetting(E_Setting.PayPalAPISecret, "")
+
+            Temp = SetINISetting(E_Setting.AutoSignalTransactions, "")
+            Temp = SetINISetting(E_Setting.AutoInfoTransactions, "")
+
+
+            Temp = SetINISetting(E_Setting.InfoOut, True)
+            Temp = SetINISetting(E_Setting.TCPAPIShowStatus, False)
+            Temp = SetINISetting(E_Setting.DEXNETEnable, False)
+            Temp = SetINISetting(E_Setting.DEXNETShowStatus, False)
+
+            Return True
+
+        Else
+            Return False
+        End If
+
+    End Function
 
     Function InitiateINI() As Boolean
 
@@ -171,10 +239,8 @@ Module ModINITools
     'End Sub
 
     Private Sub INISetValueToFile(ByVal INI As String, ByVal Section As String, ByVal Key As String, ByVal Value As String)
-
         Dim Result As String = ""
         Result = INISettings.SetValueToSectionKey(Section, Key, Value).ToString
-
     End Sub
 
     Private Function INIGetValueFromFile(ByVal File As String, ByVal Section As String, ByVal Key As String, Optional ByVal Def As String = "") As String
@@ -246,16 +312,40 @@ Module ModINITools
 
     Function SetINISetting(ByVal Setting As E_Setting, ByVal Value As String, Optional ByVal File As String = "/" + "Settings.ini") As Boolean
         Dim Section As E_SettingSection = GetINISection(Setting)
+
+        'TODO: deactivate DevelopeSettings
+        If Section = E_SettingSection.Develope Then
+
+        Else
+
+        End If
+
         INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.Trim)
         Return True
     End Function
     Function SetINISetting(ByVal Setting As E_Setting, ByVal Value As Integer, Optional ByVal File As String = "/" + "Settings.ini") As Boolean
         Dim Section As E_SettingSection = GetINISection(Setting)
+
+        'TODO: deactivate DevelopeSettings
+        If Section = E_SettingSection.Develope Then
+
+        Else
+
+        End If
+
         INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.ToString.Trim)
         Return True
     End Function
     Function SetINISetting(ByVal Setting As E_Setting, ByVal Value As Boolean, Optional ByVal File As String = "/" + "Settings.ini") As Boolean
         Dim Section As E_SettingSection = GetINISection(Setting)
+
+        'TODO: deactivate DevelopeSettings
+        If Section = E_SettingSection.Develope Then
+
+        Else
+
+        End If
+
         INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.ToString.Trim)
         Return True
     End Function

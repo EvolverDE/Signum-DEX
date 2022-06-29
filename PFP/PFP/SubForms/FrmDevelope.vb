@@ -68,33 +68,83 @@ Public Class FrmDevelope
                 LiBoDEXNETStatus.Items.AddRange(DEXNETStatusMsgs.ToArray)
             End If
 
+            Dim RelKeys As List(Of ClsDEXNET.S_RelevantKey) = C_MainForm.DEXNET.GetRelevantKeys
             Dim RelMsgs As List(Of ClsDEXNET.S_RelevantMessage) = C_MainForm.DEXNET.GetRelevantMsgs
 
-            LiBoTestRelMsgs.Items.Clear()
+            If RelKeys.Count <> LiBoTestRelKeys.Items.Count Then
+                LiBoTestRelKeys.Items.Clear()
+            End If
 
-            For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
+            For Each RelKey As ClsDEXNET.S_RelevantKey In RelKeys
 
                 Dim FoundedKey As Boolean = False
 
                 For Each LiBoRelKey As String In LiBoTestRelKeys.Items
-                    If LiBoRelKey = RelMsg.RelevantKey Then
+                    Dim T_Key As String = LiBoRelKey.Remove(LiBoRelKey.IndexOf("("))
+                    Dim T_SubKey As String = GetStringBetween(LiBoRelKey, "(", ")")
+                    If T_Key = RelKey.Name And T_SubKey = RelKey.Different Then
                         FoundedKey = True
                         Exit For
                     End If
                 Next
 
                 If Not FoundedKey Then
-                    LiBoTestRelKeys.Items.Add(RelMsg.RelevantKey)
+                    LiBoTestRelKeys.Items.Add(RelKey.Name + "(" + RelKey.Different + ")")
                 End If
 
+            Next
+
+            'Dim Empty_CNT As Integer = 0
+            'Dim CNT As Integer = 0
+            'For Each x As String In LiBoTestRelMsgs.Items
+            '    If x.Trim = "" Then
+            '        Empty_CNT += 1
+            '    Else
+            '        CNT += 1
+            '    End If
+            'Next
+
+            'Dim Empty_CNT1 As Integer = 0
+            'Dim CNT1 As Integer = 0
+            'For Each x As ClsDEXNET.S_RelevantMessage In RelMsgs
+            '    If x.RelevantMessage.Trim = "" Then
+            '        Empty_CNT1 += 1
+            '    Else
+            '        CNT += 1
+            '    End If
+            'Next
+
+            'If Empty_CNT <> Empty_CNT1 And CNT <> CNT1 Then
+            LiBoTestRelMsgs.Items.Clear()
+
+            '    For i As Integer = 0 To Empty_CNT1 - 1
+            '        LiBoTestRelMsgs.Items.Add("")
+            '    Next
+
+            'End If
+
+            For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
+
+                'If RelMsg.RelevantMessage.Trim = "" Then
+                '    Continue For
+                'End If
 
                 'Dim FoundedMsg As Boolean = False
-
                 'For Each LiBoRelMsg As String In LiBoTestRelMsgs.Items
 
-                '    If LiBoRelMsg = RelMsg.RelevantMessage Then
-                '        FoundedMsg = True
-                '        Exit For
+                '    If LiBoRelMsg.Trim = "" Then
+                '        Continue For
+                '    End If
+
+                '    If LiBoRelMsg.Contains("<PublicKey>") Then
+
+                '        Dim T_Trigger As String = GetStringBetween(LiBoRelMsg, "<PublicKey>", "</PublicKey>")
+
+                '        If RelMsg.RelevantMessage.Contains(T_Trigger) Then
+                '            FoundedMsg = True
+                '            Exit For
+                '        End If
+
                 '    End If
 
                 'Next
@@ -401,6 +451,25 @@ Public Class FrmDevelope
         End If
     End Sub
 
+    Private Sub BtTestCreateWithResponder_Click(sender As Object, e As EventArgs) Handles BtTestCreateWithResponder.Click
+
+        If Not CurrentContract Is Nothing Then
+
+            Dim Collateral As Double = Convert.ToDouble(NUDTestCollateral.Value)
+            Dim Amount As Double = Convert.ToDouble(NUDTestAmount.Value)
+
+            Dim XAmount As Double = Convert.ToDouble(NUDTestXAmount.Value)
+            Dim Price As Double = XAmount / Convert.ToDouble(NUDTestAmount.Value)
+
+            Dim Recipient As ULong = Convert.ToUInt64(TB_TestCreateWithResponder.Text)
+
+            Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
+            Dim TXID As String = CurrentContract.CreateOrderWithResponder(Masterkeys(0), Amount, Recipient, TBTestXItem.Text, XAmount,, Masterkeys(1))
+
+        End If
+
+    End Sub
+
     Private Sub BtTestCreate_Click(sender As Object, e As EventArgs) Handles BtTestCreate.Click
 
         If Not CurrentContract Is Nothing Then
@@ -555,7 +624,7 @@ Public Class FrmDevelope
         End If
     End Sub
 
-    Private Sub CoBxTestATComATID_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CoBxTestATComATID.SelectedIndexChanged
+    Private Sub CoBxTestATComATID_SelectedIndexChanged(sender As Object, e As EventArgs)
 
         If Not CoBxTestATComATID.SelectedItem Is Nothing Then
             Dim ItemAddress As String = CoBxTestATComATID.SelectedItem.ToString
@@ -734,6 +803,21 @@ Public Class FrmDevelope
 
     End Sub
 
+    Private Sub LiBoTestRelMsgs_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LiBoTestRelMsgs.DoubleClick
+
+        If Not LiBoTestRelMsgs.SelectedItem Is Nothing Then
+
+            Dim T_Frm As Form = New Form With {.Name = "FrmMessage", .Text = "FrmMessage", .StartPosition = FormStartPosition.CenterScreen}
+            Dim RTB As RichTextBox = New RichTextBox
+            RTB.Dock = DockStyle.Fill
+            RTB.AppendText(LiBoTestRelMsgs.SelectedItem.ToString)
+            T_Frm.Controls.Add(RTB)
+            T_Frm.Show()
+
+        End If
+
+    End Sub
+
     Private Sub TBTestPeerPort_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TBTestPeerPort.KeyPress
 
         Dim keys As Integer = Asc(e.KeyChar)
@@ -783,7 +867,10 @@ Public Class FrmDevelope
     Private Sub LiBoTestRelKeys_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LiBoTestRelKeys.DoubleClick
 
         If Not LiBoTestRelKeys.SelectedItem Is Nothing Then
-            C_MainForm.DEXNET.DelRelevantKey(LiBoTestRelKeys.SelectedItem.ToString)
+            Dim T_RelKey As String = LiBoTestRelKeys.SelectedItem.ToString
+            Dim T_Key As String = T_RelKey.Remove(T_RelKey.IndexOf("("))
+            Dim T_SubKey As String = GetStringBetween(T_RelKey, "(", ")")
+            C_MainForm.DEXNET.DelRelevantKey(T_Key, T_SubKey)
             LiBoTestRelKeys.Items.Remove(LiBoTestRelKeys.SelectedItem)
         End If
 
@@ -1003,7 +1090,7 @@ Public Class FrmDevelope
         End If
     End Sub
 
-    Private Sub BtTestChainSwapKeyToHash_Click(sender As Object, e As EventArgs) Handles BtTestChainSwapKeyToHash.Click
+    Private Sub BtTestChainSwapKeyToHash_Click(sender As Object, e As EventArgs)
 
         Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
         Dim SecretKeyList As List(Of ULong) = ClsSignumAPI.GetSHA256_64(TBTestChainSwapKey.Text)
@@ -1032,7 +1119,9 @@ Public Class FrmDevelope
 
     End Sub
 
-
+    Private Sub BtTestRefreshLiBoRelMsgs_Click(sender As Object, e As EventArgs) Handles BtTestRefreshLiBoRelMsgs.Click
+        LiBoTestRelMsgs.Items.Clear()
+    End Sub
 
 #End Region
 

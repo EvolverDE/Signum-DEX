@@ -19,7 +19,7 @@ Public Class ClsDEXNET
 
     Property BroadcastBuffer As List(Of String) = New List(Of String)
     Property LastBroadcastedMsgList As List(Of String) = New List(Of String)
-    Property RelevantKeys As List(Of String) = New List(Of String)
+    Property RelevantKeys As List(Of S_RelevantKey) = New List(Of S_RelevantKey)
     Property RelevantMsgs As List(Of S_RelevantMessage) = New List(Of S_RelevantMessage)
 
     Property DEXNET_ServerPort As Integer = 8131
@@ -31,7 +31,6 @@ Public Class ClsDEXNET
     Property MessageThread As Threading.Thread
     Property ShowStatus As Boolean = False
     Property DEXNETClose As Boolean = False
-
 
     Structure S_Peer
         Dim TCPClient As Net.Sockets.TcpClient
@@ -92,10 +91,44 @@ Public Class ClsDEXNET
     End Structure
 
     Structure S_RelevantMessage
-        Dim RelevantKey As String
+
+        Sub New(Optional ByVal NewKey As Boolean = True)
+            RelevantKey = New S_RelevantKey(,,,)
+            RelevantKey.Name = ""
+            RelevantKey.TriggerTag = ""
+            RelevantKey.Different = ""
+            RelevantMessage = ""
+            Timestamp = 0.0
+            Lifetime = 0.0
+        End Sub
+
+        Dim RelevantKey As S_RelevantKey
         Dim RelevantMessage As String
         Dim Timestamp As Double
         Dim Lifetime As Double
+    End Structure
+
+    Structure S_RelevantKey
+
+        Sub New(Optional ByVal KeyName As String = "", Optional ByVal Trigger As String = "", Optional ByVal DifferKey As String = "", Optional ByVal Perma As Boolean = False)
+            Name = KeyName
+            TriggerTag = Trigger
+            Different = DifferKey
+            Permanent = Perma
+        End Sub
+
+        Shared Operator =(ByVal a As S_RelevantKey, ByVal b As S_RelevantKey) As Boolean
+            Return a.Name = b.Name And a.TriggerTag = b.TriggerTag And a.Different = b.Different And a.Permanent = b.Permanent
+        End Operator
+        Shared Operator <>(ByVal a As S_RelevantKey, ByVal b As S_RelevantKey) As Boolean
+            Return a.Name <> b.Name Or a.TriggerTag <> b.TriggerTag Or a.Different <> b.Different Or a.Permanent <> b.Permanent
+        End Operator
+
+        Dim Name As String
+        Dim TriggerTag As String
+        Dim Different As String
+        Dim Permanent As Boolean
+
     End Structure
 
     Enum E_XMLTags
@@ -434,6 +467,9 @@ Public Class ClsDEXNET
 
     End Function
 
+    Public Function GetRelevantKeys() As List(Of S_RelevantKey)
+        Return New List(Of S_RelevantKey)(RelevantKeys.ToArray)
+    End Function
     Public Function GetRelevantMsgs() As List(Of S_RelevantMessage)
         Return New List(Of S_RelevantMessage)(RelevantMsgs.ToArray)
     End Function
@@ -1255,26 +1291,84 @@ Public Class ClsDEXNET
             For ii As Integer = 0 To RelevantMsgs.Count - 1
                 Dim RevMsg As S_RelevantMessage = RelevantMsgs(ii)
 
-                If BCMessage.Contains(RevMsg.RelevantKey) Then
-                    ExpectedMessage = True
-                    RevMsg.RelevantMessage = BCMessage
-                    RevMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
-                    RelevantMsgs(ii) = RevMsg
-                    Exit For
+                If Not RevMsg.RelevantKey.Name.Trim = "" And Not RevMsg.RelevantKey.Different.Trim = "" And RevMsg.RelevantKey.TriggerTag.Trim = "" Then
+
+                    If BCMessage.Contains(RevMsg.RelevantKey.Name) And BCMessage.Contains(RevMsg.RelevantKey.Different) Then
+                        ExpectedMessage = True
+                        RevMsg.RelevantMessage = BCMessage
+                        RevMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
+                        RelevantMsgs(ii) = RevMsg
+                        Exit For
+                    End If
+
                 End If
 
             Next
+
+
+
+            If Not ExpectedMessage Then
+                For ii As Integer = 0 To RelevantMsgs.Count - 1
+                    Dim RevMsg As S_RelevantMessage = RelevantMsgs(ii)
+
+                    If Not RevMsg.RelevantKey.TriggerTag.Trim = "" And RevMsg.RelevantKey.Different.Trim = "" Then
+                        Dim T_Trigger As String = GetStringBetween(BCMessage, "<" + RevMsg.RelevantKey.TriggerTag + ">", "</" + RevMsg.RelevantKey.TriggerTag + ">")
+
+                        If Not T_Trigger.Trim = "" Then
+                            If BCMessage.Contains(RevMsg.RelevantKey.Name) Then
+                                ExpectedMessage = True
+
+                                RelevantKeys.Add(New S_RelevantKey(RevMsg.RelevantKey.Name,, "<" + RevMsg.RelevantKey.TriggerTag + ">" + T_Trigger + "</" + RevMsg.RelevantKey.TriggerTag + ">"))
+
+                                Dim T_RelevantMsg As S_RelevantMessage = New S_RelevantMessage
+
+                                T_RelevantMsg.Lifetime = 480.0
+                                T_RelevantMsg.RelevantKey.Name = RevMsg.RelevantKey.Name
+                                T_RelevantMsg.RelevantKey.Different = "<" + RevMsg.RelevantKey.TriggerTag + ">" + T_Trigger + "</" + RevMsg.RelevantKey.TriggerTag + ">"
+                                T_RelevantMsg.RelevantKey.Permanent = False
+                                T_RelevantMsg.RelevantKey.TriggerTag = ""
+                                T_RelevantMsg.RelevantMessage = BCMessage
+                                T_RelevantMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
+
+                                RelevantMsgs.Add(T_RelevantMsg)
+
+                                Exit For
+                            End If
+
+                        End If
+
+                    End If
+                Next
+            End If
+
+
+
+            If Not ExpectedMessage Then
+                For ii As Integer = 0 To RelevantMsgs.Count - 1
+                    Dim RevMsg As S_RelevantMessage = RelevantMsgs(ii)
+
+                    If BCMessage.Contains(RevMsg.RelevantKey.Name) Then
+                        ExpectedMessage = True
+                        RevMsg.RelevantMessage = BCMessage
+                        RevMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
+                        RelevantMsgs(ii) = RevMsg
+                        Exit For
+                    End If
+
+                Next
+            End If
+
 
             If Not ExpectedMessage And AddressedMessage Then
 
                 Dim ShortID As String = GetID()
                 ShortID = ShortID.Remove(8)
-                RelevantKeys.Add("Unexpected" + ShortID)
+                RelevantKeys.Add(New S_RelevantKey("Unexpected" + ShortID))
 
                 Dim T_RelevantMsg As S_RelevantMessage = New S_RelevantMessage
 
-                T_RelevantMsg.Lifetime = 240
-                T_RelevantMsg.RelevantKey = "Unexpected" + ShortID
+                T_RelevantMsg.Lifetime = 480.0
+                T_RelevantMsg.RelevantKey.Name = "Unexpected" + ShortID
                 T_RelevantMsg.RelevantMessage = BCMessage
                 T_RelevantMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
 
@@ -1334,7 +1428,7 @@ Public Class ClsDEXNET
                             Continue While
                         End If
 
-                        Dim RelevantKey As String = RelevantKeys(i)
+                        Dim RelevantKey As S_RelevantKey = RelevantKeys(i)
 
                         If RelevantMsg.RelevantKey = RelevantKey Then
                             Exists = True
@@ -1353,19 +1447,20 @@ Public Class ClsDEXNET
 
                 If DeadFounded And DelIDX <> -1 Then
                     RelevantMsgs.RemoveAt(DelIDX)
+                    'TODO: del revkey
                 End If
 
             End While
 #End Region
 #Region "Add RelevantKey to RelevantMessages"
             For i As Integer = 0 To RelevantKeys.Count - 1
-                Dim RelevantKey As String = RelevantKeys(i)
+                Dim RelevantKey As S_RelevantKey = RelevantKeys(i)
 
                 Dim Notfound As Boolean = True
                 For ii As Integer = 0 To RelevantMsgs.Count - 1
                     Dim RelevantMsg As S_RelevantMessage = RelevantMsgs(ii)
 
-                    If RelevantMsg.RelevantKey = RelevantKey Then
+                    If RelevantMsg.RelevantKey.Name = RelevantKey.Name Then
                         Notfound = False
                         Exit For
                     End If
@@ -1376,7 +1471,7 @@ Public Class ClsDEXNET
                     Dim T_RelevantMsg As S_RelevantMessage = New S_RelevantMessage
                     T_RelevantMsg.RelevantKey = RelevantKey
                     T_RelevantMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
-                    T_RelevantMsg.Lifetime = 240.0
+                    T_RelevantMsg.Lifetime = 480.0
                     T_RelevantMsg.RelevantMessage = ""
 
                     RelevantMsgs.Add(T_RelevantMsg)
@@ -1386,11 +1481,11 @@ Public Class ClsDEXNET
             Next
 #End Region
 #Region "Timeout Relevant Messages"
-            Dim DelTempKey As String = ""
+            Dim DelTempKey As S_RelevantKey = New S_RelevantKey(,,,)
             For i As Integer = 0 To RelevantMsgs.Count - 1
                 Dim RevMsg As S_RelevantMessage = RelevantMsgs(i)
                 Dim DiffTimestamp As Double = Double.Parse(GetUnixTimestamp()) - RevMsg.Timestamp
-                If DiffTimestamp > RevMsg.Lifetime Then
+                If DiffTimestamp > RevMsg.Lifetime And RevMsg.Lifetime <> -1 Then
                     If RevMsg.RelevantMessage.Trim = "" Then ' RevMsg.RelevantKey.Contains("Unexpected") Or
                         DelTempKey = RevMsg.RelevantKey
                     End If
@@ -1400,7 +1495,7 @@ Public Class ClsDEXNET
                 End If
             Next
 
-            If Not DelTempKey.Trim = "" Then
+            If Not DelTempKey.Name.Trim = "" And Not DelTempKey.Permanent Then
                 RelevantKeys.Remove(DelTempKey)
             End If
 #End Region
@@ -1415,13 +1510,13 @@ Public Class ClsDEXNET
         Return True
 
     End Function
-    Function AddRelevantKey(ByVal RelevantKey As String) As Boolean
+    Function AddRelevantKey(ByVal RelevantKey As String, Optional ByVal PermaKey As Boolean = False, Optional ByVal Trigger As String = "") As Boolean
 
         Dim Founded As Boolean = False
         For i As Integer = 0 To RelevantKeys.Count - 1
-            Dim RevKey As String = RelevantKeys(i)
+            Dim RevKey As S_RelevantKey = RelevantKeys(i)
 
-            If RevKey = RelevantKey Then
+            If RevKey.Name = RelevantKey Then
                 Founded = True
                 Exit For
             End If
@@ -1429,20 +1524,20 @@ Public Class ClsDEXNET
         Next
 
         If Not Founded Then
-            RelevantKeys.Add(RelevantKey)
+            RelevantKeys.Add(New S_RelevantKey(RelevantKey, Trigger,, PermaKey))
         End If
 
         Return True
 
     End Function
-    Function DelRelevantKey(ByVal RelevantKey As String) As Boolean
+    Function DelRelevantKey(ByVal RelevantKey As String, Optional ByVal Different As String = "") As Boolean
 
         Dim FoundIDX As Integer = -1
 
         For i As Integer = 0 To RelevantKeys.Count - 1
-            Dim RevKey As String = RelevantKeys(i)
+            Dim RevKey As S_RelevantKey = RelevantKeys(i)
 
-            If RevKey = RelevantKey Then
+            If RevKey.Name = RelevantKey And RevKey.Different = Different Then
                 FoundIDX = i
                 Exit For
             End If

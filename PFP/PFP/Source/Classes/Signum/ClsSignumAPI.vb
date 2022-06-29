@@ -1,5 +1,4 @@
-﻿
-Option Strict On
+﻿Option Strict On
 Option Explicit On
 
 Imports System.IO
@@ -9,10 +8,11 @@ Imports System.Text
 Public Class ClsSignumAPI
 
 #Region "SmartContract Structure"
-    'SmartContract: 15564697375967316789
+    'SmartContract: 7617048251184549231
 
     'ActivateDeactivateDispute: -9199918549131231789
 
+    'CreateOrderWithResponder: -5335884675757206276
     'CreateOrder: 716726961670769723
     'AcceptOrder: 4714436802908501638
     'InjectResponder: 9213622959462902524
@@ -29,9 +29,9 @@ Public Class ClsSignumAPI
 
 #End Region
 
-    Public Const _ReferenceTX As ULong = 15564697375967316789UL
-    Public Const _ReferenceTXFullHash As String = "358bfc52cce900d8fb08f09375c63901a53ceb76e479749bb6be4c2e2682953a"
-    Public Const _DeployFeeNQT As ULong = 200000000UL ' 147000000UL
+    Public Const _ReferenceTX As ULong = 7617048251184549231UL
+    Public Const _ReferenceTXFullHash As String = "6f8ddd100731b569172459f788b2f3f1533f88e143e52e72d2f65c42a3ef287e"
+    Public Const _DeployFeeNQT As ULong = 210000000UL
     Public Const _GasFeeNQT As ULong = 29400000UL
     Public Const _AddressPreFix As String = "TS-"
     Public Const _DefaultNode As String = "http://signum.zone:6876/burst"
@@ -306,7 +306,7 @@ Public Class ClsSignumAPI
     End Function
 
     ''' <summary>
-    ''' Converts the given AccountID to Address
+    ''' Converts the given AccountID to Address (0= account;1= address)
     ''' </summary>
     ''' <param name="AccountID"></param>
     ''' <returns></returns>
@@ -2085,9 +2085,22 @@ Public Class ClsSignumAPI
                 RetList.Add(BE)
             Next
 
+            'If RetList.Count < 4 Then
+            '    For i As Integer = RetList.Count To 4 - 1
+            '        RetList.Add(0UL)
+            '    Next
+            'End If
+
             Return RetList
 
         Catch ex As Exception
+
+            'If RetList.Count < 4 Then
+            '    For i As Integer = RetList.Count To 4 - 1
+            '        RetList.Add(0UL)
+            '    Next
+            'End If
+
             Return RetList
         End Try
 

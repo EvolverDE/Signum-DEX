@@ -1,14 +1,18 @@
-﻿Option Strict On
+﻿
+
+
+Option Strict On
 Option Explicit On
 
 Public Class ClsDEXContract
 
 
 #Region "SmartContract Structure"
-    'SmartContract: 6827634782874753316
+    'SmartContract: 7617048251184549231
 
     'ActivateDeactivateDispute: -9199918549131231789
 
+    'CreateOrderWithResponder: -5335884675757206276
     'CreateOrder: 716726961670769723
     'AcceptOrder: 4714436802908501638
     'InjectResponder: 9213622959462902524
@@ -25,13 +29,14 @@ Public Class ClsDEXContract
 
 #End Region
 
-    'Public Const _ReferenceTX As ULong = 6827634782874753316UL
-    'Public Const _ReferenceTXFullHash As String = "24d95921a9a1c05eaaa3835331bf9c9a9f055897f417cd1213b8ca84c9bae61d" 
-    'Public Const _DeployFeeNQT As ULong = 147000000UL
+    'Public Const _ReferenceTX As ULong = 7617048251184549231UL
+    'Public Const _ReferenceTXFullHash As String = "6f8ddd100731b569172459f788b2f3f1533f88e143e52e72d2f65c42a3ef287e" 
+    'Public Const _DeployFeeNQT As ULong = 210000000UL
     'Public Const _GasFeeNQT As ULong = 29400000UL
 
     Public ReadOnly Property ReferenceDeActivateDeniability As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(-9199918549131231789L), 0) '805352d2a4817dd3
 
+    Public ReadOnly Property ReferenceCreateOrderWithResponder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(-5335884675757206276L), 0) 'b5f321287b0a94fc
     Public ReadOnly Property ReferenceCreateOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(716726961670769723L), 0) '09f2535fcf54cc3b
     Public ReadOnly Property ReferenceAcceptOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(4714436802908501638L), 0) '416d0b4b4963b686
     Public ReadOnly Property ReferenceInjectResponder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(9213622959462902524L), 0) '7fdd5d44092b6afc
@@ -139,7 +144,7 @@ Public Class ClsDEXContract
         End Get
     End Property
 
-    Property C_CurrentTimestamp As ULong = 0UL
+    Private C_CurrentTimestamp As ULong = 0UL
     ReadOnly Property CurrentTimestamp() As ULong
         Get
             Return C_CurrentTimestamp
@@ -313,6 +318,55 @@ Public Class ClsDEXContract
         End Get
     End Property
 
+
+
+    Private C_PendingAmount As Double = 0.0
+    ReadOnly Property PendingAmount() As Double
+        Get
+            Return C_PendingAmount
+        End Get
+    End Property
+
+    Private C_PendingCommand As E_ReferenceCommand = E_ReferenceCommand.NONE
+    ReadOnly Property PendingCommand() As E_ReferenceCommand
+        Get
+            Return C_PendingCommand
+        End Get
+    End Property
+
+    Private C_PendingCollateral As Double = 0.0
+    ReadOnly Property PendingCollateral() As Double
+        Get
+            Return C_PendingCollateral
+        End Get
+    End Property
+    Private C_PendingResponderID As ULong = 0UL
+    ReadOnly Property PendingResponderID() As ULong
+        Get
+            Return C_PendingResponderID
+        End Get
+    End Property
+    Private C_PendingResponderAddress As String = ""
+    ReadOnly Property PendingResponderAddress() As String
+        Get
+            Return C_PendingResponderAddress
+        End Get
+    End Property
+    Private C_PendingXAmount As Double = 0.0
+    ReadOnly Property PendingXAmount() As Double
+        Get
+            Return C_PendingXAmount
+        End Get
+    End Property
+    Private C_PendingXItem As String = ""
+    ReadOnly Property PendingXItem() As String
+        Get
+            Return C_PendingXItem
+        End Get
+    End Property
+
+
+
     Private C_Status As E_Status = E_Status.NEW_
     ReadOnly Property Status() As E_Status
         Get
@@ -484,17 +538,18 @@ Public Class ClsDEXContract
 
     Enum E_ReferenceCommand
         REFERENCE_DE_ACTIVATE_DENIABILITY = 0
-        REFERENCE_CREATE_ORDER = 1
-        REFERENCE_ACCEPT_ORDER = 2
-        REFERENCE_INJECT_RESPONDER = 3
-        REFERENCE_OPEN_DISPUTE = 4
-        REFERENCE_MEDIATE_DISPUTE = 5
-        REFERENCE_APPEAL = 6
-        REFERENCE_CHECK_CLOSE_DISPUTE = 7
-        REFERENCE_FINISH_ORDER = 8
-        REFERENCE_INJECT_CHAINSWAPHASH = 9
-        REFERENCE_FINISH_ORDER_WITH_CHAINSWAPKEY = 10
-        NONE = 11
+        REFERENCE_CREATE_ORDER_WITH_RESPONDER = 1
+        REFERENCE_CREATE_ORDER = 2
+        REFERENCE_ACCEPT_ORDER = 3
+        REFERENCE_INJECT_RESPONDER = 4
+        REFERENCE_OPEN_DISPUTE = 5
+        REFERENCE_MEDIATE_DISPUTE = 6
+        REFERENCE_APPEAL = 7
+        REFERENCE_CHECK_CLOSE_DISPUTE = 8
+        REFERENCE_FINISH_ORDER = 9
+        REFERENCE_INJECT_CHAINSWAPHASH = 10
+        REFERENCE_FINISH_ORDER_WITH_CHAINSWAPKEY = 11
+        NONE = 12
     End Enum
 
 #End Region
@@ -1593,6 +1648,7 @@ Public Class ClsDEXContract
 
             Dim UTX_Sender As ULong = GetULongBetweenFromList(UTX, "<sender>", "</sender>")
             Dim UTX_Recipient As ULong = GetULongBetweenFromList(UTX, "<recipient>", "</recipient>")
+            Dim UTX_Amount As Double = ClsSignumAPI.Planck2Dbl(GetULongBetweenFromList(UTX, "<amountNQT>", "</amountNQT>"))
 
             If Not UTX_Sender = 0UL And Not UTX_Recipient = 0UL Then
                 If UTX_Recipient = C_ID Then
@@ -1602,6 +1658,8 @@ Public Class ClsDEXContract
 
                     If ReferenceMessageList.Count > 0 Then
                         If IsReferenceCommand(ReferenceMessageList(0)) Then
+
+                            SetPendings(UTX_Amount, ReferenceMessageList)
                             If CurrentInitiatorID <> 0UL And CurrentResponderID <> 0UL Then
                                 If UTX_Sender = CurrentInitiatorID Or UTX_Sender = CurrentResponderID Or (UTX_Sender = CreatorID And C_Status = E_Status.DISPUTE) Then
                                     C_Status = E_Status.UTX_PENDING
@@ -1622,6 +1680,8 @@ Public Class ClsDEXContract
         Return False
 
     End Function
+
+
     ''' <summary>
     ''' Checks incoming Transaction for DEXContract
     ''' </summary>
@@ -1670,6 +1730,7 @@ Public Class ClsDEXContract
             If T_LastTX.Recipient = C_ID Then
                 If T_LastTX.Confirmations = 0 Then
 
+                    Dim T_Amount As Double = ClsSignumAPI.Planck2Dbl(T_LastTX.AmountNQT)
                     Dim T_Message As String = GetStringBetween(T_LastTX.Attachment, "<message>", "</message>")
                     Dim ReferenceMessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(T_Message)
 
@@ -1677,6 +1738,7 @@ Public Class ClsDEXContract
 
                         If IsReferenceCommand(ReferenceMessageList(0)) Then
 
+                            SetPendings(T_Amount, ReferenceMessageList)
                             If CurrentInitiatorID <> 0UL And CurrentResponderID <> 0UL Then
                                 If T_LastTX.Sender = CurrentInitiatorID Or T_LastTX.Sender = CurrentResponderID Or (T_LastTX.Sender = CreatorID And C_Status = E_Status.DISPUTE) Then
                                     C_Status = E_Status.TX_PENDING
@@ -1702,12 +1764,89 @@ Public Class ClsDEXContract
 
     End Function
 
+    Private Sub SetPendings(ByVal PendingAmount As Double, ByVal ReferenceMessageULongList As List(Of ULong))
+
+        C_PendingCommand = GetReferenceCommand(ReferenceMessageULongList(0))
+
+        If C_PendingCommand <> E_ReferenceCommand.NONE Then
+            C_PendingAmount = PendingAmount
+        End If
+
+        Select Case C_PendingCommand
+            Case E_ReferenceCommand.REFERENCE_DE_ACTIVATE_DENIABILITY
+
+            Case E_ReferenceCommand.REFERENCE_CREATE_ORDER
+
+                C_PendingCollateral = ClsSignumAPI.Planck2Dbl(ReferenceMessageULongList(1))
+                C_PendingResponderID = 0UL
+                C_PendingResponderAddress = ""
+                C_PendingXAmount = ClsSignumAPI.Planck2Dbl(ReferenceMessageULongList(2))
+                C_PendingXItem = ClsSignumAPI.ULng2String(ReferenceMessageULongList(3))
+
+                If CurrentInitiatorID = 0 And ((PendingAmount > 0.294 And C_PendingCollateral >= 0.0) Or (PendingAmount > 100.294 And C_PendingCollateral = 0.0)) Then
+
+                Else
+                    ResetPendings()
+                End If
+
+            Case E_ReferenceCommand.REFERENCE_CREATE_ORDER_WITH_RESPONDER
+
+                C_PendingCollateral = 0.0
+                C_PendingResponderID = ReferenceMessageULongList(1)
+                C_PendingResponderAddress = ClsReedSolomon.Encode(C_PendingResponderID)
+                C_PendingXAmount = ClsSignumAPI.Planck2Dbl(ReferenceMessageULongList(2))
+                C_PendingXItem = ClsSignumAPI.ULng2String(ReferenceMessageULongList(3))
+
+                If CurrentInitiatorID = 0 And C_PendingResponderID <> 0UL And PendingAmount > 0.294 Then
+
+                Else
+                    ResetPendings()
+                End If
+
+                'TODO: set pendings
+                'Case E_ReferenceCommand.REFERENCE_ACCEPT_ORDER
+
+                'Case E_ReferenceCommand.REFERENCE_INJECT_RESPONDER
+
+                'Case E_ReferenceCommand.REFERENCE_INJECT_CHAINSWAPHASH
+
+                'Case E_ReferenceCommand.REFERENCE_OPEN_DISPUTE
+
+                'Case E_ReferenceCommand.REFERENCE_MEDIATE_DISPUTE
+
+                'Case E_ReferenceCommand.REFERENCE_APPEAL
+
+                'Case E_ReferenceCommand.REFERENCE_CHECK_CLOSE_DISPUTE
+
+                'Case E_ReferenceCommand.REFERENCE_FINISH_ORDER
+
+                'Case E_ReferenceCommand.REFERENCE_FINISH_ORDER_WITH_CHAINSWAPKEY
+
+            Case Else
+                ResetPendings()
+
+        End Select
+
+
+    End Sub
+
+    Private Sub ResetPendings()
+        C_PendingAmount = 0.0
+        C_PendingCommand = E_ReferenceCommand.NONE
+        C_PendingCollateral = 0.0
+        C_PendingResponderID = 0UL
+        C_PendingResponderAddress = ""
+        C_PendingXAmount = 0.0
+        C_PendingXItem = ""
+    End Sub
 
     Private Function GetReferenceCommand(ByVal ReferenceCommand As ULong) As E_ReferenceCommand
 
         Select Case ReferenceCommand
             Case ReferenceDeActivateDeniability
                 Return E_ReferenceCommand.REFERENCE_DE_ACTIVATE_DENIABILITY
+            Case ReferenceCreateOrderWithResponder
+                Return E_ReferenceCommand.REFERENCE_CREATE_ORDER_WITH_RESPONDER
             Case ReferenceCreateOrder
                 Return E_ReferenceCommand.REFERENCE_CREATE_ORDER
             Case ReferenceAcceptOrder
@@ -1777,6 +1916,59 @@ Public Class ClsDEXContract
             Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
             Response = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
         End If
+
+        If Not SignKeyHEX.Trim = "" Then
+
+            Dim SignumNET As ClsSignumNET = New ClsSignumNET
+            Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(Response, SignKeyHEX)
+            Response = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+            If Response.Contains(Application.ProductName + "-error") Then
+                Return Response
+            End If
+
+        End If
+
+        Return Response
+
+    End Function
+
+    Public Function CreateOrderWithResponder(ByVal SenderPublicKey As String, ByVal SellAmount As Double, ByVal ResponderID As ULong, ByVal Xitem As String, ByVal XAmount As Double, Optional Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
+
+        Dim Response As String = ""
+
+        CheckForUTX()
+        CheckForTX()
+
+        If Not C_Status = E_Status.NEW_ And Not C_Status = E_Status.FREE Then
+            Return Application.ProductName + "-error in CreateOrderWithResponder(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString
+        End If
+
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node,, C_ID)
+        Dim XAmountNQT As ULong = ClsSignumAPI.Dbl2Planck(XAmount)
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceCreateOrderWithResponder, ResponderID, XAmountNQT, ClsSignumAPI.String2ULng(Xitem.Trim)})
+        Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
+
+        Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, SellAmount + ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
+
+        Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            Return Application.ProductName + "-error in CreateOrderWithResponder(2): ->" + vbCrLf + Response
+        End If
+
+
+        If Response.Contains(Application.ProductName + "-error") Then
+            Return Response
+        Else
+            Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
+            Response = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
+        End If
+
 
         If Not SignKeyHEX.Trim = "" Then
 

@@ -327,6 +327,7 @@ Partial Class FrmManual
         Me.BtClose.TabIndex = 1
         Me.BtClose.Text = "Lets Trade..."
         Me.BtClose.UseVisualStyleBackColor = False
+        Me.BtClose.Visible = False
         '
         'TabPage3
         '

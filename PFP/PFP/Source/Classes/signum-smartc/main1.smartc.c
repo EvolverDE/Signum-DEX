@@ -41,6 +41,7 @@ long SellOrder = false, FreeForAll = false, isFiatOrder = false, Deniability = 0
 
 #define ACTIVATE_DEACTIVATE_DISPUTE 0x805352d2a4817dd3
 #define CREATE_ORDER 0x09f2535fcf54cc3b
+#define CREATE_ORDER_WITH_RESPONDER 0xb5f321287b0a94fc
 #define ACCEPT_ORDER 0x416d0b4b4963b686
 #define INJECT_RESPONDER 0x7fdd5d44092b6afc
 #define OPEN_DISPUTE 0x683bad5d504e7c61
@@ -113,6 +114,9 @@ void main(void) {
             break;
         case CREATE_ORDER:
             CreateOrder();
+            break;
+		case CREATE_ORDER_WITH_RESPONDER:
+            CreateOrderWithResponder();
             break;
         case ACCEPT_ORDER:
             AcceptOrder();
@@ -189,11 +193,9 @@ void CreateOrder(void) {
     long T_BuyCollateralAmount = currentTX.message[1];
 	checkFiat();
 	
-    if (Initiator == NULL && (FreeForAll || currentTX.sender == CREATOR) && T_BuyCollateralAmount > 0 && currentTX.amount > 29400000) {
-
+    if (Initiator == NULL && (FreeForAll || currentTX.sender == CREATOR) && ((T_BuyCollateralAmount > 0 && currentTX.amount > 29400000) || (T_BuyCollateralAmount == 0 && currentTX.amount <= 10029400000))) {
         FreeForAll = true;
         CreateOrderTX = currentTX.txId ;
-
         if (currentTX.amount > T_BuyCollateralAmount) {
             SellOrder = true;
             BuySellAmount = currentTX.amount - T_BuyCollateralAmount;//Sell: 100 = 130 - 30;
@@ -203,7 +205,6 @@ void CreateOrder(void) {
             InitiatorsCollateral = currentTX.amount;//Buy: 30;
             BuySellAmount = T_BuyCollateralAmount;//Buy: 100
         }
-
 		if ((isFiatOrder && checkOneCent(currentTX.message[2], BuySellAmount)) || !isFiatOrder) {
 			
 			if (InitiatorsCollateral >= 0) {
@@ -224,7 +225,32 @@ void CreateOrder(void) {
     } else {
         sendBack();
     }
+}
 
+void CreateOrderWithResponder(void){
+	checkFiat();
+    if (Initiator == NULL && (FreeForAll || currentTX.sender == CREATOR) && currentTX.message[1] != 0 && currentTX.amount > 29400000) {
+		if ((isFiatOrder && checkOneCent(currentTX.message[2], currentTX.amount)) || !isFiatOrder) {
+		
+			Initiator = currentTX.sender;
+			Responder = currentTX.message[1];
+			BuySellAmount = currentTX.amount;
+			CreateOrderTX = currentTX.txId;
+			AcceptOrderTX = currentTX.txId;
+			SellOrder = true;
+			FreeForAll = true;
+			
+			if (Deniability == 1) {
+				Deniability = 3;
+			}
+			
+		} else {
+			sendBack();
+		}
+
+    } else {
+        sendBack();
+	}
 }
 void AcceptOrder(void) {
     if (Initiator != NULL && Responder == NULL) {
