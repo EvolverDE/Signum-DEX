@@ -5677,10 +5677,10 @@ Public Class PFPForm
 
                                         If T_DEXContract.CurrentChainSwapHash = "" Then
 
-                                            Dim T_ChainSwapKey As String = "aaaa1111aaaa1111" 'aaaa1111aaaa1111bbbb2222bbbb2222cccc3333cccc3333dddd4444dddd4444
-                                            T_ChainSwapKey += "bbbb2222bbbb2222"
-                                            T_ChainSwapKey += "cccc3333cccc3333"
-                                            T_ChainSwapKey += "dddd4444dddd4444"
+                                            Dim T_ChainSwapKey As String = ByteArrayToHEXString(RandomBytes(32)) ' "aaaa1111aaaa1111" 'aaaa1111aaaa1111bbbb2222bbbb2222cccc3333cccc3333dddd4444dddd4444
+                                            'T_ChainSwapKey += "bbbb2222bbbb2222"
+                                            'T_ChainSwapKey += "cccc3333cccc3333"
+                                            'T_ChainSwapKey += "dddd4444dddd4444"
 
                                             Dim T_FullChainSwapHash As String = GetSHA256HashString(T_ChainSwapKey).ToLower() '5682f300723e84bc877b0ebce916618415edc43663930cff67ef2381bedc3618
 
