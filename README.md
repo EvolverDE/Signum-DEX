@@ -6,6 +6,8 @@ PFP soll einen einfachen Einstieg in die Krypto-Welt ermöglichen.
 PFP basiert auf den Smart Contracts der Signum.network Blockchain und unterstützt neben dessen Coin "Signa" alle verfügbaren Fiat-Währungen die PayPal auch unterstützt. Diese sind unter folgendem Link zu finden: https://developer.paypal.com/docs/api/reference/currency-codes/
 
 Des weiteren wird nun mit der ersten zusätzlichen Blockchain-implementierung AtomicSwaps mit bitcoin (BTC) möglich
+Für die Interaktion mit BTC muss bitcoin core installiert sein und der Daemon mit zusätzlichen parametern gestartet werden:
+C:\coins\bitcoind.exe -testnet -datadir=C:\coindata\bitcoin_testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex
 # Welche Vorraussetzungen braucht man?
 Da PFP auf dem .NET-Framework in der Version 4.8 basiert, ist ein Betriebssystem welches dieses unterstützt ebenfalls Vorraussetzung.
 # Wie installiert man PFP?
