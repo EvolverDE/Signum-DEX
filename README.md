@@ -4,6 +4,7 @@ PFP (Perls for Pigs) ist der codename für eine dezentrale Krypto-Tauschbörse m
 PFP soll einen einfachen Einstieg in die Krypto-Welt ermöglichen.
 # Welche Währungen werden unterstützt?
 PFP basiert auf den Smart Contracts der Signum.network Blockchain und unterstützt neben dessen Coin "Signa" alle verfügbaren Fiat-Währungen die PayPal auch unterstützt. Diese sind unter folgendem Link zu finden: https://developer.paypal.com/docs/api/reference/currency-codes/
+
 Des weiteren wird nun mit der ersten zusätzlichen Blockchain-implementierung AtomicSwaps mit bitcoin (BTC) möglich
 # Welche Vorraussetzungen braucht man?
 Da PFP auf dem .NET-Framework in der Version 4.8 basiert, ist ein Betriebssystem welches dieses unterstützt ebenfalls Vorraussetzung.
