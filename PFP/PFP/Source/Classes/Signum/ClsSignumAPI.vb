@@ -8,7 +8,7 @@ Imports System.Text
 Public Class ClsSignumAPI
 
 #Region "SmartContract Structure"
-    'SmartContract: 7617048251184549231
+    'SmartContract: 8372890871867317775
 
     'ActivateDeactivateDispute: -9199918549131231789
 
@@ -29,13 +29,13 @@ Public Class ClsSignumAPI
 
 #End Region
 
-    Public Const _ReferenceTX As ULong = 7617048251184549231UL
-    Public Const _ReferenceTXFullHash As String = "6f8ddd100731b569172459f788b2f3f1533f88e143e52e72d2f65c42a3ef287e"
-    Public Const _DeployFeeNQT As ULong = 210000000UL
-    Public Const _GasFeeNQT As ULong = 29400000UL
+    Public Const _ReferenceTX As ULong = 8372890871867317775UL
+    Public Const _ReferenceTXFullHash As String = "0f1ec3f0e27b327479e559b51a5f32338a60431ec59a64a252269c17932917c8"
+    Public Const _DeployFeeNQT As ULong = 230000000UL
+    Public Const _GasFeeNQT As ULong = 40000000UL
     Public Const _AddressPreFix As String = "TS-"
-    Public Const _DefaultNode As String = "http://signum.zone:6876/burst"
-    Public Const _Nodes As String = _DefaultNode + ";" + "https://europe3.testnet.signum.network/burst" + ";" + "http://tordek.ddns.net:6876/burst" + ";" + "http://lmsi.club:6876/burst" + ";" + "https://octalsburstnode.ddns.net:6876/burst"
+    Public Const _DefaultNode As String = "https://testnet.signum.zone/burst"
+    Public Const _Nodes As String = _DefaultNode '+ ";" + "http://tordek.ddns.net:6876/burst" + ";" + "http://lmsi.club:6876/burst"
 
     'Public ReadOnly Property ReferenceCreateOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(716726961670769723L), 0)
     'Public ReadOnly Property ReferenceAcceptOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(4714436802908501638L), 0)
@@ -88,7 +88,7 @@ Public Class ClsSignumAPI
 
         Dim ReferenceSmartContractDetails = GetSmartContractDetails(ReferenceTX)
         C_ReferenceMachineCode = GetStringBetweenFromList(ReferenceSmartContractDetails, "<machineCode>", "</machineCode>")
-
+        'TODO: detect defect contract (wrong machinedata)
     End Sub
 
 
@@ -460,7 +460,7 @@ Public Class ClsSignumAPI
 
 
     Public Function GetTXFee(Optional ByVal Message As String = "") As Double
-        Dim TXFee As Double = 0.00735 * (Math.Floor(Message.Length / 176) + 1) '69
+        Dim TXFee As Double = 0.00735 * (Math.Floor(Message.Length / 176) + 2) '69
 
         If TXFee < 0.01 Then
             TXFee = 0.01
@@ -2117,43 +2117,60 @@ Public Class ClsSignumAPI
 
     End Function
 
-    ''' <summary>
-    ''' Hashing Inputkey and converting them into List(Of ULong)(FirstULongKey, SecondULongKey, HashULong)
-    ''' </summary>
-    ''' <param name="InputKey"></param>
-    ''' <returns></returns>
-    Public Shared Function GetSHA256_64(ByVal InputKey As String) As List(Of ULong)
 
-        Dim InputBytes As List(Of Byte) = System.Text.Encoding.ASCII.GetBytes(InputKey).ToList
+    '''' <summary>
+    '''' Hashing Inputkey and converting them into List(Of ULong)(FirstULongKey, SecondULongKey, ULongHash)
+    '''' </summary>
+    '''' <param name="InputKey"></param>
+    '''' <returns></returns>
+    'Public Shared Function GetSHA256_64(ByVal InputKey As String) As List(Of ULong)
 
-        For i As Integer = InputBytes.Count To 16
-            InputBytes.Add(0)
-        Next
+    '    Dim InputBytes As List(Of Byte) = New List(Of Byte)
 
-        Dim FirstULong As ULong = BitConverter.ToUInt64(InputBytes.ToArray, 0)
-        Dim SecondULong As ULong = BitConverter.ToUInt64(InputBytes.ToArray, 8)
-
-        Dim FirstULongBytes As Byte() = BitConverter.GetBytes(FirstULong)
-        Dim SecondULongBytes As Byte() = BitConverter.GetBytes(SecondULong)
+    '    If MessageIsHEXString(InputKey) Then
+    '        InputBytes = HEXStringToByteArray(InputKey).ToList
+    '    Else
+    '        InputBytes = System.Text.Encoding.ASCII.GetBytes(InputKey).ToList
+    '    End If
 
 
-        Dim ByteList As List(Of Byte) = New List(Of Byte)
-        ByteList.AddRange(FirstULongBytes)
-        ByteList.AddRange(SecondULongBytes)
+    '    For i As Integer = InputBytes.Count To 24 - 1
+    '        InputBytes.Add(0)
+    '    Next
 
-        'Dim test As String = System.Text.Encoding.ASCII.GetString(ByteList.ToArray)
+    '    Dim FirstULong As ULong = BitConverter.ToUInt64(InputBytes.ToArray, 0)
+    '    Dim SecondULong As ULong = BitConverter.ToUInt64(InputBytes.ToArray, 8)
+    '    Dim ThirdULong As ULong = BitConverter.ToUInt64(InputBytes.ToArray, 16)
 
-        ByteList.AddRange({0, 0, 0, 0, 0, 0, 0, 0})
-        ByteList.AddRange({0, 0, 0, 0, 0, 0, 0, 0})
+    '    Dim FullHash As Byte() = HEXStringToByteArray(GetSHA64_256(FirstULong, SecondULong, ThirdULong))
 
-        Dim SHA256 As System.Security.Cryptography.SHA256Managed = New System.Security.Cryptography.SHA256Managed
-        Dim Hash As List(Of Byte) = SHA256.ComputeHash(ByteList.ToArray).ToList
+    '    Dim ULongHash1 As ULong = BitConverter.ToUInt64(FullHash, 0)
+    '    Dim ULongHash2 As ULong = BitConverter.ToUInt64(FullHash, 8)
+    '    Dim ULongHash3 As ULong = BitConverter.ToUInt64(FullHash, 16)
 
-        Dim HashULong As ULong = BitConverter.ToUInt64(Hash.ToArray, 0)
+    '    Return New List(Of ULong)({FirstULong, SecondULong, ThirdULong, ULongHash1, ULongHash1, ULongHash1})
 
-        Return New List(Of ULong)({FirstULong, SecondULong, HashULong})
+    'End Function
 
-    End Function
+    'Public Shared Function GetSHA64_256(ByVal FirstULong As ULong, ByVal SecondULong As ULong, ByVal ThirdULong As ULong) As String
+
+    '    Dim ByteList As List(Of Byte) = New List(Of Byte)
+    '    ByteList.AddRange(BitConverter.GetBytes(FirstULong))
+    '    ByteList.AddRange(BitConverter.GetBytes(SecondULong))
+    '    ByteList.AddRange(BitConverter.GetBytes(ThirdULong))
+    '    ByteList.AddRange({0, 0, 0, 0, 0, 0, 0, 0})
+
+    '    Dim SHA256 As System.Security.Cryptography.SHA256Managed = New System.Security.Cryptography.SHA256Managed
+    '    Dim FullHash As List(Of Byte) = SHA256.ComputeHash(ByteList.ToArray).ToList
+
+    '    Return ByteArrayToHEXString(FullHash.ToArray)
+
+    'End Function
+
+    'Public Shared Function GetSHA256_64_256(ByVal InputKey As String) As String
+    '    Dim T_ULongList As List(Of ULong) = GetSHA256_64(InputKey)
+    '    Return GetSHA64_256(T_ULongList(0), T_ULongList(1), T_ULongList(2))
+    'End Function
 
     Public Shared Function Dbl2Planck(ByVal Signa As Double) As ULong
 

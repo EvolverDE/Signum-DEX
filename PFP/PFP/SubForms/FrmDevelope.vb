@@ -583,13 +583,11 @@ Public Class FrmDevelope
 
             Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
 
-            If TBTesChainSwapHash.Text.Trim = "" Then
+            If TBTestChainSwapHashLong1.Text.Trim = "" Then
                 Exit Sub
             End If
 
-            Dim ChainSwapHash As ULong = ULong.Parse(TBTesChainSwapHash.Text)
-
-            Dim TXID As String = CurrentContract.InjectChainSwapHash(Masterkeys(0), ChainSwapHash,, Masterkeys(1))
+            Dim TXID As String = CurrentContract.InjectChainSwapHash(Masterkeys(0), TBTestChainSwapHashLong1.Text,, Masterkeys(1))
 
             With LVTestDEXContractBasic.Items.Add("TXID")
                 .SubItems.Add("" + TXID)
@@ -603,19 +601,32 @@ Public Class FrmDevelope
 
             Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
 
-            If TBTestChainSwapULong1.Text.Trim = "" Or TBTestChainSwapULong2.Text.Trim = "" Then
+            If TBTestChainSwapKeyULong1.Text.Trim = "" Or TBTestChainSwapKeyULong2.Text.Trim = "" Or TBTestChainSwapKeyULong3.Text.Trim = "" Then
 
                 If TBTestChainSwapKey.Text.Trim = "" Then
                     Exit Sub
                 End If
 
-                Dim SecretKeyList As List(Of ULong) = ClsSignumAPI.GetSHA256_64(TBTestChainSwapKey.Text)
-                TBTestChainSwapULong1.Text = SecretKeyList(0).ToString
-                TBTestChainSwapULong2.Text = SecretKeyList(1).ToString
+                Dim SecretKeyList As List(Of ULong) = HEXStringToULongList(TBTestChainSwapKey.Text)
+
+                If SecretKeyList.Count >= 1 Then
+                    TBTestChainSwapKeyULong1.Text = SecretKeyList(0).ToString
+                    TBTestChainSwapKeyULong2.Text = ""
+                    TBTestChainSwapKeyULong3.Text = ""
+                End If
+
+                If SecretKeyList.Count >= 2 Then
+                    TBTestChainSwapKeyULong2.Text = SecretKeyList(1).ToString
+                    TBTestChainSwapKeyULong3.Text = ""
+                End If
+
+                If SecretKeyList.Count >= 3 Then
+                    TBTestChainSwapKeyULong3.Text = SecretKeyList(2).ToString
+                End If
 
             End If
 
-            Dim TXID As String = CurrentContract.FinishOrderWithChainSwapKey(Masterkeys(0), ULong.Parse(TBTestChainSwapULong1.Text), ULong.Parse(TBTestChainSwapULong2.Text),, Masterkeys(1))
+            Dim TXID As String = CurrentContract.FinishOrderWithChainSwapKey(Masterkeys(0), TBTestChainSwapKey.Text,, Masterkeys(1))
 
             With LVTestDEXContractBasic.Items.Add("TXID")
                 .SubItems.Add("" + TXID)
@@ -1045,8 +1056,17 @@ Public Class FrmDevelope
                 .SubItems.Add("" + Math.Round(CurrentContract.CurrentConciliationAmount, 2).ToString("0.00") + " Signa / " + percentage.ToString + "%")
             End With
 
-            With LVTestCurrentOrder.Items.Add("CurrentChainSwapHash")
-                .SubItems.Add("" + CurrentContract.CurrentChainSwapHash.ToString)
+            With LVTestCurrentOrder.Items.Add("CurrentChainSwapHashLong1")
+                .SubItems.Add("" + CurrentContract.CurrentChainSwapHashULong1.ToString)
+            End With
+            With LVTestCurrentOrder.Items.Add("CurrentChainSwapHashLong2")
+                .SubItems.Add("" + CurrentContract.CurrentChainSwapHashULong2.ToString)
+            End With
+            With LVTestCurrentOrder.Items.Add("CurrentChainSwapHashLong3")
+                .SubItems.Add("" + CurrentContract.CurrentChainSwapHashULong3.ToString)
+            End With
+            With LVTestCurrentOrder.Items.Add("CurrentChainSwapHashLong4")
+                .SubItems.Add("" + CurrentContract.CurrentChainSwapHashULong4.ToString)
             End With
 
             With LVTestCurrentOrder.Items.Add("CurrentXItem")
@@ -1090,18 +1110,33 @@ Public Class FrmDevelope
         End If
     End Sub
 
-    Private Sub BtTestChainSwapKeyToHash_Click(sender As Object, e As EventArgs)
+    Private Sub BtTestChainSwapKeyToHash_Click(sender As Object, e As EventArgs) Handles BtTestChainSwapKeyToHash.Click
 
         Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
-        Dim SecretKeyList As List(Of ULong) = ClsSignumAPI.GetSHA256_64(TBTestChainSwapKey.Text)
+        Dim ChainSwapKeyList As List(Of ULong) = HEXStringToULongList(TBTestChainSwapKey.Text)
+        Dim Hash As String = GetSHA256HashString(TBTestChainSwapKey.Text)
+        Dim ChainSwapHashList As List(Of ULong) = HEXStringToULongList(Hash)
 
-        TBTestChainSwapULong1.Text = SecretKeyList(0).ToString
-        TBTestChainSwapULong2.Text = SecretKeyList(1).ToString
-        TBTesChainSwapHash.Text = SecretKeyList(2).ToString
+        If ChainSwapKeyList.Count >= 1 Then
+            TBTestChainSwapKeyULong1.Text = ChainSwapKeyList(0).ToString
+            TBTestChainSwapKeyULong2.Text = ""
+            TBTestChainSwapKeyULong3.Text = ""
+        End If
 
-        TBTestChainSwapLong1.Text = Convert.ToInt64(SecretKeyList(0)).ToString
-        TBTestChainSwapLong2.Text = Convert.ToInt64(SecretKeyList(1)).ToString
+        If ChainSwapKeyList.Count >= 2 Then
+            TBTestChainSwapKeyULong2.Text = ChainSwapKeyList(1).ToString
+            TBTestChainSwapKeyULong3.Text = ""
+        End If
 
+        If ChainSwapKeyList.Count >= 3 Then
+            TBTestChainSwapKeyULong3.Text = ChainSwapKeyList(2).ToString
+        End If
+
+        If ChainSwapHashList.Count >= 3 Then
+            TBTestChainSwapHashLong1.Text = ChainSwapHashList(0).ToString
+            TBTestChainSwapHashLong2.Text = ChainSwapHashList(1).ToString
+            TBTestChainSwapHashLong3.Text = ChainSwapHashList(2).ToString
+        End If
 
     End Sub
 
@@ -1122,6 +1157,87 @@ Public Class FrmDevelope
     Private Sub BtTestRefreshLiBoRelMsgs_Click(sender As Object, e As EventArgs) Handles BtTestRefreshLiBoRelMsgs.Click
         LiBoTestRelMsgs.Items.Clear()
     End Sub
+
+    Private Sub BtCSKConvertback_Click(sender As Object, e As EventArgs) Handles BtCSKConvertback.Click
+
+        Dim FirstChainSwapKeyLong As ULong = 0UL
+        If TBTestChainSwapKeyULong1.Text.Trim <> "" Then
+            FirstChainSwapKeyLong = CULng(TBTestChainSwapKeyULong1.Text)
+        End If
+
+        Dim SecondChainSwapKeyLong As ULong = 0UL
+        If TBTestChainSwapKeyULong2.Text.Trim <> "" Then
+            SecondChainSwapKeyLong = CULng(TBTestChainSwapKeyULong2.Text)
+        End If
+
+        Dim ThirdChainSwapKeyLong As ULong = 0UL
+        If TBTestChainSwapKeyULong3.Text.Trim <> "" Then
+            ThirdChainSwapKeyLong = CULng(TBTestChainSwapKeyULong3.Text)
+        End If
+
+        Dim ChainSwpKey As String = ULongListToHEXString(New List(Of ULong)({FirstChainSwapKeyLong, SecondChainSwapKeyLong, ThirdChainSwapKeyLong}))
+
+        MsgBox(ChainSwpKey)
+
+    End Sub
+
+    Private Sub BtTestHash_Click(sender As Object, e As EventArgs) Handles BtTestHash.Click
+
+        '00000000000000a100000000000000b200000000000000c300000000000000d4
+
+        If MessageIsHEXString(TBTestKeyString.Text.Trim) Then
+            TBTestKeyHEX.Text = TBTestKeyString.Text.Trim
+        Else
+            TBTestKeyHEX.Text = ByteArrayToHEXString(System.Text.Encoding.ASCII.GetBytes(TBTestKeyString.Text.Trim))
+        End If
+
+        TBTestHashHEX.Text = GetSHA256HashString(TBTestKeyHEX.Text.Trim).ToLower
+
+
+        Dim ULKeyList As List(Of ULong) = HEXStringToULongList(TBTestKeyHEX.Text)
+        'ULKeyList.Reverse()
+
+        'For i As Integer = ULKeyList.Count To 3
+        '    ULKeyList.Add(0UL)
+        'Next
+
+        If ULKeyList.Count >= 1 Then
+            TBTestKeyUL1.Text = ULKeyList(0).ToString
+            TBTestKeyUL2.Text = ""
+            TBTestKeyUL3.Text = ""
+            TBTestKeyUL4.Text = ""
+        End If
+
+        If ULKeyList.Count >= 2 Then
+            TBTestKeyUL2.Text = ULKeyList(1).ToString
+            TBTestKeyUL3.Text = ""
+            TBTestKeyUL4.Text = ""
+        End If
+
+        If ULKeyList.Count >= 3 Then
+            TBTestKeyUL3.Text = ULKeyList(2).ToString
+            TBTestKeyUL4.Text = ""
+        End If
+
+        If ULKeyList.Count >= 4 Then
+            TBTestKeyUL4.Text = ULKeyList(3).ToString
+        End If
+
+
+        Dim ULHashList As List(Of ULong) = GetSHA256HashULongs(ULKeyList, False)
+        'ULHashList.Reverse()
+
+        If ULHashList.Count >= 4 Then
+            TBTestHashUL1.Text = ULHashList(0).ToString
+            TBTestHashUL2.Text = ULHashList(1).ToString
+            TBTestHashUL3.Text = ULHashList(2).ToString
+            TBTestHashUL4.Text = ULHashList(3).ToString
+        End If
+
+        TBTestHashULHEX.Text = ULongListToHEXString(ULHashList)
+
+    End Sub
+
 
 #End Region
 

@@ -17,9 +17,10 @@ Public Class ClsOrderSettings
     Public Enum E_PayType
         Bankaccount = 0
         PayPal_E_Mail = 1
-        PayPal_Order = 2
+        'PayPal_Order = 2
         Self_Pickup = 3
         Other = 4
+        AtomicSwap = 5
     End Enum
 
     Public Shared Function GetPayTypes() As List(Of String)
@@ -53,10 +54,12 @@ Public Class ClsOrderSettings
                 PayType = E_PayType.Bankaccount
             Case E_PayType.PayPal_E_Mail.ToString.Replace("_", "-")
                 PayType = E_PayType.PayPal_E_Mail
-            Case E_PayType.PayPal_Order.ToString.Replace("_", "-")
-                PayType = E_PayType.PayPal_Order
+            'Case E_PayType.PayPal_Order.ToString.Replace("_", "-")
+            '    PayType = E_PayType.PayPal_Order
             Case E_PayType.Self_Pickup.ToString.Replace("_", " ")
                 PayType = E_PayType.Self_Pickup
+            Case E_PayType.AtomicSwap.ToString
+                PayType = E_PayType.AtomicSwap
             Case Else
                 PayType = E_PayType.Other
         End Select

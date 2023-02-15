@@ -2,6 +2,8 @@
 Option Strict On
 Option Explicit On
 
+'http://127.0.0.1:8130/API/v1.0/GetInfo
+
 Imports System.Net
 Imports System.Net.Sockets
 Imports System.Threading
@@ -362,7 +364,8 @@ Public Class ClsTCPAPI
                                                     ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
 
                                                     Else
-                                                        ResponseHTML = "{""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                        '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
                                                     End If
 
                                                 End If

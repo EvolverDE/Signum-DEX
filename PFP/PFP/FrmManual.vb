@@ -100,13 +100,13 @@ Public Class FrmManual
         Example1 += "" + vbCrLf
         Example1 += "click Set Order to place it to the market (""5"")." + vbCrLf
 
-        LabExample1.Text = Example1
+        'LabExample1.Text = Example1
 
 
         Dim Example2 As String = "After a while your Order will also be showed in ""MyOrders"" tab in the ""MyOpenOrders"" List (at ""1"")." + vbCrLf
         Example2 += "" + vbCrLf
 
-        LabExample2.Text = Example2
+        'LabExample2.Text = Example2
 
 
         Dim Example3 As String = "For the time the Order is open, everyone can also see the Order in the ""SellOrders""-Section on the ""Marketdetails""-Tab." + vbCrLf
@@ -115,19 +115,19 @@ Public Class FrmManual
         Example3 += "" + vbCrLf
         Example3 += "The same procedure applies to Sell orders. With the exception that a encrypted message is also sent to the buyer with payment infos." + vbCrLf
 
-        LabExample3.Text = Example3
+        'LabExample3.Text = Example3
 
 
         Dim Example4 As String = "If you are ok with the conditions of the Order, just confirm it with a click on ""Yes"" in the Buy-Prompt" + vbCrLf
         Example4 += "" + vbCrLf
         Example4 += "A Transaction will be created to inform the AT." + vbCrLf
 
-        LabExample4.Text = Example4
+        'LabExample4.Text = Example4
 
 
         Dim Example5 As String = "On the Buyer side the Accepted Order will also be showed in the ""MyOpenOrder""-List." + vbCrLf
 
-        LabExample5.Text = Example5
+        'LabExample5.Text = Example5
 
 
         Dim Example6 As String = "In case that your settings are configured to send the Buyer Payment infos (""2"") automatically (""1""), the program send it as soon as there is a buyer." + vbCrLf
@@ -137,9 +137,7 @@ Public Class FrmManual
         Example6 += "For the best automatic experience you can create PayPal-Orders (""A"") that make purchases on the Buyer side as easy as possible." + vbCrLf
         Example6 += "For this option you need a PayPal-Business-Account (""B"") and a PayPal-App with its API-User and API-Secret." + vbCrLf
 
-        LabExample6.Text = Example6
-
-
+        'LabExample6.Text = Example6
 
     End Sub
 

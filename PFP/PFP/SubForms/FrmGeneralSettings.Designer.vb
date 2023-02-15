@@ -53,12 +53,31 @@ Partial Class FrmGeneralSettings
         Me.Label14 = New System.Windows.Forms.Label()
         Me.TBPayPalAPIUser = New System.Windows.Forms.TextBox()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.BtBitcoinAddresses = New System.Windows.Forms.Button()
+        Me.BtBitcoindPath = New System.Windows.Forms.Button()
+        Me.LVBitcoinAddress = New System.Windows.Forms.ListView()
+        Me.ColumnHeader1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.Label12 = New System.Windows.Forms.Label()
+        Me.TBBitcoinAPIPass = New System.Windows.Forms.TextBox()
+        Me.Label11 = New System.Windows.Forms.Label()
+        Me.TBBitcoinAPIUser = New System.Windows.Forms.TextBox()
+        Me.Label10 = New System.Windows.Forms.Label()
+        Me.TBBitcoinWallet = New System.Windows.Forms.TextBox()
+        Me.Label9 = New System.Windows.Forms.Label()
+        Me.TBBitcoinAPINode = New System.Windows.Forms.TextBox()
+        Me.Label8 = New System.Windows.Forms.Label()
+        Me.TBBitcoinArgs = New System.Windows.Forms.TextBox()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.TBBitcoindPath = New System.Windows.Forms.TextBox()
+        Me.Label5 = New System.Windows.Forms.Label()
         Me.GroupBox3.SuspendLayout()
         Me.GrpBxSeller.SuspendLayout()
         Me.TabControl2.SuspendLayout()
         Me.TabPage4.SuspendLayout()
         Me.TabPage5.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
+        Me.GroupBox2.SuspendLayout()
         Me.SuspendLayout()
         '
         'GroupBox3
@@ -84,7 +103,7 @@ Partial Class FrmGeneralSettings
         '
         'TBDEXNETPort
         '
-        Me.TBDEXNETPort.Location = New System.Drawing.Point(133, 67)
+        Me.TBDEXNETPort.Location = New System.Drawing.Point(105, 67)
         Me.TBDEXNETPort.Name = "TBDEXNETPort"
         Me.TBDEXNETPort.Size = New System.Drawing.Size(63, 20)
         Me.TBDEXNETPort.TabIndex = 24
@@ -101,7 +120,7 @@ Partial Class FrmGeneralSettings
         '
         'TBTCPAPIPort
         '
-        Me.TBTCPAPIPort.Location = New System.Drawing.Point(133, 93)
+        Me.TBTCPAPIPort.Location = New System.Drawing.Point(105, 93)
         Me.TBTCPAPIPort.Name = "TBTCPAPIPort"
         Me.TBTCPAPIPort.Size = New System.Drawing.Size(63, 20)
         Me.TBTCPAPIPort.TabIndex = 22
@@ -119,7 +138,7 @@ Partial Class FrmGeneralSettings
         'ChBxTCPAPI
         '
         Me.ChBxTCPAPI.AutoSize = True
-        Me.ChBxTCPAPI.Location = New System.Drawing.Point(202, 95)
+        Me.ChBxTCPAPI.Location = New System.Drawing.Point(174, 95)
         Me.ChBxTCPAPI.Name = "ChBxTCPAPI"
         Me.ChBxTCPAPI.Size = New System.Drawing.Size(103, 17)
         Me.ChBxTCPAPI.TabIndex = 19
@@ -129,7 +148,7 @@ Partial Class FrmGeneralSettings
         'Label20
         '
         Me.Label20.AutoSize = True
-        Me.Label20.Location = New System.Drawing.Point(202, 16)
+        Me.Label20.Location = New System.Drawing.Point(174, 16)
         Me.Label20.Name = "Label20"
         Me.Label20.Size = New System.Drawing.Size(44, 13)
         Me.Label20.TabIndex = 14
@@ -139,9 +158,9 @@ Partial Class FrmGeneralSettings
         '
         Me.CoBxNode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CoBxNode.FormattingEnabled = True
-        Me.CoBxNode.Location = New System.Drawing.Point(133, 40)
+        Me.CoBxNode.Location = New System.Drawing.Point(105, 40)
         Me.CoBxNode.Name = "CoBxNode"
-        Me.CoBxNode.Size = New System.Drawing.Size(192, 21)
+        Me.CoBxNode.Size = New System.Drawing.Size(220, 21)
         Me.CoBxNode.TabIndex = 13
         '
         'CoBxRefresh
@@ -149,7 +168,7 @@ Partial Class FrmGeneralSettings
         Me.CoBxRefresh.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CoBxRefresh.FormattingEnabled = True
         Me.CoBxRefresh.Items.AddRange(New Object() {"1", "4", "10"})
-        Me.CoBxRefresh.Location = New System.Drawing.Point(133, 13)
+        Me.CoBxRefresh.Location = New System.Drawing.Point(105, 13)
         Me.CoBxRefresh.Name = "CoBxRefresh"
         Me.CoBxRefresh.Size = New System.Drawing.Size(63, 21)
         Me.CoBxRefresh.TabIndex = 12
@@ -214,7 +233,7 @@ Partial Class FrmGeneralSettings
         '
         Me.BtSaveSettings.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtSaveSettings.ForeColor = System.Drawing.Color.White
-        Me.BtSaveSettings.Location = New System.Drawing.Point(12, 267)
+        Me.BtSaveSettings.Location = New System.Drawing.Point(12, 405)
         Me.BtSaveSettings.Name = "BtSaveSettings"
         Me.BtSaveSettings.Size = New System.Drawing.Size(758, 30)
         Me.BtSaveSettings.TabIndex = 9
@@ -243,9 +262,9 @@ Partial Class FrmGeneralSettings
         Me.GrpBxSeller.BackColor = System.Drawing.Color.Transparent
         Me.GrpBxSeller.Controls.Add(Me.TabControl2)
         Me.GrpBxSeller.ForeColor = System.Drawing.Color.White
-        Me.GrpBxSeller.Location = New System.Drawing.Point(365, 12)
+        Me.GrpBxSeller.Location = New System.Drawing.Point(12, 275)
         Me.GrpBxSeller.Name = "GrpBxSeller"
-        Me.GrpBxSeller.Size = New System.Drawing.Size(405, 249)
+        Me.GrpBxSeller.Size = New System.Drawing.Size(347, 124)
         Me.GrpBxSeller.TabIndex = 10
         Me.GrpBxSeller.TabStop = False
         Me.GrpBxSeller.Text = "PayPal Settings (Sandbox)"
@@ -258,7 +277,7 @@ Partial Class FrmGeneralSettings
         Me.TabControl2.Location = New System.Drawing.Point(3, 16)
         Me.TabControl2.Name = "TabControl2"
         Me.TabControl2.SelectedIndex = 0
-        Me.TabControl2.Size = New System.Drawing.Size(399, 230)
+        Me.TabControl2.Size = New System.Drawing.Size(341, 105)
         Me.TabControl2.TabIndex = 6
         '
         'TabPage4
@@ -270,7 +289,7 @@ Partial Class FrmGeneralSettings
         Me.TabPage4.Location = New System.Drawing.Point(4, 22)
         Me.TabPage4.Name = "TabPage4"
         Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage4.Size = New System.Drawing.Size(391, 204)
+        Me.TabPage4.Size = New System.Drawing.Size(333, 79)
         Me.TabPage4.TabIndex = 0
         Me.TabPage4.Text = "Payment informations"
         '
@@ -283,6 +302,7 @@ Partial Class FrmGeneralSettings
         Me.RBPayPalOrder.TabIndex = 12
         Me.RBPayPalOrder.Text = "create a PayPal Order (need PayPal Business)"
         Me.RBPayPalOrder.UseVisualStyleBackColor = True
+        Me.RBPayPalOrder.Visible = False
         '
         'RBPayPalEMail
         '
@@ -300,7 +320,7 @@ Partial Class FrmGeneralSettings
         '
         Me.TBPayPalEMail.Location = New System.Drawing.Point(104, 6)
         Me.TBPayPalEMail.Name = "TBPayPalEMail"
-        Me.TBPayPalEMail.Size = New System.Drawing.Size(262, 20)
+        Me.TBPayPalEMail.Size = New System.Drawing.Size(214, 20)
         Me.TBPayPalEMail.TabIndex = 7
         '
         'TabPage5
@@ -314,14 +334,14 @@ Partial Class FrmGeneralSettings
         Me.TabPage5.Location = New System.Drawing.Point(4, 22)
         Me.TabPage5.Name = "TabPage5"
         Me.TabPage5.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage5.Size = New System.Drawing.Size(391, 204)
+        Me.TabPage5.Size = New System.Drawing.Size(333, 79)
         Me.TabPage5.TabIndex = 1
         Me.TabPage5.Text = "Business API"
         '
         'BtCheckPayPalBiz
         '
         Me.BtCheckPayPalBiz.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtCheckPayPalBiz.Location = New System.Drawing.Point(76, 58)
+        Me.BtCheckPayPalBiz.Location = New System.Drawing.Point(76, 53)
         Me.BtCheckPayPalBiz.Name = "BtCheckPayPalBiz"
         Me.BtCheckPayPalBiz.Size = New System.Drawing.Size(75, 23)
         Me.BtCheckPayPalBiz.TabIndex = 4
@@ -342,7 +362,7 @@ Partial Class FrmGeneralSettings
         Me.TBPayPalAPISecret.Location = New System.Drawing.Point(76, 32)
         Me.TBPayPalAPISecret.Name = "TBPayPalAPISecret"
         Me.TBPayPalAPISecret.PasswordChar = Global.Microsoft.VisualBasic.ChrW(35)
-        Me.TBPayPalAPISecret.Size = New System.Drawing.Size(296, 20)
+        Me.TBPayPalAPISecret.Size = New System.Drawing.Size(242, 20)
         Me.TBPayPalAPISecret.TabIndex = 3
         '
         'Label14
@@ -358,7 +378,7 @@ Partial Class FrmGeneralSettings
         '
         Me.TBPayPalAPIUser.Location = New System.Drawing.Point(76, 6)
         Me.TBPayPalAPIUser.Name = "TBPayPalAPIUser"
-        Me.TBPayPalAPIUser.Size = New System.Drawing.Size(296, 20)
+        Me.TBPayPalAPIUser.Size = New System.Drawing.Size(242, 20)
         Me.TBPayPalAPIUser.TabIndex = 2
         '
         'GroupBox1
@@ -373,10 +393,191 @@ Partial Class FrmGeneralSettings
         Me.GroupBox1.ForeColor = System.Drawing.Color.White
         Me.GroupBox1.Location = New System.Drawing.Point(12, 142)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(347, 119)
+        Me.GroupBox1.Size = New System.Drawing.Size(347, 127)
         Me.GroupBox1.TabIndex = 13
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Default Non-Cryptocurrency Settings"
+        '
+        'GroupBox2
+        '
+        Me.GroupBox2.BackColor = System.Drawing.Color.Transparent
+        Me.GroupBox2.Controls.Add(Me.BtBitcoinAddresses)
+        Me.GroupBox2.Controls.Add(Me.BtBitcoindPath)
+        Me.GroupBox2.Controls.Add(Me.LVBitcoinAddress)
+        Me.GroupBox2.Controls.Add(Me.Label12)
+        Me.GroupBox2.Controls.Add(Me.TBBitcoinAPIPass)
+        Me.GroupBox2.Controls.Add(Me.Label11)
+        Me.GroupBox2.Controls.Add(Me.TBBitcoinAPIUser)
+        Me.GroupBox2.Controls.Add(Me.Label10)
+        Me.GroupBox2.Controls.Add(Me.TBBitcoinWallet)
+        Me.GroupBox2.Controls.Add(Me.Label9)
+        Me.GroupBox2.Controls.Add(Me.TBBitcoinAPINode)
+        Me.GroupBox2.Controls.Add(Me.Label8)
+        Me.GroupBox2.Controls.Add(Me.TBBitcoinArgs)
+        Me.GroupBox2.Controls.Add(Me.Label7)
+        Me.GroupBox2.Controls.Add(Me.TBBitcoindPath)
+        Me.GroupBox2.Controls.Add(Me.Label5)
+        Me.GroupBox2.ForeColor = System.Drawing.Color.White
+        Me.GroupBox2.Location = New System.Drawing.Point(365, 12)
+        Me.GroupBox2.Name = "GroupBox2"
+        Me.GroupBox2.Size = New System.Drawing.Size(402, 387)
+        Me.GroupBox2.TabIndex = 14
+        Me.GroupBox2.TabStop = False
+        Me.GroupBox2.Text = "Bitcoin Settings (Testnet)"
+        '
+        'BtBitcoinAddresses
+        '
+        Me.BtBitcoinAddresses.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BtBitcoinAddresses.ForeColor = System.Drawing.Color.White
+        Me.BtBitcoinAddresses.Location = New System.Drawing.Point(115, 172)
+        Me.BtBitcoinAddresses.Name = "BtBitcoinAddresses"
+        Me.BtBitcoinAddresses.Size = New System.Drawing.Size(169, 21)
+        Me.BtBitcoinAddresses.TabIndex = 27
+        Me.BtBitcoinAddresses.Text = "bitcoin address settings"
+        Me.BtBitcoinAddresses.UseVisualStyleBackColor = False
+        '
+        'BtBitcoindPath
+        '
+        Me.BtBitcoindPath.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BtBitcoindPath.Enabled = False
+        Me.BtBitcoindPath.ForeColor = System.Drawing.Color.White
+        Me.BtBitcoindPath.Location = New System.Drawing.Point(362, 20)
+        Me.BtBitcoindPath.Name = "BtBitcoindPath"
+        Me.BtBitcoindPath.Size = New System.Drawing.Size(34, 21)
+        Me.BtBitcoindPath.TabIndex = 26
+        Me.BtBitcoindPath.Text = "..."
+        Me.BtBitcoindPath.UseVisualStyleBackColor = False
+        '
+        'LVBitcoinAddress
+        '
+        Me.LVBitcoinAddress.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader1})
+        Me.LVBitcoinAddress.FullRowSelect = True
+        Me.LVBitcoinAddress.GridLines = True
+        Me.LVBitcoinAddress.HideSelection = False
+        Me.LVBitcoinAddress.Location = New System.Drawing.Point(12, 196)
+        Me.LVBitcoinAddress.Name = "LVBitcoinAddress"
+        Me.LVBitcoinAddress.Size = New System.Drawing.Size(384, 181)
+        Me.LVBitcoinAddress.TabIndex = 25
+        Me.LVBitcoinAddress.UseCompatibleStateImageBehavior = False
+        Me.LVBitcoinAddress.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader1
+        '
+        Me.ColumnHeader1.Text = "Address"
+        Me.ColumnHeader1.Width = 368
+        '
+        'Label12
+        '
+        Me.Label12.AutoSize = True
+        Me.Label12.Location = New System.Drawing.Point(9, 180)
+        Me.Label12.Name = "Label12"
+        Me.Label12.Size = New System.Drawing.Size(94, 13)
+        Me.Label12.TabIndex = 24
+        Me.Label12.Text = "Bitcoin Addresses:"
+        '
+        'TBBitcoinAPIPass
+        '
+        Me.TBBitcoinAPIPass.Location = New System.Drawing.Point(115, 124)
+        Me.TBBitcoinAPIPass.Name = "TBBitcoinAPIPass"
+        Me.TBBitcoinAPIPass.Size = New System.Drawing.Size(281, 20)
+        Me.TBBitcoinAPIPass.TabIndex = 23
+        Me.TBBitcoinAPIPass.Text = "bitcoin"
+        '
+        'Label11
+        '
+        Me.Label11.AutoSize = True
+        Me.Label11.Location = New System.Drawing.Point(9, 127)
+        Me.Label11.Name = "Label11"
+        Me.Label11.Size = New System.Drawing.Size(88, 13)
+        Me.Label11.TabIndex = 22
+        Me.Label11.Text = "Bitcoin API Pass:"
+        '
+        'TBBitcoinAPIUser
+        '
+        Me.TBBitcoinAPIUser.Location = New System.Drawing.Point(115, 98)
+        Me.TBBitcoinAPIUser.Name = "TBBitcoinAPIUser"
+        Me.TBBitcoinAPIUser.Size = New System.Drawing.Size(281, 20)
+        Me.TBBitcoinAPIUser.TabIndex = 21
+        Me.TBBitcoinAPIUser.Text = "bitcoin"
+        '
+        'Label10
+        '
+        Me.Label10.AutoSize = True
+        Me.Label10.Location = New System.Drawing.Point(9, 101)
+        Me.Label10.Name = "Label10"
+        Me.Label10.Size = New System.Drawing.Size(87, 13)
+        Me.Label10.TabIndex = 20
+        Me.Label10.Text = "Bitcoin API User:"
+        '
+        'TBBitcoinWallet
+        '
+        Me.TBBitcoinWallet.Enabled = False
+        Me.TBBitcoinWallet.Location = New System.Drawing.Point(115, 150)
+        Me.TBBitcoinWallet.Name = "TBBitcoinWallet"
+        Me.TBBitcoinWallet.Size = New System.Drawing.Size(281, 20)
+        Me.TBBitcoinWallet.TabIndex = 19
+        Me.TBBitcoinWallet.Text = "DEXWALLET"
+        '
+        'Label9
+        '
+        Me.Label9.AutoSize = True
+        Me.Label9.Location = New System.Drawing.Point(9, 153)
+        Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(75, 13)
+        Me.Label9.TabIndex = 18
+        Me.Label9.Text = "Bitcoin Wallet:"
+        '
+        'TBBitcoinAPINode
+        '
+        Me.TBBitcoinAPINode.Location = New System.Drawing.Point(115, 72)
+        Me.TBBitcoinAPINode.Name = "TBBitcoinAPINode"
+        Me.TBBitcoinAPINode.Size = New System.Drawing.Size(281, 20)
+        Me.TBBitcoinAPINode.TabIndex = 17
+        Me.TBBitcoinAPINode.Text = "http://127.0.0.1:18332"
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.Location = New System.Drawing.Point(9, 75)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(94, 13)
+        Me.Label8.TabIndex = 16
+        Me.Label8.Text = "Bitcoin API Node :"
+        '
+        'TBBitcoinArgs
+        '
+        Me.TBBitcoinArgs.Enabled = False
+        Me.TBBitcoinArgs.Location = New System.Drawing.Point(115, 46)
+        Me.TBBitcoinArgs.Name = "TBBitcoinArgs"
+        Me.TBBitcoinArgs.Size = New System.Drawing.Size(281, 20)
+        Me.TBBitcoinArgs.TabIndex = 15
+        Me.TBBitcoinArgs.Text = "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex"
+        '
+        'Label7
+        '
+        Me.Label7.AutoSize = True
+        Me.Label7.Location = New System.Drawing.Point(9, 49)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(100, 13)
+        Me.Label7.TabIndex = 14
+        Me.Label7.Text = "Bitcoind arguments:"
+        '
+        'TBBitcoindPath
+        '
+        Me.TBBitcoindPath.Enabled = False
+        Me.TBBitcoindPath.Location = New System.Drawing.Point(115, 20)
+        Me.TBBitcoindPath.Name = "TBBitcoindPath"
+        Me.TBBitcoindPath.Size = New System.Drawing.Size(241, 20)
+        Me.TBBitcoindPath.TabIndex = 13
+        '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Location = New System.Drawing.Point(9, 23)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(73, 13)
+        Me.Label5.TabIndex = 12
+        Me.Label5.Text = "Bitcoind Path:"
         '
         'FrmGeneralSettings
         '
@@ -385,7 +586,8 @@ Partial Class FrmGeneralSettings
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.ClientSize = New System.Drawing.Size(783, 314)
+        Me.ClientSize = New System.Drawing.Size(783, 445)
+        Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.GrpBxSeller)
         Me.Controls.Add(Me.GroupBox3)
@@ -404,6 +606,8 @@ Partial Class FrmGeneralSettings
         Me.TabPage5.PerformLayout()
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
+        Me.GroupBox2.ResumeLayout(False)
+        Me.GroupBox2.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -439,4 +643,22 @@ Partial Class FrmGeneralSettings
     Friend WithEvents Label4 As Label
     Friend WithEvents CoBxPayType As ComboBox
     Friend WithEvents GroupBox1 As GroupBox
+    Friend WithEvents GroupBox2 As GroupBox
+    Friend WithEvents TBBitcoindPath As TextBox
+    Friend WithEvents Label5 As Label
+    Friend WithEvents TBBitcoinWallet As TextBox
+    Friend WithEvents Label9 As Label
+    Friend WithEvents TBBitcoinAPINode As TextBox
+    Friend WithEvents Label8 As Label
+    Friend WithEvents TBBitcoinArgs As TextBox
+    Friend WithEvents Label7 As Label
+    Friend WithEvents LVBitcoinAddress As ListView
+    Friend WithEvents ColumnHeader1 As ColumnHeader
+    Friend WithEvents Label12 As Label
+    Friend WithEvents TBBitcoinAPIPass As TextBox
+    Friend WithEvents Label11 As Label
+    Friend WithEvents TBBitcoinAPIUser As TextBox
+    Friend WithEvents Label10 As Label
+    Friend WithEvents BtBitcoindPath As Button
+    Friend WithEvents BtBitcoinAddresses As Button
 End Class

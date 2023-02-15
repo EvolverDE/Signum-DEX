@@ -205,15 +205,23 @@ Public Class FrmMyOrderSettings
                     LabInfo.Visible = True
                     TBInfotext.Visible = True
                     LabInfo.Text = "PayPal E-Mail:"
-                Case ClsOrderSettings.E_PayType.PayPal_Order.ToString.Replace("_", "-")
-                    LabInfo.Visible = False
-                    TBInfotext.Visible = False
-                    LabInfo.Text = "PayPal-Order:"
+                'Case ClsOrderSettings.E_PayType.PayPal_Order.ToString.Replace("_", "-")
+                '    LabInfo.Visible = False
+                '    TBInfotext.Visible = False
+                '    LabInfo.Text = "PayPal-Order:"
                 Case ClsOrderSettings.E_PayType.Self_Pickup.ToString.Replace("_", "-")
                     LabInfo.Visible = True
                     TBInfotext.Visible = True
                     LabInfo.Text = "Location:"
                 Case ClsOrderSettings.E_PayType.Other.ToString
+                    LabInfo.Visible = False
+                    TBInfotext.Visible = False
+                Case ClsOrderSettings.E_PayType.AtomicSwap.ToString
+                    LabInfo.Visible = False
+                    TBInfotext.Visible = False
+                Case Else
+                    LabInfo.Visible = False
+                    TBInfotext.Visible = False
 
             End Select
 

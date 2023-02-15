@@ -1,14 +1,10 @@
-﻿
-
-
-Option Strict On
+﻿Option Strict On
 Option Explicit On
 
 Public Class ClsDEXContract
 
-
 #Region "SmartContract Structure"
-    'SmartContract: 7617048251184549231
+    'SmartContract: 8372890871867317775
 
     'ActivateDeactivateDispute: -9199918549131231789
 
@@ -29,10 +25,10 @@ Public Class ClsDEXContract
 
 #End Region
 
-    'Public Const _ReferenceTX As ULong = 7617048251184549231UL
-    'Public Const _ReferenceTXFullHash As String = "6f8ddd100731b569172459f788b2f3f1533f88e143e52e72d2f65c42a3ef287e" 
-    'Public Const _DeployFeeNQT As ULong = 210000000UL
-    'Public Const _GasFeeNQT As ULong = 29400000UL
+    'Public Const _ReferenceTX As ULong = 8372890871867317775UL
+    'Public Const _ReferenceTXFullHash As String = "0f1ec3f0e27b327479e559b51a5f32338a60431ec59a64a252269c17932917c8" 
+    'Public Const _DeployFeeNQT As ULong = 230000000UL
+    'Public Const _GasFeeNQT As ULong = 40000000UL
 
     Public ReadOnly Property ReferenceDeActivateDeniability As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(-9199918549131231789L), 0) '805352d2a4817dd3
 
@@ -55,7 +51,7 @@ Public Class ClsDEXContract
 
 #Region "Properties"
 
-    Private C_Node As String = ""
+    Private Property C_Node As String = ""
     Public Property Node() As String
         Get
             Return C_Node
@@ -65,254 +61,294 @@ Public Class ClsDEXContract
         End Set
     End Property
 
-    Private C_DEXContract As Boolean = False
-    ReadOnly Property IsDEXContract() As Boolean
+    Private Property C_DEXContract As Boolean = False
+    Public ReadOnly Property IsDEXContract() As Boolean
         Get
             Return C_DEXContract
         End Get
     End Property
 
-    Private C_IsReady As Boolean = False
-    ReadOnly Property IsReady() As Boolean
+    Private Property C_IsReady As Boolean = False
+    Public ReadOnly Property IsReady() As Boolean
         Get
             Return C_IsReady
         End Get
     End Property
 
 
-    Private C_ContractTimestamp As ULong = 0UL
-    ReadOnly Property ContractTimestamp() As ULong
+    Private Property C_ContractTimestamp As ULong = 0UL
+    Public ReadOnly Property ContractTimestamp() As ULong
         Get
             Return C_ContractTimestamp
         End Get
     End Property
 
-    Private ReadOnly C_ID As ULong = 0UL
-    ReadOnly Property ID() As ULong
+    Private ReadOnly Property C_ID As ULong = 0UL
+    Public ReadOnly Property ID() As ULong
         Get
             Return C_ID
         End Get
     End Property
 
-    Private C_Address As String = ""
-    ReadOnly Property Address() As String
+    Private Property C_Address As String = ""
+    Public ReadOnly Property Address() As String
         Get
             Return C_Address
         End Get
     End Property
 
-    Private C_Name As String = ""
-    ReadOnly Property Name() As String
+    Private Property C_Name As String = ""
+    Public ReadOnly Property Name() As String
         Get
             Return C_Name
         End Get
     End Property
 
-    Private C_Description As String = ""
-    ReadOnly Property Description() As String
+    Private Property C_Description As String = ""
+    Public ReadOnly Property Description() As String
         Get
             Return C_Description
         End Get
     End Property
 
-    Private C_CreatorID As ULong = 0UL
-    ReadOnly Property CreatorID() As ULong
+    Private Property C_CreatorID As ULong = 0UL
+    Public ReadOnly Property CreatorID() As ULong
         Get
             Return C_CreatorID
         End Get
     End Property
 
-    Private C_CreatorAddress As String = ""
-    ReadOnly Property CreatorAddress() As String
+    Private Property C_CreatorAddress As String = ""
+    Public ReadOnly Property CreatorAddress() As String
         Get
             Return C_CreatorAddress
         End Get
     End Property
 
 
-    Private C_CurrentCreationTransaction As ULong
-    ReadOnly Property CurrentCreationTransaction As ULong
+    Private Property C_CurrentCreationTransaction As ULong
+    Public ReadOnly Property CurrentCreationTransaction As ULong
         Get
             Return C_CurrentCreationTransaction
         End Get
     End Property
 
-    Private C_CurrentConfirmations As ULong
-    ReadOnly Property CurrentConfirmations As ULong
+    Private Property C_CurrentConfirmations As ULong
+    Public ReadOnly Property CurrentConfirmations As ULong
         Get
             Return C_CurrentConfirmations
         End Get
     End Property
 
-    Private C_CurrentTimestamp As ULong = 0UL
-    ReadOnly Property CurrentTimestamp() As ULong
+    Private Property C_CurrentTimestamp As ULong = 0UL
+    Public ReadOnly Property CurrentTimestamp() As ULong
         Get
             Return C_CurrentTimestamp
         End Get
     End Property
 
-    Private C_CurrentInitiatorID As ULong = 0UL
-    ReadOnly Property CurrentInitiatorID() As ULong
+    Private Property C_CurrentInitiatorID As ULong = 0UL
+    Public ReadOnly Property CurrentInitiatorID() As ULong
         Get
             Return C_CurrentInitiatorID
         End Get
     End Property
 
-    Private C_CurrentInitiatorAddress As String = ""
-    ReadOnly Property CurrentInitiatorAddress() As String
+    Private Property C_CurrentInitiatorAddress As String = ""
+    Public ReadOnly Property CurrentInitiatorAddress() As String
         Get
             Return C_CurrentInitiatorAddress
         End Get
     End Property
 
-    Private C_CurrentResponderID As ULong = 0UL
-    ReadOnly Property CurrentResponderID() As ULong
+    Private Property C_CurrentResponderID As ULong = 0UL
+    Public ReadOnly Property CurrentResponderID() As ULong
         Get
             Return C_CurrentResponderID
         End Get
     End Property
 
-    Private C_CurrentResponderAddress As String = ""
-    ReadOnly Property CurrentResponserAddress() As String
+    Private Property C_CurrentResponderAddress As String = ""
+    Public ReadOnly Property CurrentResponserAddress() As String
         Get
             Return C_CurrentResponderAddress
         End Get
     End Property
-    Private C_IsSellOrder As Boolean = False
-    ReadOnly Property IsSellOrder() As Boolean
+    Private Property C_IsSellOrder As Boolean = False
+    Public ReadOnly Property IsSellOrder() As Boolean
         Get
             Return C_IsSellOrder
         End Get
     End Property
 
-    Private C_Deniability As Boolean = False
-    ReadOnly Property Deniability() As Boolean
+    Private Property C_Deniability As Boolean = False
+    Public ReadOnly Property Deniability() As Boolean
         Get
             Return C_Deniability
         End Get
     End Property
 
-    Private C_Dispute As Boolean = False
-    ReadOnly Property Dispute() As Boolean
+    Private Property C_Dispute As Boolean = False
+    Public ReadOnly Property Dispute() As Boolean
         Get
             Return C_Dispute
         End Get
     End Property
 
-    Private C_Objection As Boolean = False
-    ReadOnly Property CurrentObjection() As Boolean
+    Private Property C_Objection As Boolean = False
+    Public ReadOnly Property CurrentObjection() As Boolean
         Get
             Return C_Objection
         End Get
     End Property
 
-    Private C_DisputeTimeout As ULong = 0UL
+    Public ReadOnly Property BlocksLeft() As Long
+        Get
+            Dim diffblock As Long = 0
+            diffblock = CLng(CurrentDisputeTimeout) - CLng(GetBlock())
+            Return diffblock
+
+        End Get
+    End Property
+
+    Private Property C_DisputeTimeout As ULong = 0UL
     ''' <summary>
     ''' Gets the TimeOut in Block
     ''' </summary>
     ''' <returns></returns>
-    ReadOnly Property CurrentDisputeTimeout() As ULong
+    Public ReadOnly Property CurrentDisputeTimeout() As ULong
         Get
             Return C_DisputeTimeout
         End Get
     End Property
 
 
-    Private C_CurrentSellerID As ULong = 0UL
-    ReadOnly Property CurrentSellerID() As ULong
+    Private Property C_CurrentSellerID As ULong = 0UL
+    Public ReadOnly Property CurrentSellerID() As ULong
         Get
             Return C_CurrentSellerID
         End Get
     End Property
-    Private C_CurrentSellerAddress As String = ""
-    ReadOnly Property CurrentSellerAddress() As String
+    Private Property C_CurrentSellerAddress As String = ""
+    Public ReadOnly Property CurrentSellerAddress() As String
         Get
             Return C_CurrentSellerAddress
         End Get
     End Property
-    Private C_CurrentBuyerID As ULong = 0UL
-    ReadOnly Property CurrentBuyerID() As ULong
+    Private Property C_CurrentBuyerID As ULong = 0UL
+    Public ReadOnly Property CurrentBuyerID() As ULong
         Get
             Return C_CurrentBuyerID
         End Get
     End Property
-    Private C_CurrentBuyerAddress As String = ""
-    ReadOnly Property CurrentBuyerAddress() As String
+    Private Property C_CurrentBuyerAddress As String = ""
+    Public ReadOnly Property CurrentBuyerAddress() As String
         Get
             Return C_CurrentBuyerAddress
         End Get
     End Property
-    Private C_CurrentBalance As Double = 0.0
-    ReadOnly Property CurrentBalance() As Double
+    Private Property C_CurrentBalance As Double = 0.0
+    Public ReadOnly Property CurrentBalance() As Double
         Get
             Return C_CurrentBalance
         End Get
     End Property
-    Private C_CurrentInitiatorsCollateral As Double = 0.0
-    ReadOnly Property CurrentInitiatorsCollateral() As Double
+    Private Property C_CurrentInitiatorsCollateral As Double = 0.0
+    Public ReadOnly Property CurrentInitiatorsCollateral() As Double
         Get
             Return C_CurrentInitiatorsCollateral
         End Get
     End Property
-    Private C_CurrentRespondersCollateral As Double = 0.0
-    ReadOnly Property CurrentRespondersCollateral() As Double
+    Private Property C_CurrentRespondersCollateral As Double = 0.0
+    Public ReadOnly Property CurrentRespondersCollateral() As Double
         Get
             Return C_CurrentRespondersCollateral
         End Get
     End Property
-    Private C_CurrentBuySellAmount As Double = 0.0
-    ReadOnly Property CurrentBuySellAmount() As Double
+    Private Property C_CurrentBuySellAmount As Double = 0.0
+    Public ReadOnly Property CurrentBuySellAmount() As Double
         Get
             Return C_CurrentBuySellAmount
         End Get
     End Property
 
-    Private C_MediatorsDeposit As Double = 0.0
-    ReadOnly Property CurrentMediatorsDeposit() As Double
+    Private Property C_MediatorsDeposit As Double = 0.0
+    Public ReadOnly Property CurrentMediatorsDeposit() As Double
         Get
             Return C_MediatorsDeposit
         End Get
     End Property
 
-    Private C_ConciliationAmount As Double = 0.0
-    ReadOnly Property CurrentConciliationAmount() As Double
+    Private Property C_ConciliationAmount As Double = 0.0
+    Public ReadOnly Property CurrentConciliationAmount() As Double
         Get
             Return C_ConciliationAmount
         End Get
     End Property
 
-    Private C_CurrentXAmount As Double = 0.0
-    ReadOnly Property CurrentXAmount() As Double
+    Private Property C_CurrentXAmount As Double = 0.0
+    Public ReadOnly Property CurrentXAmount() As Double
         Get
             Return C_CurrentXAmount
         End Get
     End Property
-    Private C_CurrentPrice As Double = 0.0
-    ReadOnly Property CurrentPrice As Double
+    Private Property C_CurrentPrice As Double = 0.0
+    Public ReadOnly Property CurrentPrice As Double
         Get
             Return C_CurrentPrice
         End Get
     End Property
-    Private C_CurrentXItem As String = ""
-    ReadOnly Property CurrentXItem() As String
+    Private Property C_CurrentXItem As String = ""
+    Public ReadOnly Property CurrentXItem() As String
         Get
             Return C_CurrentXItem
         End Get
     End Property
-    Private C_CurrentChainSwapHash As ULong = 0UL
-    ReadOnly Property CurrentChainSwapHash() As ULong
+    'Private Property C_CurrentChainSwapHash As String = ""
+    Public ReadOnly Property CurrentChainSwapHash() As String
         Get
-            Return C_CurrentChainSwapHash
+
+            Dim T_Longs As List(Of ULong) = New List(Of ULong)({C_CurrentChainSwapHashULong4, C_CurrentChainSwapHashULong3, C_CurrentChainSwapHashULong2, C_CurrentChainSwapHashULong1})
+
+            T_Longs = ChangeULongEndians(T_Longs)
+
+            Dim MaxHash As String = ULongListToHEXString(T_Longs)
+            Return MaxHash
         End Get
     End Property
-    Private C_CurrentChat As List(Of S_Chat) = New List(Of S_Chat)
-    ReadOnly Property CurrentChat() As List(Of S_Chat)
+    Private Property C_CurrentChainSwapHashULong1 As ULong = 0UL
+    Public ReadOnly Property CurrentChainSwapHashULong1() As ULong
+        Get
+            Return C_CurrentChainSwapHashULong1
+        End Get
+    End Property
+    Private Property C_CurrentChainSwapHashULong2 As ULong = 0UL
+    Public ReadOnly Property CurrentChainSwapHashULong2() As ULong
+        Get
+            Return C_CurrentChainSwapHashULong2
+        End Get
+    End Property
+    Private Property C_CurrentChainSwapHashULong3 As ULong = 0UL
+    Public ReadOnly Property CurrentChainSwapHashULong3() As ULong
+        Get
+            Return C_CurrentChainSwapHashULong3
+        End Get
+    End Property
+    Private Property C_CurrentChainSwapHashULong4 As ULong = 0UL
+    Public ReadOnly Property CurrentChainSwapHashULong4() As ULong
+        Get
+            Return C_CurrentChainSwapHashULong4
+        End Get
+    End Property
+
+    Private Property C_CurrentChat As List(Of S_Chat) = New List(Of S_Chat)
+    Public ReadOnly Property CurrentChat() As List(Of S_Chat)
         Get
             Return C_CurrentChat
         End Get
     End Property
-    Private C_ContractOrderHistoryList As List(Of S_Order) = New List(Of S_Order)
-    ReadOnly Property ContractOrderHistoryList() As List(Of S_Order)
+    Private Property C_ContractOrderHistoryList As List(Of S_Order) = New List(Of S_Order)
+    Public ReadOnly Property ContractOrderHistoryList() As List(Of S_Order)
         Get
             Return C_ContractOrderHistoryList
         End Get
@@ -320,46 +356,46 @@ Public Class ClsDEXContract
 
 
 
-    Private C_PendingAmount As Double = 0.0
-    ReadOnly Property PendingAmount() As Double
+    Private Property C_PendingAmount As Double = 0.0
+    Public ReadOnly Property PendingAmount() As Double
         Get
             Return C_PendingAmount
         End Get
     End Property
 
-    Private C_PendingCommand As E_ReferenceCommand = E_ReferenceCommand.NONE
-    ReadOnly Property PendingCommand() As E_ReferenceCommand
+    Private Property C_PendingCommand As E_ReferenceCommand = E_ReferenceCommand.NONE
+    Public ReadOnly Property PendingCommand() As E_ReferenceCommand
         Get
             Return C_PendingCommand
         End Get
     End Property
 
-    Private C_PendingCollateral As Double = 0.0
-    ReadOnly Property PendingCollateral() As Double
+    Private Property C_PendingCollateral As Double = 0.0
+    Public ReadOnly Property PendingCollateral() As Double
         Get
             Return C_PendingCollateral
         End Get
     End Property
-    Private C_PendingResponderID As ULong = 0UL
-    ReadOnly Property PendingResponderID() As ULong
+    Private Property C_PendingResponderID As ULong = 0UL
+    Public ReadOnly Property PendingResponderID() As ULong
         Get
             Return C_PendingResponderID
         End Get
     End Property
-    Private C_PendingResponderAddress As String = ""
-    ReadOnly Property PendingResponderAddress() As String
+    Private Property C_PendingResponderAddress As String = ""
+    Public ReadOnly Property PendingResponderAddress() As String
         Get
             Return C_PendingResponderAddress
         End Get
     End Property
-    Private C_PendingXAmount As Double = 0.0
-    ReadOnly Property PendingXAmount() As Double
+    Private Property C_PendingXAmount As Double = 0.0
+    Public ReadOnly Property PendingXAmount() As Double
         Get
             Return C_PendingXAmount
         End Get
     End Property
-    Private C_PendingXItem As String = ""
-    ReadOnly Property PendingXItem() As String
+    Private Property C_PendingXItem As String = ""
+    Public ReadOnly Property PendingXItem() As String
         Get
             Return C_PendingXItem
         End Get
@@ -367,51 +403,65 @@ Public Class ClsDEXContract
 
 
 
-    Private C_Status As E_Status = E_Status.NEW_
-    ReadOnly Property Status() As E_Status
+    Private Property C_Status As E_Status = E_Status.NEW_
+    Public ReadOnly Property Status() As E_Status
         Get
             Return C_Status
         End Get
     End Property
-    Private ReadOnly C_Message As String = ""
-    ReadOnly Property Message() As String
+
+    Private Property C_StatusMessage As String = ""
+    Public ReadOnly Property StatusMessage() As String
+        Get
+            C_StatusMessage = GetProposalMessage()
+            If C_StatusMessage.Trim = "" Then
+                C_StatusMessage = GetReserveMessage()
+            End If
+
+            Return C_StatusMessage
+        End Get
+    End Property
+
+    Private ReadOnly Property C_Message As String = ""
+    Public ReadOnly Property Message() As String
         Get
             Return C_Message
         End Get
     End Property
 
 
-    Private C_IsFrozen As Boolean = False
-    ReadOnly Property IsFrozen() As Boolean
+    Private Property C_IsFrozen As Boolean = False
+    Public ReadOnly Property IsFrozen() As Boolean
         Get
             Return C_IsFrozen
         End Get
     End Property
-    Private C_IsRunning As Boolean = False
-    ReadOnly Property IsRunning() As Boolean
+    Private Property C_IsRunning As Boolean = False
+    Public ReadOnly Property IsRunning() As Boolean
         Get
             Return C_IsRunning
         End Get
     End Property
-    Private C_IsStopped As Boolean = False
-    ReadOnly Property IsStopped() As Boolean
+    Private Property C_IsStopped As Boolean = False
+    Public ReadOnly Property IsStopped() As Boolean
         Get
             Return C_IsStopped
         End Get
     End Property
-    Private C_IsFinished As Boolean = False
-    ReadOnly Property IsFinished() As Boolean
+    Private Property C_IsFinished As Boolean = False
+    Public ReadOnly Property IsFinished() As Boolean
         Get
             Return C_IsFinished
         End Get
     End Property
-    Private C_IsDead As Boolean = False
-    ReadOnly Property IsDead() As Boolean
+    Private Property C_IsDead As Boolean = False
+    Public ReadOnly Property IsDead() As Boolean
         Get
             Return C_IsDead
         End Get
     End Property
 
+    Private Property XMLList As List(Of List(Of String)) = New List(Of List(Of String))
 
 #End Region
 
@@ -453,6 +503,8 @@ Public Class ClsDEXContract
 
         Dim Status As E_Status
         'Dim Message As String
+        Dim ChainSwapKey As String
+        'Dim ChainSwapHash As String
 
     End Structure
     Private Structure S_TX
@@ -520,19 +572,22 @@ Public Class ClsDEXContract
         BUY_SELL_AMOUNT = 12
         CONCILIATION_AMOUNT = 13
 
-        CHAINSWAPHASH = 14
+        CHAINSWAPHASHLONG1 = 14
+        CHAINSWAPHASHLONG2 = 15
+        CHAINSWAPHASHLONG3 = 16
+        CHAINSWAPHASHLONG4 = 17
 
-        TIMEOUT = 15
+        TIMEOUT = 18
 
-        SELL_ORDER = 16
-        FREE_FOR_ALL = 17
+        SELL_ORDER = 19
+        FREE_FOR_ALL = 20
 
-        IS_FIAT_ORDER = 18
-        DECIMALS = 22
+        IS_FIAT_ORDER = 21
+        DECIMALS = 25
 
-        DENIABILITY = 19
-        DISPUTE = 20
-        OBJECTION = 21
+        DENIABILITY = 22
+        DISPUTE = 23
+        OBJECTION = 24
 
     End Enum
 
@@ -554,7 +609,7 @@ Public Class ClsDEXContract
 
 #End Region
 
-
+#Region "Constructors"
     ''' <summary>
     ''' Loads the entire DEXContract with its HistoryOrders
     ''' </summary>
@@ -593,6 +648,459 @@ Public Class ClsDEXContract
         Refresh(RefreshHistoryOrders)
 
     End Sub
+
+#End Region
+
+#Region "Public Supportfunctions/Subroutines"
+    ''' <summary>
+    ''' Refreshing DEXContract
+    ''' </summary>
+    Public Sub Refresh(Optional ByVal RefreshHistoryOrders As Boolean = True)
+
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node)
+        Dim ContractList As List(Of String) = SignumAPI.GetSmartContractDetails(C_ID)
+
+        If ContractList.Count > 0 Then
+            If C_DEXContract Then
+
+                C_CurrentBalance = ClsSignumAPI.Planck2Dbl(GetULongBetweenFromList(ContractList, "<balanceNQT>", "</balanceNQT>"))
+
+                Dim MachineData As String = GetStringBetweenFromList(ContractList, "<machineData>", "</machineData>")
+                Dim MachineDataULongList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(MachineData)
+
+                Dim T_CreateOrderTX As ULong = MachineDataULongList(E_ContractVariables.CREATE_ORDER)
+                'Dim T_AcceptOrderTX As ULong = MachineDataULongList(E_ContractVariables.ACCEPT_ORDER)
+
+                Dim T_InitiatorID As ULong = MachineDataULongList(E_ContractVariables.INITIATOR)
+                Dim T_ResponderID As ULong = MachineDataULongList(E_ContractVariables.RESPONDER)
+
+
+                Dim T_InitiatorsCollateral As ULong = MachineDataULongList(E_ContractVariables.INITIATORS_COLLATERAL)
+                Dim T_RespondersCollateral As ULong = MachineDataULongList(E_ContractVariables.RESPONDERS_COLLATERAL)
+                Dim T_BuySellAmount As ULong = MachineDataULongList(E_ContractVariables.BUY_SELL_AMOUNT)
+
+                Dim T_SellOrder As ULong = MachineDataULongList(E_ContractVariables.SELL_ORDER)
+                Dim T_FreeForAll As ULong = MachineDataULongList(E_ContractVariables.FREE_FOR_ALL)
+
+                Dim T_ChainSwapHashULong1 As ULong = MachineDataULongList(E_ContractVariables.CHAINSWAPHASHLONG1)
+                Dim T_ChainSwapHashULong2 As ULong = MachineDataULongList(E_ContractVariables.CHAINSWAPHASHLONG2)
+                Dim T_ChainSwapHashULong3 As ULong = MachineDataULongList(E_ContractVariables.CHAINSWAPHASHLONG3)
+                Dim T_ChainSwapHashULong4 As ULong = MachineDataULongList(E_ContractVariables.CHAINSWAPHASHLONG4)
+
+
+                Dim T_Dispute As ULong = MachineDataULongList(E_ContractVariables.DISPUTE)
+                Dim T_ConciliationAmount As ULong = MachineDataULongList(E_ContractVariables.CONCILIATION_AMOUNT)
+
+                Dim T_TimeOut As ULong = MachineDataULongList(E_ContractVariables.TIMEOUT)
+
+                Dim T_MediatorsDeposit As ULong = MachineDataULongList(E_ContractVariables.MEDIATORS_DEPOSIT)
+                Dim T_Deniability As ULong = MachineDataULongList(E_ContractVariables.DENIABILITY)
+                Dim T_Objection As ULong = MachineDataULongList(E_ContractVariables.OBJECTION)
+
+#Region "getCandidates"
+
+                C_CurrentInitiatorID = T_InitiatorID
+                If Not C_CurrentInitiatorID = 0UL Then
+                    C_CurrentInitiatorAddress = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(CurrentInitiatorID)
+                Else
+                    C_CurrentInitiatorAddress = ""
+                End If
+
+                C_CurrentResponderID = T_ResponderID
+                If Not C_CurrentResponderID = 0UL Then
+                    C_CurrentResponderAddress = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(CurrentResponderID)
+                Else
+                    C_CurrentResponderAddress = ""
+                End If
+
+                C_CurrentInitiatorsCollateral = ClsSignumAPI.Planck2Dbl(T_InitiatorsCollateral)
+                C_CurrentRespondersCollateral = ClsSignumAPI.Planck2Dbl(T_RespondersCollateral)
+
+#End Region
+#Region "convertCandidates"
+                If T_SellOrder = 0UL Then
+                    C_IsSellOrder = False
+                    C_CurrentSellerID = CurrentResponderID
+                    C_CurrentBuyerID = CurrentInitiatorID
+                Else
+                    C_IsSellOrder = True
+                    C_CurrentSellerID = CurrentInitiatorID
+                    C_CurrentBuyerID = CurrentResponderID
+                End If
+
+
+                If Not C_CurrentSellerID = 0UL Then
+                    C_CurrentSellerAddress = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(CurrentSellerID)
+                Else
+                    C_CurrentSellerAddress = ""
+                End If
+
+                If Not C_CurrentBuyerID = 0UL Then
+                    C_CurrentBuyerAddress = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(CurrentBuyerID)
+                Else
+                    C_CurrentBuyerAddress = ""
+                End If
+#End Region
+
+                If T_Deniability = 0UL Or T_Deniability = 3UL Then
+                    C_Deniability = False
+                Else
+                    C_Deniability = True
+                End If
+
+                If T_Objection = 0UL Then
+                    C_Objection = False
+                Else
+                    C_Objection = True
+                End If
+
+                Dim T_DisputeTimeOut As Byte() = BitConverter.GetBytes(T_TimeOut)
+                C_DisputeTimeout = CULng(BitConverter.ToInt32(T_DisputeTimeOut, 4))
+
+                C_CurrentBuySellAmount = ClsSignumAPI.Planck2Dbl(T_BuySellAmount)
+                C_MediatorsDeposit = ClsSignumAPI.Planck2Dbl(T_MediatorsDeposit)
+                C_ConciliationAmount = ClsSignumAPI.Planck2Dbl(T_ConciliationAmount)
+
+
+                C_CurrentChainSwapHashULong1 = T_ChainSwapHashULong1
+                C_CurrentChainSwapHashULong2 = T_ChainSwapHashULong2
+                C_CurrentChainSwapHashULong3 = T_ChainSwapHashULong3
+                C_CurrentChainSwapHashULong4 = T_ChainSwapHashULong4
+
+                If CurrentInitiatorID = 0UL And CurrentResponderID = 0UL Then
+                    C_Status = E_Status.FREE ' "FREE"
+                ElseIf Not CurrentInitiatorID = 0UL And CurrentResponderID = 0UL Then
+                    C_Status = E_Status.OPEN ' "OPEN"
+                ElseIf CurrentInitiatorID = 0UL And Not CurrentResponderID = 0UL Then
+                    C_Status = E_Status.ERROR_ ' "ERROR"
+                ElseIf Not CurrentInitiatorID = 0UL And Not CurrentResponderID = 0UL Then
+
+                    C_Status = E_Status.RESERVED ' "RESERVED"
+                    C_Dispute = False
+
+                    If Not T_Dispute = 0L Then
+                        C_Status = E_Status.DISPUTE
+                        C_Dispute = True
+                    End If
+                Else
+                    C_Status = E_Status.ERROR_ ' "ERROR"
+                End If
+
+
+                Dim TXList As List(Of String) = New List(Of String)
+
+                If Not T_CreateOrderTX = 0UL Then
+                    TXList = SignumAPI.GetTransaction(T_CreateOrderTX)
+                End If
+
+                If TXList.Count > 0 Then
+
+                    Dim Message As String = GetStringBetweenFromList(TXList, "<message>", "</message>")
+                    Dim MessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(Message)
+
+                    C_CurrentCreationTransaction = GetULongBetweenFromList(TXList, "<transaction>", "</transaction>")
+                    C_CurrentConfirmations = GetULongBetweenFromList(TXList, "<confirmations>", "</confirmations>")
+
+                    C_CurrentTimestamp = GetULongBetweenFromList(TXList, "<timestamp>", "</timestamp>")
+
+                    '(0) ULong   creation method
+                    '(1) ULong   collateral
+                    '(2) ULong   xamountnqt
+                    '(3) ULong   xitem USD
+
+                    If MessageList.Count > 2 Then
+                        C_CurrentXAmount = ClsSignumAPI.Planck2Dbl(MessageList(2))
+                        C_CurrentXItem = ClsSignumAPI.ULng2String(MessageList(3))
+                    End If
+
+                    C_CurrentPrice = C_CurrentXAmount / C_CurrentBuySellAmount
+
+                Else
+
+                    If T_FreeForAll = 0L Then
+                        C_Status = E_Status.NEW_ ' "NEW"
+                    Else
+
+                        C_Status = E_Status.FREE ' "FREE"
+
+                        C_CurrentXAmount = 0.0
+                        C_CurrentXItem = ""
+
+                        C_CurrentInitiatorID = 0UL
+                        C_CurrentInitiatorAddress = ""
+
+                        C_CurrentResponderID = 0UL
+                        C_CurrentResponderAddress = ""
+
+                        C_CurrentInitiatorsCollateral = 0.0
+                        C_CurrentRespondersCollateral = 0.0
+                        C_CurrentBuySellAmount = 0.0
+                        C_CurrentChainSwapHashULong1 = 0UL
+                        C_CurrentChainSwapHashULong2 = 0UL
+                        C_CurrentChainSwapHashULong3 = 0UL
+                        C_CurrentChainSwapHashULong4 = 0UL
+
+                        C_IsSellOrder = False
+                        C_CurrentSellerID = 0UL
+                        C_CurrentBuyerID = 0UL
+
+                        C_CurrentSellerAddress = ""
+                        C_CurrentBuyerAddress = ""
+
+                    End If
+
+                End If
+
+                CheckForTX()
+                CheckForUTX()
+
+                C_IsFrozen = GetBooleanBetweenFromList(ContractList, "<frozen>", "</frozen>")
+                C_IsRunning = GetBooleanBetweenFromList(ContractList, "<running>", "</running>")
+                C_IsStopped = GetBooleanBetweenFromList(ContractList, "<stopped>", "</stopped>")
+                C_IsFinished = GetBooleanBetweenFromList(ContractList, "<finished>", "</finished>")
+                C_IsDead = GetBooleanBetweenFromList(ContractList, "<dead>", "</dead>")
+
+                If RefreshHistoryOrders Then
+                    If C_ContractOrderHistoryList.Count = 0 Then
+                        GetHistoryTransactions(ContractTimestamp)
+                    Else
+                        GetHistoryTransactions(C_ContractOrderHistoryList(C_ContractOrderHistoryList.Count - 1).EndTimestamp)
+                    End If
+                End If
+
+                If C_ContractOrderHistoryList.Count > 0 Then
+                    If C_Status = E_Status.NEW_ Then
+                        C_Status = E_Status.FREE
+                    End If
+                End If
+
+                GetCurrentChat()
+                C_IsReady = True
+
+            Else
+                'No DEX Contract
+                LoadBasics(#01/01/0001#)
+                C_IsReady = True
+            End If
+
+        Else
+            'not ready
+            C_IsReady = False
+        End If
+
+    End Sub
+
+    ''' <summary>
+    ''' Checks incoming unconfirmedTransaction for DEXContract 
+    ''' </summary>
+    ''' <returns></returns>
+    Public Function CheckForUTX() As Boolean
+
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node)
+        Dim T_UTXList As List(Of List(Of String)) = SignumAPI.GetUnconfirmedTransactions()
+
+        For Each UTX In T_UTXList
+
+            Dim UTX_Sender As ULong = GetULongBetweenFromList(UTX, "<sender>", "</sender>")
+            Dim UTX_Recipient As ULong = GetULongBetweenFromList(UTX, "<recipient>", "</recipient>")
+            Dim UTX_Amount As Double = ClsSignumAPI.Planck2Dbl(GetULongBetweenFromList(UTX, "<amountNQT>", "</amountNQT>"))
+
+            If Not UTX_Sender = 0UL And Not UTX_Recipient = 0UL Then
+                If UTX_Recipient = C_ID Then
+
+                    Dim T_Message As String = GetStringBetweenFromList(UTX, "<message>", "</message>")
+                    Dim ReferenceMessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(T_Message)
+
+                    If ReferenceMessageList.Count > 0 Then
+                        If IsReferenceCommand(ReferenceMessageList(0)) Then
+
+                            SetPendings(UTX_Amount, ReferenceMessageList)
+                            If CurrentInitiatorID <> 0UL And CurrentResponderID <> 0UL Then
+                                If UTX_Sender = CurrentInitiatorID Or UTX_Sender = CurrentResponderID Or (UTX_Sender = CreatorID And C_Status = E_Status.DISPUTE) Then
+                                    C_Status = E_Status.UTX_PENDING
+                                    Return True
+                                End If
+                            Else
+                                C_Status = E_Status.UTX_PENDING
+                                Return True
+                            End If
+                        End If
+                    End If
+
+                End If
+            End If
+
+        Next
+
+        Return False
+
+    End Function
+    ''' <summary>
+    ''' Checks incoming Transaction for DEXContract
+    ''' </summary>
+    ''' <returns></returns>
+    Public Function CheckForTX() As Boolean
+
+        Dim T_LastTimestamp As ULong = C_ContractTimestamp
+
+        If ContractOrderHistoryList.Count > 0 Then
+            T_LastTimestamp = ContractOrderHistoryList(ContractOrderHistoryList.Count - 1).EndTimestamp
+        End If
+
+        Dim SignumAPI = New ClsSignumAPI(C_Node)
+        Dim T_ContractTransactionsList As List(Of List(Of String)) = SignumAPI.GetAccountTransactions(C_ID, T_LastTimestamp)
+
+        Dim T_TXList As List(Of S_TX) = New List(Of S_TX)
+
+        For Each TX As List(Of String) In T_ContractTransactionsList
+            Dim T_TX As S_TX = New S_TX
+
+            T_TX.Transaction = GetULongBetweenFromList(TX, "<transaction>", "</transaction>")
+            T_TX.Type = GetIntegerBetweenFromList(TX, "<type>", "</type>")
+            T_TX.Timestamp = GetULongBetweenFromList(TX, "<timestamp>", "</timestamp>")
+
+            T_TX.Sender = GetULongBetweenFromList(TX, "<sender>", "</sender>")
+            T_TX.SenderRS = GetStringBetweenFromList(TX, "<senderRS>", "</senderRS>")
+
+            T_TX.AmountNQT = GetULongBetweenFromList(TX, "<amountNQT>", "</amountNQT>")
+            T_TX.FeeNQT = GetULongBetweenFromList(TX, "<feeNQT>", "</feeNQT>")
+            T_TX.Attachment = GetStringBetweenFromList(TX, "<attachment>", "</attachment>")
+
+            T_TX.Recipient = GetULongBetweenFromList(TX, "<recipient>", "</recipient>")
+            T_TX.RecipientRS = GetStringBetweenFromList(TX, "<recipientRS>", "</recipientRS>")
+
+            T_TX.Confirmations = GetULongBetweenFromList(TX, "<confirmations>", "</confirmations>")
+
+            T_TXList.Add(T_TX)
+
+        Next
+
+        If T_TXList.Count > 0 Then
+            T_TXList = T_TXList.OrderBy(Function(T_TX As S_TX) T_TX.Timestamp).ToList
+
+            Dim T_LastTX As S_TX = T_TXList(T_TXList.Count - 1)
+
+            If T_LastTX.Recipient = C_ID Then
+                If T_LastTX.Confirmations = 0 Then
+
+                    Dim T_Amount As Double = ClsSignumAPI.Planck2Dbl(T_LastTX.AmountNQT)
+                    Dim T_Message As String = GetStringBetween(T_LastTX.Attachment, "<message>", "</message>")
+                    Dim ReferenceMessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(T_Message)
+
+                    If ReferenceMessageList.Count > 0 Then
+
+                        If IsReferenceCommand(ReferenceMessageList(0)) Then
+
+                            SetPendings(T_Amount, ReferenceMessageList)
+                            If CurrentInitiatorID <> 0UL And CurrentResponderID <> 0UL Then
+                                If T_LastTX.Sender = CurrentInitiatorID Or T_LastTX.Sender = CurrentResponderID Or (T_LastTX.Sender = CreatorID And C_Status = E_Status.DISPUTE) Then
+                                    C_Status = E_Status.TX_PENDING
+                                    Return True
+                                End If
+                            Else
+                                C_Status = E_Status.TX_PENDING
+                                Return True
+                            End If
+
+                        End If
+
+                    End If
+
+
+                End If
+
+            End If
+
+        End If
+
+        Return False
+
+    End Function
+
+    Public Function CurrencyIsCrypto() As Boolean
+        Return CurrencyIsCrypto(C_CurrentXItem)
+    End Function
+    Public Shared Function CurrencyIsCrypto(ByVal Currency As String) As Boolean
+        Select Case Currency
+            Case "AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "ILS", "INR", "JPY", "MXN", "MYR", "NOK", "NZD", "PHP", "PLN", "GBP", "RUB", "SEK", "SGD", "CHF", "THB", "TWD", "USD"
+                'Non CryptoCurrencys Supported by PayPal
+                Return False
+        End Select
+        Return True
+    End Function
+
+    Public Function GetCurrencyDecimals() As Integer
+        Return GetCurrencyDecimals(C_CurrentXItem)
+    End Function
+    Public Shared Function GetCurrencyDecimals(ByVal Currency As String) As Integer
+
+        Select Case Currency
+
+            Case "AUD", "BRL", "CAD", "CHF", "CNY", "CZK", "DKK", "EUR", "HKD", "ILS", "INR", "MXN", "MYR", "NOK", "NZD", "PHP", "PLN", "GBP", "RUB", "SEK", "SGD", "THB", "USD"
+                'Non CryptoCurrencys Supported by PayPal
+                Return 2
+
+            Case "HUF", "JPY", "TWD"
+                'These Currencys do not support decimals
+                Return 0
+
+            Case Else
+                Return 8
+
+        End Select
+
+        Return 8
+
+    End Function
+
+    Private Function GetProposalMessage() As String
+
+        Dim Proposal As String = ""
+        If CurrentDisputeTimeout <> 0UL And Dispute And Not CurrencyIsCrypto(CurrentXItem) Then
+
+            Dim percentage As Double = 100 / CurrentBuySellAmount * CurrentConciliationAmount
+            Proposal = " (Proposal:" + Math.Round(CurrentConciliationAmount, 2).ToString + " Signa =" + Math.Round(percentage, 2).ToString + "%)"
+            Dim diffblock As Long = 0
+            diffblock = CLng(CurrentDisputeTimeout) - CLng(GetBlock())
+
+            If diffblock < 0 Then
+                Proposal += " accepted"
+            ElseIf diffblock <= 1 Then
+                Proposal += " not appealable"
+            Else
+                Proposal += " autoaccept in: ~" + CStr(diffblock * 4) + " Min"
+            End If
+            'ElseIf CurrentDisputeTimeout <> 0UL And CurrencyIsCrypto(CurrentXItem) Then
+            '    Dim diffblock As Long = 0
+            '    diffblock = CLng(CurrentDisputeTimeout) - CLng(GetBlock())
+            '    Proposal += "reserved for ~" + CStr(diffblock * 4) + " Min"
+        End If
+
+        Return Proposal
+
+    End Function
+
+    Private Function GetReserveMessage() As String
+
+        Dim ReserveMessage As String = ""
+        If CurrentDisputeTimeout <> 0UL And CurrencyIsCrypto(CurrentXItem) Then
+            Dim diffblock As Long = 0
+            diffblock = CLng(CurrentDisputeTimeout) - CLng(GetBlock())
+            ReserveMessage += "reserved for ~" + CStr(diffblock * 4) + " Min"
+        End If
+
+        Return ReserveMessage
+
+    End Function
+
+    Private Function GetBlock() As Integer
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(Node)
+        Return SignumAPI.GetCurrentBlock()
+    End Function
+
+#End Region
+
+#Region "Private Supportfunctions/Subroutines"
 
     Private Sub LoadBasics(ByVal StartDateTime As Date)
 
@@ -653,8 +1161,6 @@ Public Class ClsDEXContract
         End If
 
     End Sub
-
-
     Private Sub LoadUpTransactions(ByVal SetStartTimeStamp As ULong)
 
         Dim SignumAPI = New ClsSignumAPI(C_Node)
@@ -831,6 +1337,9 @@ Public Class ClsDEXContract
                                     T_Order.StartTimestamp = T_CreationTX.Timestamp
                                     T_Order.EndTimestamp = T_TX.Timestamp + 1UL
 
+                                    T_Order.ChainSwapKey = ""
+                                    'T_Order.ChainSwapHash = ""
+
                                     'T_Order.StartDate = ClsSignumAPI.UnixToTime(T_Order.StartTimestamp.ToString) 'Debug
                                     'T_Order.EndDate = ClsSignumAPI.UnixToTime(T_Order.EndTimestamp.ToString) 'Debug
 
@@ -942,7 +1451,7 @@ Public Class ClsDEXContract
         C_StartForm.MultiInvoker(C_StartForm.SubStatusLabel, "Text", "")
 
     End Sub
-    Private Property XMLList As List(Of List(Of String)) = New List(Of List(Of String))
+
     Private Sub ConvertThread(ByVal Input As Object)
 
         Dim JSONStr As String = Convert.ToString(Input)
@@ -1031,235 +1540,6 @@ Public Class ClsDEXContract
             '    Out.ErrorLog2File(Application.ProductName + "-error in LoadUpTransactions() -> ConvertThread(): " + JSONStr)
             'End If
 
-        End If
-
-    End Sub
-
-    ''' <summary>
-    ''' Refreshing DEXContract
-    ''' </summary>
-    Sub Refresh(Optional ByVal RefreshHistoryOrders As Boolean = True)
-
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node)
-        Dim ContractList As List(Of String) = SignumAPI.GetSmartContractDetails(C_ID)
-
-        If ContractList.Count > 0 Then
-            If C_DEXContract Then
-
-                C_CurrentBalance = ClsSignumAPI.Planck2Dbl(GetULongBetweenFromList(ContractList, "<balanceNQT>", "</balanceNQT>"))
-
-                Dim MachineData As String = GetStringBetweenFromList(ContractList, "<machineData>", "</machineData>")
-                Dim MachineDataULongList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(MachineData)
-
-                Dim T_CreateOrderTX As ULong = MachineDataULongList(E_ContractVariables.CREATE_ORDER)
-                'Dim T_AcceptOrderTX As ULong = MachineDataULongList(E_ContractVariables.ACCEPT_ORDER)
-
-                Dim T_InitiatorID As ULong = MachineDataULongList(E_ContractVariables.INITIATOR)
-                Dim T_ResponderID As ULong = MachineDataULongList(E_ContractVariables.RESPONDER)
-
-
-                Dim T_InitiatorsCollateral As ULong = MachineDataULongList(E_ContractVariables.INITIATORS_COLLATERAL)
-                Dim T_RespondersCollateral As ULong = MachineDataULongList(E_ContractVariables.RESPONDERS_COLLATERAL)
-                Dim T_BuySellAmount As ULong = MachineDataULongList(E_ContractVariables.BUY_SELL_AMOUNT)
-
-                Dim T_SellOrder As ULong = MachineDataULongList(E_ContractVariables.SELL_ORDER)
-                Dim T_FreeForAll As ULong = MachineDataULongList(E_ContractVariables.FREE_FOR_ALL)
-
-                Dim T_ChainSwapHash As ULong = MachineDataULongList(E_ContractVariables.CHAINSWAPHASH)
-
-
-                Dim T_Dispute As ULong = MachineDataULongList(E_ContractVariables.DISPUTE)
-                Dim T_ConciliationAmount As ULong = MachineDataULongList(E_ContractVariables.CONCILIATION_AMOUNT)
-
-                Dim T_TimeOut As ULong = MachineDataULongList(E_ContractVariables.TIMEOUT)
-
-                Dim T_MediatorsDeposit As ULong = MachineDataULongList(E_ContractVariables.MEDIATORS_DEPOSIT)
-                Dim T_Deniability As ULong = MachineDataULongList(E_ContractVariables.DENIABILITY)
-                Dim T_Objection As ULong = MachineDataULongList(E_ContractVariables.OBJECTION)
-
-#Region "getCandidates"
-
-                C_CurrentInitiatorID = T_InitiatorID
-                If Not C_CurrentInitiatorID = 0UL Then
-                    C_CurrentInitiatorAddress = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(CurrentInitiatorID)
-                Else
-                    C_CurrentInitiatorAddress = ""
-                End If
-
-                C_CurrentResponderID = T_ResponderID
-                If Not C_CurrentResponderID = 0UL Then
-                    C_CurrentResponderAddress = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(CurrentResponderID)
-                Else
-                    C_CurrentResponderAddress = ""
-                End If
-
-                C_CurrentInitiatorsCollateral = ClsSignumAPI.Planck2Dbl(T_InitiatorsCollateral)
-                C_CurrentRespondersCollateral = ClsSignumAPI.Planck2Dbl(T_RespondersCollateral)
-
-#End Region
-#Region "convertCandidates"
-                If T_SellOrder = 0UL Then
-                    C_IsSellOrder = False
-                    C_CurrentSellerID = CurrentResponderID
-                    C_CurrentBuyerID = CurrentInitiatorID
-                Else
-                    C_IsSellOrder = True
-                    C_CurrentSellerID = CurrentInitiatorID
-                    C_CurrentBuyerID = CurrentResponderID
-                End If
-
-
-                If Not C_CurrentSellerID = 0UL Then
-                    C_CurrentSellerAddress = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(CurrentSellerID)
-                Else
-                    C_CurrentSellerAddress = ""
-                End If
-
-                If Not C_CurrentBuyerID = 0UL Then
-                    C_CurrentBuyerAddress = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(CurrentBuyerID)
-                Else
-                    C_CurrentBuyerAddress = ""
-                End If
-#End Region
-
-                If T_Deniability = 0UL Or T_Deniability = 3UL Then
-                    C_Deniability = False
-                Else
-                    C_Deniability = True
-                End If
-
-                If T_Objection = 0UL Then
-                    C_Objection = False
-                Else
-                    C_Objection = True
-                End If
-
-                Dim T_DisputeTimeOut As Byte() = BitConverter.GetBytes(T_TimeOut)
-                C_DisputeTimeout = CULng(BitConverter.ToInt32(T_DisputeTimeOut, 4))
-
-                C_CurrentBuySellAmount = ClsSignumAPI.Planck2Dbl(T_BuySellAmount)
-                C_MediatorsDeposit = ClsSignumAPI.Planck2Dbl(T_MediatorsDeposit)
-                C_ConciliationAmount = ClsSignumAPI.Planck2Dbl(T_ConciliationAmount)
-
-
-                C_CurrentChainSwapHash = T_ChainSwapHash
-
-                If CurrentInitiatorID = 0UL And CurrentResponderID = 0UL Then
-                    C_Status = E_Status.FREE ' "FREE"
-                ElseIf Not CurrentInitiatorID = 0UL And CurrentResponderID = 0UL Then
-                    C_Status = E_Status.OPEN ' "OPEN"
-                ElseIf CurrentInitiatorID = 0UL And Not CurrentResponderID = 0UL Then
-                    C_Status = E_Status.ERROR_ ' "ERROR"
-                ElseIf Not CurrentInitiatorID = 0UL And Not CurrentResponderID = 0UL Then
-
-                    C_Status = E_Status.RESERVED ' "RESERVED"
-                    C_Dispute = False
-
-                    If Not T_Dispute = 0L Then
-                        C_Status = E_Status.DISPUTE
-                        C_Dispute = True
-                    End If
-                Else
-                    C_Status = E_Status.ERROR_ ' "ERROR"
-                End If
-
-
-                Dim TXList As List(Of String) = New List(Of String)
-
-                If Not T_CreateOrderTX = 0UL Then
-                    TXList = SignumAPI.GetTransaction(T_CreateOrderTX)
-                End If
-
-                If TXList.Count > 0 Then
-
-                    Dim Message As String = GetStringBetweenFromList(TXList, "<message>", "</message>")
-                    Dim MessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(Message)
-
-                    C_CurrentCreationTransaction = GetULongBetweenFromList(TXList, "<transaction>", "</transaction>")
-                    C_CurrentConfirmations = GetULongBetweenFromList(TXList, "<confirmations>", "</confirmations>")
-
-                    C_CurrentTimestamp = GetULongBetweenFromList(TXList, "<timestamp>", "</timestamp>")
-
-                    '(0) ULong   creation method
-                    '(1) ULong   collateral
-                    '(2) ULong   xamountnqt
-                    '(3) ULong   xitem USD
-
-                    If MessageList.Count > 2 Then
-                        C_CurrentXAmount = ClsSignumAPI.Planck2Dbl(MessageList(2))
-                        C_CurrentXItem = ClsSignumAPI.ULng2String(MessageList(3))
-                    End If
-
-                    C_CurrentPrice = C_CurrentXAmount / C_CurrentBuySellAmount
-
-                Else
-
-                    If T_FreeForAll = 0L Then
-                        C_Status = E_Status.NEW_ ' "NEW"
-                    Else
-
-                        C_Status = E_Status.FREE ' "FREE"
-
-                        C_CurrentXAmount = 0.0
-                        C_CurrentXItem = ""
-
-                        C_CurrentInitiatorID = 0UL
-                        C_CurrentInitiatorAddress = ""
-
-                        C_CurrentResponderID = 0UL
-                        C_CurrentResponderAddress = ""
-
-                        C_CurrentInitiatorsCollateral = 0.0
-                        C_CurrentRespondersCollateral = 0.0
-                        C_CurrentBuySellAmount = 0.0
-                        C_CurrentChainSwapHash = 0UL
-
-                        C_IsSellOrder = False
-                        C_CurrentSellerID = 0UL
-                        C_CurrentBuyerID = 0UL
-
-                        C_CurrentSellerAddress = ""
-                        C_CurrentBuyerAddress = ""
-
-                    End If
-
-                End If
-
-                CheckForTX()
-                CheckForUTX()
-
-                C_IsFrozen = GetBooleanBetweenFromList(ContractList, "<frozen>", "</frozen>")
-                C_IsRunning = GetBooleanBetweenFromList(ContractList, "<running>", "</running>")
-                C_IsStopped = GetBooleanBetweenFromList(ContractList, "<stopped>", "</stopped>")
-                C_IsFinished = GetBooleanBetweenFromList(ContractList, "<finished>", "</finished>")
-                C_IsDead = GetBooleanBetweenFromList(ContractList, "<dead>", "</dead>")
-
-                If RefreshHistoryOrders Then
-                    If C_ContractOrderHistoryList.Count = 0 Then
-                        GetHistoryTransactions(ContractTimestamp)
-                    Else
-                        GetHistoryTransactions(C_ContractOrderHistoryList(C_ContractOrderHistoryList.Count - 1).EndTimestamp)
-                    End If
-                End If
-
-                If C_ContractOrderHistoryList.Count > 0 Then
-                    If C_Status = E_Status.NEW_ Then
-                        C_Status = E_Status.FREE
-                    End If
-                End If
-
-                GetCurrentChat()
-                C_IsReady = True
-
-            Else
-                'No DEX Contract
-                LoadBasics(#01/01/0001#)
-                C_IsReady = True
-            End If
-
-        Else
-            'not ready
-            C_IsReady = False
         End If
 
     End Sub
@@ -1408,6 +1688,8 @@ Public Class ClsDEXContract
 
 
                                 Dim RefCreateOrderBool As Boolean = ReferenceCreateOrder = ReferenceCreationMessageList(0)
+                                Dim RefCreateOrderWithResponderBool As Boolean = ReferenceCreateOrderWithResponder = ReferenceCreationMessageList(0)
+
                                 Dim RefAcceptOrderBol As Boolean = ReferenceAcceptOrder = ReferenceAcceptMessageList(0) Or ReferenceInjectResponder = ReferenceAcceptMessageList(0)
 
                                 Dim RefCancelOrderBol As Boolean = ReferenceAcceptMessageList(0) = ReferenceFinishMessageList(0) And T_AcceptTX.Transaction = T_FinishTX.Transaction
@@ -1416,12 +1698,10 @@ Public Class ClsDEXContract
 
                                 Dim RefFinishOrderByCheckCloseDisputeBol As Boolean = ReferenceCheckCloseDispute = ReferenceFinishMessageList(0)
 
-                                If RefCreateOrderBool And RefAcceptOrderBol And (RefCancelOrderBol Or RefFinishOrderBol Or RefFinishOrderWithChainSwapKeyBol Or RefFinishOrderByCheckCloseDisputeBol) Then
+                                If (RefCreateOrderBool Or RefCreateOrderWithResponderBool) And RefAcceptOrderBol And (RefCancelOrderBol Or RefFinishOrderBol Or RefFinishOrderWithChainSwapKeyBol Or RefFinishOrderByCheckCloseDisputeBol) Then
 
-                                    '    RefCreateOrderBool = RefCreateOrderBool
-
+                                    'RefCreateOrderBool = RefCreateOrderBool
                                     'End If
-
                                     'If ReferenceCreateOrder = ReferenceCreationMessageList(0) And (ReferenceAcceptOrder = ReferenceAcceptMessageList(0) Or ReferenceInjectResponder = ReferenceAcceptMessageList(0)) And ((ReferenceFinishOrder = ReferenceFinishMessageList(0) Or ReferenceFinishOrderWithChainSwapKey = ReferenceFinishMessageList(0)) Or (ReferenceAcceptMessageList(0) = ReferenceFinishMessageList(0) And T_AcceptTX.Transaction = T_FinishTX.Transaction)) Then
 
                                     Dim T_Order As S_Order = New S_Order
@@ -1436,6 +1716,8 @@ Public Class ClsDEXContract
 
                                     'T_Order.StartDate = ClsSignumAPI.UnixToTime(T_Order.StartTimestamp.ToString) 'Debug
                                     'T_Order.EndDate = ClsSignumAPI.UnixToTime(T_Order.EndTimestamp.ToString) 'Debug
+                                    T_Order.ChainSwapKey = ""
+                                    'T_Order.ChainSwapHash = ""
 
                                     Dim T_Collateral As ULong = ReferenceCreationMessageList(1)
                                     Dim T_Amount As ULong = T_CreationTX.AmountNQT '- T_Collateral - ClsSignumAPI._GasFeeNQT
@@ -1471,7 +1753,7 @@ Public Class ClsDEXContract
 
                                         Dim Finisher As ULong = T_FinishTX.Sender
 
-                                        If ReferenceFinishOrder = ReferenceFinishMessageList(0) Then
+                                        If RefFinishOrderBol Then
                                             If Finisher = T_Order.SellerID Then
                                                 T_Order.Status = E_Status.CLOSED
                                             Else 'If Finisher = o.BuyerID Then
@@ -1480,9 +1762,32 @@ Public Class ClsDEXContract
                                         ElseIf ReferenceAcceptOrder = ReferenceFinishMessageList(0) Then
                                             'initiator canceled Order
                                             T_Order.Status = E_Status.CANCELED
-                                        ElseIf ReferenceFinishOrderWithChainSwapKey = ReferenceFinishMessageList(0) Then
+                                        ElseIf RefFinishOrderWithChainSwapKeyBol Then
+
+                                            '(0) ULong   Finish Method FinishOrderWithChainSwapKey()
+                                            '(1) ULong   First ChainSwapKeyLong
+                                            '(2) ULong   Second ChainSwapKeyLong
+                                            '(3) ULong   Third ChainSwapKeyLong
+                                            '(4) ULong   Fourth ChainSwapKeyLong
+
+                                            Dim FirstChainSwapKeyLong As Byte() = BitConverter.GetBytes(ReferenceFinishMessageList(1))
+                                            Dim SecondChainSwapKeyLong As Byte() = BitConverter.GetBytes(ReferenceFinishMessageList(2))
+                                            Dim ThirdChainSwapKeyLong As Byte() = BitConverter.GetBytes(ReferenceFinishMessageList(3))
+                                            Dim FourthChainSwapKeyLong As Byte() = BitConverter.GetBytes(ReferenceFinishMessageList(4))
+
+                                            Dim ChainSwapKeyByteList As List(Of Byte) = New List(Of Byte)(FirstChainSwapKeyLong)
+                                            ChainSwapKeyByteList.AddRange(SecondChainSwapKeyLong)
+                                            ChainSwapKeyByteList.AddRange(ThirdChainSwapKeyLong)
+                                            ChainSwapKeyByteList.AddRange(FourthChainSwapKeyLong)
+
+                                            Dim ChainSwapKeyHEX As String = ByteArrayToHEXString(ChainSwapKeyByteList.ToArray)
+
+                                            'TODO: ##AtomicSwap get chainswapkey 
+
+                                            T_Order.ChainSwapKey = ChainSwapKeyHEX
+
                                             T_Order.Status = E_Status.CLOSED
-                                        ElseIf ReferenceCheckCloseDispute = ReferenceFinishMessageList(0) Then
+                                        ElseIf RefFinishOrderByCheckCloseDisputeBol Then
                                             T_Order.Status = E_Status.CANCELED
                                         End If
 
@@ -1512,7 +1817,7 @@ Public Class ClsDEXContract
 
                                         Dim Finisher As ULong = T_FinishTX.Sender
 
-                                        If ReferenceFinishOrder = ReferenceFinishMessageList(0) Then
+                                        If RefFinishOrderBol Then
                                             If Finisher = T_Order.SellerID Then
                                                 T_Order.Status = E_Status.CLOSED
                                             Else 'If Finisher = o.BuyerID Then
@@ -1521,9 +1826,32 @@ Public Class ClsDEXContract
                                         ElseIf ReferenceAcceptOrder = ReferenceFinishMessageList(0) Then
                                             'initiator canceled Order
                                             T_Order.Status = E_Status.CANCELED
-                                        ElseIf ReferenceFinishOrderWithChainSwapKey = ReferenceFinishMessageList(0) Then
+                                        ElseIf RefFinishOrderWithChainSwapKeyBol Then
+
+                                            '(0) ULong   Finish Method FinishOrderWithChainSwapKey()
+                                            '(1) ULong   First ChainSwapKeyLong
+                                            '(2) ULong   Second ChainSwapKeyLong
+                                            '(3) ULong   Third ChainSwapKeyLong
+                                            '(4) ULong   Fourth ChainSwapKeyLong
+
+                                            Dim FirstChainSwapKeyLong As Byte() = BitConverter.GetBytes(ReferenceFinishMessageList(1))
+                                            Dim SecondChainSwapKeyLong As Byte() = BitConverter.GetBytes(ReferenceFinishMessageList(2))
+                                            Dim ThirdChainSwapKeyLong As Byte() = BitConverter.GetBytes(ReferenceFinishMessageList(3))
+                                            Dim FourthChainSwapKeyLong As Byte() = BitConverter.GetBytes(ReferenceFinishMessageList(4))
+
+                                            Dim ChainSwapKeyByteList As List(Of Byte) = New List(Of Byte)(FirstChainSwapKeyLong)
+                                            ChainSwapKeyByteList.AddRange(SecondChainSwapKeyLong)
+                                            ChainSwapKeyByteList.AddRange(ThirdChainSwapKeyLong)
+                                            ChainSwapKeyByteList.AddRange(FourthChainSwapKeyLong)
+
+                                            Dim ChainSwapKeyHEX As String = ByteArrayToHEXString(ChainSwapKeyByteList.ToArray)
+
+                                            'TODO: ##AtomicSwap get chainswapkey 
+
+                                            T_Order.ChainSwapKey = ChainSwapKeyHEX
+
                                             T_Order.Status = E_Status.CLOSED
-                                        ElseIf ReferenceCheckCloseDispute = ReferenceFinishMessageList(0) Then
+                                        ElseIf RefFinishOrderByCheckCloseDisputeBol Then
                                             T_Order.Status = E_Status.CANCELED
                                         End If
 
@@ -1635,135 +1963,6 @@ Public Class ClsDEXContract
 
     End Sub
 
-    ''' <summary>
-    ''' Checks incoming unconfirmedTransaction for DEXContract 
-    ''' </summary>
-    ''' <returns></returns>
-    Public Function CheckForUTX() As Boolean
-
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_Node)
-        Dim T_UTXList As List(Of List(Of String)) = SignumAPI.GetUnconfirmedTransactions()
-
-        For Each UTX In T_UTXList
-
-            Dim UTX_Sender As ULong = GetULongBetweenFromList(UTX, "<sender>", "</sender>")
-            Dim UTX_Recipient As ULong = GetULongBetweenFromList(UTX, "<recipient>", "</recipient>")
-            Dim UTX_Amount As Double = ClsSignumAPI.Planck2Dbl(GetULongBetweenFromList(UTX, "<amountNQT>", "</amountNQT>"))
-
-            If Not UTX_Sender = 0UL And Not UTX_Recipient = 0UL Then
-                If UTX_Recipient = C_ID Then
-
-                    Dim T_Message As String = GetStringBetweenFromList(UTX, "<message>", "</message>")
-                    Dim ReferenceMessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(T_Message)
-
-                    If ReferenceMessageList.Count > 0 Then
-                        If IsReferenceCommand(ReferenceMessageList(0)) Then
-
-                            SetPendings(UTX_Amount, ReferenceMessageList)
-                            If CurrentInitiatorID <> 0UL And CurrentResponderID <> 0UL Then
-                                If UTX_Sender = CurrentInitiatorID Or UTX_Sender = CurrentResponderID Or (UTX_Sender = CreatorID And C_Status = E_Status.DISPUTE) Then
-                                    C_Status = E_Status.UTX_PENDING
-                                    Return True
-                                End If
-                            Else
-                                C_Status = E_Status.UTX_PENDING
-                                Return True
-                            End If
-                        End If
-                    End If
-
-                End If
-            End If
-
-        Next
-
-        Return False
-
-    End Function
-
-
-    ''' <summary>
-    ''' Checks incoming Transaction for DEXContract
-    ''' </summary>
-    ''' <returns></returns>
-    Public Function CheckForTX() As Boolean
-
-        Dim T_LastTimestamp As ULong = C_ContractTimestamp
-
-        If ContractOrderHistoryList.Count > 0 Then
-            T_LastTimestamp = ContractOrderHistoryList(ContractOrderHistoryList.Count - 1).EndTimestamp
-        End If
-
-        Dim SignumAPI = New ClsSignumAPI(C_Node)
-        Dim T_ContractTransactionsList As List(Of List(Of String)) = SignumAPI.GetAccountTransactions(C_ID, T_LastTimestamp)
-
-        Dim T_TXList As List(Of S_TX) = New List(Of S_TX)
-
-        For Each TX As List(Of String) In T_ContractTransactionsList
-            Dim T_TX As S_TX = New S_TX
-
-            T_TX.Transaction = GetULongBetweenFromList(TX, "<transaction>", "</transaction>")
-            T_TX.Type = GetIntegerBetweenFromList(TX, "<type>", "</type>")
-            T_TX.Timestamp = GetULongBetweenFromList(TX, "<timestamp>", "</timestamp>")
-
-            T_TX.Sender = GetULongBetweenFromList(TX, "<sender>", "</sender>")
-            T_TX.SenderRS = GetStringBetweenFromList(TX, "<senderRS>", "</senderRS>")
-
-            T_TX.AmountNQT = GetULongBetweenFromList(TX, "<amountNQT>", "</amountNQT>")
-            T_TX.FeeNQT = GetULongBetweenFromList(TX, "<feeNQT>", "</feeNQT>")
-            T_TX.Attachment = GetStringBetweenFromList(TX, "<attachment>", "</attachment>")
-
-            T_TX.Recipient = GetULongBetweenFromList(TX, "<recipient>", "</recipient>")
-            T_TX.RecipientRS = GetStringBetweenFromList(TX, "<recipientRS>", "</recipientRS>")
-
-            T_TX.Confirmations = GetULongBetweenFromList(TX, "<confirmations>", "</confirmations>")
-
-            T_TXList.Add(T_TX)
-
-        Next
-
-        If T_TXList.Count > 0 Then
-            T_TXList = T_TXList.OrderBy(Function(T_TX As S_TX) T_TX.Timestamp).ToList
-
-            Dim T_LastTX As S_TX = T_TXList(T_TXList.Count - 1)
-
-            If T_LastTX.Recipient = C_ID Then
-                If T_LastTX.Confirmations = 0 Then
-
-                    Dim T_Amount As Double = ClsSignumAPI.Planck2Dbl(T_LastTX.AmountNQT)
-                    Dim T_Message As String = GetStringBetween(T_LastTX.Attachment, "<message>", "</message>")
-                    Dim ReferenceMessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(T_Message)
-
-                    If ReferenceMessageList.Count > 0 Then
-
-                        If IsReferenceCommand(ReferenceMessageList(0)) Then
-
-                            SetPendings(T_Amount, ReferenceMessageList)
-                            If CurrentInitiatorID <> 0UL And CurrentResponderID <> 0UL Then
-                                If T_LastTX.Sender = CurrentInitiatorID Or T_LastTX.Sender = CurrentResponderID Or (T_LastTX.Sender = CreatorID And C_Status = E_Status.DISPUTE) Then
-                                    C_Status = E_Status.TX_PENDING
-                                    Return True
-                                End If
-                            Else
-                                C_Status = E_Status.TX_PENDING
-                                Return True
-                            End If
-
-                        End If
-
-                    End If
-
-
-                End If
-
-            End If
-
-        End If
-
-        Return False
-
-    End Function
-
     Private Sub SetPendings(ByVal PendingAmount As Double, ByVal ReferenceMessageULongList As List(Of ULong))
 
         C_PendingCommand = GetReferenceCommand(ReferenceMessageULongList(0))
@@ -1783,7 +1982,7 @@ Public Class ClsDEXContract
                 C_PendingXAmount = ClsSignumAPI.Planck2Dbl(ReferenceMessageULongList(2))
                 C_PendingXItem = ClsSignumAPI.ULng2String(ReferenceMessageULongList(3))
 
-                If CurrentInitiatorID = 0 And ((PendingAmount > 0.294 And C_PendingCollateral >= 0.0) Or (PendingAmount > 100.294 And C_PendingCollateral = 0.0)) Then
+                If CurrentInitiatorID = 0 And ((PendingAmount > 0.4 And C_PendingCollateral >= 0.0) Or (PendingAmount > 100.4 And C_PendingCollateral = 0.0)) Then
 
                 Else
                     ResetPendings()
@@ -1797,7 +1996,7 @@ Public Class ClsDEXContract
                 C_PendingXAmount = ClsSignumAPI.Planck2Dbl(ReferenceMessageULongList(2))
                 C_PendingXItem = ClsSignumAPI.ULng2String(ReferenceMessageULongList(3))
 
-                If CurrentInitiatorID = 0 And C_PendingResponderID <> 0UL And PendingAmount > 0.294 Then
+                If CurrentInitiatorID = 0 And C_PendingResponderID <> 0UL And PendingAmount > 0.4 Then
 
                 Else
                     ResetPendings()
@@ -1882,6 +2081,7 @@ Public Class ClsDEXContract
 
     End Function
 
+#End Region
 
 #Region "DEXContract interactions"
 
@@ -2147,6 +2347,44 @@ Public Class ClsDEXContract
         Return Response
 
     End Function
+
+    Public Function RejectResponder(ByVal SenderPublicKey As String, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceAcceptOrder})
+        Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
+        Dim Response As String = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), , MsgStr.Trim, False)
+
+        Dim JSON As ClsJSON = New ClsJSON
+        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType.Name = GetType(Boolean).Name Then
+            'TX OK
+        ElseIf Error0.GetType.Name = GetType(String).Name Then
+            'TX not OK
+            Return Application.ProductName + "-error in RejectResponder(): ->" + vbCrLf + Response
+        End If
+
+        If Response.Contains(Application.ProductName + "-error") Then
+            Return Response
+        Else
+            Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
+            Response = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
+        End If
+
+        If Not SignKeyHEX.Trim = "" Then
+
+            Dim SignumNET As ClsSignumNET = New ClsSignumNET
+            Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(Response, SignKeyHEX)
+            Response = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+            If Response.Contains(Application.ProductName + "-error") Then
+                Return Response
+            End If
+
+        End If
+
+        Return Response
+    End Function
+
     Public Function AcceptBuyOrder(ByVal SenderPublicKey As String, Optional ByVal SellAmount As Double = -1.0, Optional ByVal Collateral As Double = -1.0, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
 
         Dim Response As String = ""
@@ -2530,13 +2768,53 @@ Public Class ClsDEXContract
 
     End Function
 
-    Public Function InjectChainSwapHash(ByVal SenderPublicKey As String, ByVal ChainSwapPass As String, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
-        Dim SecretKeyList As List(Of ULong) = ClsSignumAPI.GetSHA256_64(ChainSwapPass)
-        Return InjectChainSwapHash(SenderPublicKey, SecretKeyList(2), Fee, SignKeyHEX)
-    End Function
-    Public Function InjectChainSwapHash(ByVal SenderPublicKey As String, ByVal ChainSwapHash As ULong, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
 
-        Dim Response As String = ""
+
+
+    Function ChangeULongEndians(ByVal ULongList As List(Of ULong)) As List(Of ULong)
+
+        Dim T_ULongList As List(Of ULong) = New List(Of ULong)
+
+        For Each TUL As ULong In ULongList
+            T_ULongList.Add(ChangeULongEndian(TUL))
+        Next
+
+        Return T_ULongList
+
+    End Function
+
+    Function ChangeULongEndian(ByVal uLog As ULong) As ULong
+
+        Dim T_ByteList As List(Of Byte) = BitConverter.GetBytes(uLog).ToList
+        T_ByteList.Reverse()
+
+        Dim T_UL As ULong = BitConverter.ToUInt64(T_ByteList.ToArray, 0)
+
+        Return T_UL
+
+    End Function
+
+
+
+    Public Function InjectChainSwapKeyToHash(ByVal SenderPublicKey As String, ByVal ChainSwapKey As String, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
+        Dim SecretKeyList As String = GetSHA256HashString(ChainSwapKey)
+        Return InjectChainSwapHash(SenderPublicKey, SecretKeyList, Fee, SignKeyHEX)
+    End Function
+
+    Public Function InjectChainSwapHash(ByVal SenderPublicKey As String, ByVal ChainSwapHash As String, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
+
+        If MessageIsHEXString(ChainSwapHash, 32) Then
+            Dim HashULongList As List(Of ULong) = HEXStringToULongList(ChainSwapHash)
+            HashULongList = ChangeULongEndians(HashULongList)
+            Return InjectChainSwapHash(SenderPublicKey, HashULongList(3), HashULongList(2), HashULongList(1), HashULongList(0), Fee, SignKeyHEX)
+        End If
+
+        Return Application.ProductName + "-error in InjectChainSwapHash(" + SenderPublicKey + ", " + ChainSwapHash + ", " + Fee.ToString + ", " + SignKeyHEX + "): -> ChainSwapHash is no 32 len HEX"
+
+    End Function
+    Public Function InjectChainSwapHash(ByVal SenderPublicKey As String, ByVal ChainSwapHashLong1 As ULong, ByVal ChainSwapHashLong2 As ULong, ByVal ChainSwapHashLong3 As ULong, ByVal ChainSwapHashLong4 As ULong, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
+
+        Dim Response As String = Application.ProductName + "-error in InjectChainSwapHash(#init# " + SenderPublicKey.ToString + ", " + ChainSwapHashLong1.ToString + ", " + ChainSwapHashLong2.ToString + ", " + ChainSwapHashLong3.ToString + ", " + ChainSwapHashLong4.ToString + ", " + Fee.ToString + ", " + SignKeyHEX + ")"
 
         CheckForUTX()
         CheckForTX()
@@ -2546,7 +2824,7 @@ Public Class ClsDEXContract
         End If
 
         Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceInjectChainSwapHash, ChainSwapHash})
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceInjectChainSwapHash, ChainSwapHashLong1, ChainSwapHashLong2, ChainSwapHashLong3, ChainSwapHashLong4})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
 
@@ -2583,12 +2861,27 @@ Public Class ClsDEXContract
 
     End Function
     Public Function FinishOrderWithChainSwapKey(ByVal SenderPublicKey As String, ByVal ChainSwapKey As String, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
-        Dim SecretKeyList As List(Of ULong) = ClsSignumAPI.GetSHA256_64(ChainSwapKey)
-        Return FinishOrderWithChainSwapKey(SenderPublicKey, SecretKeyList(0), SecretKeyList(1), Fee, SignKeyHEX)
-    End Function
-    Public Function FinishOrderWithChainSwapKey(ByVal SenderPublicKey As String, ByVal ChainSwapKeyLong1 As ULong, ByVal ChainSwapKeyLong2 As ULong, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
 
-        Dim Response As String = ""
+        Try
+            Dim KeyULongList As List(Of ULong) = HEXStringToULongList(ChainSwapKey)
+
+            While KeyULongList.Count < 4
+                KeyULongList.Add(0UL)
+            End While
+
+            KeyULongList = ChangeULongEndians(KeyULongList)
+
+            Return FinishOrderWithChainSwapKey(SenderPublicKey, KeyULongList(3), KeyULongList(2), KeyULongList(1), KeyULongList(0), Fee, SignKeyHEX)
+        Catch ex As Exception
+
+        End Try
+
+        Return Application.ProductName + "-error in FinishOrderWithChainSwapKey(" + SenderPublicKey + ", " + ChainSwapKey + ", " + Fee.ToString + ", " + SignKeyHEX + "): -> ChainSwapKey is no 32 len HEX"
+
+    End Function
+    Public Function FinishOrderWithChainSwapKey(ByVal SenderPublicKey As String, ByVal ChainSwapKeyLong1 As ULong, ByVal ChainSwapKeyLong2 As ULong, ByVal ChainSwapKeyLong3 As ULong, ByVal ChainSwapKeyLong4 As ULong, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
+
+        Dim Response As String = Application.ProductName + "-error in FinishOrderWithChainSwapKey(#init# " + SenderPublicKey.ToString + ", " + ChainSwapKeyLong1.ToString + ", " + ChainSwapKeyLong2.ToString + ", " + ChainSwapKeyLong3.ToString + ", " + ChainSwapKeyLong4.ToString + ", " + Fee.ToString + ", " + SignKeyHEX + ")"
 
         CheckForUTX()
         CheckForTX()
@@ -2598,10 +2891,9 @@ Public Class ClsDEXContract
         End If
 
         Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
-        Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceFinishOrderWithChainSwapKey, ChainSwapKeyLong1, ChainSwapKeyLong2, 0L})
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceFinishOrderWithChainSwapKey, ChainSwapKeyLong1, ChainSwapKeyLong2, ChainSwapKeyLong3, ChainSwapKeyLong4})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT) * 3, Fee, MsgStr.Trim, False)
-
         Dim JSON As ClsJSON = New ClsJSON
 
         Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
@@ -2637,7 +2929,7 @@ Public Class ClsDEXContract
 
     Public Function SendMessageToDEXContract(ByVal SenderPublicKeyHEX As String, ByVal Collateral As Double, ByVal ULongMsgList As List(Of ULong), Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
 
-        Dim Response As String = ""
+        Dim Response As String = Application.ProductName + "-error in SendMessageToDEXContract(#init# " + SenderPublicKeyHEX + ", " + Collateral.ToString + ", " + ULongMsgList.ToString + ", " + Fee.ToString + ", " + SignKeyHEX + ")"
 
         If CheckForUTX() Or CheckForTX() Or Not C_Status = E_Status.OPEN Then
             Return Application.ProductName + "-error in SendMessageToDEXContract(1): ->" + vbCrLf + "Contract not OPEN"

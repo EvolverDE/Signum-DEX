@@ -94,11 +94,51 @@ Public Class FrmEnterPIN
                 Dim EncryptedPassPhrase As String = GetINISetting(E_Setting.PassPhrase, "")
                 Dim DecryptedPassPhrase As String = AESDecrypt(EncryptedPassPhrase, TBOldPIN.Text)
 
+#Region "Bitcoin"
+
+                Dim EncryptedBitcoinAccounts As String = GetINISetting(E_Setting.BitcoinAccounts, "")
+
+                Dim EncryptedBitcoinAccsList As List(Of String) = New List(Of String)
+
+                If EncryptedBitcoinAccounts.Contains(";") Then
+                    EncryptedBitcoinAccsList.AddRange(EncryptedBitcoinAccounts.Split(";"))
+                Else
+                    EncryptedBitcoinAccsList.Add(EncryptedBitcoinAccounts)
+                End If
+
+                Dim DecryptedBitcoinAccsList As List(Of List(Of String)) = New List(Of List(Of String))
+
+                For Each BitAcc As String In EncryptedBitcoinAccsList
+
+                    If BitAcc.Contains(":") Then
+                        Dim T_Mnemonic As String = AESDecrypt(BitAcc.Split(":")(0), TBOldPIN.Text)
+
+                        Dim T_PublicKey As String = BitAcc.Split(":")(1)
+                        DecryptedBitcoinAccsList.Add(New List(Of String)({T_Mnemonic, T_PublicKey}))
+
+                    End If
+
+                Next
+
+#End Region
+
                 If TBPIN.Text = "" Then
-                    Dim Res As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("The PassPhrase will shown as plaintext in Settings.ini" + vbCrLf + "do you really want to do that?", "Warning", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList.Yes_No),, ClsMsgs.Status.Warning)
+                    Dim Res As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("All PassPhrases/Mnemonics will be shown as plaintext in Settings.ini" + vbCrLf + "do you really want to do that?", "Warning", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList.Yes_No),, ClsMsgs.Status.Warning)
 
                     If Res = ClsMsgs.CustomDialogResult.Yes Then
                         SetINISetting(E_Setting.PassPhrase, DecryptedPassPhrase)
+
+#Region "Bitcoin"
+                        Dim T_DecryptedBitcoinAccs As String = ""
+                        For Each DecryptedBitcoinAcc As List(Of String) In DecryptedBitcoinAccsList
+                            T_DecryptedBitcoinAccs += DecryptedBitcoinAcc(0) + ":" + DecryptedBitcoinAcc(1) + ";"
+                        Next
+
+                        T_DecryptedBitcoinAccs = T_DecryptedBitcoinAccs.Remove(T_DecryptedBitcoinAccs.Length - 1)
+
+                        SetINISetting(E_Setting.BitcoinAccounts, T_DecryptedBitcoinAccs)
+#End Region
+
                         SetINISetting(E_Setting.PINFingerPrint, "")
                         GlobalPIN = ""
                     Else
@@ -107,6 +147,27 @@ Public Class FrmEnterPIN
                     End If
 
                 Else
+
+#Region "Bitcoin"
+                    Dim T_EncryptedBitcoinAccsList As List(Of String) = New List(Of String)
+                    For Each T_Mnemonic_PublicKey As List(Of String) In DecryptedBitcoinAccsList
+                        Dim T_EncryptedMnemonic As String = AESEncrypt2HEXStr(T_Mnemonic_PublicKey(0), TBPIN.Text)
+                        Dim T_PublicKey As String = T_Mnemonic_PublicKey(1)
+
+                        T_EncryptedBitcoinAccsList.Add(T_EncryptedMnemonic + ":" + T_PublicKey)
+                    Next
+
+                    Dim T_EncryptedBitcoinAccs As String = ""
+                    For Each T_EncMnemonic_PublicKey As String In T_EncryptedBitcoinAccsList
+                        T_EncryptedBitcoinAccs += T_EncMnemonic_PublicKey + ";"
+                    Next
+
+                    T_EncryptedBitcoinAccs = T_EncryptedBitcoinAccs.Remove(T_EncryptedBitcoinAccs.Length - 1)
+
+                    SetINISetting(E_Setting.BitcoinAccounts, T_EncryptedBitcoinAccs)
+
+#End Region
+
                     EncryptedPassPhrase = AESEncrypt2HEXStr(DecryptedPassPhrase, TBPIN.Text)
                     SetINISetting(E_Setting.PassPhrase, EncryptedPassPhrase)
 
@@ -123,6 +184,42 @@ Public Class FrmEnterPIN
                 Dim HashNewPIN() As Byte = SHA512a.ComputeHash(System.Text.Encoding.UTF8.GetBytes(TBPIN.Text).ToArray)
                 Dim HashNewPINHEX As String = ByteArrayToHEXString(HashNewPIN)
                 SetINISetting(E_Setting.PINFingerPrint, HashNewPINHEX)
+
+#Region "Bitcoin"
+
+                Dim PlainBitcoinAccounts As String = GetINISetting(E_Setting.BitcoinAccounts, "")
+
+                Dim PlainBitcoinAccsList As List(Of String) = New List(Of String)
+
+                If PlainBitcoinAccounts.Contains(";") Then
+                    PlainBitcoinAccsList.AddRange(PlainBitcoinAccounts.Split(";"))
+                Else
+                    PlainBitcoinAccsList.Add(PlainBitcoinAccounts)
+                End If
+
+                Dim DecryptedBitcoinAccsList As List(Of List(Of String)) = New List(Of List(Of String))
+
+                For Each BitAcc As String In PlainBitcoinAccsList
+
+                    If BitAcc.Contains(":") Then
+                        Dim T_Mnemonic As String = BitAcc.Split(":")(0)
+                        Dim T_PublicKey As String = BitAcc.Split(":")(1)
+                        DecryptedBitcoinAccsList.Add(New List(Of String)({T_Mnemonic, T_PublicKey}))
+
+                    End If
+
+                Next
+
+                Dim T_EncryptedBitcoinAccs As String = ""
+                For Each DecryptedBitcoinAcc As List(Of String) In DecryptedBitcoinAccsList
+                    T_EncryptedBitcoinAccs += AESEncrypt2HEXStr(DecryptedBitcoinAcc(0), TBPIN.Text) + ":" + DecryptedBitcoinAcc(1) + ";"
+                Next
+
+                T_EncryptedBitcoinAccs = T_EncryptedBitcoinAccs.Remove(T_EncryptedBitcoinAccs.Length - 1)
+
+                SetINISetting(E_Setting.BitcoinAccounts, T_EncryptedBitcoinAccs)
+
+#End Region
 
                 Dim PlainPassPhrase As String = GetINISetting(E_Setting.PassPhrase, "")
                 Dim EncryptedPassPhrase As String = AESEncrypt2HEXStr(PlainPassPhrase, TBPIN.Text)

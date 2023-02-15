@@ -53,11 +53,20 @@ Module ModINITools
         'Temp
         AutoSignalTransactions = 400
         AutoInfoTransactions = 401
+        BitcoinTransactions = 402
         'Develope
         InfoOut = 500
         TCPAPIShowStatus = 501
         DEXNETEnable = 502
         DEXNETShowStatus = 503
+        'Bitcoin
+        BitcoinDPath = 600
+        BitcoinDArguments = 601
+        BitcoinAPINode = 602
+        BitcoinAPIUser = 603
+        BitcoinAPIPassword = 604
+        BitcoinWallet = 605
+        BitcoinAccounts = 606
 
     End Enum
 
@@ -68,6 +77,7 @@ Module ModINITools
         PayPal = 3
         Temp = 4
         Develope = 5
+        Bitcoin = 6
     End Enum
 
 
@@ -85,6 +95,8 @@ Module ModINITools
 
         If Not IO.File.Exists(Application.StartupPath + "/Settings.ini") Then
 
+#Region "Basics"
+
             Dim Temp As Boolean = SetINISetting(E_Setting.PassPhrase, "")
             Temp = SetINISetting(E_Setting.PINFingerPrint, "")
             Temp = SetINISetting(E_Setting.Address, "")
@@ -98,10 +110,18 @@ Module ModINITools
             Temp = SetINISetting(E_Setting.DEXNETNodes, "signum.zone:8131")
             Temp = SetINISetting(E_Setting.DEXNETMyHost, "")
 
+#End Region
+
+#Region "Default"
+
             Temp = SetINISetting(E_Setting.AutoSendPaymentInfo, False)
             Temp = SetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False)
             Temp = SetINISetting(E_Setting.PaymentType, "Other")
             Temp = SetINISetting(E_Setting.PaymentInfoText, "self pickup")
+
+#End Region
+
+#Region "Filter"
 
             Temp = SetINISetting(E_Setting.ShowMaxSellOrders, 10)
             Temp = SetINISetting(E_Setting.ShowMaxBuyOrders, 10)
@@ -125,19 +145,47 @@ Module ModINITools
             Temp = SetINISetting(E_Setting.SellFilterPayable, False)
             Temp = SetINISetting(E_Setting.BuyFilterPayable, False)
 
+#End Region
+
+#Region "PayPal"
+
             Temp = SetINISetting(E_Setting.PayPalChoice, "EMail")
             Temp = SetINISetting(E_Setting.PayPalEMail, "test@test.com")
             Temp = SetINISetting(E_Setting.PayPalAPIUser, "")
             Temp = SetINISetting(E_Setting.PayPalAPISecret, "")
 
+#End Region
+
+#Region "Temp"
+
             Temp = SetINISetting(E_Setting.AutoSignalTransactions, "")
             Temp = SetINISetting(E_Setting.AutoInfoTransactions, "")
 
+#End Region
 
             Temp = SetINISetting(E_Setting.InfoOut, True)
             Temp = SetINISetting(E_Setting.TCPAPIShowStatus, False)
+
+#Region "Develope"
+
             Temp = SetINISetting(E_Setting.DEXNETEnable, False)
             Temp = SetINISetting(E_Setting.DEXNETShowStatus, False)
+
+#End Region
+
+#Region "Bitcoin"
+
+            Temp = SetINISetting(E_Setting.BitcoinDPath, "")
+            Temp = SetINISetting(E_Setting.BitcoinDArguments, "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex")
+
+            Temp = SetINISetting(E_Setting.BitcoinAPINode, "http://127.0.0.1:18332")
+            Temp = SetINISetting(E_Setting.BitcoinAPIUser, "bitcoin")
+            Temp = SetINISetting(E_Setting.BitcoinAPIPassword, "bitcoin")
+            Temp = SetINISetting(E_Setting.BitcoinWallet, "DEXWALLET")
+
+            Temp = SetINISetting(E_Setting.BitcoinAccounts, "")
+
+#End Region
 
             Return True
 
@@ -148,6 +196,8 @@ Module ModINITools
     End Function
 
     Function InitiateINI() As Boolean
+
+#Region "Basics"
 
         Dim Temp As String = GetINISetting(E_Setting.PassPhrase, "")
         Temp = GetINISetting(E_Setting.PINFingerPrint, "")
@@ -162,10 +212,18 @@ Module ModINITools
         Temp = GetINISetting(E_Setting.DEXNETNodes, "signum.zone:8131")
         Temp = GetINISetting(E_Setting.DEXNETMyHost, "")
 
+#End Region
+
+#Region "Defaults"
+
         Temp = GetINISetting(E_Setting.AutoSendPaymentInfo, False).ToString
         Temp = GetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False).ToString
         Temp = GetINISetting(E_Setting.PaymentType, "Other").ToString
         Temp = GetINISetting(E_Setting.PaymentInfoText, "self pickup")
+
+#End Region
+
+#Region "Filter"
 
         Temp = GetINISetting(E_Setting.ShowMaxSellOrders, 10).ToString
         Temp = GetINISetting(E_Setting.ShowMaxBuyOrders, 10).ToString
@@ -173,7 +231,6 @@ Module ModINITools
         Temp = GetINISetting(E_Setting.BuyFilterAutoinfo, False).ToString
         Temp = GetINISetting(E_Setting.SellFilterAutofinish, False).ToString
         Temp = GetINISetting(E_Setting.BuyFilterAutofinish, False).ToString
-
 
         Dim DefaultMethodList As List(Of String) = New List(Of String)(ClsOrderSettings.GetPayTypes.ToArray)
 
@@ -188,19 +245,45 @@ Module ModINITools
         Temp = GetINISetting(E_Setting.BuyFilterMethods, DefaultMethods)
         Temp = GetINISetting(E_Setting.SellFilterPayable, False).ToString
         Temp = GetINISetting(E_Setting.BuyFilterPayable, False).ToString
+#End Region
+
+#Region "PayPal"
 
         Temp = GetINISetting(E_Setting.PayPalChoice, "EMail")
         Temp = GetINISetting(E_Setting.PayPalEMail, "test@test.com")
         Temp = GetINISetting(E_Setting.PayPalAPIUser, "")
         Temp = GetINISetting(E_Setting.PayPalAPISecret, "")
 
+#End Region
+
+#Region "Temp"
         Temp = GetINISetting(E_Setting.AutoSignalTransactions, "")
         Temp = GetINISetting(E_Setting.AutoInfoTransactions, "")
+#End Region
 
         Temp = GetINISetting(E_Setting.InfoOut, True).ToString
         Temp = GetINISetting(E_Setting.TCPAPIShowStatus, False).ToString
+
+#Region "Develope"
+
         Temp = GetINISetting(E_Setting.DEXNETEnable, False).ToString
         Temp = GetINISetting(E_Setting.DEXNETShowStatus, False).ToString
+
+#End Region
+
+#Region "Bitcoin"
+
+        Temp = GetINISetting(E_Setting.BitcoinDPath, "").ToString
+        Temp = GetINISetting(E_Setting.BitcoinDArguments, "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex").ToString
+
+        Temp = GetINISetting(E_Setting.BitcoinAPINode, "http://127.0.0.1:18332").ToString
+        Temp = GetINISetting(E_Setting.BitcoinAPIUser, "bitcoin").ToString
+        Temp = GetINISetting(E_Setting.BitcoinAPIPassword, "bitcoin").ToString
+        Temp = GetINISetting(E_Setting.BitcoinWallet, "DEXWALLET").ToString
+
+        Temp = GetINISetting(E_Setting.BitcoinAccounts, "").ToString
+
+#End Region
 
         Return True
 
@@ -226,6 +309,8 @@ Module ModINITools
                 Section = E_SettingSection.Temp
             Case 500 To 599
                 Section = E_SettingSection.Develope
+            Case 600 To 699
+                Section = E_SettingSection.Bitcoin
             Case Else
                 Section = E_SettingSection.Basics
         End Select

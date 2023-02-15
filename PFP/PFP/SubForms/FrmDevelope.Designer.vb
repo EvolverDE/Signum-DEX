@@ -118,19 +118,22 @@ Partial Class FrmDevelope
         Me.Label33 = New System.Windows.Forms.Label()
         Me.BtTestInjectResponder = New System.Windows.Forms.Button()
         Me.Panel5 = New System.Windows.Forms.Panel()
+        Me.TBTestChainSwapHashLong3 = New System.Windows.Forms.TextBox()
+        Me.Label46 = New System.Windows.Forms.Label()
+        Me.TBTestChainSwapHashLong2 = New System.Windows.Forms.TextBox()
+        Me.Label41 = New System.Windows.Forms.Label()
         Me.Label34 = New System.Windows.Forms.Label()
-        Me.TBTesChainSwapHash = New System.Windows.Forms.TextBox()
+        Me.TBTestChainSwapHashLong1 = New System.Windows.Forms.TextBox()
         Me.Label39 = New System.Windows.Forms.Label()
         Me.BtTestChainSwapKeyToHash = New System.Windows.Forms.Button()
         Me.TBTestChainSwapKey = New System.Windows.Forms.TextBox()
         Me.BtTestInjectChainSwapHash = New System.Windows.Forms.Button()
         Me.Panel6 = New System.Windows.Forms.Panel()
-        Me.Label41 = New System.Windows.Forms.Label()
+        Me.BtCSKConvertback = New System.Windows.Forms.Button()
         Me.Label42 = New System.Windows.Forms.Label()
-        Me.TBTestChainSwapLong2 = New System.Windows.Forms.TextBox()
-        Me.TBTestChainSwapLong1 = New System.Windows.Forms.TextBox()
-        Me.TBTestChainSwapULong2 = New System.Windows.Forms.TextBox()
-        Me.TBTestChainSwapULong1 = New System.Windows.Forms.TextBox()
+        Me.TBTestChainSwapKeyULong3 = New System.Windows.Forms.TextBox()
+        Me.TBTestChainSwapKeyULong2 = New System.Windows.Forms.TextBox()
+        Me.TBTestChainSwapKeyULong1 = New System.Windows.Forms.TextBox()
         Me.Label43 = New System.Windows.Forms.Label()
         Me.Label44 = New System.Windows.Forms.Label()
         Me.BtTestFinishWithChainSwapKey = New System.Windows.Forms.Button()
@@ -213,6 +216,7 @@ Partial Class FrmDevelope
         Me.Label9 = New System.Windows.Forms.Label()
         Me.LiBoTestRelKeys = New System.Windows.Forms.ListBox()
         Me.SplitContainer5 = New System.Windows.Forms.SplitContainer()
+        Me.BtTestRefreshLiBoRelMsgs = New System.Windows.Forms.Button()
         Me.Label7 = New System.Windows.Forms.Label()
         Me.LiBoTestRelMsgs = New System.Windows.Forms.ListBox()
         Me.SplitContainer8 = New System.Windows.Forms.SplitContainer()
@@ -228,7 +232,32 @@ Partial Class FrmDevelope
         Me.Label29 = New System.Windows.Forms.Label()
         Me.TBTestMyPublicKey = New System.Windows.Forms.TextBox()
         Me.Label28 = New System.Windows.Forms.Label()
-        Me.BtTestRefreshLiBoRelMsgs = New System.Windows.Forms.Button()
+        Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.Label47 = New System.Windows.Forms.Label()
+        Me.TBTestKeyString = New System.Windows.Forms.TextBox()
+        Me.Label48 = New System.Windows.Forms.Label()
+        Me.TBTestKeyHEX = New System.Windows.Forms.TextBox()
+        Me.Label49 = New System.Windows.Forms.Label()
+        Me.TBTestHashULHEX = New System.Windows.Forms.TextBox()
+        Me.BtTestHash = New System.Windows.Forms.Button()
+        Me.Label50 = New System.Windows.Forms.Label()
+        Me.TBTestKeyUL3 = New System.Windows.Forms.TextBox()
+        Me.Label51 = New System.Windows.Forms.Label()
+        Me.TBTestKeyUL1 = New System.Windows.Forms.TextBox()
+        Me.TBTestKeyUL2 = New System.Windows.Forms.TextBox()
+        Me.Label52 = New System.Windows.Forms.Label()
+        Me.TBTestKeyUL4 = New System.Windows.Forms.TextBox()
+        Me.Label53 = New System.Windows.Forms.Label()
+        Me.TBTestHashUL4 = New System.Windows.Forms.TextBox()
+        Me.Label54 = New System.Windows.Forms.Label()
+        Me.TBTestHashUL2 = New System.Windows.Forms.TextBox()
+        Me.Label55 = New System.Windows.Forms.Label()
+        Me.TBTestHashUL1 = New System.Windows.Forms.TextBox()
+        Me.Label56 = New System.Windows.Forms.Label()
+        Me.TBTestHashUL3 = New System.Windows.Forms.TextBox()
+        Me.Label57 = New System.Windows.Forms.Label()
+        Me.TBTestHashHEX = New System.Windows.Forms.TextBox()
+        Me.Label58 = New System.Windows.Forms.Label()
         Me.TestTabControl.SuspendLayout()
         Me.TabPage6.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
@@ -316,6 +345,7 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel1.SuspendLayout()
         Me.SplitContainer11.Panel2.SuspendLayout()
         Me.SplitContainer11.SuspendLayout()
+        Me.GroupBox4.SuspendLayout()
         Me.SuspendLayout()
         '
         'TestTabControl
@@ -332,11 +362,12 @@ Partial Class FrmDevelope
         Me.TestTabControl.Location = New System.Drawing.Point(0, 0)
         Me.TestTabControl.Name = "TestTabControl"
         Me.TestTabControl.SelectedIndex = 0
-        Me.TestTabControl.Size = New System.Drawing.Size(1213, 669)
+        Me.TestTabControl.Size = New System.Drawing.Size(1240, 712)
         Me.TestTabControl.TabIndex = 39
         '
         'TabPage6
         '
+        Me.TabPage6.Controls.Add(Me.GroupBox4)
         Me.TabPage6.Controls.Add(Me.GroupBox2)
         Me.TabPage6.Controls.Add(Me.GroupBox1)
         Me.TabPage6.Controls.Add(Me.GroupBox5)
@@ -344,7 +375,7 @@ Partial Class FrmDevelope
         Me.TabPage6.Location = New System.Drawing.Point(4, 22)
         Me.TabPage6.Name = "TabPage6"
         Me.TabPage6.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage6.Size = New System.Drawing.Size(1205, 643)
+        Me.TabPage6.Size = New System.Drawing.Size(1232, 686)
         Me.TabPage6.TabIndex = 0
         Me.TabPage6.Text = "Convertings"
         Me.TabPage6.UseVisualStyleBackColor = True
@@ -592,7 +623,7 @@ Partial Class FrmDevelope
         Me.TabPage7.Location = New System.Drawing.Point(4, 22)
         Me.TabPage7.Name = "TabPage7"
         Me.TabPage7.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage7.Size = New System.Drawing.Size(1205, 643)
+        Me.TabPage7.Size = New System.Drawing.Size(1232, 686)
         Me.TabPage7.TabIndex = 1
         Me.TabPage7.Text = "INI-Tools-Tests"
         Me.TabPage7.UseVisualStyleBackColor = True
@@ -668,7 +699,7 @@ Partial Class FrmDevelope
         Me.TabPage8.Controls.Add(Me.SplitContainer10)
         Me.TabPage8.Location = New System.Drawing.Point(4, 22)
         Me.TabPage8.Name = "TabPage8"
-        Me.TabPage8.Size = New System.Drawing.Size(1205, 643)
+        Me.TabPage8.Size = New System.Drawing.Size(1232, 686)
         Me.TabPage8.TabIndex = 2
         Me.TabPage8.Text = "PayPal-Tests"
         Me.TabPage8.UseVisualStyleBackColor = True
@@ -690,8 +721,8 @@ Partial Class FrmDevelope
         'SplitContainer10.Panel2
         '
         Me.SplitContainer10.Panel2.Controls.Add(Me.LiBoPayPalComs)
-        Me.SplitContainer10.Size = New System.Drawing.Size(1205, 643)
-        Me.SplitContainer10.SplitterDistance = 169
+        Me.SplitContainer10.Size = New System.Drawing.Size(1232, 686)
+        Me.SplitContainer10.SplitterDistance = 180
         Me.SplitContainer10.TabIndex = 11
         '
         'GroupBox7
@@ -947,7 +978,7 @@ Partial Class FrmDevelope
         Me.LiBoPayPalComs.FormattingEnabled = True
         Me.LiBoPayPalComs.Location = New System.Drawing.Point(0, 0)
         Me.LiBoPayPalComs.Name = "LiBoPayPalComs"
-        Me.LiBoPayPalComs.Size = New System.Drawing.Size(1205, 470)
+        Me.LiBoPayPalComs.Size = New System.Drawing.Size(1232, 502)
         Me.LiBoPayPalComs.TabIndex = 0
         '
         'TabPage9
@@ -960,7 +991,7 @@ Partial Class FrmDevelope
         Me.TabPage9.Controls.Add(Me.LVTestCurrentOrder)
         Me.TabPage9.Location = New System.Drawing.Point(4, 22)
         Me.TabPage9.Name = "TabPage9"
-        Me.TabPage9.Size = New System.Drawing.Size(1205, 643)
+        Me.TabPage9.Size = New System.Drawing.Size(1232, 686)
         Me.TabPage9.TabIndex = 3
         Me.TabPage9.Text = "AT Communication"
         Me.TabPage9.UseVisualStyleBackColor = True
@@ -1283,8 +1314,12 @@ Partial Class FrmDevelope
         'Panel5
         '
         Me.Panel5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Panel5.Controls.Add(Me.TBTestChainSwapHashLong3)
+        Me.Panel5.Controls.Add(Me.Label46)
+        Me.Panel5.Controls.Add(Me.TBTestChainSwapHashLong2)
+        Me.Panel5.Controls.Add(Me.Label41)
         Me.Panel5.Controls.Add(Me.Label34)
-        Me.Panel5.Controls.Add(Me.TBTesChainSwapHash)
+        Me.Panel5.Controls.Add(Me.TBTestChainSwapHashLong1)
         Me.Panel5.Controls.Add(Me.Label39)
         Me.Panel5.Controls.Add(Me.BtTestChainSwapKeyToHash)
         Me.Panel5.Controls.Add(Me.TBTestChainSwapKey)
@@ -1293,6 +1328,42 @@ Partial Class FrmDevelope
         Me.Panel5.Name = "Panel5"
         Me.Panel5.Size = New System.Drawing.Size(109, 295)
         Me.Panel5.TabIndex = 95
+        '
+        'TBTestChainSwapHashLong3
+        '
+        Me.TBTestChainSwapHashLong3.Location = New System.Drawing.Point(1, 179)
+        Me.TBTestChainSwapHashLong3.Name = "TBTestChainSwapHashLong3"
+        Me.TBTestChainSwapHashLong3.ReadOnly = True
+        Me.TBTestChainSwapHashLong3.Size = New System.Drawing.Size(105, 20)
+        Me.TBTestChainSwapHashLong3.TabIndex = 51
+        '
+        'Label46
+        '
+        Me.Label46.AutoSize = True
+        Me.Label46.ForeColor = System.Drawing.Color.Black
+        Me.Label46.Location = New System.Drawing.Point(0, 163)
+        Me.Label46.Name = "Label46"
+        Me.Label46.Size = New System.Drawing.Size(73, 13)
+        Me.Label46.TabIndex = 52
+        Me.Label46.Text = "HashULong3:"
+        '
+        'TBTestChainSwapHashLong2
+        '
+        Me.TBTestChainSwapHashLong2.Location = New System.Drawing.Point(1, 140)
+        Me.TBTestChainSwapHashLong2.Name = "TBTestChainSwapHashLong2"
+        Me.TBTestChainSwapHashLong2.ReadOnly = True
+        Me.TBTestChainSwapHashLong2.Size = New System.Drawing.Size(105, 20)
+        Me.TBTestChainSwapHashLong2.TabIndex = 49
+        '
+        'Label41
+        '
+        Me.Label41.AutoSize = True
+        Me.Label41.ForeColor = System.Drawing.Color.Black
+        Me.Label41.Location = New System.Drawing.Point(0, 124)
+        Me.Label41.Name = "Label41"
+        Me.Label41.Size = New System.Drawing.Size(73, 13)
+        Me.Label41.TabIndex = 50
+        Me.Label41.Text = "HashULong2:"
         '
         'Label34
         '
@@ -1304,13 +1375,13 @@ Partial Class FrmDevelope
         Me.Label34.TabIndex = 48
         Me.Label34.Text = "ChainSwapKey:"
         '
-        'TBTesChainSwapHash
+        'TBTestChainSwapHashLong1
         '
-        Me.TBTesChainSwapHash.Location = New System.Drawing.Point(1, 101)
-        Me.TBTesChainSwapHash.Name = "TBTesChainSwapHash"
-        Me.TBTesChainSwapHash.ReadOnly = True
-        Me.TBTesChainSwapHash.Size = New System.Drawing.Size(105, 20)
-        Me.TBTesChainSwapHash.TabIndex = 11
+        Me.TBTestChainSwapHashLong1.Location = New System.Drawing.Point(1, 101)
+        Me.TBTestChainSwapHashLong1.Name = "TBTestChainSwapHashLong1"
+        Me.TBTestChainSwapHashLong1.ReadOnly = True
+        Me.TBTestChainSwapHashLong1.Size = New System.Drawing.Size(105, 20)
+        Me.TBTestChainSwapHashLong1.TabIndex = 11
         '
         'Label39
         '
@@ -1318,9 +1389,9 @@ Partial Class FrmDevelope
         Me.Label39.ForeColor = System.Drawing.Color.Black
         Me.Label39.Location = New System.Drawing.Point(0, 85)
         Me.Label39.Name = "Label39"
-        Me.Label39.Size = New System.Drawing.Size(96, 13)
+        Me.Label39.Size = New System.Drawing.Size(73, 13)
         Me.Label39.TabIndex = 37
-        Me.Label39.Text = "SHA256_64 Hash:"
+        Me.Label39.Text = "HashULong1:"
         '
         'BtTestChainSwapKeyToHash
         '
@@ -1352,12 +1423,11 @@ Partial Class FrmDevelope
         'Panel6
         '
         Me.Panel6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Panel6.Controls.Add(Me.Label41)
+        Me.Panel6.Controls.Add(Me.BtCSKConvertback)
         Me.Panel6.Controls.Add(Me.Label42)
-        Me.Panel6.Controls.Add(Me.TBTestChainSwapLong2)
-        Me.Panel6.Controls.Add(Me.TBTestChainSwapLong1)
-        Me.Panel6.Controls.Add(Me.TBTestChainSwapULong2)
-        Me.Panel6.Controls.Add(Me.TBTestChainSwapULong1)
+        Me.Panel6.Controls.Add(Me.TBTestChainSwapKeyULong3)
+        Me.Panel6.Controls.Add(Me.TBTestChainSwapKeyULong2)
+        Me.Panel6.Controls.Add(Me.TBTestChainSwapKeyULong1)
         Me.Panel6.Controls.Add(Me.Label43)
         Me.Panel6.Controls.Add(Me.Label44)
         Me.Panel6.Controls.Add(Me.BtTestFinishWithChainSwapKey)
@@ -1366,15 +1436,15 @@ Partial Class FrmDevelope
         Me.Panel6.Size = New System.Drawing.Size(116, 295)
         Me.Panel6.TabIndex = 96
         '
-        'Label41
+        'BtCSKConvertback
         '
-        Me.Label41.AutoSize = True
-        Me.Label41.ForeColor = System.Drawing.Color.Black
-        Me.Label41.Location = New System.Drawing.Point(1, 124)
-        Me.Label41.Name = "Label41"
-        Me.Label41.Size = New System.Drawing.Size(94, 13)
-        Me.Label41.TabIndex = 80
-        Me.Label41.Text = "ChainSwapLong2:"
+        Me.BtCSKConvertback.ForeColor = System.Drawing.Color.Black
+        Me.BtCSKConvertback.Location = New System.Drawing.Point(1, 177)
+        Me.BtCSKConvertback.Name = "BtCSKConvertback"
+        Me.BtCSKConvertback.Size = New System.Drawing.Size(110, 23)
+        Me.BtCSKConvertback.TabIndex = 81
+        Me.BtCSKConvertback.Text = "convert back"
+        Me.BtCSKConvertback.UseVisualStyleBackColor = True
         '
         'Label42
         '
@@ -1382,37 +1452,30 @@ Partial Class FrmDevelope
         Me.Label42.ForeColor = System.Drawing.Color.Black
         Me.Label42.Location = New System.Drawing.Point(1, 84)
         Me.Label42.Name = "Label42"
-        Me.Label42.Size = New System.Drawing.Size(94, 13)
+        Me.Label42.Size = New System.Drawing.Size(66, 13)
         Me.Label42.TabIndex = 79
-        Me.Label42.Text = "ChainSwapLong1:"
+        Me.Label42.Text = "KeyULong3:"
         '
-        'TBTestChainSwapLong2
+        'TBTestChainSwapKeyULong3
         '
-        Me.TBTestChainSwapLong2.Location = New System.Drawing.Point(1, 140)
-        Me.TBTestChainSwapLong2.Name = "TBTestChainSwapLong2"
-        Me.TBTestChainSwapLong2.Size = New System.Drawing.Size(112, 20)
-        Me.TBTestChainSwapLong2.TabIndex = 78
+        Me.TBTestChainSwapKeyULong3.Location = New System.Drawing.Point(1, 101)
+        Me.TBTestChainSwapKeyULong3.Name = "TBTestChainSwapKeyULong3"
+        Me.TBTestChainSwapKeyULong3.Size = New System.Drawing.Size(112, 20)
+        Me.TBTestChainSwapKeyULong3.TabIndex = 77
         '
-        'TBTestChainSwapLong1
+        'TBTestChainSwapKeyULong2
         '
-        Me.TBTestChainSwapLong1.Location = New System.Drawing.Point(1, 101)
-        Me.TBTestChainSwapLong1.Name = "TBTestChainSwapLong1"
-        Me.TBTestChainSwapLong1.Size = New System.Drawing.Size(112, 20)
-        Me.TBTestChainSwapLong1.TabIndex = 77
+        Me.TBTestChainSwapKeyULong2.Location = New System.Drawing.Point(1, 62)
+        Me.TBTestChainSwapKeyULong2.Name = "TBTestChainSwapKeyULong2"
+        Me.TBTestChainSwapKeyULong2.Size = New System.Drawing.Size(112, 20)
+        Me.TBTestChainSwapKeyULong2.TabIndex = 14
         '
-        'TBTestChainSwapULong2
+        'TBTestChainSwapKeyULong1
         '
-        Me.TBTestChainSwapULong2.Location = New System.Drawing.Point(1, 62)
-        Me.TBTestChainSwapULong2.Name = "TBTestChainSwapULong2"
-        Me.TBTestChainSwapULong2.Size = New System.Drawing.Size(112, 20)
-        Me.TBTestChainSwapULong2.TabIndex = 14
-        '
-        'TBTestChainSwapULong1
-        '
-        Me.TBTestChainSwapULong1.Location = New System.Drawing.Point(1, 23)
-        Me.TBTestChainSwapULong1.Name = "TBTestChainSwapULong1"
-        Me.TBTestChainSwapULong1.Size = New System.Drawing.Size(112, 20)
-        Me.TBTestChainSwapULong1.TabIndex = 13
+        Me.TBTestChainSwapKeyULong1.Location = New System.Drawing.Point(1, 23)
+        Me.TBTestChainSwapKeyULong1.Name = "TBTestChainSwapKeyULong1"
+        Me.TBTestChainSwapKeyULong1.Size = New System.Drawing.Size(112, 20)
+        Me.TBTestChainSwapKeyULong1.TabIndex = 13
         '
         'Label43
         '
@@ -1420,9 +1483,9 @@ Partial Class FrmDevelope
         Me.Label43.ForeColor = System.Drawing.Color.Black
         Me.Label43.Location = New System.Drawing.Point(0, 6)
         Me.Label43.Name = "Label43"
-        Me.Label43.Size = New System.Drawing.Size(102, 13)
+        Me.Label43.Size = New System.Drawing.Size(66, 13)
         Me.Label43.TabIndex = 43
-        Me.Label43.Text = "ChainSwapULong1:"
+        Me.Label43.Text = "KeyULong1:"
         '
         'Label44
         '
@@ -1430,9 +1493,9 @@ Partial Class FrmDevelope
         Me.Label44.ForeColor = System.Drawing.Color.Black
         Me.Label44.Location = New System.Drawing.Point(0, 46)
         Me.Label44.Name = "Label44"
-        Me.Label44.Size = New System.Drawing.Size(102, 13)
+        Me.Label44.Size = New System.Drawing.Size(66, 13)
         Me.Label44.TabIndex = 45
-        Me.Label44.Text = "ChainSwapULong2:"
+        Me.Label44.Text = "KeyULong2:"
         '
         'BtTestFinishWithChainSwapKey
         '
@@ -1588,7 +1651,7 @@ Partial Class FrmDevelope
         Me.TabPage10.Controls.Add(Me.TestGrpBoxMultithreadings)
         Me.TabPage10.Location = New System.Drawing.Point(4, 22)
         Me.TabPage10.Name = "TabPage10"
-        Me.TabPage10.Size = New System.Drawing.Size(1205, 643)
+        Me.TabPage10.Size = New System.Drawing.Size(1232, 686)
         Me.TabPage10.TabIndex = 4
         Me.TabPage10.Text = "Multithreading-Tests"
         Me.TabPage10.UseVisualStyleBackColor = True
@@ -1599,7 +1662,7 @@ Partial Class FrmDevelope
         Me.TestGrpBoxMultithreadings.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TestGrpBoxMultithreadings.Location = New System.Drawing.Point(0, 0)
         Me.TestGrpBoxMultithreadings.Name = "TestGrpBoxMultithreadings"
-        Me.TestGrpBoxMultithreadings.Size = New System.Drawing.Size(1205, 643)
+        Me.TestGrpBoxMultithreadings.Size = New System.Drawing.Size(1232, 686)
         Me.TestGrpBoxMultithreadings.TabIndex = 38
         Me.TestGrpBoxMultithreadings.TabStop = False
         Me.TestGrpBoxMultithreadings.Text = "Multithreading-Tests"
@@ -1623,7 +1686,7 @@ Partial Class FrmDevelope
         'SplitContainer9.Panel2
         '
         Me.SplitContainer9.Panel2.Controls.Add(Me.SplitContainer12)
-        Me.SplitContainer9.Size = New System.Drawing.Size(1199, 624)
+        Me.SplitContainer9.Size = New System.Drawing.Size(1226, 667)
         Me.SplitContainer9.SplitterDistance = 55
         Me.SplitContainer9.TabIndex = 32
         '
@@ -1691,8 +1754,8 @@ Partial Class FrmDevelope
         'SplitContainer12.Panel2
         '
         Me.SplitContainer12.Panel2.Controls.Add(Me.SplitContainer14)
-        Me.SplitContainer12.Size = New System.Drawing.Size(1199, 565)
-        Me.SplitContainer12.SplitterDistance = 595
+        Me.SplitContainer12.Size = New System.Drawing.Size(1226, 608)
+        Me.SplitContainer12.SplitterDistance = 608
         Me.SplitContainer12.TabIndex = 29
         '
         'SplitContainer13
@@ -1711,7 +1774,7 @@ Partial Class FrmDevelope
         'SplitContainer13.Panel2
         '
         Me.SplitContainer13.Panel2.Controls.Add(Me.LVTestMulti)
-        Me.SplitContainer13.Size = New System.Drawing.Size(595, 565)
+        Me.SplitContainer13.Size = New System.Drawing.Size(608, 608)
         Me.SplitContainer13.SplitterDistance = 25
         Me.SplitContainer13.TabIndex = 0
         '
@@ -1734,7 +1797,7 @@ Partial Class FrmDevelope
         Me.LVTestMulti.Location = New System.Drawing.Point(0, 0)
         Me.LVTestMulti.MultiSelect = False
         Me.LVTestMulti.Name = "LVTestMulti"
-        Me.LVTestMulti.Size = New System.Drawing.Size(595, 536)
+        Me.LVTestMulti.Size = New System.Drawing.Size(608, 579)
         Me.LVTestMulti.TabIndex = 28
         Me.LVTestMulti.UseCompatibleStateImageBehavior = False
         Me.LVTestMulti.View = System.Windows.Forms.View.Details
@@ -1775,7 +1838,7 @@ Partial Class FrmDevelope
         'SplitContainer14.Panel2
         '
         Me.SplitContainer14.Panel2.Controls.Add(Me.LVActiveNodes)
-        Me.SplitContainer14.Size = New System.Drawing.Size(600, 565)
+        Me.SplitContainer14.Size = New System.Drawing.Size(614, 608)
         Me.SplitContainer14.SplitterDistance = 25
         Me.SplitContainer14.TabIndex = 0
         '
@@ -1798,7 +1861,7 @@ Partial Class FrmDevelope
         Me.LVActiveNodes.Location = New System.Drawing.Point(0, 0)
         Me.LVActiveNodes.MultiSelect = False
         Me.LVActiveNodes.Name = "LVActiveNodes"
-        Me.LVActiveNodes.Size = New System.Drawing.Size(600, 536)
+        Me.LVActiveNodes.Size = New System.Drawing.Size(614, 579)
         Me.LVActiveNodes.TabIndex = 29
         Me.LVActiveNodes.UseCompatibleStateImageBehavior = False
         Me.LVActiveNodes.View = System.Windows.Forms.View.Details
@@ -1816,7 +1879,7 @@ Partial Class FrmDevelope
         Me.TabPage11.Controls.Add(Me.SplitContainer1)
         Me.TabPage11.Location = New System.Drawing.Point(4, 22)
         Me.TabPage11.Name = "TabPage11"
-        Me.TabPage11.Size = New System.Drawing.Size(1205, 643)
+        Me.TabPage11.Size = New System.Drawing.Size(1232, 686)
         Me.TabPage11.TabIndex = 5
         Me.TabPage11.Text = "TCP API"
         Me.TabPage11.UseVisualStyleBackColor = True
@@ -1837,7 +1900,7 @@ Partial Class FrmDevelope
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.LiBoTCPAPIStatus)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1205, 643)
+        Me.SplitContainer1.Size = New System.Drawing.Size(1232, 686)
         Me.SplitContainer1.SplitterDistance = 25
         Me.SplitContainer1.TabIndex = 1
         '
@@ -1869,7 +1932,7 @@ Partial Class FrmDevelope
         Me.LiBoTCPAPIStatus.FormattingEnabled = True
         Me.LiBoTCPAPIStatus.Location = New System.Drawing.Point(0, 0)
         Me.LiBoTCPAPIStatus.Name = "LiBoTCPAPIStatus"
-        Me.LiBoTCPAPIStatus.Size = New System.Drawing.Size(1205, 614)
+        Me.LiBoTCPAPIStatus.Size = New System.Drawing.Size(1232, 657)
         Me.LiBoTCPAPIStatus.TabIndex = 0
         '
         'TabPage12
@@ -1878,7 +1941,7 @@ Partial Class FrmDevelope
         Me.TabPage12.Controls.Add(Me.BtTestMultiInvokeSetInLV)
         Me.TabPage12.Location = New System.Drawing.Point(4, 22)
         Me.TabPage12.Name = "TabPage12"
-        Me.TabPage12.Size = New System.Drawing.Size(1205, 643)
+        Me.TabPage12.Size = New System.Drawing.Size(1232, 686)
         Me.TabPage12.TabIndex = 6
         Me.TabPage12.Text = "Multiinvoke-Tests"
         Me.TabPage12.UseVisualStyleBackColor = True
@@ -1911,7 +1974,7 @@ Partial Class FrmDevelope
         Me.TabPage1.Controls.Add(Me.SplitContainer6)
         Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Size = New System.Drawing.Size(1205, 643)
+        Me.TabPage1.Size = New System.Drawing.Size(1232, 686)
         Me.TabPage1.TabIndex = 7
         Me.TabPage1.Text = "DEXNET"
         Me.TabPage1.UseVisualStyleBackColor = True
@@ -1930,8 +1993,8 @@ Partial Class FrmDevelope
         'SplitContainer6.Panel2
         '
         Me.SplitContainer6.Panel2.Controls.Add(Me.SplitContainer7)
-        Me.SplitContainer6.Size = New System.Drawing.Size(1205, 643)
-        Me.SplitContainer6.SplitterDistance = 592
+        Me.SplitContainer6.Size = New System.Drawing.Size(1232, 686)
+        Me.SplitContainer6.SplitterDistance = 605
         Me.SplitContainer6.TabIndex = 2
         '
         'SplitContainer2
@@ -1961,7 +2024,7 @@ Partial Class FrmDevelope
         'SplitContainer2.Panel2
         '
         Me.SplitContainer2.Panel2.Controls.Add(Me.LiBoDEXNETStatus)
-        Me.SplitContainer2.Size = New System.Drawing.Size(590, 641)
+        Me.SplitContainer2.Size = New System.Drawing.Size(603, 684)
         Me.SplitContainer2.SplitterDistance = 129
         Me.SplitContainer2.TabIndex = 0
         '
@@ -2098,7 +2161,7 @@ Partial Class FrmDevelope
         Me.LiBoDEXNETStatus.FormattingEnabled = True
         Me.LiBoDEXNETStatus.Location = New System.Drawing.Point(0, 0)
         Me.LiBoDEXNETStatus.Name = "LiBoDEXNETStatus"
-        Me.LiBoDEXNETStatus.Size = New System.Drawing.Size(590, 508)
+        Me.LiBoDEXNETStatus.Size = New System.Drawing.Size(603, 551)
         Me.LiBoDEXNETStatus.TabIndex = 0
         '
         'CMSTestLiBoDEXNETStatus
@@ -2132,8 +2195,8 @@ Partial Class FrmDevelope
         'SplitContainer7.Panel2
         '
         Me.SplitContainer7.Panel2.Controls.Add(Me.SplitContainer8)
-        Me.SplitContainer7.Size = New System.Drawing.Size(607, 641)
-        Me.SplitContainer7.SplitterDistance = 466
+        Me.SplitContainer7.Size = New System.Drawing.Size(621, 684)
+        Me.SplitContainer7.SplitterDistance = 476
         Me.SplitContainer7.TabIndex = 2
         '
         'SplitContainer3
@@ -2150,7 +2213,7 @@ Partial Class FrmDevelope
         'SplitContainer3.Panel2
         '
         Me.SplitContainer3.Panel2.Controls.Add(Me.SplitContainer5)
-        Me.SplitContainer3.Size = New System.Drawing.Size(466, 641)
+        Me.SplitContainer3.Size = New System.Drawing.Size(476, 684)
         Me.SplitContainer3.SplitterDistance = 150
         Me.SplitContainer3.TabIndex = 1
         '
@@ -2172,7 +2235,7 @@ Partial Class FrmDevelope
         'SplitContainer4.Panel2
         '
         Me.SplitContainer4.Panel2.Controls.Add(Me.LiBoTestRelKeys)
-        Me.SplitContainer4.Size = New System.Drawing.Size(150, 641)
+        Me.SplitContainer4.Size = New System.Drawing.Size(150, 684)
         Me.SplitContainer4.SplitterDistance = 91
         Me.SplitContainer4.TabIndex = 0
         '
@@ -2219,7 +2282,7 @@ Partial Class FrmDevelope
         Me.LiBoTestRelKeys.FormattingEnabled = True
         Me.LiBoTestRelKeys.Location = New System.Drawing.Point(0, 0)
         Me.LiBoTestRelKeys.Name = "LiBoTestRelKeys"
-        Me.LiBoTestRelKeys.Size = New System.Drawing.Size(150, 546)
+        Me.LiBoTestRelKeys.Size = New System.Drawing.Size(150, 589)
         Me.LiBoTestRelKeys.TabIndex = 0
         '
         'SplitContainer5
@@ -2238,9 +2301,18 @@ Partial Class FrmDevelope
         'SplitContainer5.Panel2
         '
         Me.SplitContainer5.Panel2.Controls.Add(Me.LiBoTestRelMsgs)
-        Me.SplitContainer5.Size = New System.Drawing.Size(312, 641)
+        Me.SplitContainer5.Size = New System.Drawing.Size(322, 684)
         Me.SplitContainer5.SplitterDistance = 25
         Me.SplitContainer5.TabIndex = 0
+        '
+        'BtTestRefreshLiBoRelMsgs
+        '
+        Me.BtTestRefreshLiBoRelMsgs.Location = New System.Drawing.Point(114, 4)
+        Me.BtTestRefreshLiBoRelMsgs.Name = "BtTestRefreshLiBoRelMsgs"
+        Me.BtTestRefreshLiBoRelMsgs.Size = New System.Drawing.Size(50, 18)
+        Me.BtTestRefreshLiBoRelMsgs.TabIndex = 1
+        Me.BtTestRefreshLiBoRelMsgs.Text = "refresh"
+        Me.BtTestRefreshLiBoRelMsgs.UseVisualStyleBackColor = True
         '
         'Label7
         '
@@ -2258,7 +2330,7 @@ Partial Class FrmDevelope
         Me.LiBoTestRelMsgs.FormattingEnabled = True
         Me.LiBoTestRelMsgs.Location = New System.Drawing.Point(0, 0)
         Me.LiBoTestRelMsgs.Name = "LiBoTestRelMsgs"
-        Me.LiBoTestRelMsgs.Size = New System.Drawing.Size(312, 612)
+        Me.LiBoTestRelMsgs.Size = New System.Drawing.Size(322, 655)
         Me.LiBoTestRelMsgs.TabIndex = 0
         '
         'SplitContainer8
@@ -2276,7 +2348,7 @@ Partial Class FrmDevelope
         'SplitContainer8.Panel2
         '
         Me.SplitContainer8.Panel2.Controls.Add(Me.LiBoTestPeers)
-        Me.SplitContainer8.Size = New System.Drawing.Size(137, 641)
+        Me.SplitContainer8.Size = New System.Drawing.Size(141, 684)
         Me.SplitContainer8.SplitterDistance = 25
         Me.SplitContainer8.TabIndex = 0
         '
@@ -2296,7 +2368,7 @@ Partial Class FrmDevelope
         Me.LiBoTestPeers.FormattingEnabled = True
         Me.LiBoTestPeers.Location = New System.Drawing.Point(0, 0)
         Me.LiBoTestPeers.Name = "LiBoTestPeers"
-        Me.LiBoTestPeers.Size = New System.Drawing.Size(137, 612)
+        Me.LiBoTestPeers.Size = New System.Drawing.Size(141, 655)
         Me.LiBoTestPeers.TabIndex = 0
         '
         'DevTimer
@@ -2326,7 +2398,7 @@ Partial Class FrmDevelope
         'SplitContainer11.Panel2
         '
         Me.SplitContainer11.Panel2.Controls.Add(Me.TestTabControl)
-        Me.SplitContainer11.Size = New System.Drawing.Size(1213, 756)
+        Me.SplitContainer11.Size = New System.Drawing.Size(1240, 799)
         Me.SplitContainer11.SplitterDistance = 83
         Me.SplitContainer11.TabIndex = 11
         '
@@ -2398,21 +2470,260 @@ Partial Class FrmDevelope
         Me.Label28.TabIndex = 0
         Me.Label28.Text = "My Public Key:"
         '
-        'BtTestRefreshLiBoRelMsgs
+        'GroupBox4
         '
-        Me.BtTestRefreshLiBoRelMsgs.Location = New System.Drawing.Point(114, 4)
-        Me.BtTestRefreshLiBoRelMsgs.Name = "BtTestRefreshLiBoRelMsgs"
-        Me.BtTestRefreshLiBoRelMsgs.Size = New System.Drawing.Size(50, 18)
-        Me.BtTestRefreshLiBoRelMsgs.TabIndex = 1
-        Me.BtTestRefreshLiBoRelMsgs.Text = "refresh"
-        Me.BtTestRefreshLiBoRelMsgs.UseVisualStyleBackColor = True
+        Me.GroupBox4.Controls.Add(Me.TBTestHashHEX)
+        Me.GroupBox4.Controls.Add(Me.Label58)
+        Me.GroupBox4.Controls.Add(Me.TBTestHashUL4)
+        Me.GroupBox4.Controls.Add(Me.Label54)
+        Me.GroupBox4.Controls.Add(Me.TBTestHashUL2)
+        Me.GroupBox4.Controls.Add(Me.Label55)
+        Me.GroupBox4.Controls.Add(Me.TBTestHashUL1)
+        Me.GroupBox4.Controls.Add(Me.Label56)
+        Me.GroupBox4.Controls.Add(Me.TBTestHashUL3)
+        Me.GroupBox4.Controls.Add(Me.Label57)
+        Me.GroupBox4.Controls.Add(Me.TBTestKeyUL4)
+        Me.GroupBox4.Controls.Add(Me.Label53)
+        Me.GroupBox4.Controls.Add(Me.TBTestKeyUL2)
+        Me.GroupBox4.Controls.Add(Me.Label52)
+        Me.GroupBox4.Controls.Add(Me.TBTestKeyUL1)
+        Me.GroupBox4.Controls.Add(Me.Label51)
+        Me.GroupBox4.Controls.Add(Me.TBTestKeyUL3)
+        Me.GroupBox4.Controls.Add(Me.Label50)
+        Me.GroupBox4.Controls.Add(Me.BtTestHash)
+        Me.GroupBox4.Controls.Add(Me.TBTestHashULHEX)
+        Me.GroupBox4.Controls.Add(Me.Label49)
+        Me.GroupBox4.Controls.Add(Me.TBTestKeyHEX)
+        Me.GroupBox4.Controls.Add(Me.Label48)
+        Me.GroupBox4.Controls.Add(Me.TBTestKeyString)
+        Me.GroupBox4.Controls.Add(Me.Label47)
+        Me.GroupBox4.Location = New System.Drawing.Point(8, 197)
+        Me.GroupBox4.Name = "GroupBox4"
+        Me.GroupBox4.Size = New System.Drawing.Size(1056, 216)
+        Me.GroupBox4.TabIndex = 39
+        Me.GroupBox4.TabStop = False
+        Me.GroupBox4.Text = "SHA256"
+        '
+        'Label47
+        '
+        Me.Label47.AutoSize = True
+        Me.Label47.ForeColor = System.Drawing.Color.Black
+        Me.Label47.Location = New System.Drawing.Point(6, 16)
+        Me.Label47.Name = "Label47"
+        Me.Label47.Size = New System.Drawing.Size(58, 13)
+        Me.Label47.TabIndex = 0
+        Me.Label47.Text = "Key String:"
+        '
+        'TBTestKeyString
+        '
+        Me.TBTestKeyString.Location = New System.Drawing.Point(69, 13)
+        Me.TBTestKeyString.Name = "TBTestKeyString"
+        Me.TBTestKeyString.Size = New System.Drawing.Size(406, 20)
+        Me.TBTestKeyString.TabIndex = 1
+        '
+        'Label48
+        '
+        Me.Label48.AutoSize = True
+        Me.Label48.ForeColor = System.Drawing.Color.Black
+        Me.Label48.Location = New System.Drawing.Point(6, 42)
+        Me.Label48.Name = "Label48"
+        Me.Label48.Size = New System.Drawing.Size(53, 13)
+        Me.Label48.TabIndex = 2
+        Me.Label48.Text = "Key HEX:"
+        '
+        'TBTestKeyHEX
+        '
+        Me.TBTestKeyHEX.Location = New System.Drawing.Point(69, 39)
+        Me.TBTestKeyHEX.Name = "TBTestKeyHEX"
+        Me.TBTestKeyHEX.Size = New System.Drawing.Size(406, 20)
+        Me.TBTestKeyHEX.TabIndex = 3
+        '
+        'Label49
+        '
+        Me.Label49.AutoSize = True
+        Me.Label49.ForeColor = System.Drawing.Color.Black
+        Me.Label49.Location = New System.Drawing.Point(576, 120)
+        Me.Label49.Name = "Label49"
+        Me.Label49.Size = New System.Drawing.Size(57, 13)
+        Me.Label49.TabIndex = 4
+        Me.Label49.Text = "HashHEX:"
+        '
+        'TBTestHashULHEX
+        '
+        Me.TBTestHashULHEX.Location = New System.Drawing.Point(639, 117)
+        Me.TBTestHashULHEX.Name = "TBTestHashULHEX"
+        Me.TBTestHashULHEX.Size = New System.Drawing.Size(406, 20)
+        Me.TBTestHashULHEX.TabIndex = 5
+        '
+        'BtTestHash
+        '
+        Me.BtTestHash.ForeColor = System.Drawing.Color.Black
+        Me.BtTestHash.Location = New System.Drawing.Point(491, 13)
+        Me.BtTestHash.Name = "BtTestHash"
+        Me.BtTestHash.Size = New System.Drawing.Size(75, 47)
+        Me.BtTestHash.TabIndex = 6
+        Me.BtTestHash.Text = "hash"
+        Me.BtTestHash.UseVisualStyleBackColor = True
+        '
+        'Label50
+        '
+        Me.Label50.AutoSize = True
+        Me.Label50.ForeColor = System.Drawing.Color.Black
+        Me.Label50.Location = New System.Drawing.Point(585, 42)
+        Me.Label50.Name = "Label50"
+        Me.Label50.Size = New System.Drawing.Size(48, 13)
+        Me.Label50.TabIndex = 7
+        Me.Label50.Text = "KeyUL3:"
+        '
+        'TBTestKeyUL3
+        '
+        Me.TBTestKeyUL3.Location = New System.Drawing.Point(639, 39)
+        Me.TBTestKeyUL3.Name = "TBTestKeyUL3"
+        Me.TBTestKeyUL3.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestKeyUL3.TabIndex = 8
+        '
+        'Label51
+        '
+        Me.Label51.AutoSize = True
+        Me.Label51.ForeColor = System.Drawing.Color.Black
+        Me.Label51.Location = New System.Drawing.Point(585, 16)
+        Me.Label51.Name = "Label51"
+        Me.Label51.Size = New System.Drawing.Size(48, 13)
+        Me.Label51.TabIndex = 9
+        Me.Label51.Text = "KeyUL1:"
+        '
+        'TBTestKeyUL1
+        '
+        Me.TBTestKeyUL1.Location = New System.Drawing.Point(639, 13)
+        Me.TBTestKeyUL1.Name = "TBTestKeyUL1"
+        Me.TBTestKeyUL1.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestKeyUL1.TabIndex = 10
+        '
+        'TBTestKeyUL2
+        '
+        Me.TBTestKeyUL2.Location = New System.Drawing.Point(872, 13)
+        Me.TBTestKeyUL2.Name = "TBTestKeyUL2"
+        Me.TBTestKeyUL2.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestKeyUL2.TabIndex = 12
+        '
+        'Label52
+        '
+        Me.Label52.AutoSize = True
+        Me.Label52.ForeColor = System.Drawing.Color.Black
+        Me.Label52.Location = New System.Drawing.Point(818, 16)
+        Me.Label52.Name = "Label52"
+        Me.Label52.Size = New System.Drawing.Size(48, 13)
+        Me.Label52.TabIndex = 11
+        Me.Label52.Text = "KeyUL2:"
+        '
+        'TBTestKeyUL4
+        '
+        Me.TBTestKeyUL4.Location = New System.Drawing.Point(872, 39)
+        Me.TBTestKeyUL4.Name = "TBTestKeyUL4"
+        Me.TBTestKeyUL4.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestKeyUL4.TabIndex = 14
+        '
+        'Label53
+        '
+        Me.Label53.AutoSize = True
+        Me.Label53.ForeColor = System.Drawing.Color.Black
+        Me.Label53.Location = New System.Drawing.Point(818, 42)
+        Me.Label53.Name = "Label53"
+        Me.Label53.Size = New System.Drawing.Size(48, 13)
+        Me.Label53.TabIndex = 13
+        Me.Label53.Text = "KeyUL4:"
+        '
+        'TBTestHashUL4
+        '
+        Me.TBTestHashUL4.Location = New System.Drawing.Point(872, 91)
+        Me.TBTestHashUL4.Name = "TBTestHashUL4"
+        Me.TBTestHashUL4.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestHashUL4.TabIndex = 22
+        '
+        'Label54
+        '
+        Me.Label54.AutoSize = True
+        Me.Label54.ForeColor = System.Drawing.Color.Black
+        Me.Label54.Location = New System.Drawing.Point(814, 94)
+        Me.Label54.Name = "Label54"
+        Me.Label54.Size = New System.Drawing.Size(55, 13)
+        Me.Label54.TabIndex = 21
+        Me.Label54.Text = "HashUL4:"
+        '
+        'TBTestHashUL2
+        '
+        Me.TBTestHashUL2.Location = New System.Drawing.Point(872, 65)
+        Me.TBTestHashUL2.Name = "TBTestHashUL2"
+        Me.TBTestHashUL2.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestHashUL2.TabIndex = 20
+        '
+        'Label55
+        '
+        Me.Label55.AutoSize = True
+        Me.Label55.ForeColor = System.Drawing.Color.Black
+        Me.Label55.Location = New System.Drawing.Point(814, 68)
+        Me.Label55.Name = "Label55"
+        Me.Label55.Size = New System.Drawing.Size(55, 13)
+        Me.Label55.TabIndex = 19
+        Me.Label55.Text = "HashUL2:"
+        '
+        'TBTestHashUL1
+        '
+        Me.TBTestHashUL1.Location = New System.Drawing.Point(639, 65)
+        Me.TBTestHashUL1.Name = "TBTestHashUL1"
+        Me.TBTestHashUL1.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestHashUL1.TabIndex = 18
+        '
+        'Label56
+        '
+        Me.Label56.AutoSize = True
+        Me.Label56.ForeColor = System.Drawing.Color.Black
+        Me.Label56.Location = New System.Drawing.Point(578, 68)
+        Me.Label56.Name = "Label56"
+        Me.Label56.Size = New System.Drawing.Size(55, 13)
+        Me.Label56.TabIndex = 17
+        Me.Label56.Text = "HashUL1:"
+        '
+        'TBTestHashUL3
+        '
+        Me.TBTestHashUL3.Location = New System.Drawing.Point(639, 91)
+        Me.TBTestHashUL3.Name = "TBTestHashUL3"
+        Me.TBTestHashUL3.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestHashUL3.TabIndex = 16
+        '
+        'Label57
+        '
+        Me.Label57.AutoSize = True
+        Me.Label57.ForeColor = System.Drawing.Color.Black
+        Me.Label57.Location = New System.Drawing.Point(578, 94)
+        Me.Label57.Name = "Label57"
+        Me.Label57.Size = New System.Drawing.Size(55, 13)
+        Me.Label57.TabIndex = 15
+        Me.Label57.Text = "HashUL3:"
+        '
+        'TBTestHashHEX
+        '
+        Me.TBTestHashHEX.Location = New System.Drawing.Point(69, 117)
+        Me.TBTestHashHEX.Name = "TBTestHashHEX"
+        Me.TBTestHashHEX.Size = New System.Drawing.Size(406, 20)
+        Me.TBTestHashHEX.TabIndex = 24
+        '
+        'Label58
+        '
+        Me.Label58.AutoSize = True
+        Me.Label58.ForeColor = System.Drawing.Color.Black
+        Me.Label58.Location = New System.Drawing.Point(6, 120)
+        Me.Label58.Name = "Label58"
+        Me.Label58.Size = New System.Drawing.Size(57, 13)
+        Me.Label58.TabIndex = 23
+        Me.Label58.Text = "HashHEX:"
         '
         'FrmDevelope
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.ClientSize = New System.Drawing.Size(1213, 756)
+        Me.ClientSize = New System.Drawing.Size(1240, 799)
         Me.Controls.Add(Me.SplitContainer11)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Name = "FrmDevelope"
@@ -2529,6 +2840,8 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer11, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer11.ResumeLayout(False)
+        Me.GroupBox4.ResumeLayout(False)
+        Me.GroupBox4.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -2717,18 +3030,16 @@ Partial Class FrmDevelope
     Friend WithEvents BtTestInjectResponder As Button
     Friend WithEvents Panel5 As Panel
     Friend WithEvents Label34 As Label
-    Friend WithEvents TBTesChainSwapHash As TextBox
+    Friend WithEvents TBTestChainSwapHashLong1 As TextBox
     Friend WithEvents Label39 As Label
     Friend WithEvents BtTestChainSwapKeyToHash As Button
     Friend WithEvents TBTestChainSwapKey As TextBox
     Friend WithEvents BtTestInjectChainSwapHash As Button
     Friend WithEvents Panel6 As Panel
-    Friend WithEvents Label41 As Label
     Friend WithEvents Label42 As Label
-    Friend WithEvents TBTestChainSwapLong2 As TextBox
-    Friend WithEvents TBTestChainSwapLong1 As TextBox
-    Friend WithEvents TBTestChainSwapULong2 As TextBox
-    Friend WithEvents TBTestChainSwapULong1 As TextBox
+    Friend WithEvents TBTestChainSwapKeyULong3 As TextBox
+    Friend WithEvents TBTestChainSwapKeyULong2 As TextBox
+    Friend WithEvents TBTestChainSwapKeyULong1 As TextBox
     Friend WithEvents Label43 As Label
     Friend WithEvents Label44 As Label
     Friend WithEvents BtTestFinishWithChainSwapKey As Button
@@ -2737,4 +3048,35 @@ Partial Class FrmDevelope
     Friend WithEvents NUDTestMediateAmount As NumericUpDown
     Friend WithEvents BtTestMediateDispute As Button
     Friend WithEvents BtTestRefreshLiBoRelMsgs As Button
+    Friend WithEvents BtCSKConvertback As Button
+    Friend WithEvents TBTestChainSwapHashLong3 As TextBox
+    Friend WithEvents Label46 As Label
+    Friend WithEvents TBTestChainSwapHashLong2 As TextBox
+    Friend WithEvents Label41 As Label
+    Friend WithEvents GroupBox4 As GroupBox
+    Friend WithEvents TBTestHashUL4 As TextBox
+    Friend WithEvents Label54 As Label
+    Friend WithEvents TBTestHashUL2 As TextBox
+    Friend WithEvents Label55 As Label
+    Friend WithEvents TBTestHashUL1 As TextBox
+    Friend WithEvents Label56 As Label
+    Friend WithEvents TBTestHashUL3 As TextBox
+    Friend WithEvents Label57 As Label
+    Friend WithEvents TBTestKeyUL4 As TextBox
+    Friend WithEvents Label53 As Label
+    Friend WithEvents TBTestKeyUL2 As TextBox
+    Friend WithEvents Label52 As Label
+    Friend WithEvents TBTestKeyUL1 As TextBox
+    Friend WithEvents Label51 As Label
+    Friend WithEvents TBTestKeyUL3 As TextBox
+    Friend WithEvents Label50 As Label
+    Friend WithEvents BtTestHash As Button
+    Friend WithEvents TBTestHashULHEX As TextBox
+    Friend WithEvents Label49 As Label
+    Friend WithEvents TBTestKeyHEX As TextBox
+    Friend WithEvents Label48 As Label
+    Friend WithEvents TBTestKeyString As TextBox
+    Friend WithEvents Label47 As Label
+    Friend WithEvents TBTestHashHEX As TextBox
+    Friend WithEvents Label58 As Label
 End Class

@@ -63,9 +63,9 @@ Namespace My.Resources
         '''<summary>
         '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         '''</summary>
-        Friend ReadOnly Property buyorder() As System.Drawing.Bitmap
+        Friend ReadOnly Property bitcoin_logo_512() As System.Drawing.Bitmap
             Get
-                Dim obj As Object = ResourceManager.GetObject("buyorder", resourceCulture)
+                Dim obj As Object = ResourceManager.GetObject("bitcoin_logo_512", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property
@@ -73,9 +73,9 @@ Namespace My.Resources
         '''<summary>
         '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         '''</summary>
-        Friend ReadOnly Property createorder() As System.Drawing.Bitmap
+        Friend ReadOnly Property bitcoin_logo_512_bg() As System.Drawing.Bitmap
             Get
-                Dim obj As Object = ResourceManager.GetObject("createorder", resourceCulture)
+                Dim obj As Object = ResourceManager.GetObject("bitcoin_logo_512_bg", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property
@@ -87,46 +87,6 @@ Namespace My.Resources
             Get
                 Dim obj As Object = ResourceManager.GetObject("logo", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        '''</summary>
-        Friend ReadOnly Property OpenOrder() As System.Drawing.Bitmap
-            Get
-                Dim obj As Object = ResourceManager.GetObject("OpenOrder", resourceCulture)
-                Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        '''</summary>
-        Friend ReadOnly Property responseopenorder() As System.Drawing.Bitmap
-            Get
-                Dim obj As Object = ResourceManager.GetObject("responseopenorder", resourceCulture)
-                Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        '''</summary>
-        Friend ReadOnly Property settings() As System.Drawing.Bitmap
-            Get
-                Dim obj As Object = ResourceManager.GetObject("settings", resourceCulture)
-                Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        '''</summary>
-        Friend ReadOnly Property showmyopenorder() As System.Drawing.Bitmap
-            Get
-                Dim obj As Object = ResourceManager.GetObject("showmyopenorder", resourceCulture)
-                Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property
         

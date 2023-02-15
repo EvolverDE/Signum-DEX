@@ -22,12 +22,12 @@ PFP
   Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
 </summary>
 </member>
-<member name="P:PFP.My.Resources.Resources.buyorder">
+<member name="P:PFP.My.Resources.Resources.bitcoin_logo_512">
 <summary>
   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:PFP.My.Resources.Resources.createorder">
+<member name="P:PFP.My.Resources.Resources.bitcoin_logo_512_bg">
 <summary>
   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
 </summary>
@@ -35,26 +35,6 @@ PFP
 <member name="P:PFP.My.Resources.Resources.logo">
 <summary>
   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
-</summary>
-</member>
-<member name="P:PFP.My.Resources.Resources.OpenOrder">
-<summary>
-  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-</summary>
-</member>
-<member name="P:PFP.My.Resources.Resources.responseopenorder">
-<summary>
-  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-</summary>
-</member>
-<member name="P:PFP.My.Resources.Resources.settings">
-<summary>
-  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-</summary>
-</member>
-<member name="P:PFP.My.Resources.Resources.showmyopenorder">
-<summary>
-  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
 </summary>
 </member>
 <member name="P:PFP.My.Resources.Resources.signum_back3">
@@ -154,6 +134,96 @@ PFP
  <returns>-1, 0 oder 1 (gemäß Vergleich)</returns>
  <remarks></remarks>
 </member>
+<member name="T:PFP.ClsBitcoinNET">
+ <summary>
+ this class is for data preparation from BTC_API
+ </summary>
+</member>
+<member name="T:PFP.ClsBTCAPI">
+ <summary>
+ this class is used for raw communication with the bitcoin-node
+ </summary>
+</member>
+<member name="M:PFP.ClsBTCAPI.GetTXOut(System.String,System.Int32,System.Boolean)">
+ <summary>
+ Gets the unconfirmed transaction output
+ </summary>
+ <param name="TX">The Transaction to check</param>
+ <param name="VOut">The output index of the given Transaction</param>
+ <param name="UnconformedToo">The Boolean to check in Unconfirmed ones</param>
+ <returns>vout,confirmations,value and hex of the lockingscript</returns>
+</member>
+<member name="T:PFP.ModBitcoinHelper">
+ <summary>
+ this module is to simplify global using
+ </summary>
+</member>
+<member name="M:PFP.ClsOutput.#ctor(System.String,System.Double,System.Boolean)">
+ <summary>
+ Create a Standard Script
+ </summary>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="Amount">the amount in BTC</param>
+</member>
+<member name="M:PFP.ClsOutput.#ctor(System.String,System.String,System.Double)">
+ <summary>
+ Create a ChainSwapHash Script
+ </summary>
+ <param name="ChainSwapHash">the chain swap hash to redeem the transaction output</param>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="Amount">the amount in BTC</param>
+</member>
+<member name="M:PFP.ClsOutput.#ctor(System.String,System.Double,System.Int32)">
+ <summary>
+ Create a LockTime Script
+ </summary>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="Amount">the amount in BTC</param>
+ <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
+</member>
+<member name="M:PFP.ClsOutput.#ctor(System.String,System.String,System.String,System.Double,System.Int32)">
+ <summary>
+ Create a ChainSwapHash script with LockTime for payback option when the time is up
+ </summary>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="ChainSwapHash">the chain swap hash to redeem the transaction output</param>
+ <param name="SenderAddress">the Address of the sender address</param>
+ <param name="Amount">the amount in BTC</param>
+ <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
+</member>
+<member name="M:PFP.ClsTransaction.CreateOutput(System.String,System.Double)">
+ <summary>
+ Create a Standard Output
+ </summary>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="Amount">the amount in BTC</param>
+</member>
+<member name="M:PFP.ClsTransaction.CreateOutput(System.String,System.String,System.Double)">
+ <summary>
+ Create a ChainSwapHash Output
+ </summary>
+ <param name="ChainSwapHash">the chain swap hash to redeem the transaction output</param>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="Amount">the amount in BTC</param>
+</member>
+<member name="M:PFP.ClsTransaction.CreateOutput(System.String,System.Double,System.Int32)">
+ <summary>
+ Create a LockTime Output
+ </summary>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="Amount">the amount in BTC</param>
+ <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
+</member>
+<member name="M:PFP.ClsTransaction.CreateOutput(System.String,System.String,System.String,System.Double,System.Int32)">
+ <summary>
+ Create a ChainSwapHash Output with LockTime for payback option when the time is up
+ </summary>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="ChainSwapHash">the chain swap hash to redeem the transaction output</param>
+ <param name="SenderAddress">the Address of the sender address</param>
+ <param name="Amount">the amount in BTC</param>
+ <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
+</member>
 <member name="P:PFP.ClsDEXContract.CurrentDisputeTimeout">
  <summary>
  Gets the TimeOut in Block
@@ -173,12 +243,6 @@ PFP
  Refreshing DEXContract
  </summary>
 </member>
-<member name="M:PFP.ClsDEXContract.GetHistoryTransactions(System.UInt64)">
- <summary>
- Loads HistoryTransactions
- </summary>
- <param name="SetStartTimeStamp"></param>
-</member>
 <member name="M:PFP.ClsDEXContract.CheckForUTX">
  <summary>
  Checks incoming unconfirmedTransaction for DEXContract 
@@ -191,99 +255,11 @@ PFP
  </summary>
  <returns></returns>
 </member>
-<member name="M:PFP.ClsSignumNET.EncryptMessage(System.String,System.String,System.String)">
+<member name="M:PFP.ClsDEXContract.GetHistoryTransactions(System.UInt64)">
  <summary>
- Encrypts Message from Parameters 0=Data; 1=Nonce
+ Loads HistoryTransactions
  </summary>
- <param name="Plaintext"></param>
- <param name="RecipientPublicKeyHex"></param>
- <param name="SenderAgreementKeyHex"></param>
- <returns></returns>
-</member>
-<member name="M:PFP.ClsSignumNET.EncryptData(System.Byte[],System.String,System.String)">
- <summary>
- Encrypt Data from Parameters 0=Data; 1=Nonce
- </summary>
- <param name="Data"></param>
- <param name="RecipientPublicKeyHex"></param>
- <param name="SenderAgreementKeyHex"></param>
- <returns></returns>
-</member>
-<member name="M:PFP.ClsSignumAPI.RSConvert(System.UInt64)">
- <summary>
- Converts the given AccountID to Address (0= account;1= address)
- </summary>
- <param name="AccountID"></param>
- <returns></returns>
-</member>
-<member name="M:PFP.ClsSignumAPI.RSConvert(System.String)">
- <summary>
- Converts the given Address to AccountID
- </summary>
- <param name="Address"></param>
- <returns></returns>
-</member>
-<member name="M:PFP.ClsSignumAPI.GetBalance(System.String)">
- <summary>
- Gets the Balance from the given Address (HTML-Tags= coin, account, address, balance, available, pending)
- </summary>
- <param name="Address"></param>
- <returns></returns>
-</member>
-<member name="M:PFP.ClsSignumAPI.GetBalance(System.UInt64)">
- <summary>
- Gets the Balance from the given AccountID (HTML-Tags= coin, account, address, balance, available, pending)
- </summary>
- <param name="AccountID"></param>
- <returns></returns>
-</member>
-<member name="M:PFP.ClsSignumAPI.GetSHA256_64(System.String)">
- <summary>
- Hashing Inputkey and converting them into List(Of ULong)(FirstULongKey, SecondULongKey, HashULong)
- </summary>
- <param name="InputKey"></param>
- <returns></returns>
-</member>
-<member name="M:PFP.ModCrypto.GetMasterKeys(System.String)">
- <summary>
- Generates the Masterkeys from PassPhrase 0=PublicKey; 1=SignKey; 2=AgreementKey
- </summary>
- <returns>List of Masterkeys</returns>
-</member>
-<member name="M:PFP.ModCrypto.Keygen(System.Byte[])">
- <summary>
- Generates the Masterkeys from KeyHash
- </summary>
- <param name="KeyHash">The 32 Byte hashed PassPhrase</param>
- <returns>Array of Masterkeys</returns>
-</member>
-<member name="M:PFP.ModCrypto.GenerateSignature(System.String,System.String)">
- <summary>
- Generates the Signature of the MessageHEX
- </summary>
- <param name="MessageHEX">Message as HEX String</param>
- <param name="PrivateKey">The Private Key to Sign with</param>
- <returns>Signature in HEX String</returns>
-</member>
-<member name="M:PFP.ModCrypto.VerifySignature(System.String,System.String,System.String)">
- <summary>
- Verify the Signature of the UnsignedMessageHEX String
- </summary>
- <param name="Signature">The Signature as HEX String</param>
- <param name="UnsignedMessageHex">The Unsigned Message as HEX String</param>
- <param name="PublicKey">The Public Key as HEX String</param>
- <returns></returns>
-</member>
-<member name="M:PFP.ModJSON.GetStringBetween(System.String,System.String,System.String,System.Boolean)">
- <summary>
- Einen String aus einem Bereich auslesen
- </summary>
- <param name="input">Der String, aus dem ein Bereich ausgelesen werden soll</param>
- <param name="startchar">die Startmarkierung ab der gelesen werden soll</param>
- <param name="endchar">die Endmarkierung bis der gelesen werden soll</param>
- <param name="LastIdxOf">Legt fest, ob bis zum letzten endchar gelesen werden soll</param>
- <returns>Vorzugsweise ein Double , andernfalls z.b. ein Integer</returns>
- <remarks></remarks>
+ <param name="SetStartTimeStamp"></param>
 </member>
 <member name="M:PFP.ClsCurve25519.Clamp(System.Byte[]@)">
  <summary>
@@ -336,6 +312,93 @@ PFP
  <param name="SignHash">signature hash</param>
  <param name="PublicKey">public key</param>
  <returns>signature public key</returns>
+</member>
+<member name="M:PFP.ClsSignumNET.EncryptMessage(System.String,System.String,System.String)">
+ <summary>
+ Encrypts Message from Parameters 0=Data; 1=Nonce
+ </summary>
+ <param name="Plaintext"></param>
+ <param name="RecipientPublicKeyHex"></param>
+ <param name="SenderAgreementKeyHex"></param>
+ <returns></returns>
+</member>
+<member name="M:PFP.ClsSignumNET.EncryptData(System.Byte[],System.String,System.String)">
+ <summary>
+ Encrypt Data from Parameters 0=Data; 1=Nonce
+ </summary>
+ <param name="Data"></param>
+ <param name="RecipientPublicKeyHex"></param>
+ <param name="SenderAgreementKeyHex"></param>
+ <returns></returns>
+</member>
+<member name="M:PFP.ClsSignumAPI.RSConvert(System.UInt64)">
+ <summary>
+ Converts the given AccountID to Address (0= account;1= address)
+ </summary>
+ <param name="AccountID"></param>
+ <returns></returns>
+</member>
+<member name="M:PFP.ClsSignumAPI.RSConvert(System.String)">
+ <summary>
+ Converts the given Address to AccountID
+ </summary>
+ <param name="Address"></param>
+ <returns></returns>
+</member>
+<member name="M:PFP.ClsSignumAPI.GetBalance(System.String)">
+ <summary>
+ Gets the Balance from the given Address (HTML-Tags= coin, account, address, balance, available, pending)
+ </summary>
+ <param name="Address"></param>
+ <returns></returns>
+</member>
+<member name="M:PFP.ClsSignumAPI.GetBalance(System.UInt64)">
+ <summary>
+ Gets the Balance from the given AccountID (HTML-Tags= coin, account, address, balance, available, pending)
+ </summary>
+ <param name="AccountID"></param>
+ <returns></returns>
+</member>
+<member name="M:PFP.ModCrypto.GetMasterKeys(System.String)">
+ <summary>
+ Generates the Masterkeys from PassPhrase 0=PublicKey; 1=SignKey; 2=AgreementKey
+ </summary>
+ <returns>List of Masterkeys</returns>
+</member>
+<member name="M:PFP.ModCrypto.Keygen(System.Byte[])">
+ <summary>
+ Generates the Masterkeys from KeyHash
+ </summary>
+ <param name="KeyHash">The 32 Byte hashed PassPhrase</param>
+ <returns>Array of Masterkeys</returns>
+</member>
+<member name="M:PFP.ModCrypto.GenerateSignature(System.String,System.String)">
+ <summary>
+ Generates the Signature of the MessageHEX
+ </summary>
+ <param name="MessageHEX">Message as HEX String</param>
+ <param name="PrivateKey">The Private Key to Sign with</param>
+ <returns>Signature in HEX String</returns>
+</member>
+<member name="M:PFP.ModCrypto.VerifySignature(System.String,System.String,System.String)">
+ <summary>
+ Verify the Signature of the UnsignedMessageHEX String
+ </summary>
+ <param name="Signature">The Signature as HEX String</param>
+ <param name="UnsignedMessageHex">The Unsigned Message as HEX String</param>
+ <param name="PublicKey">The Public Key as HEX String</param>
+ <returns></returns>
+</member>
+<member name="M:PFP.ModJSON.GetStringBetween(System.String,System.String,System.String,System.Boolean)">
+ <summary>
+ Einen String aus einem Bereich auslesen
+ </summary>
+ <param name="input">Der String, aus dem ein Bereich ausgelesen werden soll</param>
+ <param name="startchar">die Startmarkierung ab der gelesen werden soll</param>
+ <param name="endchar">die Endmarkierung bis der gelesen werden soll</param>
+ <param name="LastIdxOf">Legt fest, ob bis zum letzten endchar gelesen werden soll</param>
+ <returns>Vorzugsweise ein Double , andernfalls z.b. ein Integer</returns>
+ <remarks></remarks>
 </member>
 <member name="M:PFP.ClsGZip.Compress(System.Byte[])">
  <summary>

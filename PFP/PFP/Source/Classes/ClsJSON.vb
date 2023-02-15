@@ -457,4 +457,307 @@ Public Class ClsJSON
 
     End Function
 
+
+    Function GetFromJSON(ByVal JSON As String, ByVal Path As String, Optional ByVal SearchPattern As String = "") As List(Of String)
+
+        If Path.Contains("/") Then
+
+            Dim IDXList As List(Of String) = GetIDXList(JSON)
+
+            Dim JSONList As List(Of Object) = JSONRecursive(JSON)
+            Dim XML As String = JSONListToXMLRecursive(JSONList)
+
+            Dim Search As String = ""
+            Dim Search_List As List(Of String) = New List(Of String)
+            For i As Integer = 0 To IDXList.Count - 1
+                Dim T_Path As String = IDXList(i)
+                Dim StartIDX As Integer = Convert.ToInt32(T_Path.Substring(T_Path.LastIndexOf("/") + 1))
+
+                If T_Path.Contains("|") Then
+                    T_Path = T_Path.Substring(T_Path.IndexOf("|") + 1)
+                End If
+
+                T_Path = T_Path.Remove(T_Path.LastIndexOf("/"))
+
+                Dim T_LastPath As String = T_Path.Substring(T_Path.LastIndexOf("/") + 1)
+
+                If T_Path.Contains(Path) Then
+
+                    If SearchPattern.Trim = "" Then
+                        Search_List.Add(IDXList(i))
+                    Else
+                        Dim T_Val As String = GetStringBetween(XML.Substring(StartIDX), "<" + T_LastPath + ">", "</" + T_LastPath + ">")
+
+                        If T_Val.Contains(SearchPattern) Then
+                            Search = IDXList(i)
+                        End If
+                    End If
+
+                End If
+
+            Next
+
+            Dim SearchList As List(Of String) = New List(Of String)
+            If SearchPattern.Trim = "" Then
+                SearchList = Search_List
+            Else
+                While Search.Contains("/")
+
+                    For Each idx As String In IDXList
+
+                        If idx.Contains(Search) Then
+
+                            Dim AlreadyIn As Boolean = False
+
+                            For Each T_search As String In SearchList
+
+                                If T_search = idx Then
+                                    AlreadyIn = True
+                                    Exit For
+                                End If
+
+                            Next
+
+                            If Not AlreadyIn Then
+                                SearchList.Add(idx)
+                            End If
+
+                        End If
+
+                    Next
+
+                    Search = Search.Remove(Search.LastIndexOf("/"))
+
+                End While
+
+            End If
+
+            Dim EndList As List(Of String) = New List(Of String)
+
+            For i As Integer = 0 To SearchList.Count - 1
+
+                Dim T_Search As String = SearchList(i)
+
+                Dim T_IDX As Integer = -1
+
+                If T_Search.Contains("|"c) Then
+                    T_IDX = Convert.ToInt32(T_Search.Remove(T_Search.LastIndexOf("|")))
+                End If
+
+
+                Dim T_GetFrom As Integer = Convert.ToInt32(T_Search.Substring(T_Search.LastIndexOf("/") + 1))
+
+                T_Search = T_Search.Remove(T_Search.LastIndexOf("/"))
+
+                Dim T_LastPath As String = T_Search.Substring(T_Search.LastIndexOf("/") + 1)
+
+                Dim T_Val As String = GetStringBetween(XML.Substring(T_GetFrom), "<" + T_LastPath + ">", "</" + T_LastPath + ">")
+
+                If Not T_Val.Contains("<") Then
+                    If T_IDX = -1 Then
+                        EndList.Add("<0>" + "<" + T_LastPath + ">" + T_Val + "</" + T_LastPath + ">" + "</0>")
+                    Else
+                        EndList.Add("<" + T_IDX.ToString + ">" + "<" + T_LastPath + ">" + T_Val + "</" + T_LastPath + ">" + "</" + T_IDX.ToString + ">")
+                    End If
+
+                End If
+
+            Next
+
+            Return EndList
+
+        Else
+            Dim XML As String = JSONToXML(JSON)
+            Return New List(Of String)({GetStringBetween(XML, "<" + Path + ">", "</" + Path + ">")})
+        End If
+
+    End Function
+
+    Private Function GetIDXList(ByVal JSON As String) As List(Of String)
+
+        Dim JSONList As List(Of Object) = JSONRecursive(JSON)
+        Dim XML As String = JSONListToXMLRecursive(JSONList)
+        Dim IdxList As List(Of String) = GetPaths(JSONList)
+        IdxList = IdxPaths(IdxList)
+        IdxList = GetPathIndices(XML, IdxList)
+
+
+        Dim Before As String = ""
+
+        For i As Integer = 0 To IdxList.Count - 1
+
+            Dim T_IDX As String = IdxList(i)
+
+            If T_IDX.Contains("|") Then
+                Before = T_IDX.Remove(T_IDX.IndexOf("|"))
+            Else
+                If IdxList.Count - 1 > i Then
+                    If Before <> "" Then
+                        Dim After_IDX As String = IdxList(i + 1)
+
+                        If After_IDX.Contains("|") Then
+                            Dim After As String = After_IDX.Remove(After_IDX.IndexOf("|"))
+
+                            If Before = After Then
+                                T_IDX = Before + "|" + T_IDX
+                                IdxList(i) = T_IDX
+                                Before = ""
+                            End If
+
+                        End If
+
+                    End If
+                End If
+
+            End If
+
+        Next
+
+
+        Return IdxList
+
+    End Function
+
+    Private Function GetPathIndices(ByVal XML As String, ByVal PathList As List(Of String)) As List(Of String)
+
+        Dim T_List As List(Of String) = New List(Of String)
+
+        Dim T_StartIdx As Integer = 0
+
+        For Each Path As String In PathList
+
+            Dim T_PathList As List(Of String) = New List(Of String)
+
+            If Path.Contains("/") Then
+                T_PathList = Path.Split("/"c).ToList
+            Else
+                T_PathList.Add(Path)
+            End If
+
+            If T_PathList.Count > 0 Then
+                Dim LastPath As String = T_PathList(T_PathList.Count - 1)
+
+                Dim T_TagStart As String = "<" + LastPath + ">"
+                Dim T_TagEnd As String = "</" + LastPath + ">"
+
+                T_StartIdx = XML.IndexOf(T_TagStart, T_StartIdx)
+
+                Dim T_ListStr As String = Path + "/" + T_StartIdx.ToString
+                T_List.Add(T_ListStr)
+
+            End If
+
+        Next
+
+        Return T_List
+
+    End Function
+    Private Function GetPaths(ByVal JSONList As List(Of Object), Optional ByVal Path As String = "") As List(Of String)
+
+        Dim RetList As List(Of String) = New List(Of String)
+
+        If JSONList.Count > 1 Then
+
+            Dim T_ObjName As Type = JSONList(0).GetType
+
+            If T_ObjName = GetType(String) Then
+                Dim Tag As String = DirectCast(JSONList(0), String)
+
+                If Path.Trim = "" Then
+                    Path += Tag
+                Else
+                    Path += "/" + Tag
+                End If
+
+                RetList.Add(Path)
+
+                Dim Obj_List As List(Of Object) = TryCast(JSONList(1), List(Of Object))
+                Dim Str_List As List(Of String) = TryCast(JSONList(1), List(Of String))
+
+                If Not Obj_List Is Nothing Then
+
+                    For Each T_Obj As Object In Obj_List
+                        Dim SubObj_List As List(Of Object) = TryCast(T_Obj, List(Of Object))
+                        If Not SubObj_List Is Nothing Then
+                            RetList.AddRange(GetPaths(SubObj_List, Path))
+                            'Else
+                            '    Dim T_ValStr As String = T_Obj.ToString
+
+                            'nix list of obj
+                        End If
+
+                    Next
+
+                ElseIf Not Str_List Is Nothing Then
+                    Dim T_ValList As List(Of String) = DirectCast(JSONList(1), List(Of String))
+                    RetList.Add(T_ValList(0))
+                    'Else
+                    '    Dim T_ValStr As String = JSONList(1).ToString
+                    'RetList.Add(T_ValStr)
+                End If
+
+            Else
+                Dim T_List As List(Of Object) = TryCast(JSONList(0), List(Of Object))
+
+                If Not T_List Is Nothing Then
+                    RetList.AddRange(GetPaths(T_List, Path))
+                End If
+
+            End If
+
+        Else
+
+            If JSONList(0).GetType.FullName = GetType(String).FullName Then
+                Dim Tag As String = DirectCast(JSONList(0), String)
+
+                If Path.Trim = "" Then
+                    Path += Tag
+                Else
+                    Path += "/" + Tag
+                End If
+
+                RetList.Add(Path)
+
+                'Else
+                '    Dim T_Str As String = JSONList(0).ToString
+                '    RetList.Add(T_Str)
+            End If
+
+        End If
+
+        Return RetList
+
+    End Function
+
+    Function IdxPaths(ByVal PathList As List(Of String)) As List(Of String)
+
+        For i As Integer = 0 To PathList.Count - 1
+
+            Dim T_Path As String = PathList(i)
+
+            Dim Dupletten As Integer = 0
+
+            For j As Integer = i + 1 To PathList.Count - 1
+
+                Dim TT_Path As String = PathList(j)
+
+                If T_Path = TT_Path Then
+                    Dupletten += 1
+
+                    If Not PathList(i).Contains("0|") Then
+                        PathList(i) = "0|" + PathList(i)
+                    End If
+
+                    PathList(j) = Dupletten.ToString + "|" + PathList(j)
+                End If
+
+            Next
+
+        Next
+
+        Return PathList
+
+    End Function
+
+
 End Class

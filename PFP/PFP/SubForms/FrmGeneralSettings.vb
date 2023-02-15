@@ -25,8 +25,6 @@ Public Class FrmGeneralSettings
 
     End Sub
 
-
-
     Private Sub ChBxTCPAPI_CheckedChanged(sender As Object, e As EventArgs) Handles ChBxTCPAPI.CheckedChanged
 
         If ChBxTCPAPI.Checked Then
@@ -40,8 +38,6 @@ Public Class FrmGeneralSettings
         SetINISetting(E_Setting.TCPAPIEnable, ChBxTCPAPI.Checked)
 
     End Sub
-
-
     Private Sub FrmGeneralSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         C_MainForm.PrimaryNode = GetINISetting(E_Setting.DefaultNode, ClsSignumAPI._DefaultNode)
@@ -130,8 +126,56 @@ Public Class FrmGeneralSettings
 
         SetINISetting(E_Setting.Nodes, NodesStr)
 
-    End Sub
+#Region "Bitcoin"
 
+        TBBitcoindPath.Text = GetINISetting(E_Setting.BitcoinDPath, "")
+        TBBitcoinArgs.Text = GetINISetting(E_Setting.BitcoinDArguments, "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex")
+        TBBitcoinAPINode.Text = GetINISetting(E_Setting.BitcoinAPINode, "http://127.0.0.1:18332")
+        TBBitcoinAPIUser.Text = GetINISetting(E_Setting.BitcoinAPIUser, "bitcoin")
+        TBBitcoinAPIPass.Text = GetINISetting(E_Setting.BitcoinAPIPassword, "bitcoin")
+        TBBitcoinWallet.Text = GetINISetting(E_Setting.BitcoinWallet, "DEXWALLET")
+
+        Dim T_Accounts As String = GetINISetting(E_Setting.BitcoinAccounts, "")
+
+        If Not T_Accounts.Trim = "" Then
+
+            LVBitcoinAddress.Items.Clear()
+
+            If T_Accounts.Contains(";") Then
+
+                Dim T_AccountList As List(Of String) = New List(Of String)(T_Accounts.Split(";"c).ToArray)
+
+                For Each T_KeyPair As String In T_AccountList
+
+                    If T_KeyPair.Contains(":") Then
+
+                        'Dim Mnemonic As String = T_KeyPair.Split(":"c)(0)
+                        Dim T_PublicKey As String = T_KeyPair.Split(":"c)(1)
+                        Dim T_Address As String = PubKeyToAddress(T_PublicKey, BitcoinAddressPrefix)
+                        LVBitcoinAddress.Items.Add(T_Address)
+
+                    End If
+
+                Next
+
+            Else
+
+                If T_Accounts.Contains(":") Then
+
+                    'Dim Mnemonic As String = T_Addresses.Split(":"c)(0)
+                    Dim T_PublicKey As String = T_Accounts.Split(":"c)(1)
+                    Dim T_Address As String = PubKeyToAddress(T_PublicKey, BitcoinAddressPrefix)
+                    LVBitcoinAddress.Items.Add(T_Address)
+
+                End If
+
+            End If
+
+        End If
+
+#End Region
+
+    End Sub
     Private Sub FrmGeneralSettings_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
 
         Dim Changes As Boolean = False
@@ -249,7 +293,6 @@ Public Class FrmGeneralSettings
         End If
 
     End Sub
-
     Private Sub BtSaveSettings_Click(sender As Object, e As EventArgs) Handles BtSaveSettings.Click
 
         'SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
@@ -296,8 +339,16 @@ Public Class FrmGeneralSettings
         SetINISetting(E_Setting.PayPalAPIUser, TBPayPalAPIUser.Text)
         SetINISetting(E_Setting.PayPalAPISecret, TBPayPalAPISecret.Text)
 
-    End Sub
 
+        SetINISetting(E_Setting.BitcoinDPath, TBBitcoindPath.Text.Trim)
+        SetINISetting(E_Setting.BitcoinDArguments, TBBitcoinArgs.Text.Trim) ' "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex")
+        SetINISetting(E_Setting.BitcoinAPINode, TBBitcoinAPINode.Text.Trim) ' "http://127.0.0.1:18332")
+        SetINISetting(E_Setting.BitcoinAPIUser, TBBitcoinAPIUser.Text.Trim) ' "bitcoin")
+        SetINISetting(E_Setting.BitcoinAPIPassword, TBBitcoinAPIPass.Text.Trim) ' "bitcoin")
+        SetINISetting(E_Setting.BitcoinWallet, TBBitcoinWallet.Text.Trim) ' "DEXWALLET")
+
+
+    End Sub
     Private Sub RBPayPalEMail_CheckedChanged(sender As Object, e As EventArgs)
 
         Dim PaymentInfo As String = ""
@@ -315,7 +366,6 @@ Public Class FrmGeneralSettings
         End If
 
     End Sub
-
     Private Sub BtCheckPayPalBiz_Click(sender As Object, e As EventArgs) Handles BtCheckPayPalBiz.Click
 
         Dim Status As String = CheckPayPalAPI()
@@ -333,8 +383,6 @@ Public Class FrmGeneralSettings
         End If
 
     End Sub
-
-
     Private Sub CoBxNode_DropDownClosed(sender As Object, e As EventArgs)
 
         If CoBxNode.Text <> olditem Then
@@ -353,14 +401,11 @@ Public Class FrmGeneralSettings
 
     End Sub
 
-
     Dim olditem As String = ""
 
     Private Sub CoBxNode_DropDown(sender As Object, e As EventArgs)
         olditem = CoBxNode.Text
     End Sub
-
-
     Private Sub TBPayPalEMail_KeyPress(sender As Object, e As KeyPressEventArgs)
 
         Dim keys As Integer = Asc(e.KeyChar)
@@ -383,7 +428,6 @@ Public Class FrmGeneralSettings
         End Select
 
     End Sub
-
     Private Sub TBTCPAPIPort_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TBTCPAPIPort.KeyPress
 
         Dim keys As Integer = Asc(e.KeyChar)
@@ -405,7 +449,6 @@ Public Class FrmGeneralSettings
         End Select
 
     End Sub
-
     Private Sub TBDEXNETPort_KeyPress(sender As Object, e As KeyPressEventArgs) Handles TBDEXNETPort.KeyPress
 
         Dim keys As Integer = Asc(e.KeyChar)
@@ -430,7 +473,6 @@ Public Class FrmGeneralSettings
         End Select
 
     End Sub
-
     Private Sub CoBxPayType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CoBxPayType.SelectedIndexChanged
 
         'Public Enum E_PayType
@@ -488,6 +530,72 @@ Public Class FrmGeneralSettings
                     TBPaymentInfo.Enabled = True
             End Select
 
+
+        End If
+
+
+    End Sub
+
+    Private Sub BtBitcoindPath_Click(sender As Object, e As EventArgs) Handles BtBitcoindPath.Click
+
+        Dim OFD As OpenFileDialog = New OpenFileDialog()
+
+        OFD.Title = "Bitcoind Path"
+        'OFD.InitialDirectory = "C:\"
+        OFD.Filter = "*.exe|*.exe"
+        OFD.Multiselect = False
+
+        OFD.ShowDialog()
+
+        If OFD.CheckFileExists() Then
+            TBBitcoindPath.Text = OFD.FileName
+        End If
+
+
+    End Sub
+
+    Private Sub BtBitcoinAddresses_Click(sender As Object, e As EventArgs) Handles BtBitcoinAddresses.Click
+
+        Dim BCA As FrmBitcoinAccounts = New FrmBitcoinAccounts()
+        BCA.StartPosition = FormStartPosition.CenterParent
+        BCA.ShowDialog()
+
+
+        Dim T_Accounts As String = GetINISetting(E_Setting.BitcoinAccounts, "")
+
+        If Not T_Accounts.Trim = "" Then
+
+            LVBitcoinAddress.Items.Clear()
+
+            If T_Accounts.Contains(";") Then
+
+                Dim T_AccountList As List(Of String) = New List(Of String)(T_Accounts.Split(";"c).ToArray)
+
+                For Each T_KeyPair As String In T_AccountList
+
+                    If T_KeyPair.Contains(":") Then
+
+                        'Dim Mnemonic As String = T_KeyPair.Split(":"c)(0)
+                        Dim T_PublicKey As String = T_KeyPair.Split(":"c)(1)
+                        Dim T_Address As String = PubKeyToAddress(T_PublicKey, BitcoinAddressPrefix)
+                        LVBitcoinAddress.Items.Add(T_Address)
+
+                    End If
+
+                Next
+
+            Else
+
+                If T_Accounts.Contains(":") Then
+
+                    'Dim Mnemonic As String = T_Addresses.Split(":"c)(0)
+                    Dim T_PublicKey As String = T_Accounts.Split(":"c)(1)
+                    Dim T_Address As String = PubKeyToAddress(T_PublicKey, BitcoinAddressPrefix)
+                    LVBitcoinAddress.Items.Add(T_Address)
+
+                End If
+
+            End If
 
         End If
 

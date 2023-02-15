@@ -1,7 +1,8 @@
-﻿
-Option Strict On
+﻿Option Strict On
 Option Explicit On
 Option Infer Off
+Imports System.Security.Cryptography
+Imports PFP.ClsOrderSettings
 
 Public Class PFPForm
 
@@ -53,31 +54,49 @@ Public Class PFPForm
             Dim T_OS As ClsOrderSettings = T_OSList(0)
             T_OS.SetPayType()
 
-            If T_OS.AutoSendInfotext Then
+            If ClsDEXContract.CurrencyIsCrypto(Market) Then
+                T_OS.SetPayType(E_PayType.AtomicSwap.ToString)
+            End If
+
+            If T_OS.AutoSendInfotext Or ClsDEXContract.CurrencyIsCrypto(Market) Then
 
                 Select Case T_OS.PayType
                     Case ClsOrderSettings.E_PayType.Bankaccount
                         PaymentInfo = "Bankdetails=" + T_OS.Infotext.Replace(",", ";")
                     Case ClsOrderSettings.E_PayType.PayPal_E_Mail
                         PaymentInfo = "PayPal-E-Mail=" + T_OS.Infotext.Replace(",", ";")
-                    Case ClsOrderSettings.E_PayType.PayPal_Order
+                    'Case ClsOrderSettings.E_PayType.PayPal_Order
 
-                        Dim APIOK As String = CheckPayPalAPI()
+                    '    Dim APIOK As String = CheckPayPalAPI()
 
-                        If APIOK = "True" Then
-                            Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal With {
-                                .Client_ID = GetINISetting(E_Setting.PayPalAPIUser, ""),
-                                .Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
-                            }
+                    '    If APIOK = "True" Then
+                    '        Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal With {
+                    '            .Client_ID = GetINISetting(E_Setting.PayPalAPIUser, ""),
+                    '            .Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
+                    '        }
 
-                            Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", Quantity, XAmount, Market)
-                            Dim PPOrderID As String = GetStringBetweenFromList(PPOrderIDList, "<id>", "</id>")
-                            PaymentInfo = "PayPal-Order=" + PPOrderID
-                        End If
+                    '        Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", Quantity, XAmount, Market)
+                    '        Dim PPOrderID As String = GetStringBetweenFromList(PPOrderIDList, "<id>", "</id>")
+                    '        PaymentInfo = "PayPal-Order=" + PPOrderID
+                    '    End If
 
-                    Case ClsOrderSettings.E_PayType.Self_Pickup
+                    Case ClsOrderSettings.E_PayType.Self_Pickup, ClsOrderSettings.E_PayType.Other
                         PaymentInfo = "PaymentInfotext=" + GetINISetting(E_Setting.PaymentInfoText, "").Replace(",", ";")
-                    Case ClsOrderSettings.E_PayType.Other
+                    Case ClsOrderSettings.E_PayType.AtomicSwap
+
+                        If ClsDEXContract.CurrencyIsCrypto(Market) Then
+
+                            If Market = "BTC" Then
+                                PaymentInfo = "AtomicSwap=" + Market + ":" + GetBitcoinMainAddress() 'TODO: ###AtomicSwap Coinaddress
+                            Else
+                                'TODO: other cryptocurrencies
+
+                            End If
+
+                        Else
+                            PaymentInfo = "PaymentInfotext=" + GetINISetting(E_Setting.PaymentInfoText, "").Replace(",", ";")
+                        End If
+                    Case Else
                         PaymentInfo = "PaymentInfotext=" + GetINISetting(E_Setting.PaymentInfoText, "").Replace(",", ";")
                 End Select
 
@@ -88,105 +107,105 @@ Public Class PFPForm
         Return PaymentInfo
 
     End Function
-    Function CheckPayPalOrder(ByVal DEXContract As ClsDEXContract, ByVal PayPalOrder As String) As String
+    'Function CheckPayPalOrder(ByVal DEXContract As ClsDEXContract, ByVal PayPalOrder As String) As String
 
-        Dim Status As String = ""
+    '    Dim Status As String = ""
 
-        If Not PayPalOrder = "0" And Not PayPalOrder = "" Then
+    '    If Not PayPalOrder = "0" And Not PayPalOrder = "" Then
 
-            Dim APIOK As String = CheckPayPalAPI()
-            If APIOK = "True" Then
+    '        Dim APIOK As String = CheckPayPalAPI()
+    '        If APIOK = "True" Then
 
-                'PayPal Approving check
-                Dim PPAPI As ClsPayPal = New ClsPayPal With {
-                    .Client_ID = GetINISetting(E_Setting.PayPalAPIUser, ""),
-                    .Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
-                }
+    '            'PayPal Approving check
+    '            Dim PPAPI As ClsPayPal = New ClsPayPal With {
+    '                .Client_ID = GetINISetting(E_Setting.PayPalAPIUser, ""),
+    '                .Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
+    '            }
 
-                Dim OrderDetails As List(Of String) = PPAPI.GetOrderDetails(PayPalOrder)
-                Dim PayPalStatus As String = GetStringBetweenFromList(OrderDetails, "<status>", "</status>")
+    '            Dim OrderDetails As List(Of String) = PPAPI.GetOrderDetails(PayPalOrder)
+    '            Dim PayPalStatus As String = GetStringBetweenFromList(OrderDetails, "<status>", "</status>")
 
-                If PayPalStatus = "APPROVED" Then
-                    PPAPI = New ClsPayPal With {
-                        .Client_ID = GetINISetting(E_Setting.PayPalAPIUser, ""),
-                        .Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
-                    }
+    '            If PayPalStatus = "APPROVED" Then
+    '                PPAPI = New ClsPayPal With {
+    '                    .Client_ID = GetINISetting(E_Setting.PayPalAPIUser, ""),
+    '                    .Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
+    '                }
 
-                    OrderDetails = PPAPI.CaptureOrder(PayPalOrder)
-                    PayPalStatus = GetStringBetweenFromList(OrderDetails, "<status>", "</status>")
+    '                OrderDetails = PPAPI.CaptureOrder(PayPalOrder)
+    '                PayPalStatus = GetStringBetweenFromList(OrderDetails, "<status>", "</status>")
 
-                    If PayPalStatus = "COMPLETED" Then
+    '                If PayPalStatus = "COMPLETED" Then
 
-                        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+    '                    Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
 
-                        Dim MasterKeys As List(Of String) = GetPassPhrase()
-                        If MasterKeys.Count > 0 Then
+    '                    Dim MasterKeys As List(Of String) = GetPassPhrase()
+    '                    If MasterKeys.Count > 0 Then
 
-                            Dim Response As String = DEXContract.FinishOrder(MasterKeys(0), Fee)
+    '                        Dim Response As String = DEXContract.FinishOrder(MasterKeys(0), Fee)
 
-                            If Response.Contains(Application.ProductName + "-error") Then
+    '                        If Response.Contains(Application.ProductName + "-error") Then
 
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalOrder(1): -> " + vbCrLf + Response)
-                                End If
+    '                            If GetINISetting(E_Setting.InfoOut, False) Then
+    '                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+    '                                out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalOrder(1): -> " + vbCrLf + Response)
+    '                            End If
 
-                            Else
+    '                        Else
 
-                                Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
-                                Dim UTX As String = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
-                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
-                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
-                                Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+    '                            Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
+    '                            Dim UTX As String = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
+    '                            Dim SignumNET As ClsSignumNET = New ClsSignumNET
+    '                            Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+    '                            Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                If TX.Contains(Application.ProductName + "-error") Then
+    '                            If TX.Contains(Application.ProductName + "-error") Then
 
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalOrder(2): -> " + vbCrLf + TX)
-                                    End If
+    '                                If GetINISetting(E_Setting.InfoOut, False) Then
+    '                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+    '                                    out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalOrder(2): -> " + vbCrLf + TX)
+    '                                End If
 
-                                Else
-                                    Status = "COMPLETED"
-                                End If
+    '                            Else
+    '                                Status = "COMPLETED"
+    '                            End If
 
-                            End If
-
-
-                        Else
-
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.WarningLog2File(Application.ProductName + "-warning in CheckPayPalOrder(3): -> no Keys")
-                            End If
-
-                        End If
-
-                    Else
-                        Status = PayPalStatus
-                    End If
-
-                ElseIf PayPalStatus = "COMPLETED" Then
-
-                    Status = "COMPLETED"
+    '                        End If
 
 
-                ElseIf PayPalStatus = "CREATED" Then
+    '                    Else
 
-                    Status = "PayPal Order created"
+    '                        If GetINISetting(E_Setting.InfoOut, False) Then
+    '                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+    '                            out.WarningLog2File(Application.ProductName + "-warning in CheckPayPalOrder(3): -> no Keys")
+    '                        End If
 
-                Else
-                    'TODO: auto Recreate PayPal Order
-                    Status = "No Payment received"
-                End If
+    '                    End If
 
-            End If
+    '                Else
+    '                    Status = PayPalStatus
+    '                End If
 
-        End If
+    '            ElseIf PayPalStatus = "COMPLETED" Then
 
-        Return Status
+    '                Status = "COMPLETED"
 
-    End Function
+
+    '            ElseIf PayPalStatus = "CREATED" Then
+
+    '                Status = "PayPal Order created"
+
+    '            Else
+    '                'TODO: auto Recreate PayPal Order
+    '                Status = "No Payment received"
+    '            End If
+
+    '        End If
+
+    '    End If
+
+    '    Return Status
+
+    'End Function
     Function CheckPayPalTransaction(ByVal DEXContract As ClsDEXContract) As String
 
         Dim Status As String = ""
@@ -223,14 +242,7 @@ Public Class PFPForm
                             If MasterKeys.Count > 0 Then
                                 Dim Response As String = DEXContract.FinishOrder(MasterKeys(0), Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalTransaction(1): -> " + vbCrLf + Response)
-                                    End If
-
-                                Else
+                                If Not IsErrorOrWarning(Response, Application.ProductName + "-error in CheckPayPalTransaction(1): -> " + vbCrLf, True) Then
 
                                     Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
                                     Dim UTX As String = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
@@ -238,31 +250,15 @@ Public Class PFPForm
                                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                    If TX.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in CheckPayPalTransaction(2): -> " + vbCrLf + TX)
-                                        End If
-
-                                    Else
-
+                                    If Not IsErrorOrWarning(TX, Application.ProductName + "-error in CheckPayPalTransaction(2): -> " + vbCrLf, True) Then
                                         Status = "COMPLETED"
-
-                                        If SetAutosignalTX2INI(DEXContract.CurrentCreationTransaction) Then 'Set autosignal-TX in Settings.ini
-                                            'ok
-                                        End If
+                                        SetAutosignalTX2INI(DEXContract.CurrentCreationTransaction)   'Set autosignal-TX in Settings.ini
                                     End If
 
                                 End If
 
                             Else
-
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.WarningLog2File(Application.ProductName + "-warning in CheckPayPalTransaction(3): -> no Keys")
-                                End If
-
+                                IsErrorOrWarning(Application.ProductName + "-warning in CheckPayPalTransaction(3): -> no Keys")
                             End If
 
                         End If
@@ -361,6 +357,16 @@ Public Class PFPForm
     Dim TTS As TradeTrackerSlot = New TradeTrackerSlot
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        Dim StartupArguments As List(Of String) = Environment.GetCommandLineArgs().ToList
+
+        For Each StartupArg As String In StartupArguments
+            If StartupArg.Contains("-test") Then
+                BitcoinAddressPrefix = "6f"
+            End If
+        Next
+
+
 
         Dim Wait As Boolean = InitiateINI()
 
@@ -714,12 +720,7 @@ Public Class PFPForm
             'Next
 
         Catch ex As Exception
-
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in AutoResizeWindow(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in AutoResizeWindow(): -> " + ex.Message)
         End Try
 
         Return True
@@ -979,12 +980,45 @@ Public Class PFPForm
     Property ForceReload As Boolean = False
     Private Sub CoBxMarket_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CoBxMarket.SelectedIndexChanged, CoBxMarket.DropDownClosed
 
-        CurrentMarket = Convert.ToString(CoBxMarket.SelectedItem)
-        SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
+        Dim NuMarket As String = Convert.ToString(CoBxMarket.SelectedItem)
 
-        ResetLVColumns()
+        If ClsDEXContract.CurrencyIsCrypto(NuMarket) Then
+            'TODO: check XItem available
+            Dim Info As String = GetBitcoinMiningInfo()
 
-        ForceReload = True
+            '<blocks>2420142</blocks>
+            '<difficulty>95719704.10633034</difficulty>
+            '<networkhashps>369666982391068.9</networkhashps>
+            '<pooledtx>44</pooledtx>
+            '<chain>test</chain>
+            '<warnings>Unknown New rules activated (versionbit 28)</warnings>
+
+            If Info.Contains("<blocks>") Then
+                CurrentMarket = NuMarket
+                SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
+                ResetLVColumns()
+                ForceReload = True
+            Else
+
+                Dim Message As String = NuMarket + "-Node not reachable on " + GetINISetting(E_Setting.BitcoinAPINode, "https://127.0.0.1") + vbCrLf
+                Message += "please make sure your Node is up and running and have the right settings." + vbCrLf + vbCrLf
+                Message += "please make also sure the DEX is unlocked(the lock at the bottom right" + vbCrLf + "corner) "
+                Message += "so the DEX can interact with both Blockchains for timelocked " + vbCrLf + "AtomicSwaps automatically!"
+                ClsMsgs.MBox(Message, "Error",,, ClsMsgs.Status.Erro, 3, ClsMsgs.Timer_Type.ButtonEnable)
+                CoBxMarket.SelectedItem = CurrentMarket
+
+                SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
+                ResetLVColumns()
+                ForceReload = True
+
+            End If
+
+        Else
+            CurrentMarket = NuMarket
+            SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
+            ResetLVColumns()
+            ForceReload = True
+        End If
 
     End Sub
     Private Sub TBSNOPassPhrase_KeyPress(sender As Object, e As KeyPressEventArgs)
@@ -1040,14 +1074,7 @@ Public Class PFPForm
 
                     Dim Response As String = SignumAPI.CreateSmartContract(MasterKeys(0))
 
-                    If Response.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtCreateNewSmartContract_Click(1): -> " + vbCrLf + Response)
-                        End If
-
-                    Else
+                    If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtCreateNewSmartContract_Click(1): -> " + vbCrLf, True) Then
 
                         Dim NuList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
                         Response = GetStringBetweenFromList(NuList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
@@ -1057,14 +1084,7 @@ Public Class PFPForm
                         Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                         Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                        If TX.Contains(Application.ProductName + "-error") Then
-
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(Application.ProductName + "-error in BtCreateNewSmartContract_Click(2): -> " + vbCrLf + TX)
-                            End If
-
-                        Else
+                        If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtCreateNewSmartContract_Click(2): -> " + vbCrLf, True) Then
 
                             'Dim NuSmartContract As S_SmartContract = New S_SmartContract
                             'NuSmartContract.ID = GetULongBetweenFromList(NuList, "<transaction>", "</transaction>")
@@ -1086,15 +1106,9 @@ Public Class PFPForm
                     If Not GlobalPublicKey.Trim = "" Then
 
                         Response = SignumAPI.CreateSmartContract(GlobalPublicKey)
-                        If Response.Contains(Application.ProductName + "-error") Then
 
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(Application.ProductName + "-error in BtCreateNewSmartContract_Click(2a): -> " + vbCrLf + Response)
-                            End If
-
+                        If IsErrorOrWarning(Response, Application.ProductName + "-error in BtCreateNewSmartContract_Click(2a): -> " + vbCrLf, True) Then
                             ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                         Else
                             Dim NuList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
                             Response = GetStringBetweenFromList(NuList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
@@ -1110,14 +1124,7 @@ Public Class PFPForm
 
                         Response = SignumAPI.CreateSmartContract(PinForm.PublicKey) ' T_DEXContract.AcceptSellOrder(PinForm.PublicKey, Collateral, Fee)
 
-                        If Response.Contains(Application.ProductName + "-error") Then
-
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(Application.ProductName + "-error in BtCreateNewSmartContract_Click(2a): -> " + vbCrLf + Response)
-                            End If
-
-                        Else
+                        If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtCreateNewSmartContract_Click(2a): -> " + vbCrLf, True) Then
 
                             Dim NuList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
                             Response = GetStringBetweenFromList(NuList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
@@ -1128,14 +1135,7 @@ Public Class PFPForm
                             Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                             Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                            If TX.Contains(Application.ProductName + "-error") Then
-
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtCreateNewSmartContract_Click(2b): -> " + vbCrLf + TX)
-                                End If
-
-                            Else
+                            If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtCreateNewSmartContract_Click(2b): -> " + vbCrLf, True) Then
 
                                 Dim NuSmartContract As S_SmartContract = New S_SmartContract
                                 NuSmartContract.ID = GetULongBetweenFromList(NuList, "<transaction>", "</transaction>")
@@ -1155,107 +1155,7 @@ Public Class PFPForm
 
                 End If
 
-
-#Region "deprecated"
-
-                '    Dim NuList As List(Of String) = New List(Of String)
-
-                '    Dim PublicKey As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(TBSNOAddress.Text)
-
-                '    If PublicKey.Contains(Application.ProductName + "-error") Then
-                '        ClsMsgs.MBox("This account/address is not in Blockchain and has no Balance to create SmartContract" + vbCrLf + vbCrLf + "Try to buy your first Signa from Sellorders without collateral.", "Account not in Blockchain",,, ClsMsgs.Status.Erro)
-                '        Exit Sub
-                '    End If
-
-                '    Dim SignumResponse As String = SignumAPI.CreateSmartContract(PublicKey)
-
-                '    If SignumResponse.Contains(Application.ProductName + "-error") Then
-
-                '        If GetINISetting(E_Setting.InfoOut, False) Then
-                '            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                '            Out.ErrorLog2File(Application.ProductName + "-error in CreateSmartContract(): -> " + SignumResponse)
-                '        End If
-
-                '        ClsMsgs.MBox("something went wrong:" + vbCrLf + SignumResponse, "Error",,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.AutoOK)
-                '        Exit Sub
-
-                '    Else
-
-
-                '        'Dim UTX As String = Response
-                '        'Dim SignumNET As ClsSignumNET = New ClsSignumNET
-                '        Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
-                '        Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
-
-                '        If TX.Contains(Application.ProductName + "-error") Then
-
-                '            If GetINISetting(E_Setting.InfoOut, False) Then
-                '                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                '                out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(2): -> " + vbCrLf + TX)
-                '            End If
-
-                '        Else
-                '            MBoxMsg = "SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX + vbCrLf + vbCrLf
-                '            MBoxMsg += "please wait 1-2 Blocks (4-8 minutes) to get the payment-infos from Seller"
-
-                '            ClsMsgs.MBox(MBoxMsg, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
-                '        End If
-
-
-                '    End If
-
-
-
-
-
-                '    NuList = ClsSignumAPI.ConvertUnsignedTXToList(SignumResponse)
-                '    Dim UTX As String = GetStringBetweenFromList(NuList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
-                '    Dim SignumNET As ClsSignumNET = New ClsSignumNET()
-
-                '    Dim Masterkeys As List(Of String) = GetPassPhrase()
-                '    If MasterKeys.Count > 0 Then
-                '        Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
-                '        Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
-
-                '        NuList.Add("<transaction>" + TX + "</transaction>")
-
-                '    Else
-
-                '        Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
-                '        PinForm.ShowDialog()
-
-                '        If Not PinForm.SignKey = "" Then
-                '            Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
-                '            Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
-
-                '            NuList.Add("<transaction>" + TX + "</transaction>")
-                '        Else
-                '            ClsMsgs.MBox("Smart Contract creation canceled.", "Canceled",,, ClsMsgs.Status.Erro)
-                '            Exit Sub
-                '        End If
-
-                '    End If
-
-                '    If NuList.Count = 0 Then
-                '        ClsMsgs.MBox("Error creating new Smart Contract", "Error",,, ClsMsgs.Status.Erro)
-                '        Exit Sub
-                '    End If
-
-                '    Dim NuSmartContract As S_SmartContract = New S_SmartContract
-                '    NuSmartContract.ID = GetULongBetweenFromList(NuList, "<transaction>", "</transaction>")
-
-                '    Dim AccRS As List(Of String) = SignumAPI.RSConvert(NuSmartContract.ID)
-
-                '    NuSmartContract.IsDEX_SC = True
-
-
-                '    ClsMsgs.MBox("New Smart Contract Created" + vbCrLf + vbCrLf + "TX: " + NuSmartContract.ID.ToString, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
-
-#End Region
-
-
             End If
-
 
         Else
             'not enough balance
@@ -1459,15 +1359,8 @@ Public Class PFPForm
                             If MasterKeys.Count > 0 Then
                                 Dim Response As String = T_DEXContract.CreateSellOrder(MasterKeys(0), Amount, Collateral, Item, ItemAmount, Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Response)
-                                    End If
-
+                                If IsErrorOrWarning(Response) Then
                                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                 Else
 
                                     'Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
@@ -1476,15 +1369,8 @@ Public Class PFPForm
                                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                    If TX.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Sell1): -> " + vbCrLf + TX)
-                                        End If
-
+                                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtSNOSetOrder_Click(Sell1): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                     Else
                                         ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                                     End If
@@ -1498,15 +1384,9 @@ Public Class PFPForm
                                 If Not GlobalPublicKey.Trim = "" Then
 
                                     Response = T_DEXContract.CreateSellOrder(GlobalPublicKey, Amount, Collateral, Item, ItemAmount, Fee)
-                                    If Response.Contains(Application.ProductName + "-error") Then
 
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Sell2): -> " + vbCrLf + Response)
-                                        End If
-
+                                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtSNOSetOrder_Click(Sell2): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                     Else
 
                                         Dim UTX As String = Response
@@ -1521,15 +1401,8 @@ Public Class PFPForm
 
                                     Response = T_DEXContract.CreateSellOrder(PinForm.PublicKey, Amount, Collateral, Item, ItemAmount, Fee)
 
-                                    If Response.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Sell3): -> " + vbCrLf + Response)
-                                        End If
-
+                                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtSNOSetOrder_Click(Sell3): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                     Else
 
                                         'Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
@@ -1539,15 +1412,8 @@ Public Class PFPForm
                                         Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                                         Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                        If TX.Contains(Application.ProductName + "-error") Then
-
-                                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(Sell4): -> " + vbCrLf + TX)
-                                            End If
-
+                                        If IsErrorOrWarning(TX, Application.ProductName + "-error in BtBuy_Click(Sell4): -> " + vbCrLf, True) Then
                                             ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                         Else
                                             ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                                         End If
@@ -1558,19 +1424,11 @@ Public Class PFPForm
 
                                     Dim TX As String = SignumAPI.BroadcastTransaction(PinForm.TBSignedBytes.Text.Trim)
 
-                                    If TX.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(Sell5): -> " + vbCrLf + TX)
-                                        End If
-
+                                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtBuy_Click(Sell5): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                     Else
                                         ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                                     End If
-
 
                                 Else
 
@@ -1602,32 +1460,17 @@ Public Class PFPForm
                             If MasterKeys.Count > 0 Then
                                 Dim Response As String = T_DEXContract.CreateBuyOrder(MasterKeys(0), Amount, Collateral, Item, ItemAmount, Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Response)
-                                    End If
-
+                                If IsErrorOrWarning(Response) Then
                                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                 Else
-
 
                                     Dim UTX As String = Response
                                     Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                    If TX.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Buy1): -> " + vbCrLf + TX)
-                                        End If
-
+                                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtSNOSetOrder_Click(Buy1): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                     Else
                                         ClsMsgs.MBox("BuyOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                                     End If
@@ -1642,21 +1485,12 @@ Public Class PFPForm
                                 If Not GlobalPublicKey.Trim = "" Then
 
                                     Response = T_DEXContract.CreateBuyOrder(PinForm.PublicKey, Amount, Collateral, Item, ItemAmount, Fee)
-                                    If Response.Contains(Application.ProductName + "-error") Then
 
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Buy2): -> " + vbCrLf + Response)
-                                        End If
-
+                                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtSNOSetOrder_Click(Buy2): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                     Else
-
                                         Dim UTX As String = Response
-
                                         PinForm.TBUnsignedBytes.Text = UTX
-
                                     End If
                                 End If
 
@@ -1666,15 +1500,8 @@ Public Class PFPForm
 
                                     Response = T_DEXContract.CreateBuyOrder(PinForm.PublicKey, Amount, Collateral, Item, ItemAmount, Fee)
 
-                                    If Response.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Buy3): -> " + vbCrLf + Response)
-                                        End If
-
+                                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtSNOSetOrder_Click(Buy3): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                     Else
 
                                         'Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
@@ -1684,15 +1511,8 @@ Public Class PFPForm
                                         Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                                         Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                        If TX.Contains(Application.ProductName + "-error") Then
-
-                                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Buy4): -> " + vbCrLf + TX)
-                                            End If
-
+                                        If IsErrorOrWarning(TX, Application.ProductName + "-error in BtSNOSetOrder_Click(Buy4): -> " + vbCrLf, True) Then
                                             ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                         Else
                                             ClsMsgs.MBox("BuyOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                                         End If
@@ -1703,15 +1523,8 @@ Public Class PFPForm
 
                                     Dim TX As String = SignumAPI.BroadcastTransaction(PinForm.TBSignedBytes.Text.Trim)
 
-                                    If TX.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Buy5): -> " + vbCrLf + TX)
-                                        End If
-
+                                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtSNOSetOrder_Click(Buy5): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                     Else
                                         ClsMsgs.MBox("BuyOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                                     End If
@@ -1932,29 +1745,14 @@ Public Class PFPForm
 
                             Dim Response As String = T_DEXContract.AcceptSellOrder(MasterKeys(0), Collateral, Fee,)
 
-                            If Response.Contains(Application.ProductName + "-error") Then
-
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(1): -> " + vbCrLf + Response)
-                                End If
-
-                            Else
-
+                            If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtBuy_Click(1): -> " + vbCrLf, True) Then
 
                                 Dim UTX As String = Response
                                 Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                 Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                 Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                If TX.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(2): -> " + vbCrLf + TX)
-                                    End If
-
-                                Else
+                                If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtBuy_Click(2): -> " + vbCrLf, True) Then
                                     MBoxMsg = "SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX + vbCrLf + vbCrLf
                                     MBoxMsg += "please wait 1-2 Blocks (4-8 minutes) to get the payment-infos from Seller" 'TODO: only if autoinfo is on
 
@@ -1971,15 +1769,9 @@ Public Class PFPForm
                             If Not GlobalPublicKey.Trim = "" Then
 
                                 Response = T_DEXContract.AcceptSellOrder(GlobalPublicKey, Collateral, Fee)
-                                If Response.Contains(Application.ProductName + "-error") Then
 
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(2a): -> " + vbCrLf + Response)
-                                    End If
-
+                                If IsErrorOrWarning(Response, Application.ProductName + "-error in BtBuy_Click(2a): -> " + vbCrLf, True) Then
                                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                 Else
                                     Dim UTX As String = Response
                                     PinForm.TBUnsignedBytes.Text = UTX
@@ -1993,15 +1785,7 @@ Public Class PFPForm
 
                                 Response = T_DEXContract.AcceptSellOrder(PinForm.PublicKey, Collateral, Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(2a): -> " + vbCrLf + Response)
-                                    End If
-
-                                Else
-
+                                If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtBuy_Click(2a): -> " + vbCrLf, True) Then
 
                                     Dim UTX As String = Response
 
@@ -2009,14 +1793,8 @@ Public Class PFPForm
                                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                    If TX.Contains(Application.ProductName + "-error") Then
+                                    If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtBuy_Click(2b): -> " + vbCrLf, True) Then
 
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(2b): -> " + vbCrLf + TX)
-                                        End If
-
-                                    Else
                                         MBoxMsg = "SellOrder Accepted" + vbCrLf + vbCrLf + "TX: " + TX + vbCrLf + vbCrLf
                                         MBoxMsg += "please wait 1-2 Blocks (4-8 minutes) to get the payment-infos from Seller" 'TODO: only if autoinfo is on
 
@@ -2062,29 +1840,14 @@ Public Class PFPForm
 
                         Dim Response As String = T_DEXContract.AcceptSellOrder(MasterKeys(0), 1.0, Fee)
 
-                        If Response.Contains(Application.ProductName + "-error") Then
-
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(cancel1): -> " + vbCrLf + Response)
-                            End If
-
-                        Else
-
+                        If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtBuy_Click(cancel1): -> " + vbCrLf, True) Then
 
                             Dim UTX As String = Response
                             Dim SignumNET As ClsSignumNET = New ClsSignumNET
                             Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                             Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                            If TX.Contains(Application.ProductName + "-error") Then
-
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(cancel2): -> " + vbCrLf + TX)
-                                End If
-
-                            Else
+                            If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtBuy_Click(cancel2): -> " + vbCrLf, True) Then
                                 ClsMsgs.MBox("SellOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                             End If
 
@@ -2098,15 +1861,9 @@ Public Class PFPForm
                         If Not GlobalPublicKey.Trim = "" Then
 
                             Response = T_DEXContract.AcceptSellOrder(GlobalPublicKey, 1.0, Fee)
-                            If Response.Contains(Application.ProductName + "-error") Then
 
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(cancel2a): -> " + vbCrLf + Response)
-                                End If
-
+                            If IsErrorOrWarning(Response, Application.ProductName + "-error in BtBuy_Click(cancel2a): -> " + vbCrLf, True) Then
                                 ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                             Else
                                 Dim UTX As String = Response
                                 PinForm.TBUnsignedBytes.Text = UTX
@@ -2120,15 +1877,7 @@ Public Class PFPForm
 
                             Response = T_DEXContract.AcceptSellOrder(PinForm.PublicKey, 1.0, Fee)
 
-                            If Response.Contains(Application.ProductName + "-error") Then
-
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(cancel1a): -> " + vbCrLf + Response)
-                                End If
-
-                            Else
-
+                            If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtBuy_Click(cancel1a): -> " + vbCrLf, True) Then
 
                                 Dim UTX As String = Response
 
@@ -2136,17 +1885,8 @@ Public Class PFPForm
                                 Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                                 Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                If TX.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(cancel1b): -> " + vbCrLf + TX)
-                                    End If
-
-                                Else
-
+                                If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtBuy_Click(cancel1b): -> " + vbCrLf, True) Then
                                     ClsMsgs.MBox("SellOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
-
                                 End If
 
                             End If
@@ -2275,15 +2015,8 @@ Public Class PFPForm
                                     If MasterKeys.Count > 0 Then
                                         Dim Response As String = T_DEXContract.CreateOrderWithResponder(MasterKeys(0), Amount, Recipient, Item, ItemAmount) '.CreateSellOrder(MasterKeys(0), Amount, Collateral, Item, ItemAmount, Fee)
 
-                                        If Response.Contains(Application.ProductName + "-error") Then
-
-                                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                out.ErrorLog2File(Response)
-                                            End If
-
+                                        If IsErrorOrWarning(Response) Then
                                             ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                         Else
 
                                             Dim UTX As String = Response
@@ -2291,15 +2024,8 @@ Public Class PFPForm
                                             Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                             TX = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                            If TX.Contains(Application.ProductName + "-error") Then
-
-                                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                    out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Sell1): -> " + vbCrLf + TX)
-                                                End If
-
+                                            If IsErrorOrWarning(TX, Application.ProductName + "-error in BtSNOSetOrder_Click(Sell1): -> " + vbCrLf, True) Then
                                                 ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                             Else
                                                 ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                                             End If
@@ -2314,15 +2040,9 @@ Public Class PFPForm
                                         If Not GlobalPublicKey.Trim = "" Then
 
                                             Response = T_DEXContract.CreateOrderWithResponder(GlobalPublicKey, Amount, Recipient, Item, ItemAmount)
-                                            If Response.Contains(Application.ProductName + "-error") Then
 
-                                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                    out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Sell2): -> " + vbCrLf + Response)
-                                                End If
-
+                                            If IsErrorOrWarning(Response, Application.ProductName + "-error in BtSNOSetOrder_Click(Sell2): -> " + vbCrLf, True) Then
                                                 ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                             Else
 
                                                 Dim UTX As String = Response
@@ -2337,15 +2057,8 @@ Public Class PFPForm
 
                                             Response = T_DEXContract.CreateOrderWithResponder(PinForm.PublicKey, Amount, Recipient, Item, ItemAmount)
 
-                                            If Response.Contains(Application.ProductName + "-error") Then
-
-                                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                    out.ErrorLog2File(Application.ProductName + "-error in BtSNOSetOrder_Click(Sell3): -> " + vbCrLf + Response)
-                                                End If
-
+                                            If IsErrorOrWarning(Response, Application.ProductName + "-error in BtSNOSetOrder_Click(Sell3): -> " + vbCrLf, True) Then
                                                 ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                             Else
 
                                                 Dim UTX As String = Response
@@ -2354,15 +2067,8 @@ Public Class PFPForm
                                                 Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                                                 TX = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                                If TX.Contains(Application.ProductName + "-error") Then
-
-                                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                        out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(Sell4): -> " + vbCrLf + TX)
-                                                    End If
-
+                                                If IsErrorOrWarning(TX, Application.ProductName + "-error in BtBuy_Click(Sell4): -> " + vbCrLf, True) Then
                                                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                                 Else
                                                     ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                                                 End If
@@ -2373,22 +2079,13 @@ Public Class PFPForm
 
                                             TX = SignumAPI.BroadcastTransaction(PinForm.TBSignedBytes.Text.Trim)
 
-                                            If TX.Contains(Application.ProductName + "-error") Then
-
-                                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                    out.ErrorLog2File(Application.ProductName + "-error in BtBuy_Click(Sell5): -> " + vbCrLf + TX)
-                                                End If
-
+                                            If IsErrorOrWarning(TX, Application.ProductName + "-error in BtBuy_Click(Sell5): -> " + vbCrLf, True) Then
                                                 ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                             Else
                                                 ClsMsgs.MBox("SellOrder Created" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                                             End If
 
-
                                         Else
-
                                             ClsMsgs.MBox("SellOrder creation canceled.", "Canceled",,, ClsMsgs.Status.Erro)
                                         End If
 
@@ -2483,37 +2180,20 @@ Public Class PFPForm
 
                         If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
 
-
                             Dim MasterKeys As List(Of String) = GetPassPhrase()
-
 
                             If MasterKeys.Count > 0 Then
 
                                 Dim Response As String = T_DEXContract.AcceptBuyOrder(MasterKeys(0),,, Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1): -> " + vbCrLf + Response)
-                                    End If
-
-                                Else
-
+                                If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtSell_Click(1): -> " + vbCrLf, True) Then
 
                                     Dim UTX As String = Response
                                     Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                    If TX.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(2): -> " + vbCrLf + TX)
-                                        End If
-
-                                    Else
+                                    If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtSell_Click(2): -> " + vbCrLf, True) Then
 
                                         MBoxMsg = "BuyOrder Accepted" + vbCrLf
                                         MBoxMsg += "TX: " + TX + vbCrLf
@@ -2527,60 +2207,60 @@ Public Class PFPForm
                                         '    Other = 4
                                         'End Enum
 
-                                        'TODO: OwnPayType 
+                                        If Not T_DEXContract.CurrencyIsCrypto() Then
 
-                                        Dim OwnPayType As String = GetINISetting(E_Setting.PaymentType, "Self Pickup")
+                                            'TODO: OwnPayType 
+                                            Dim OwnPayType As String = GetINISetting(E_Setting.PaymentType, "Self Pickup")
 
-                                        If PayInfo.Contains(OwnPayType) Then
+                                            If PayInfo.Contains(OwnPayType) Then
 
-                                            If PayInfo.Contains("PayPal-E-Mail") Then
+                                                If PayInfo.Contains("PayPal-E-Mail") Then
 
-                                                Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                                                Dim ColWordsString As String = ColWords.GenerateColloquialWords(T_DEXContract.CurrentCreationTransaction.ToString, True, "-", 5)
+                                                    Dim ColWords As ClsColloquialWords = New ClsColloquialWords
+                                                    Dim ColWordsString As String = ColWords.GenerateColloquialWords(T_DEXContract.CurrentCreationTransaction.ToString, True, "-", 5)
 
-                                                PayInfo = "PayPal-E-Mail=" + GetINISetting(E_Setting.PayPalEMail, "test@test.com") + " Reference/Note=" + ColWordsString
+                                                    PayInfo = "PayPal-E-Mail=" + GetINISetting(E_Setting.PayPalEMail, "test@test.com") + " Reference/Note=" + ColWordsString
 
-                                            ElseIf PayInfo.Contains("PayPal-Order") Then
+                                                    'ElseIf PayInfo.Contains("PayPal-Order") Then
 
-                                                Dim APIOK As String = CheckPayPalAPI()
+                                                    '    Dim APIOK As String = CheckPayPalAPI()
 
-                                                If APIOK = "True" Then
-                                                    Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal
-                                                    PPAPI_Autoinfo.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
-                                                    PPAPI_Autoinfo.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
+                                                    '    If APIOK = "True" Then
+                                                    '        Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal
+                                                    '        PPAPI_Autoinfo.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
+                                                    '        PPAPI_Autoinfo.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
 
-                                                    Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", BuyAmount, XAmount, T_DEXContract.CurrentXItem)
-                                                    Dim PPOrderID As String = GetStringBetweenFromList(PPOrderIDList, "<id>", "</id>")
-                                                    PayInfo = "PayPal-Order=" + PPOrderID
+                                                    '        Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", BuyAmount, XAmount, T_DEXContract.CurrentXItem)
+                                                    '        Dim PPOrderID As String = GetStringBetweenFromList(PPOrderIDList, "<id>", "</id>")
+                                                    '        PayInfo = "PayPal-Order=" + PPOrderID
+                                                    '    End If
+
+                                                End If
+
+                                                Dim T_MsgStr As String = "SmartContract=" + T_DEXContract.Address + " Transaction=" + T_DEXContract.CurrentCreationTransaction.ToString + " " + Dbl2LVStr(XAmount, Decimals) + " " + T_DEXContract.CurrentXItem + " " + PayInfo
+
+                                                Dim TXr As String = SendBillingInfos(T_DEXContract.CurrentInitiatorID, T_MsgStr, True, True)
+
+                                                If Not IsErrorOrWarning(TXr) Then
+                                                    MBoxMsg += "Payment instructions sended" + vbCrLf
+                                                    MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
+                                                    MBoxMsg += "Recipient: " + T_DEXContract.CurrentInitiatorAddress + vbCrLf
+                                                    MBoxMsg += "SmartContract: " + T_DEXContract.Address + vbCrLf
+                                                    MBoxMsg += "Order-Transaction: " + T_DEXContract.CurrentCreationTransaction.ToString + vbCrLf
+                                                    MBoxMsg += "payment request: " + Dbl2LVStr(XAmount, Decimals) + " " + T_DEXContract.CurrentXItem + vbCrLf
+                                                    MBoxMsg += PayInfo + vbCrLf + vbCrLf
+                                                    MBoxMsg += "please wait for requested payment from buyer"
                                                 End If
 
                                             End If
 
-                                            Dim T_MsgStr As String = "SmartContract=" + T_DEXContract.Address + " Transaction=" + T_DEXContract.CurrentCreationTransaction.ToString + " " + Dbl2LVStr(XAmount, Decimals) + " " + T_DEXContract.CurrentXItem + " " + PayInfo
+                                        Else
+                                            'TODO: ##AtomicSwap send XItem address to buyer
 
-                                            Dim TXr As String = SendBillingInfos(T_DEXContract.CurrentInitiatorID, T_MsgStr, True, True)
+                                            If T_DEXContract.CurrentXItem = "BTC" Then
 
-                                            If TXr.Contains(Application.ProductName + "-error") Then
-                                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                    out.ErrorLog2File(TXr)
-                                                End If
 
-                                            ElseIf TXr.Contains(Application.ProductName + "-warning") Then
-                                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                    out.WarningLog2File(TXr)
-                                                End If
-                                            Else
 
-                                                MBoxMsg += "Payment instructions sended" + vbCrLf
-                                                MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
-                                                MBoxMsg += "Recipient: " + T_DEXContract.CurrentInitiatorAddress + vbCrLf
-                                                MBoxMsg += "SmartContract: " + T_DEXContract.Address + vbCrLf
-                                                MBoxMsg += "Order-Transaction: " + T_DEXContract.CurrentCreationTransaction.ToString + vbCrLf
-                                                MBoxMsg += "payment request: " + Dbl2LVStr(XAmount, Decimals) + " " + T_DEXContract.CurrentXItem + vbCrLf
-                                                MBoxMsg += PayInfo + vbCrLf + vbCrLf
-                                                MBoxMsg += "please wait for requested payment from buyer"
                                             End If
 
                                         End If
@@ -2599,15 +2279,9 @@ Public Class PFPForm
                                 If Not GlobalPublicKey.Trim = "" Then
 
                                     Response = T_DEXContract.AcceptBuyOrder(GlobalPublicKey,,, Fee)
-                                    If Response.Contains(Application.ProductName + "-error") Then
 
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1aa): -> " + vbCrLf + Response)
-                                        End If
-
+                                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtSell_Click(1aa): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                     Else
                                         Dim UTX As String = Response
                                         PinForm.TBUnsignedBytes.Text = UTX
@@ -2621,15 +2295,7 @@ Public Class PFPForm
 
                                     Response = T_DEXContract.AcceptBuyOrder(PinForm.PublicKey,,, Fee)
 
-                                    If Response.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1a): -> " + vbCrLf + Response)
-                                        End If
-
-                                    Else
-
+                                    If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtSell_Click(1a): -> " + vbCrLf, True) Then
 
                                         Dim UTX As String = Response
 
@@ -2637,14 +2303,7 @@ Public Class PFPForm
                                         Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                                         Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                        If TX.Contains(Application.ProductName + "-error") Then
-
-                                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(1b): -> " + vbCrLf + TX)
-                                            End If
-
-                                        Else
+                                        If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtSell_Click(1b): -> " + vbCrLf, True) Then
 
                                             MBoxMsg = "BuyOrder Accepted" + vbCrLf
                                             MBoxMsg += "TX: " + TX + vbCrLf
@@ -2658,59 +2317,59 @@ Public Class PFPForm
                                             '    Other = 4
                                             'End Enum
 
-                                            'TODO: OwnPayType 
 
-                                            Dim OwnPayType As String = GetINISetting(E_Setting.PaymentType, "Self Pickup")
+                                            If Not T_DEXContract.CurrencyIsCrypto() Then
+                                                'TODO: OwnPayType 
 
-                                            If PayInfo.Contains(OwnPayType) Then
+                                                Dim OwnPayType As String = GetINISetting(E_Setting.PaymentType, "Self Pickup")
 
-                                                If PayInfo.Contains("PayPal-E-Mail") Then
+                                                If PayInfo.Contains(OwnPayType) Then
 
-                                                    Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                                                    Dim ColWordsString As String = ColWords.GenerateColloquialWords(T_DEXContract.CurrentCreationTransaction.ToString, True, "-", 5)
+                                                    If PayInfo.Contains("PayPal-E-Mail") Then
 
-                                                    PayInfo = "PayPal-E-Mail=" + GetINISetting(E_Setting.PayPalEMail, "test@test.com") + " Reference/Note=" + ColWordsString
+                                                        Dim ColWords As ClsColloquialWords = New ClsColloquialWords
+                                                        Dim ColWordsString As String = ColWords.GenerateColloquialWords(T_DEXContract.CurrentCreationTransaction.ToString, True, "-", 5)
 
-                                                ElseIf PayInfo.Contains("PayPal-Order") Then
+                                                        PayInfo = "PayPal-E-Mail=" + GetINISetting(E_Setting.PayPalEMail, "test@test.com") + " Reference/Note=" + ColWordsString
 
-                                                    Dim APIOK As String = CheckPayPalAPI()
+                                                        'ElseIf PayInfo.Contains("PayPal-Order") Then
 
-                                                    If APIOK = "True" Then
-                                                        Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal
-                                                        PPAPI_Autoinfo.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
-                                                        PPAPI_Autoinfo.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
+                                                        '    Dim APIOK As String = CheckPayPalAPI()
 
-                                                        Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", BuyAmount, XAmount, T_DEXContract.CurrentXItem)
-                                                        Dim PPOrderID As String = GetStringBetweenFromList(PPOrderIDList, "<id>", "</id>")
-                                                        PayInfo = "PayPal-Order=" + PPOrderID
+                                                        '    If APIOK = "True" Then
+                                                        '        Dim PPAPI_Autoinfo As ClsPayPal = New ClsPayPal
+                                                        '        PPAPI_Autoinfo.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
+                                                        '        PPAPI_Autoinfo.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
+
+                                                        '        Dim PPOrderIDList As List(Of String) = PPAPI_Autoinfo.CreateOrder("Signa", BuyAmount, XAmount, T_DEXContract.CurrentXItem)
+                                                        '        Dim PPOrderID As String = GetStringBetweenFromList(PPOrderIDList, "<id>", "</id>")
+                                                        '        PayInfo = "PayPal-Order=" + PPOrderID
+                                                        '    End If
+
+
+                                                    End If
+
+                                                    Dim T_MsgStr As String = "SmartContract=" + T_DEXContract.Address + " Transaction=" + T_DEXContract.CurrentCreationTransaction.ToString + " " + Dbl2LVStr(XAmount, Decimals) + " " + T_DEXContract.CurrentXItem + " " + PayInfo
+
+                                                    Dim TXr As String = SendBillingInfos(T_DEXContract.CurrentInitiatorID, T_MsgStr, True, True)
+
+                                                    If Not IsErrorOrWarning(TXr) Then
+
+                                                        MBoxMsg += "Payment instructions sended" + vbCrLf
+                                                        MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
+                                                        MBoxMsg += "Recipient: " + T_DEXContract.CurrentInitiatorAddress + vbCrLf
+                                                        MBoxMsg += "SmartContract: " + T_DEXContract.Address + vbCrLf
+                                                        MBoxMsg += "Order-Transaction: " + T_DEXContract.CurrentCreationTransaction.ToString + vbCrLf
+                                                        MBoxMsg += "payment request: " + Dbl2LVStr(XAmount, Decimals) + " " + T_DEXContract.CurrentXItem + vbCrLf
+                                                        MBoxMsg += PayInfo + vbCrLf + vbCrLf
+                                                        MBoxMsg += "please wait for requested payment from buyer"
                                                     End If
 
                                                 End If
 
-                                                Dim T_MsgStr As String = "SmartContract=" + T_DEXContract.Address + " Transaction=" + T_DEXContract.CurrentCreationTransaction.ToString + " " + Dbl2LVStr(XAmount, Decimals) + " " + T_DEXContract.CurrentXItem + " " + PayInfo
+                                            Else
+                                                'TODO: ##AtomicSwap send XItem address to buyer
 
-                                                Dim TXr As String = SendBillingInfos(T_DEXContract.CurrentInitiatorID, T_MsgStr, True, True)
-
-                                                If TXr.Contains(Application.ProductName + "-error") Then
-                                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                        out.ErrorLog2File(TXr)
-                                                    End If
-                                                ElseIf TXr.Contains(Application.ProductName + "-warning") Then
-                                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                        out.WarningLog2File(TXr)
-                                                    End If
-                                                Else
-                                                    MBoxMsg += "Payment instructions sended" + vbCrLf
-                                                    MBoxMsg += "TX: " + TXr + vbCrLf + vbCrLf
-                                                    MBoxMsg += "Recipient: " + T_DEXContract.CurrentInitiatorAddress + vbCrLf
-                                                    MBoxMsg += "SmartContract: " + T_DEXContract.Address + vbCrLf
-                                                    MBoxMsg += "Order-Transaction: " + T_DEXContract.CurrentCreationTransaction.ToString + vbCrLf
-                                                    MBoxMsg += "payment request: " + Dbl2LVStr(XAmount, Decimals) + " " + T_DEXContract.CurrentXItem + vbCrLf
-                                                    MBoxMsg += PayInfo + vbCrLf + vbCrLf
-                                                    MBoxMsg += "please wait for requested payment from buyer"
-                                                End If
 
                                             End If
 
@@ -2746,29 +2405,14 @@ Public Class PFPForm
 
                             Dim Response As String = T_DEXContract.AcceptBuyOrder(MasterKeys(0), 1.0, 1.0, Fee)
 
-                            If Response.Contains(Application.ProductName + "-error") Then
-
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel1): -> " + vbCrLf + Response)
-                                End If
-
-                            Else
-
+                            If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtSell_Click(cancel1): -> " + vbCrLf, True) Then
 
                                 Dim UTX As String = Response
                                 Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                 Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                 Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                If TX.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel2): -> " + vbCrLf + TX)
-                                    End If
-
-                                Else
+                                If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtSell_Click(cancel2): -> " + vbCrLf, True) Then
                                     ClsMsgs.MBox("BuyOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                                 End If
 
@@ -2782,15 +2426,9 @@ Public Class PFPForm
                             If Not GlobalPublicKey.Trim = "" Then
 
                                 Response = T_DEXContract.AcceptBuyOrder(GlobalPublicKey,,, Fee)
-                                If Response.Contains(Application.ProductName + "-error") Then
 
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel2a): -> " + vbCrLf + Response)
-                                    End If
-
+                                If IsErrorOrWarning(Response, Application.ProductName + "-error in BtSell_Click(cancel2a): -> " + vbCrLf, True) Then
                                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                 Else
                                     Dim UTX As String = Response
                                     PinForm.TBUnsignedBytes.Text = UTX
@@ -2804,32 +2442,15 @@ Public Class PFPForm
 
                                 Response = T_DEXContract.AcceptBuyOrder(PinForm.PublicKey,,, Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel1a): -> " + vbCrLf + Response)
-                                    End If
-
-                                Else
-
-
+                                If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtSell_Click(cancel1a): -> " + vbCrLf, True) Then
                                     Dim UTX As String = Response
 
                                     Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                    If TX.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtSell_Click(cancel1b): -> " + vbCrLf + TX)
-                                        End If
-
-                                    Else
+                                    If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtSell_Click(cancel1b): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("BuyOrder canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
-
                                     End If
 
                                 End If
@@ -3166,15 +2787,8 @@ Public Class PFPForm
             If MasterKeys.Count > 0 Then
                 Dim Response As String = T_DexContract.DeActivateDeniability(MasterKeys(0),,)
 
-                If Response.Contains(Application.ProductName + "-error") Then
-
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                        out.ErrorLog2File(Response)
-                    End If
-
+                If IsErrorOrWarning(Response) Then
                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                 Else
 
                     Dim UTX As String = Response
@@ -3182,15 +2796,8 @@ Public Class PFPForm
                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                    If TX.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(1): -> " + vbCrLf + TX)
-                        End If
-
+                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(1): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
                         ClsMsgs.MBox("Toggle Deniability" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                     End If
@@ -3205,15 +2812,9 @@ Public Class PFPForm
                 If Not GlobalPublicKey.Trim = "" Then
 
                     Response = T_DexContract.DeActivateDeniability(GlobalPublicKey,,)
-                    If Response.Contains(Application.ProductName + "-error") Then
 
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(2): -> " + vbCrLf + Response)
-                        End If
-
+                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtOpenDispute_Click(2): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
                         Dim UTX As String = Response
                         PinForm.TBUnsignedBytes.Text = UTX
@@ -3226,15 +2827,8 @@ Public Class PFPForm
 
                     Response = T_DexContract.DeActivateDeniability(PinForm.PublicKey,,)
 
-                    If Response.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(3): -> " + vbCrLf + Response)
-                        End If
-
+                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtOpenDispute_Click(3): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
 
                         Dim UTX As String = Response
@@ -3243,15 +2837,8 @@ Public Class PFPForm
                         Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                         Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                        If TX.Contains(Application.ProductName + "-error") Then
-
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(4): -> " + vbCrLf + TX)
-                            End If
-
+                        If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(4): -> " + vbCrLf, True) Then
                             ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                         Else
                             ClsMsgs.MBox("Toggle deniability" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                         End If
@@ -3262,15 +2849,8 @@ Public Class PFPForm
 
                     Dim TX As String = SignumAPI.BroadcastTransaction(PinForm.TBSignedBytes.Text.Trim)
 
-                    If TX.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(5): -> " + vbCrLf + TX)
-                        End If
-
+                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(5): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
                         ClsMsgs.MBox("Toggle deniability" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                     End If
@@ -3280,7 +2860,6 @@ Public Class PFPForm
                 End If
 
             End If
-
 
             BtMediatorDeActivateDeniability.Text = "de/activate Deniability"
             BtMediatorDeActivateDeniability.Enabled = True
@@ -3303,15 +2882,8 @@ Public Class PFPForm
             If MasterKeys.Count > 0 Then
                 Dim Response As String = T_DexContract.MediateDispute(MasterKeys(0), NUDMediatePercentage.Value,,)
 
-                If Response.Contains(Application.ProductName + "-error") Then
-
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                        out.ErrorLog2File(Response)
-                    End If
-
+                If IsErrorOrWarning(Response) Then
                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                 Else
 
                     Dim UTX As String = Response
@@ -3319,15 +2891,8 @@ Public Class PFPForm
                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                    If TX.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(1): -> " + vbCrLf + TX)
-                        End If
-
+                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(1): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
                         ClsMsgs.MBox("Proposal sended" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                     End If
@@ -3342,15 +2907,9 @@ Public Class PFPForm
                 If Not GlobalPublicKey.Trim = "" Then
 
                     Response = T_DexContract.MediateDispute(GlobalPublicKey, NUDMediatePercentage.Value,,)
-                    If Response.Contains(Application.ProductName + "-error") Then
 
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(2): -> " + vbCrLf + Response)
-                        End If
-
+                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtOpenDispute_Click(2): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
                         Dim UTX As String = Response
                         PinForm.TBUnsignedBytes.Text = UTX
@@ -3363,15 +2922,8 @@ Public Class PFPForm
 
                     Response = T_DexContract.MediateDispute(PinForm.PublicKey, NUDMediatePercentage.Value,,)
 
-                    If Response.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(3): -> " + vbCrLf + Response)
-                        End If
-
+                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtOpenDispute_Click(3): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
 
                         Dim UTX As String = Response
@@ -3380,15 +2932,8 @@ Public Class PFPForm
                         Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                         Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                        If TX.Contains(Application.ProductName + "-error") Then
-
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(4): -> " + vbCrLf + TX)
-                            End If
-
+                        If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(4): -> " + vbCrLf, True) Then
                             ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                         Else
                             ClsMsgs.MBox("Proposal sended" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                         End If
@@ -3399,15 +2944,8 @@ Public Class PFPForm
 
                     Dim TX As String = SignumAPI.BroadcastTransaction(PinForm.TBSignedBytes.Text.Trim)
 
-                    If TX.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(5): -> " + vbCrLf + TX)
-                        End If
-
+                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(5): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
                         ClsMsgs.MBox("Proposal sended" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                     End If
@@ -3417,7 +2955,6 @@ Public Class PFPForm
                 End If
 
             End If
-
 
             BtMediateDispute.Text = "mediate dispute"
             BtMediateDispute.Enabled = True
@@ -3440,17 +2977,8 @@ Public Class PFPForm
 
             Dim TXr As String = SendBillingInfos(Recipient, T_MsgStr, True, ChBxEncMsg.Checked)
 
-            If TXr.Contains(Application.ProductName + "-error") Then
-                If GetINISetting(E_Setting.InfoOut, False) Then
-                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                    out.ErrorLog2File(TXr)
-                End If
-            ElseIf TXr.Contains(Application.ProductName + "-warning") Then
-                If GetINISetting(E_Setting.InfoOut, False) Then
-                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                    out.WarningLog2File(TXr)
-                End If
-            Else
+            If Not IsErrorOrWarning(TXr) Then
+
                 If ChBxEncMsg.Checked Then
                     ClsMsgs.MBox("encrypted Message sended" + vbCrLf + vbCrLf + "TX: " + TXr, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                 Else
@@ -3478,6 +3006,7 @@ Public Class PFPForm
         BtExecuteOrder.Visible = False
         BtOpenDispute.Visible = False
         BtAppeal.Visible = False
+        BtExecuteWithChainSwapKey.Visible = False
 
         LabMsg.Visible = False
         TBManuMsg.Visible = False
@@ -3503,6 +3032,21 @@ Public Class PFPForm
 
             Dim T_DexContract As ClsDEXContract = DirectCast(LVi.Tag, ClsDEXContract)
 
+            If T_DexContract.CurrencyIsCrypto() Then
+                BtExecuteWithChainSwapKey.Enabled = True
+                If Buyer = "Me" Then
+                    BtExecuteWithChainSwapKey.Text = "execute with chainswapkey"
+                ElseIf Seller = "Me" Then
+                    If T_DexContract.BlocksLeft <= 0 Then
+                        BtExecuteWithChainSwapKey.Text = "cancel AtomicSwap"
+                    Else
+                        BtExecuteWithChainSwapKey.Enabled = False
+                    End If
+                End If
+
+            Else
+                BtExecuteWithChainSwapKey.Enabled = False
+            End If
 
             Dim LVContextMenu As ContextMenuStrip = New ContextMenuStrip
 
@@ -3609,9 +3153,12 @@ Public Class PFPForm
                     BtExecuteOrder.Visible = True
                     BtOpenDispute.Visible = T_DexContract.Deniability And Not T_DexContract.Dispute
 
-                    If T_DexContract.CurrentDisputeTimeout <> 0UL Then
+                    If T_DexContract.CurrentDisputeTimeout <> 0UL And Not T_DexContract.CurrencyIsCrypto Then
                         BtAppeal.Visible = True
+                    ElseIf T_DexContract.CurrentDisputeTimeout <> 0UL And T_DexContract.CurrencyIsCrypto Then
+                        BtExecuteWithChainSwapKey.Visible = True
                     End If
+
 
 
                     LabMsg.Visible = True
@@ -3679,29 +3226,14 @@ Public Class PFPForm
                             Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
                             Dim Response As String = T_DEXContract.AcceptSellOrder(MasterKeys(0), 1.0, Fee)
 
-                            If Response.Contains(Application.ProductName + "-error") Then
-
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(1): -> " + vbCrLf + Response)
-                                End If
-
-                            Else
-
+                            If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteOrder_Click(1): -> " + vbCrLf, True) Then
 
                                 Dim UTX As String = Response
                                 Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                 Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                 Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                If TX.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(2): -> " + vbCrLf + TX)
-                                    End If
-
-                                Else
+                                If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtExecuteOrder_Click(2): -> " + vbCrLf, True) Then
                                     ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "Transaction: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                                 End If
 
@@ -3717,15 +3249,9 @@ Public Class PFPForm
                             If Not GlobalPublicKey.Trim = "" Then
 
                                 Response = T_DEXContract.AcceptSellOrder(GlobalPublicKey,, Fee)
-                                If Response.Contains(Application.ProductName + "-error") Then
 
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(2a): -> " + vbCrLf + Response)
-                                    End If
-
+                                If IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteOrder_Click(2a): -> " + vbCrLf, True) Then
                                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                 Else
                                     Dim UTX As String = Response
                                     PinForm.TBUnsignedBytes.Text = UTX
@@ -3738,30 +3264,14 @@ Public Class PFPForm
 
                                 Response = T_DEXContract.AcceptSellOrder(PinForm.PublicKey,, Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(3): -> " + vbCrLf + Response)
-                                    End If
-
-                                Else
-
-
+                                If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteOrder_Click(3): -> " + vbCrLf, True) Then
                                     Dim UTX As String = Response
 
                                     Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                    If TX.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(4): -> " + vbCrLf + TX)
-                                        End If
-
-                                    Else
+                                    If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtExecuteOrder_Click(4): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                                     End If
 
@@ -3787,29 +3297,14 @@ Public Class PFPForm
                             Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
                             Dim Response As String = T_DEXContract.FinishOrder(MasterKeys(0), Fee)
 
-                            If Response.Contains(Application.ProductName + "-error") Then
-
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(3): -> " + vbCrLf + Response)
-                                End If
-
-                            Else
-
+                            If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteOrder_Click(3): -> " + vbCrLf, True) Then
 
                                 Dim UTX As String = Response
                                 Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                 Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                 Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                If TX.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(5): -> " + vbCrLf + TX)
-                                    End If
-
-                                Else
+                                If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtExecuteOrder_Click(5): -> " + vbCrLf, True) Then
                                     ClsMsgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                                 End If
 
@@ -3826,19 +3321,13 @@ Public Class PFPForm
 
                                 Response = T_DEXContract.FinishOrder(GlobalPublicKey, Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(2a): -> " + vbCrLf + Response)
-                                    End If
-
+                                If IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteOrder_Click(2a): -> " + vbCrLf, True) Then
                                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                 Else
                                     Dim UTX As String = Response
                                     PinForm.TBUnsignedBytes.Text = UTX
                                 End If
+
                             End If
 
                             PinForm.ShowDialog()
@@ -3847,28 +3336,14 @@ Public Class PFPForm
 
                                 Response = T_DEXContract.FinishOrder(PinForm.PublicKey, Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(6): -> " + vbCrLf + Response)
-                                    End If
-
-                                Else
+                                If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteOrder_Click(6): -> " + vbCrLf, True) Then
 
                                     Dim UTX As String = Response
                                     Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                    If TX.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(7): -> " + vbCrLf + TX)
-                                        End If
-
-                                    Else
+                                    If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtExecuteOrder_Click(7): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                                     End If
 
@@ -3901,28 +3376,14 @@ Public Class PFPForm
                             Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
                             Dim Response As String = T_DEXContract.AcceptBuyOrder(MasterKeys(0), 1.0, 1.0, Fee)
 
-                            If Response.Contains(Application.ProductName + "-error") Then
-
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(8): -> " + vbCrLf + Response)
-                                End If
-
-                            Else
+                            If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteOrder_Click(8): -> " + vbCrLf, True) Then
 
                                 Dim UTX As String = Response
                                 Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                 Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                 Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                If TX.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(9): -> " + vbCrLf + TX)
-                                    End If
-
-                                Else
+                                If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtExecuteOrder_Click(9): -> " + vbCrLf, True) Then
                                     ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                                 End If
 
@@ -3938,19 +3399,13 @@ Public Class PFPForm
 
                                 Response = T_DEXContract.AcceptBuyOrder(GlobalPublicKey,,, Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(2a): -> " + vbCrLf + Response)
-                                    End If
-
+                                If IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteOrder_Click(2a): -> " + vbCrLf, True) Then
                                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                 Else
                                     Dim UTX As String = Response
                                     PinForm.TBUnsignedBytes.Text = UTX
                                 End If
+
                             End If
 
                             PinForm.ShowDialog()
@@ -3959,30 +3414,14 @@ Public Class PFPForm
 
                                 Response = T_DEXContract.AcceptBuyOrder(PinForm.PublicKey, 1.0, 1.0, Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(10): -> " + vbCrLf + Response)
-                                    End If
-
-                                Else
-
-
+                                If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteOrder_Click(10): -> " + vbCrLf, True) Then
                                     Dim UTX As String = Response
 
                                     Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                    If TX.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(11): -> " + vbCrLf + TX)
-                                        End If
-
-                                    Else
+                                    If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtExecuteOrder_Click(11): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                                     End If
 
@@ -4009,29 +3448,13 @@ Public Class PFPForm
                             Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
                             Dim Response As String = T_DEXContract.FinishOrder(MasterKeys(0), Fee)
 
-                            If Response.Contains(Application.ProductName + "-error") Then
-
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(12): -> " + vbCrLf + Response)
-                                End If
-
-                            Else
-
-
+                            If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteOrder_Click(12): -> " + vbCrLf, True) Then
                                 Dim UTX As String = Response
                                 Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                 Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                 Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                If TX.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(13): -> " + vbCrLf + TX)
-                                    End If
-
-                                Else
+                                If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtExecuteOrder_Click(13): -> " + vbCrLf, True) Then
                                     ClsMsgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                                 End If
 
@@ -4048,19 +3471,13 @@ Public Class PFPForm
 
                                 Response = T_DEXContract.FinishOrder(GlobalPublicKey, Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(2a): -> " + vbCrLf + Response)
-                                    End If
-
+                                If IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteOrder_Click(2a): -> " + vbCrLf, True) Then
                                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                                 Else
                                     Dim UTX As String = Response
                                     PinForm.TBUnsignedBytes.Text = UTX
                                 End If
+
                             End If
 
                             PinForm.ShowDialog()
@@ -4069,29 +3486,14 @@ Public Class PFPForm
 
                                 Response = T_DEXContract.FinishOrder(PinForm.PublicKey, Fee)
 
-                                If Response.Contains(Application.ProductName + "-error") Then
-
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(14): -> " + vbCrLf + Response)
-                                    End If
-
-                                Else
-
+                                If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteOrder_Click(14): -> " + vbCrLf, True) Then
                                     Dim UTX As String = Response
 
                                     Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                    If TX.Contains(Application.ProductName + "-error") Then
-
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                            out.ErrorLog2File(Application.ProductName + "-error in BtExecuteOrder_Click(15): -> " + vbCrLf + TX)
-                                        End If
-
-                                    Else
+                                    If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtExecuteOrder_Click(15): -> " + vbCrLf, True) Then
                                         ClsMsgs.MBox("Order Finished" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                                     End If
 
@@ -4115,6 +3517,111 @@ Public Class PFPForm
         BtExecuteOrder.Enabled = True
 
     End Sub
+
+    Private Sub BtExecuteWithChainSwapKey_Click(sender As Object, e As EventArgs) Handles BtExecuteWithChainSwapKey.Click
+        'TODO: execute with chainswapkey / cancel the reservation
+
+        Dim OldTxt As String = BtExecuteWithChainSwapKey.Text
+
+        BtExecuteWithChainSwapKey.Text = "Wait..."
+        BtExecuteWithChainSwapKey.Enabled = False
+
+        If LVMyOpenOrders.SelectedItems.Count > 0 Then
+
+            Dim T_DEXContract As ClsDEXContract = DirectCast(LVMyOpenOrders.SelectedItems(0).Tag, ClsDEXContract)
+
+            Dim Seller As String = Convert.ToString(GetLVColNameFromSubItem(LVMyOpenOrders, "Seller", LVMyOpenOrders.SelectedItems(0)))
+            Dim Buyer As String = Convert.ToString(GetLVColNameFromSubItem(LVMyOpenOrders, "Buyer", LVMyOpenOrders.SelectedItems(0)))
+
+            If T_DEXContract.CheckForUTX Or T_DEXContract.CheckForTX Then
+                ClsMsgs.MBox("One TX is already Pending for this Order", "Order not available",,, ClsMsgs.Status.Attention, 5, ClsMsgs.Timer_Type.AutoOK)
+                BtExecuteWithChainSwapKey.Text = OldTxt
+                BtExecuteWithChainSwapKey.Enabled = True
+                Exit Sub
+            End If
+
+            If Seller = "Me" Then
+                Dim MasterKeys As List(Of String) = GetPassPhrase()
+                If MasterKeys.Count > 0 Then
+
+                    Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+                    Dim Response As String = RejectResponder(T_DEXContract,) ' T_DEXContract.RejectResponder(MasterKeys(0), Fee)
+
+                    If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteWithChainSwapKey_Click(1): -> " + vbCrLf, True) Then
+                        ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "Transaction: " + Response, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                    End If
+
+                Else
+
+                    Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+                    Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+
+                    Dim Response As String = ""
+
+                    If Not GlobalPublicKey.Trim = "" Then
+
+                        Response = T_DEXContract.RejectResponder(GlobalPublicKey, Fee)
+
+                        If IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteWithChainSwapKey_Click(2a): -> " + vbCrLf, True) Then
+                            ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+                        Else
+                            Dim UTX As String = Response
+                            PinForm.TBUnsignedBytes.Text = UTX
+                        End If
+                    End If
+
+                    PinForm.ShowDialog()
+
+                    If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                        Response = T_DEXContract.RejectResponder(PinForm.PublicKey, Fee)
+
+                        If Not IsErrorOrWarning(Response, Application.ProductName + "-error in BtExecuteWithChainSwapKey_Click(3): -> " + vbCrLf, True) Then
+                            Dim UTX As String = Response
+
+                            Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                            Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                            Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                            If Not IsErrorOrWarning(TX, Application.ProductName + "-error in BtExecuteWithChainSwapKey_Click(4): -> " + vbCrLf, True) Then
+                                ClsMsgs.MBox("Order Canceled" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                            End If
+
+                        End If
+
+                    Else
+                        ClsMsgs.MBox("Order cancelation aborted.", "Canceled",,, ClsMsgs.Status.Erro)
+                    End If
+
+                End If
+
+            ElseIf Buyer = "Me" Then
+
+                Dim T_BitcoinTransactionID As String = GetBitcoinTXFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction)
+
+                If Not T_BitcoinTransactionID.Trim = "" Then
+                    Dim T_BTCTransaction As ClsTransaction = New ClsTransaction(T_BitcoinTransactionID, New List(Of String)({GetBitcoinMainAddress()})) ' RedeemBitcoinTransaction(T_BitcoinTransactionID, GetBitcoinMainAddress())
+
+                    Dim T_BitcoinRAWTX As String = SignBitcoinTransaction(T_BTCTransaction, GetBitcoinMainPrivateKey())
+
+                    Dim T_BitcoinTXID As String = ""
+                    If Not T_BitcoinRAWTX.Trim = "" Then
+                        T_BitcoinTXID = SendRawBitcoinTransaction(T_BitcoinRAWTX)
+                    End If
+
+                    IsErrorOrWarning(T_BitcoinTXID)
+
+                End If
+
+            End If
+
+        End If
+
+        BtExecuteWithChainSwapKey.Text = OldTxt
+        BtExecuteWithChainSwapKey.Enabled = True
+
+    End Sub
+
     Private Sub BtOpenDispute_Click(sender As Object, e As EventArgs) Handles BtOpenDispute.Click
 
         If LVMyOpenOrders.SelectedItems.Count > 0 Then
@@ -4130,15 +3637,8 @@ Public Class PFPForm
             If MasterKeys.Count > 0 Then
                 Dim Response As String = T_DexContract.OpenDispute(MasterKeys(0),,)
 
-                If Response.Contains(Application.ProductName + "-error") Then
-
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                        out.ErrorLog2File(Response)
-                    End If
-
+                If IsErrorOrWarning(Response) Then
                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                 Else
 
                     Dim UTX As String = Response
@@ -4146,15 +3646,8 @@ Public Class PFPForm
                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                    If TX.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(1): -> " + vbCrLf + TX)
-                        End If
-
+                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(1): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
                         ClsMsgs.MBox("Dispute opened" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                     End If
@@ -4169,15 +3662,9 @@ Public Class PFPForm
                 If Not GlobalPublicKey.Trim = "" Then
 
                     Response = T_DexContract.OpenDispute(GlobalPublicKey,,)
-                    If Response.Contains(Application.ProductName + "-error") Then
 
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(2): -> " + vbCrLf + Response)
-                        End If
-
+                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtOpenDispute_Click(2): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
                         Dim UTX As String = Response
                         PinForm.TBUnsignedBytes.Text = UTX
@@ -4190,15 +3677,8 @@ Public Class PFPForm
 
                     Response = T_DexContract.OpenDispute(PinForm.PublicKey,,)
 
-                    If Response.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(3): -> " + vbCrLf + Response)
-                        End If
-
+                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtOpenDispute_Click(3): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
 
                         Dim UTX As String = Response
@@ -4207,15 +3687,8 @@ Public Class PFPForm
                         Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                         Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                        If TX.Contains(Application.ProductName + "-error") Then
-
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(4): -> " + vbCrLf + TX)
-                            End If
-
+                        If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(4): -> " + vbCrLf, True) Then
                             ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                         Else
                             ClsMsgs.MBox("Dispute opened" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                         End If
@@ -4226,15 +3699,8 @@ Public Class PFPForm
 
                     Dim TX As String = SignumAPI.BroadcastTransaction(PinForm.TBSignedBytes.Text.Trim)
 
-                    If TX.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(5): -> " + vbCrLf + TX)
-                        End If
-
+                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(5): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
                         ClsMsgs.MBox("Dispute opened" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                     End If
@@ -4266,15 +3732,8 @@ Public Class PFPForm
             If MasterKeys.Count > 0 Then
                 Dim Response As String = T_DexContract.Appeal(MasterKeys(0),,)
 
-                If Response.Contains(Application.ProductName + "-error") Then
-
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                        out.ErrorLog2File(Response)
-                    End If
-
+                If IsErrorOrWarning(Response) Then
                     ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                 Else
 
                     Dim UTX As String = Response
@@ -4282,15 +3741,8 @@ Public Class PFPForm
                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                    If TX.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(1): -> " + vbCrLf + TX)
-                        End If
-
+                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(1): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
                         ClsMsgs.MBox("Appeal sended" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                     End If
@@ -4305,19 +3757,14 @@ Public Class PFPForm
                 If Not GlobalPublicKey.Trim = "" Then
 
                     Response = T_DexContract.Appeal(GlobalPublicKey,,)
-                    If Response.Contains(Application.ProductName + "-error") Then
 
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(2): -> " + vbCrLf + Response)
-                        End If
-
+                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtOpenDispute_Click(2): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
                         Dim UTX As String = Response
                         PinForm.TBUnsignedBytes.Text = UTX
                     End If
+
                 End If
 
                 PinForm.ShowDialog()
@@ -4326,15 +3773,8 @@ Public Class PFPForm
 
                     Response = T_DexContract.Appeal(PinForm.PublicKey,,)
 
-                    If Response.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(3): -> " + vbCrLf + Response)
-                        End If
-
+                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtOpenDispute_Click(3): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
 
                         Dim UTX As String = Response
@@ -4343,15 +3783,8 @@ Public Class PFPForm
                         Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                         Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                        If TX.Contains(Application.ProductName + "-error") Then
-
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(4): -> " + vbCrLf + TX)
-                            End If
-
+                        If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(4): -> " + vbCrLf, True) Then
                             ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                         Else
                             ClsMsgs.MBox("Appeal sended" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                         End If
@@ -4362,15 +3795,8 @@ Public Class PFPForm
 
                     Dim TX As String = SignumAPI.BroadcastTransaction(PinForm.TBSignedBytes.Text.Trim)
 
-                    If TX.Contains(Application.ProductName + "-error") Then
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                            out.ErrorLog2File(Application.ProductName + "-error in BtOpenDispute_Click(5): -> " + vbCrLf + TX)
-                        End If
-
+                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(5): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
-
                     Else
                         ClsMsgs.MBox("Appeal sended" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
                     End If
@@ -4426,17 +3852,7 @@ Public Class PFPForm
                 Dim T_MsgStr As String = "SmartContract=" + T_DEXContract.Address + " Transaction=" + T_DEXContract.CurrentCreationTransaction.ToString + " " + Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + T_DEXContract.CurrentXItem + " " + PayInfo
                 Dim TXr As String = SendBillingInfos(T_DEXContract.CurrentBuyerID, T_MsgStr, True, True)
 
-                If TXr.Contains(Application.ProductName + "-error") Then
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                        out.ErrorLog2File(TXr)
-                    End If
-                ElseIf TXr.Contains(Application.ProductName + "-warning") Then
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                        out.WarningLog2File(TXr)
-                    End If
-                Else
+                If Not IsErrorOrWarning(TXr) Then
                     ClsMsgs.MBox("New PayPal Order sended as encrypted Message", "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                 End If
 
@@ -4463,17 +3879,8 @@ Public Class PFPForm
 
             Dim TXr As String = SendBillingInfos(Recipient, T_MsgStr, True, ChBxEncMsg.Checked)
 
-            If TXr.Contains(Application.ProductName + "-error") Then
-                If GetINISetting(E_Setting.InfoOut, False) Then
-                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                    out.ErrorLog2File(TXr)
-                End If
-            ElseIf TXr.Contains(Application.ProductName + "-warning") Then
-                If GetINISetting(E_Setting.InfoOut, False) Then
-                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                    out.WarningLog2File(TXr)
-                End If
-            Else
+            If Not IsErrorOrWarning(TXr) Then
+
                 If ChBxEncMsg.Checked Then
                     ClsMsgs.MBox("encrypted Message sended" + vbCrLf + vbCrLf + "TX: " + TXr, "Transaction created",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
                 Else
@@ -4671,40 +4078,40 @@ Public Class PFPForm
 
     End Function
 
-    Function GetMarketCurrencyIsCrypto(ByVal Currency As String) As Boolean
+    'Function GetMarketCurrencyIsCrypto(ByVal Currency As String) As Boolean
 
-        Select Case Currency
+    '    Select Case Currency
 
-            Case "AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"
-                'Non CryptoCurrencys Supported by PayPal
-                Return False
+    '        Case "AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"
+    '            'Non CryptoCurrencys Supported by PayPal
+    '            Return False
 
-        End Select
+    '    End Select
 
-        Return True
+    '    Return True
 
-    End Function
+    'End Function
 
-    Function GetCurrencyDecimals(ByVal Currency As String) As Integer
+    'Function GetCurrencyDecimals(ByVal Currency As String) As Integer
 
-        Select Case Currency
+    '    Select Case Currency
 
-            Case "AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "INR", "ILS", "MYR", "MXN", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"
-                'Non CryptoCurrencys Supported by PayPal
-                Return 2
+    '        Case "AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "INR", "ILS", "MYR", "MXN", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"
+    '            'Non CryptoCurrencys Supported by PayPal
+    '            Return 2
 
-            Case "HUF", "JPY", "TWD"
-                'These Currencys do not support decimals
-                Return 0
+    '        Case "HUF", "JPY", "TWD"
+    '            'These Currencys do not support decimals
+    '            Return 0
 
-            Case Else
-                Return 8
+    '        Case Else
+    '            Return 8
 
-        End Select
+    '    End Select
 
-        Return 8
+    '    Return 8
 
-    End Function
+    'End Function
 
     Function GetAndCheckSmartContracts() As Boolean
 
@@ -4779,11 +4186,7 @@ Public Class PFPForm
             Next
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in GetAndCheckSmartContracts(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in GetAndCheckSmartContracts(): -> " + ex.Message)
         End Try
 
         Return True
@@ -4973,7 +4376,14 @@ Public Class PFPForm
             'MyClosedOrder.SubItems.Add() 'xamount
             MyClosedOrder.SubItems.Add(Dbl2LVStr(HistoryOrder.Order.Amount))  'quantity
             MyClosedOrder.SubItems.Add(Dbl2LVStr(HistoryOrder.Order.Price, Decimals) + " " + HistoryOrder.Order.XItem) 'price
-            MyClosedOrder.SubItems.Add(HistoryOrder.Order.Status.ToString) 'status
+
+            If ClsDEXContract.CurrencyIsCrypto(HistoryOrder.Order.XItem) And Not HistoryOrder.Order.ChainSwapKey.Trim = "" Then
+                MyClosedOrder.SubItems.Add(HistoryOrder.Order.Status.ToString + " ChainSwapKey:" + HistoryOrder.Order.ChainSwapKey) 'status
+            Else
+                MyClosedOrder.SubItems.Add(HistoryOrder.Order.Status.ToString) 'status
+            End If
+
+
             'MyClosedOrder.SubItems.Add(Order.Attachment.ToString) 'conditions
             MyClosedOrder.Tag = HistoryOrder.Contract
 
@@ -5291,11 +4701,7 @@ Public Class PFPForm
             SaveOrderSettingsToCSV(OrderSettingsBuffer)
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in ProcessingSmartContracts(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in ProcessingSmartContracts(): -> " + ex.Message)
         End Try
 
         Return True
@@ -5374,10 +4780,7 @@ Public Class PFPForm
             If T_Input.GetType.Name = GetType(List(Of Object)).Name Then
                 Input = DirectCast(T_Input, List(Of Object))
             Else
-                If GetINISetting(E_Setting.InfoOut, False) Then
-                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                    Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(DirectCast): -> " + T_Input.GetType.Name)
-                End If
+                IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(DirectCast): -> " + T_Input.GetType.Name)
             End If
 
             Dim Index As Integer = DirectCast(Input(0), Integer)
@@ -5463,9 +4866,6 @@ Public Class PFPForm
 #Region "Confirmations"
                 Dim Confirms As String = T_DEXContract.CurrentConfirmations.ToString
 #End Region
-
-
-
 
 
 #Region "XItem/Payment Method"
@@ -5778,12 +5178,7 @@ Public Class PFPForm
                         End If 'market(USD)
 
                     Catch ex As Exception
-
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                            Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(OPEN): -> " + ex.Message)
-                        End If
-
+                        IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(OPEN): -> " + ex.Message)
                     End Try
 
                 ElseIf T_DEXContract.Status = ClsDEXContract.E_Status.RESERVED Or T_DEXContract.Status = ClsDEXContract.E_Status.DISPUTE Or T_DEXContract.Status = ClsDEXContract.E_Status.UTX_PENDING Or T_DEXContract.Status = ClsDEXContract.E_Status.TX_PENDING Then
@@ -5798,7 +5193,7 @@ Public Class PFPForm
 
                             Try
 
-                                'Save/Update my RESERVED SellOrder to cache2.dat (MyOrders Settings)
+                                'Save/Update my RESERVED SellOrder to cache.dat (MyOrders Settings)
                                 Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(T_DEXContract.CurrentCreationTransaction)
                                 Dim T_OS As ClsOrderSettings = New ClsOrderSettings(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_DEXContract.IsSellOrder, T_DEXContract.Status)
 
@@ -5823,7 +5218,7 @@ Public Class PFPForm
                                     'Broadcast info over DEXNET
                                     BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
 
-                                Else
+                                Else 'IsBuyOrder
 
 #Region "SellOrder-Info from DEXNET"
                                     Try
@@ -5873,35 +5268,34 @@ Public Class PFPForm
                                         End If
 
                                     Catch ex As Exception
-                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                            Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->SellOrder-Info from DEXNET): -> " + ex.Message)
-                                        End If
+                                        IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->SellOrder-Info from DEXNET): -> " + ex.Message)
                                     End Try
 #End Region
+
+                                    If T_DEXContract.CurrencyIsCrypto() Then
+                                        If T_OSList.Count = 0 Then
+                                            T_OS.PaytypeString = ClsOrderSettings.E_PayType.AtomicSwap.ToString ' GetINISetting(E_Setting.PaymentType, "Other")
+                                            T_OS.Infotext = "AtomicSwap=" + T_DEXContract.CurrentXItem + ":" + GetBitcoinMainAddress() ' GetINISetting(E_Setting.PaymentInfoText, "Unknown")
+                                        Else
+                                            T_OS = T_OSList(0)
+                                            T_OS.SetPayType()
+                                            T_OS.Status = T_DEXContract.Status.ToString
+                                            'PayMet = T_OS.PaytypeString
+                                            'Autosendinfotext = T_OS.AutoSendInfotext.ToString
+                                            'AutocompleteSmartContract = T_OS.AutoCompleteSmartContract.ToString
+                                        End If
+
+                                        OrderSettingsBuffer.Add(T_OS)
+                                    End If
 
                                 End If
 
                                 Dim AlreadySend As String = CheckBillingInfosAlreadySend(T_DEXContract)
 
 #Region "Automentation"
-                                If AlreadySend.Contains(Application.ProductName + "-error") Then
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                        Out.ErrorLog2File(AlreadySend)
-                                    End If
 
+                                If IsErrorOrWarning(AlreadySend) Then
                                     AlreadySend = "ENCRYPTED"
-
-
-                                ElseIf AlreadySend.Contains(Application.ProductName + "-warning") Then
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                        out.WarningLog2File(AlreadySend)
-                                    End If
-
-                                    AlreadySend = "ENCRYPTED"
-
                                 ElseIf AlreadySend.Trim = "" Then
 
                                     'Dim SearchAttachmentHEX As String = ClsSignumAPI.ULngList2DataStr(New List(Of ULong)({SignumAPI.ReferenceFinishOrder}))
@@ -5913,56 +5307,138 @@ Public Class PFPForm
                                     'End If
 
 
-                                    If T_OS.AutoSendInfotext Then 'autosend info to Buyer
+                                    If T_OS.AutoSendInfotext Or T_DEXContract.CurrencyIsCrypto() Then 'autosend info to Buyer
 
 #Region "AutoSend PaymentInfotext"
                                         Try
 
-                                            If Not GetAutoinfoTXFromINI(T_DEXContract.CurrentCreationTransaction) Then ' Order.FirstTransaction) Then 'Check for autosend-info-TX in Settings.ini and skip if founded
+                                            If Not T_DEXContract.Status = ClsDEXContract.E_Status.UTX_PENDING And Not T_DEXContract.Status = ClsDEXContract.E_Status.TX_PENDING Then 'skip pendings
 
-                                                Dim PayInfo As String = GetPaymentInfoFromOrderSettings(T_DEXContract.CurrentCreationTransaction, T_DEXContract.CurrentBuySellAmount, T_DEXContract.CurrentXAmount, CurrentMarket) ' Order.FirstTransaction, Order.Quantity, Order.XAmount, CurrentMarket)
+                                                If Not GetAutoinfoTXFromINI(T_DEXContract.CurrentCreationTransaction) Then 'Check for autosend-info-TX in Settings.ini and skip if founded (already sended)
+                                                    'TODO: No info in Settings
+                                                    Dim PayInfo As String = GetPaymentInfoFromOrderSettings(T_DEXContract.CurrentCreationTransaction, T_DEXContract.CurrentBuySellAmount, T_DEXContract.CurrentXAmount, T_DEXContract.CurrentXItem)
 
-                                                If PayInfo.Contains("PayPal-E-Mail=") Then
-                                                    Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                                                    Dim ColWordsString As String = ColWords.GenerateColloquialWords(T_DEXContract.CurrentCreationTransaction.ToString, True, "-", 5)
+                                                    If Not PayInfo.Trim = "" Then
+                                                        If PayInfo.Contains("PayPal-E-Mail=") Then
+                                                            Dim ColWords As ClsColloquialWords = New ClsColloquialWords
+                                                            Dim ColWordsString As String = ColWords.GenerateColloquialWords(T_DEXContract.CurrentCreationTransaction.ToString, True, "-", 5)
 
-                                                    PayInfo += " Reference/Note=" + ColWordsString
+                                                            PayInfo += " Reference/Note=" + ColWordsString
+                                                        End If
+
+                                                        Dim T_MsgStr As String = "SmartContract=" + T_DEXContract.Address + " Transaction=" + T_DEXContract.CurrentCreationTransaction.ToString + " " + Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + T_DEXContract.CurrentXItem + " " + PayInfo
+                                                        Dim TXr As String = SendBillingInfos(T_DEXContract.CurrentBuyerID, T_MsgStr, False, True)
+
+                                                        If Not IsErrorOrWarning(TXr) Then
+                                                            SetAutoinfoTX2INI(T_DEXContract.CurrentCreationTransaction) 'Set autosend-info-TX in Settings.ini
+                                                        End If
+                                                    End If
+
+
                                                 End If
-
-                                                Dim T_MsgStr As String = "SmartContract=" + T_DEXContract.Address + " Transaction=" + T_DEXContract.CurrentCreationTransaction.ToString + " " + Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + T_DEXContract.CurrentXItem + " " + PayInfo
-                                                Dim TXr As String = SendBillingInfos(T_DEXContract.CurrentBuyerID, T_MsgStr, False, True)
-
-                                                If TXr.Contains(Application.ProductName + "-error") Then
-                                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                        out.ErrorLog2File(TXr)
-                                                    End If
-
-                                                ElseIf TXr.Contains(Application.ProductName + "-warning") Then
-                                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                        out.WarningLog2File(TXr)
-                                                    End If
-                                                Else
-
-                                                    If SetAutoinfoTX2INI(T_DEXContract.CurrentCreationTransaction) Then 'Set autosend-info-TX in Settings.ini
-                                                        'ok
-                                                    End If
-                                                End If
-
                                             End If
 
                                         Catch ex As Exception
-                                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                                Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->Autosend PaymentInfotext): -> " + ex.Message)
-                                            End If
+                                            IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->Autosend PaymentInfotext): -> " + ex.Message)
                                         End Try
 #End Region
 
                                     End If
 
                                 Else 'BillingInfo Already send, check for aproving
+
+
+#Region "Inject ChainSwapHash into SmartContract for AtomicSwap"
+
+                                    Dim T_XItem As String = GetLastDecryptedMessageFromChat(T_DEXContract.CurrentChat, True)
+                                    If T_XItem.Contains(T_DEXContract.CurrentXItem + ":") And T_XItem.Contains(" RedeemScript=") Then
+
+                                        Dim T_XItemTransactionID As String = GetStringBetween(T_XItem, T_DEXContract.CurrentXItem + ":", " RedeemScript=")
+                                        Dim T_RedeemScript As String = T_XItem.Substring(T_XItem.IndexOf(" RedeemScript=") + " RedeemScript=".Length)
+
+                                        If T_DEXContract.BlocksLeft <= 2 And T_DEXContract.Status = ClsDEXContract.E_Status.RESERVED Then
+
+                                            If Not T_DEXContract.CheckForUTX() And Not T_DEXContract.CheckForTX() Then
+
+                                                Dim Response As String = RejectResponder(T_DEXContract, False)
+
+                                                If Not IsErrorOrWarning(Response) Then
+                                                    Dim T_INIRedeemScript As String = GetBitcoinRedeemScriptFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID)
+                                                    DelBitcoinTXFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID, T_INIRedeemScript)
+                                                End If
+
+                                            End If
+
+                                        Else
+
+                                            If T_DEXContract.CurrentXItem = "BTC" Then
+
+                                                Dim T_ChainSwapHash As String = GetBitcoinChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID)
+
+                                                If T_ChainSwapHash.Trim = "" And T_DEXContract.CurrentChainSwapHash.Trim = "" Then
+
+                                                    'TODO: ###AtomicSwap Get ChainSwapHash from XCryptoTXID from message and inject into smart contract
+
+                                                    Dim ChainSwapHash As String = ClsBitcoinNET.GetXFromScript(T_RedeemScript, ClsScriptEntry.E_OP_Code.ChainSwapHash)
+                                                    Dim T_BTCTX As ClsTransaction = New ClsTransaction(T_XItemTransactionID, New List(Of String)({GetBitcoinMainAddress()})) ' RedeemBitcoinTransaction(T_XItemTransactionID, GetBitcoinMainAddress())
+
+                                                    For Each T_BTCTXInput As ClsUnspentOutput In T_BTCTX.Inputs
+
+                                                        If T_BTCTXInput.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
+
+                                                            Dim T_ScriptHash As String = ClsBitcoinNET.GetXFromScript(T_BTCTXInput.Script, ClsScriptEntry.E_OP_Code.ScriptHash)
+
+                                                            If T_ScriptHash.ToLower() = PubKeyToRipe160(T_RedeemScript).ToLower() Then
+
+                                                                Dim LockTime As String = ""
+                                                                LockTime = ClsBitcoinNET.GetXFromScript(T_BTCTXInput.Script, ClsScriptEntry.E_OP_Code.LockTime)
+
+                                                                If Not LockTime.Trim = "" Then
+                                                                    LockTime = ChangeHEXStrEndian(LockTime)
+                                                                    Dim ULLockTime As ULong = HEXStringToULongList(ChangeHEXStrEndian(LockTime))(0)
+
+                                                                    If Not T_BTCTXInput.Confirmations <= Convert.ToInt32(ULLockTime) - 10 Then
+                                                                        ChainSwapHash = ""
+                                                                    End If
+
+                                                                End If
+
+                                                                If Not ChainSwapHash.Trim = "" And T_DEXContract.BlocksLeft > 8 Then
+
+                                                                    Dim SCTX As String = InjectChainSwapHash(T_DEXContract, ChainSwapHash, False)
+
+                                                                    If Not IsErrorOrWarning(SCTX) Then
+
+                                                                        SetBitcoinTX2INI(T_DEXContract, T_XItemTransactionID, T_RedeemScript)
+
+                                                                        'If GetINISetting(E_Setting.InfoOut, False) Then
+                                                                        '    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                        '    out.Info2File(ChainSwapHash + " successfully injected in " + T_DEXContract.ID.ToString + " with " + SCTX)
+                                                                        'End If
+                                                                    End If
+
+                                                                    Exit For
+
+                                                                End If
+
+                                                            End If
+
+                                                        End If
+
+                                                    Next
+
+                                                End If
+
+                                            End If
+
+                                        End If
+
+                                    Else
+                                        'TODO: handle Errors and warnings
+
+                                    End If
+
+#End Region
 
                                     Dim PayInfoList As List(Of String) = New List(Of String)
 
@@ -5981,12 +5457,9 @@ Public Class PFPForm
                                         AlreadySend = NuPayInfo.Trim
                                     End If
 
+                                    DelAutoinfoTXFromINI(T_DEXContract.CurrentCreationTransaction)  'Delete autosend-info-TX from Settings.ini
 
-                                    If DelAutoinfoTXFromINI(T_DEXContract.CurrentCreationTransaction) Then 'Delete autosend-info-TX from Settings.ini
-                                        'ok
-                                    End If
-
-                                    If T_OS.AutoCompleteSmartContract Then 'autosignal SmartContract
+                                    If T_OS.AutoCompleteSmartContract And Not T_DEXContract.CurrencyIsCrypto() Then 'autosignal SmartContract
 
 #Region "AutoComplete SmartContract with PayPalInfo"
                                         Try
@@ -5999,29 +5472,26 @@ Public Class PFPForm
                                                     AlreadySend = PayPalStatus
                                                 End If
 
-                                            ElseIf T_OS.PayType = ClsOrderSettings.E_PayType.PayPal_Order Then
+                                                'ElseIf T_OS.PayType = ClsOrderSettings.E_PayType.PayPal_Order Then
 
-                                                If AlreadySend.Contains("PayPal-Order=") Then
-                                                    Dim PayPalOrder As String = AlreadySend.Substring(AlreadySend.IndexOf("PayPal-Order=") + 13).Trim
-                                                    If PayPalOrder.Contains(" ") Then
-                                                        PayPalOrder = PayPalOrder.Remove(PayPalOrder.IndexOf(" "))
-                                                    End If
+                                                '    If AlreadySend.Contains("PayPal-Order=") Then
+                                                '        Dim PayPalOrder As String = AlreadySend.Substring(AlreadySend.IndexOf("PayPal-Order=") + 13).Trim
+                                                '        If PayPalOrder.Contains(" ") Then
+                                                '            PayPalOrder = PayPalOrder.Remove(PayPalOrder.IndexOf(" "))
+                                                '        End If
 
-                                                    Dim PayPalStatus As String = CheckPayPalOrder(T_DEXContract, PayPalOrder)
+                                                '        Dim PayPalStatus As String = CheckPayPalOrder(T_DEXContract, PayPalOrder)
 
-                                                    If Not PayPalStatus.Trim = "" Then
-                                                        AlreadySend = PayPalStatus
-                                                    End If
+                                                '        If Not PayPalStatus.Trim = "" Then
+                                                '            AlreadySend = PayPalStatus
+                                                '        End If
 
-                                                End If
+                                                '    End If
 
                                             End If
 
                                         Catch ex As Exception
-                                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                                Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->Autocomplete): -> " + ex.Message)
-                                            End If
+                                            IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->Autocomplete): -> " + ex.Message)
                                         End Try
 #End Region
 
@@ -6052,30 +5522,37 @@ Public Class PFPForm
                                 T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral)) 'collateral
                                 T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItem) 'price
 
-                                Dim Proposal As String = ""
+#Region "Dispute"
 
-                                If T_DEXContract.CurrentDisputeTimeout <> 0UL Then
+                                Dim Proposal As String = T_DEXContract.StatusMessage
 
-                                    Dim percentage As Double = 100 / T_DEXContract.CurrentBuySellAmount * T_DEXContract.CurrentConciliationAmount
-                                    Proposal = " (Proposal:" + Dbl2LVStr(T_DEXContract.CurrentBuySellAmount - T_DEXContract.CurrentConciliationAmount, 2) + " Signa = " + Dbl2LVStr(100.0 - percentage, 2) + "%)"
-                                    Dim diffblock As Long = 0
-                                    diffblock = CLng(T_DEXContract.CurrentDisputeTimeout) - CLng(Block)
+                                'If T_DEXContract.CurrentDisputeTimeout <> 0UL And Not T_DEXContract.CurrencyIsCrypto() Then ' ClsDEXContract.GetMarketCurrencyIsCrypto(T_DEXContract.CurrentXItem) Then
 
-                                    If diffblock < 0 Then
-                                        Proposal += " accepted"
-                                    ElseIf diffblock <= 1 Then
-                                        Proposal += " not appealable"
-                                    Else
-                                        Proposal += " autoaccept in: ~" + CStr(diffblock * 4) + " Min"
-                                    End If
+                                '    Dim percentage As Double = 100 / T_DEXContract.CurrentBuySellAmount * T_DEXContract.CurrentConciliationAmount
+                                '    Proposal = " (Proposal:" + Dbl2LVStr(T_DEXContract.CurrentBuySellAmount - T_DEXContract.CurrentConciliationAmount, 2) + " Signa = " + Dbl2LVStr(100.0 - percentage, 2) + "%)"
+                                '    Dim diffblock As Long = 0
+                                '    diffblock = CLng(T_DEXContract.CurrentDisputeTimeout) - CLng(Block)
 
-                                End If
+                                '    If diffblock < 0 Then
+                                '        Proposal += " accepted"
+                                '    ElseIf diffblock <= 1 Then
+                                '        Proposal += " not appealable"
+                                '    Else
+                                '        Proposal += " autoaccept in: ~" + CStr(diffblock * 4) + " Min"
+                                '    End If
+                                'ElseIf T_DEXContract.CurrentDisputeTimeout <> 0UL And ClsDEXContract.CurrencyIsCrypto(T_DEXContract.CurrentXItem) Then
+                                '    Dim diffblock As Long = 0
+                                '    diffblock = CLng(T_DEXContract.CurrentDisputeTimeout) - CLng(Block)
+                                '    AlreadySend += "reserved for ~" + CStr(diffblock * 4) + " Min"
+                                'End If
 
                                 If Proposal.Trim = "" Then
                                     T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString) 'deniability/dispute
                                 Else
                                     T_LVI.SubItems.Add(Proposal) 'deniability/dispute
                                 End If
+
+#End Region
 
                                 T_LVI.SubItems.Add(T_DEXContract.Status.ToString) 'status
                                 T_LVI.SubItems.Add(AlreadySend) 'infotext
@@ -6085,15 +5562,12 @@ Public Class PFPForm
                                 MyOpenOrderLVIList.Add(T_LVI)
 
                             Catch ex As Exception
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                    Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->Seller): -> " + ex.Message)
-                                End If
+                                IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->Seller): -> " + ex.Message)
                             End Try
 
                         ElseIf TBSNOAddress.Text = T_DEXContract.CurrentBuyerAddress Then ' Order.BuyerRS Then
 
-                            'Save/ Update() my RESERVED SellOrder to cache2.dat (MyOrders Settings)
+                            'Save/ Update() my RESERVED SellOrder to cache.dat (MyOrders Settings)
                             Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(T_DEXContract.CurrentCreationTransaction) ' Order.FirstTransaction)
                             Dim T_OS As ClsOrderSettings = New ClsOrderSettings(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_DEXContract.IsSellOrder, T_DEXContract.Status)
 
@@ -6168,23 +5642,8 @@ Public Class PFPForm
 
                             Dim AlreadySend As String = CheckBillingInfosAlreadySend(T_DEXContract)
 
-                            If AlreadySend.Contains(Application.ProductName + "-error") Then
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                    Out.ErrorLog2File(AlreadySend)
-                                End If
-
+                            If IsErrorOrWarning(AlreadySend) Then
                                 AlreadySend = "ENCRYPTED"
-
-
-                            ElseIf AlreadySend.Contains(Application.ProductName + "-warning") Then
-                                If GetINISetting(E_Setting.InfoOut, False) Then
-                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                    out.WarningLog2File(AlreadySend)
-                                End If
-
-                                AlreadySend = "ENCRYPTED"
-
                             ElseIf AlreadySend = "" Then
 
                                 'T_DEXContract.Refresh()
@@ -6197,37 +5656,292 @@ Public Class PFPForm
 
                             ElseIf AlreadySend.Trim <> "" Then
 
-                                Dim PayPalOrder As String = ""
-                                If AlreadySend.Contains("PayPal-Order=") Then
-                                    PayPalOrder = AlreadySend.Substring(AlreadySend.IndexOf("PayPal-Order=") + 13).Trim
+                                'Dim PayPalOrder As String = ""
+                                'If AlreadySend.Contains("PayPal-Order=") Then
+                                'PayPalOrder = AlreadySend.Substring(AlreadySend.IndexOf("PayPal-Order=") + 13).Trim
 
-                                    If PayPalOrder.Trim <> "" Then
-                                        Dim PPAPI As ClsPayPal = New ClsPayPal()
+                                'If PayPalOrder.Trim <> "" Then
+                                '    Dim PPAPI As ClsPayPal = New ClsPayPal()
 
-                                        AlreadySend = PPAPI.URL + "/checkoutnow?token=" + PayPalOrder '"https://www.sandbox.paypal.com/checkoutnow?token=" 
-                                        'Process.Start(AlreadySend)
-                                    End If
+                                '    AlreadySend = PPAPI.URL + "/checkoutnow?token=" + PayPalOrder '"https://www.sandbox.paypal.com/checkoutnow?token=" 
+                                '    'Process.Start(AlreadySend)
+                                'End If
 
-                                Else
+                                'End If
 
-                                    Dim PayInfoList As List(Of String) = New List(Of String)
+#Region "ChainSwap/AtomicSwap"
 
-                                    If AlreadySend.Contains(" ") Then
-                                        PayInfoList.AddRange(AlreadySend.Split(" "c))
-                                    End If
+                                If Not T_DEXContract.Status = ClsDEXContract.E_Status.UTX_PENDING And Not T_DEXContract.Status = ClsDEXContract.E_Status.TX_PENDING Then
 
-                                    If PayInfoList.Count > 2 Then
-                                        Dim NuPayInfo As String = ""
-                                        For i As Integer = 2 To PayInfoList.Count - 1
-                                            Dim T_PayInfo As String = PayInfoList(i)
-                                            If Not T_PayInfo.Trim = "" Then
-                                                NuPayInfo += T_PayInfo + " "
+                                    If (AlreadySend.Contains("AtomicSwap=" + T_DEXContract.CurrentXItem) Or T_DEXContract.CurrentChainSwapHash <> "") And T_DEXContract.CurrencyIsCrypto() Then
+
+                                        If T_DEXContract.CurrentChainSwapHash = "" Then
+
+                                            Dim T_ChainSwapKey As String = "aaaa1111aaaa1111" 'aaaa1111aaaa1111bbbb2222bbbb2222cccc3333cccc3333dddd4444dddd4444
+                                            T_ChainSwapKey += "bbbb2222bbbb2222"
+                                            T_ChainSwapKey += "cccc3333cccc3333"
+                                            T_ChainSwapKey += "dddd4444dddd4444"
+
+                                            Dim T_FullChainSwapHash As String = GetSHA256HashString(T_ChainSwapKey).ToLower() '5682f300723e84bc877b0ebce916618415edc43663930cff67ef2381bedc3618
+
+                                            Dim T_Key As String = "AtomicSwap=" + T_DEXContract.CurrentXItem + ":"
+                                            Dim T_XCryptoAddress As String = AlreadySend.Substring(AlreadySend.IndexOf(T_Key) + T_Key.Length).Trim
+
+                                            Dim PayInfo As String = "Infotext=" + T_DEXContract.CurrentXItem + ":"
+
+                                            If T_DEXContract.CurrentXItem = "BTC" Then
+                                                Dim T_BTCTX As String = GetBitcoinTXFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction)
+
+                                                If T_DEXContract.BlocksLeft > 8 Then
+
+                                                    If T_BTCTX.Trim = "" Then
+
+                                                        'TODO: ###AtomicSwap create chainswapkey/chainswaphash pair and send XItemTX
+                                                        Dim T_BTCTransaction As ClsTransaction = CreateBitcoinTransaction(T_DEXContract.CurrentXAmount, T_XCryptoAddress, GetBitcoinMainAddress(), T_FullChainSwapHash, 12) '12 * ~10min/block = 120min = 2 hours locktime
+
+                                                        Dim BitcoinPrivateKey As String = GetBitcoinMainPrivateKey().ToLower()
+
+                                                        If Not BitcoinPrivateKey = "" Then
+                                                            T_BTCTransaction.C_FeesNQTPerByte = 5
+
+                                                            Dim T_BitcoinRAWTX As String = SignBitcoinTransaction(T_BTCTransaction, BitcoinPrivateKey) 'TODO: ###AtomicSwap Sign BitcoinTX with PrivateKey
+
+                                                            Dim T_BitcoinTXID As String = ""
+                                                            If Not T_BitcoinRAWTX.Trim = "" Then
+                                                                T_BitcoinTXID = SendRawBitcoinTransaction(T_BitcoinRAWTX)
+                                                            End If
+
+                                                            If Not IsErrorOrWarning(T_BitcoinTXID) Then
+
+                                                                PayInfo += T_BitcoinTXID
+                                                                Dim RedeemScript As String = ""
+                                                                For Each T_RedeemOutput As ClsOutput In T_BTCTransaction.Outputs
+
+                                                                    If T_RedeemOutput.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
+                                                                        PayInfo += " RedeemScript=" + T_RedeemOutput.ScriptHex
+                                                                        RedeemScript = T_RedeemOutput.ScriptHex
+                                                                        Exit For
+                                                                    End If
+
+                                                                Next
+
+                                                                Dim T_MsgStr As String = "SmartContract=" + T_DEXContract.Address + " Transaction=" + T_DEXContract.CurrentCreationTransaction.ToString + " " + PayInfo
+                                                                Dim TXr As String = ""
+                                                                TXr = SendBillingInfos(T_DEXContract.CurrentSellerID, T_MsgStr, False, True)
+
+                                                                If Not IsErrorOrWarning(TXr) Then
+
+                                                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                    Out.Info2File("ChainSwapHash BTC TX:" + T_BitcoinTXID)
+
+                                                                    SetBitcoinTX2INI(T_DEXContract, T_BitcoinTXID, T_ChainSwapKey, RedeemScript)
+                                                                End If
+
+                                                            Else
+                                                                IsErrorOrWarning(Application.ProductName + "-warning in MultiThreadSetSmartContract2LV(AtomicSwapError) -> No BitcoinTransactionID")
+                                                            End If
+                                                        Else
+                                                            IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(AtomicSwapError) -> No Keys")
+                                                        End If
+
+                                                    End If
+
+                                                Else
+                                                    'getting bitcoin back
+                                                    If Not T_BTCTX.Trim = "" Then
+
+                                                        Dim RedeemScript As String = GetBitcoinRedeemScriptFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BTCTX)
+
+                                                        Dim T_BitcoinTransaction As ClsTransaction = New ClsTransaction(T_BTCTX, New List(Of String), RedeemScript)
+
+                                                        If T_BitcoinTransaction.IsTimeOut() Then
+
+                                                            Dim BitcoinPrivateKey As String = GetBitcoinMainPrivateKey().ToLower()
+
+                                                            If Not BitcoinPrivateKey = "" Then
+
+                                                                T_BitcoinTransaction.C_FeesNQTPerByte = 5
+
+                                                                Dim T_BitcoinRAWTX As String = SignBitcoinTransactionWithRedeemScript(T_BitcoinTransaction, BitcoinPrivateKey)
+
+                                                                Dim T_BitcoinTXID As String = ""
+                                                                If Not T_BitcoinRAWTX.Trim = "" Then
+                                                                    T_BitcoinTXID = SendRawBitcoinTransaction(T_BitcoinRAWTX)
+                                                                End If
+
+                                                                If Not IsErrorOrWarning(T_BitcoinTXID) Then
+
+                                                                    'TODO: ##AtomicSwap cancel sellers Contract ?
+
+                                                                    Dim T_INIScript As String = GetBitcoinRedeemScriptFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BTCTX)
+                                                                    DelBitcoinTXFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BTCTX, T_INIScript)
+                                                                End If
+
+                                                            End If
+
+                                                        End If
+
+                                                    End If
+                                                End If
+
+                                            Else
+                                                'other crypto
+
+
                                             End If
-                                        Next
-                                        AlreadySend = NuPayInfo.Trim
+
+                                        Else 'T_DEXContract.CurrentChainSwapHash <> ""
+                                            'TODO: ###AtmicSwap Redeem Smart Contract with ChainSwapKey
+                                            Dim T_ChainSwapKey As String = ""
+
+                                            If T_DEXContract.CurrentXItem = "BTC" Then
+
+                                                Dim T_BitcoinTransactionID As String = GetBitcoinTXFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_DEXContract.CurrentChainSwapHash)
+
+                                                If Not T_BitcoinTransactionID.Trim = "" Then
+
+                                                    If T_DEXContract.BlocksLeft > 2L Then '504446
+                                                        T_ChainSwapKey = GetBitcoinChainSwapKeyFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID)
+
+                                                        If Not T_ChainSwapKey.Trim = "" Then
+
+                                                            Dim Response As String = FinishWithChainSwapKey(T_DEXContract, T_ChainSwapKey, False)
+
+                                                            If Not IsErrorOrWarning(Response, Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->FinishOrderWithChainSwapKey) -> " + vbCrLf, True) Then
+                                                                DelBitcoinTXFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID, T_DEXContract.CurrentChainSwapHash)
+                                                            End If
+
+                                                        End If
+
+                                                    Else 'reject Order
+
+                                                        Dim T_BTCTransaction As ClsTransaction = RedeemBitcoinTransaction(T_BitcoinTransactionID, GetBitcoinMainAddress(), "")
+
+                                                        Dim T_BitcoinRAWTX As String = SignBitcoinTransaction(T_BTCTransaction, GetBitcoinMainPrivateKey())
+
+                                                        Dim T_BitcoinTXID As String = ""
+                                                        If Not T_BitcoinRAWTX.Trim = "" Then
+                                                            T_BitcoinTXID = SendRawBitcoinTransaction(T_BitcoinRAWTX)
+                                                        End If
+
+                                                        If Not IsErrorOrWarning(T_BitcoinTXID) Then
+                                                            Dim MasterKeys As List(Of String) = GetPassPhrase()
+                                                            If MasterKeys.Count > 0 Then
+
+                                                                Dim Response As String = T_DEXContract.RejectResponder(MasterKeys(0), Fee)
+
+                                                                If Not IsErrorOrWarning(Response, Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->RejectResponder): -> " + vbCrLf, True) Then
+
+                                                                    Dim UTX As String = Response
+                                                                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                                                    Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                                                    IsErrorOrWarning(TX, Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->RejectResponder2): -> " + vbCrLf, True)
+
+                                                                End If
+                                                            Else
+                                                                IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->RejectResponder) -> No Keys")
+                                                            End If
+                                                        End If
+
+                                                    End If
+
+                                                End If
+
+                                            Else
+                                                'TODO: other cryptocurrencies
+
+                                            End If
+
+                                        End If
+
+                                    Else
+
+                                        If T_DEXContract.CurrencyIsCrypto Then
+
+                                            Dim T_BitcoinTransactionID As String = GetBitcoinTXFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction)
+
+                                            If Not T_BitcoinTransactionID.Trim = "" Then
+
+                                                If T_DEXContract.BlocksLeft <= 3L Then
+
+                                                    Dim T_RedeemScript As String = GetBitcoinRedeemScriptFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID)
+
+                                                    Dim T_BTCTransaction As ClsTransaction = RedeemBitcoinTransaction(T_BitcoinTransactionID, GetBitcoinMainAddress(), T_RedeemScript)
+
+                                                    Dim T_BitcoinRAWTX As String = SignBitcoinTransaction(T_BTCTransaction, GetBitcoinMainPrivateKey().ToLower())
+
+                                                    Dim T_BitcoinTXID As String = ""
+                                                    If Not T_BitcoinRAWTX.Trim = "" Then
+                                                        T_BitcoinTXID = SendRawBitcoinTransaction(T_BitcoinRAWTX)
+                                                    End If
+
+                                                    If Not IsErrorOrWarning(T_BitcoinTXID) Then
+                                                        DelBitcoinTXFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID, T_DEXContract.CurrentChainSwapHash)
+                                                    End If
+
+                                                End If
+
+                                            End If
+
+                                        Else
+
+                                        End If
+
+                                        Dim PayInfoList As List(Of String) = New List(Of String)
+
+                                        If AlreadySend.Contains(" ") Then
+                                            PayInfoList.AddRange(AlreadySend.Split(" "c))
+                                        End If
+
+                                        If PayInfoList.Count > 2 Then
+                                            Dim NuPayInfo As String = ""
+                                            For i As Integer = 2 To PayInfoList.Count - 1
+                                                Dim T_PayInfo As String = PayInfoList(i)
+                                                If Not T_PayInfo.Trim = "" Then
+                                                    NuPayInfo += T_PayInfo + " "
+                                                End If
+                                            Next
+                                            AlreadySend = NuPayInfo.Trim
+                                        End If
+
+                                    End If
+
+                                ElseIf Not T_DEXContract.Status = ClsDEXContract.E_Status.RESERVED Then
+
+                                    If T_DEXContract.CurrencyIsCrypto Then
+
+                                        'Dim T_BitcoinTransactionID As String = GetBitcoinTXFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_DEXContract.CurrentChainSwapHash)
+
+                                        'If Not T_BitcoinTransactionID.Trim = "" Then
+
+                                        '    If T_DEXContract.BlocksLeft <= 3L Then
+
+                                        '        Dim T_BTCTransaction As ClsTransaction = RedeemBitcoinTransaction(T_BitcoinTransactionID, GetBitcoinMainAddress())
+
+                                        '        Dim T_BitcoinRAWTX As String = SignBitcoinTransaction(T_BTCTransaction, GetBitcoinMainPrivateKey())
+
+                                        '        Dim T_BitcoinTXID As String = ""
+                                        '        If Not T_BitcoinRAWTX.Trim = "" Then
+                                        '            T_BitcoinTXID = SendRawBitcoinTransaction(T_BitcoinRAWTX)
+                                        '        End If
+
+                                        '        If Not IsErrorOrWarning(T_BitcoinTXID) Then
+
+                                        '        End If
+
+                                        '    End If
+
+                                        'End If
+
+                                    Else
+
                                     End If
 
                                 End If
+
+#End Region
 
                             End If
 
@@ -6247,7 +5961,13 @@ Public Class PFPForm
                             End If
 
                             T_LVI.SubItems.Add(PayMet) 'method
-                            T_LVI.SubItems.Add(Autosendinfotext + "/" + AutocompleteSmartContract) 'autoinfo
+
+                            If MarketIsCrypto Then
+                                T_LVI.SubItems.Add("auto/auto") 'autoinfo
+                            Else
+                                T_LVI.SubItems.Add(Autosendinfotext + "/" + AutocompleteSmartContract) 'autoinfo
+                            End If
+
                             T_LVI.SubItems.Add(T_DEXContract.CurrentSellerAddress)  'seller
                             T_LVI.SubItems.Add("Me") 'buyer
 
@@ -6256,26 +5976,39 @@ Public Class PFPForm
                             T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral)) 'collateral
                             T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItem) 'price
 
-                            Dim Proposal As String = ""
-                            If T_DEXContract.CurrentDisputeTimeout <> 0UL Then
+#Region "Dispute"
 
-                                Dim percentage As Double = 100 / T_DEXContract.CurrentBuySellAmount * T_DEXContract.CurrentConciliationAmount
-                                Proposal = " (Proposal:" + Dbl2LVStr(T_DEXContract.CurrentConciliationAmount, 2) + " Signa =" + Dbl2LVStr(percentage, 2) + "%)"
-                                Dim diffblock As Long = 0
-                                diffblock = CLng(T_DEXContract.CurrentDisputeTimeout) - CLng(Block)
+                            Dim Proposal As String = T_DEXContract.StatusMessage
 
-                                If diffblock < 0 Then
-                                    Proposal += " accepted"
-                                ElseIf diffblock <= 1 Then
-                                    Proposal += " not appealable"
-                                Else
-                                    Proposal += " autoaccept in: ~" + CStr(diffblock * 4) + " Min"
-                                End If
+                            'If T_DEXContract.CurrentDisputeTimeout <> 0UL And Not ClsDEXContract.CurrencyIsCrypto(T_DEXContract.CurrentXItem) Then
 
+                            '    Dim percentage As Double = 100 / T_DEXContract.CurrentBuySellAmount * T_DEXContract.CurrentConciliationAmount
+                            '    Proposal = " (Proposal:" + Dbl2LVStr(T_DEXContract.CurrentConciliationAmount, 2) + " Signa =" + Dbl2LVStr(percentage, 2) + "%)"
+                            '    Dim diffblock As Long = 0
+                            '    diffblock = CLng(T_DEXContract.CurrentDisputeTimeout) - CLng(Block)
+
+                            '    If diffblock < 0 Then
+                            '        Proposal += " accepted"
+                            '    ElseIf diffblock <= 1 Then
+                            '        Proposal += " not appealable"
+                            '    Else
+                            '        Proposal += " autoaccept in: ~" + CStr(diffblock * 4) + " Min"
+                            '    End If
+                            'ElseIf T_DEXContract.CurrentDisputeTimeout <> 0UL And ClsDEXContract.CurrencyIsCrypto(T_DEXContract.CurrentXItem) Then
+                            '    Dim diffblock As Long = 0
+                            '    diffblock = CLng(T_DEXContract.CurrentDisputeTimeout) - CLng(Block)
+                            '    AlreadySend += "reserved for ~" + CStr(diffblock * 4) + " Min"
+                            'End If
+
+                            'T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString + " " + Proposal) 'deniability/dispute
+
+                            If Proposal.Trim = "" Then
+                                T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString) 'deniability/dispute
+                            Else
+                                T_LVI.SubItems.Add(Proposal) 'deniability/dispute
                             End If
 
-                            T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString + " " + Proposal) 'deniability/dispute
-
+#End Region
                             T_LVI.SubItems.Add(T_DEXContract.Status.ToString) 'status
                             T_LVI.SubItems.Add(AlreadySend) 'infotext
 
@@ -6288,11 +6021,7 @@ Public Class PFPForm
 #End Region
 
                     Catch ex As Exception
-                        If GetINISetting(E_Setting.InfoOut, False) Then
-                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                            Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED): -> " + ex.Message)
-                        End If
-
+                        IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED): -> " + ex.Message)
                     End Try
 
                 Else 'CLOSED or CANCELED
@@ -6304,6 +6033,7 @@ Public Class PFPForm
 
                     If HistoryOrder.Status = ClsDEXContract.E_Status.CLOSED Or HistoryOrder.Status = ClsDEXContract.E_Status.CANCELED Then
 
+
 #Region "MyClosedOrders - GUI"
 
                         Try
@@ -6313,11 +6043,7 @@ Public Class PFPForm
                             End If
 
                         Catch ex As Exception
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(Delete): -> " + ex.Message)
-                            End If
-
+                            IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(Delete): -> " + ex.Message)
                         End Try
 
 
@@ -6341,111 +6067,175 @@ Public Class PFPForm
                             End If
 
                         Catch ex As Exception
-                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(DeleteOrdersettingbuffer): -> " + ex.Message)
-                            End If
-
+                            IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(DeleteOrdersettingbuffer): -> " + ex.Message)
                         End Try
 
-                        If HistoryOrder.XItem.Contains(Market) Then
+                        'If HistoryOrder.XItem.Contains(Market) Then
 
-                            If TBSNOAddress.Text = HistoryOrder.SellerRS Then
+                        If TBSNOAddress.Text = HistoryOrder.SellerRS Then
 
-                                Try
+                            Try
 
-                                    'If MyClosedOrderLVIList.Count < 100 Then
+                                'Dim BTCTX As ClsTransaction = CreateBitcoinTransaction(HistoryOrder.XAmount, GetBitcoinMainAddress(), GetBitcoinMainAddress())
+                                'BTCTX = BTCTX
 
-                                    Dim T_DEXOrder As S_DEXOrder = New S_DEXOrder
-                                    T_DEXOrder.ContractAddress = T_DEXContract.Address
-                                    T_DEXOrder.Order = HistoryOrder
-                                    T_DEXOrder.Contract = T_DEXContract
+                                'If MyClosedOrderLVIList.Count < 100 Then
 
-                                    'T_LVI.Text = HistoryOrder.CreationTransaction.ToString
-                                    'T_LVI.SubItems.Add(HistoryOrder.LastTransaction.ToString)
+                                Dim T_DEXOrder As S_DEXOrder = New S_DEXOrder
+                                T_DEXOrder.ContractAddress = T_DEXContract.Address
+                                T_DEXOrder.Order = HistoryOrder
+                                T_DEXOrder.Contract = T_DEXContract
 
-                                    'T_LVI.SubItems.Add(HistoryOrder.Confirmations.ToString) 'confirms
-                                    'T_LVI.SubItems.Add(T_DEXContract.Address)  'at
+                                If Not HistoryOrder.ChainSwapKey.Trim = "" Then
+                                    'TODO: ###AtomicSwap get last msg (with ChainSwapKey) and redeem XItem
 
-                                    'If HistoryOrder.WasSellOrder Then
-                                    '    T_LVI.SubItems.Add("SellOrder") 'type
-                                    'Else
-                                    '    T_LVI.SubItems.Add("BuyOrder") 'type
-                                    'End If
+                                    Dim BitcoinTX As String = GetBitcoinTXFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction)
+                                    Dim RedeemScript As String = GetBitcoinRedeemScriptFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, BitcoinTX)
 
-                                    'T_LVI.SubItems.Add("Me") 'seller
-                                    'T_LVI.SubItems.Add(HistoryOrder.BuyerRS)  'buyer
-                                    'T_LVI.SubItems.Add(XItem) 'xitem
-                                    'T_LVI.SubItems.Add(Dbl2LVStr(HistoryOrder.XAmount, Decimals)) 'xamount
-                                    'T_LVI.SubItems.Add(Dbl2LVStr(HistoryOrder.Amount))  'quantity
-                                    'T_LVI.SubItems.Add(Dbl2LVStr(HistoryOrder.Price, Decimals)) 'price
-                                    'T_LVI.SubItems.Add(HistoryOrder.Status.ToString) 'status
-                                    ''T_LVI.SubItems.Add(Order.Attachment.ToString) 'conditions
-                                    'T_LVI.Tag = T_DEXContract
+                                    If Not BitcoinTX.Trim = "" Then
 
-                                    MyClosedOrderLVIList.Add(T_DEXOrder)
+                                        Dim T_BTCTX As ClsTransaction = RedeemBitcoinTransaction(BitcoinTX, GetBitcoinMainAddress(), RedeemScript)
 
-                                    'End If
+                                        Dim BitcoinPrivateKey As String = GetBitcoinMainPrivateKey()
 
-                                Catch ex As Exception
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                        Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(SetClosedSellOrder): -> " + ex.Message)
+                                        If Not BitcoinPrivateKey = "" Then
+                                            Dim T_BitcoinTXID As String = SignBitcoinTransactionWithChainSwapKeyAndRedeemScript(T_BTCTX, BitcoinPrivateKey.ToLower(), HistoryOrder.ChainSwapKey) ' SignBitcoinTransactionWithChainSwapKey(T_BTCTX, BitcoinPrivateKey.ToLower(), HistoryOrder.ChainSwapKey) 'TODO: ###AtomicSwap Sign BitcoinTX with PrivateKey and ChainSwapKey
+
+                                            If Not T_BitcoinTXID.Trim = "" Then
+
+                                                T_BitcoinTXID = SendRawBitcoinTransaction(T_BitcoinTXID)
+
+                                                If Not IsErrorOrWarning(T_BitcoinTXID, "Redeem BTC TX:", True) Then
+                                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    Out.Info2File("Redeem BTC TX:" + T_BitcoinTXID)
+
+                                                    DelBitcoinTXFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, BitcoinTX, GetSHA256HashString(HistoryOrder.ChainSwapKey.Trim))
+                                                End If
+
+                                            Else
+                                                IsErrorOrWarning(Application.ProductName + "-warning in MultiThreadSetSmartContract2LV(AtomicSwapError) -> No BitcoinTransactionID")
+                                            End If
+                                        Else
+                                            IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(AtomicSwapError) -> No Keys")
+                                        End If
+
                                     End If
 
-                                End Try
+                                End If
 
-                            ElseIf TBSNOAddress.Text = HistoryOrder.BuyerRS Then ' Order.BuyerRS Then
+                                'If Not HistoryOrder.ChainSwapHash.Trim = "" Then
+                                '    HistoryOrder = HistoryOrder
+                                'End If
 
-                                Try
+                                'T_LVI.Text = HistoryOrder.CreationTransaction.ToString
+                                'T_LVI.SubItems.Add(HistoryOrder.LastTransaction.ToString)
 
-                                    'If MyClosedOrderLVIList.Count < 100 Then
+                                'T_LVI.SubItems.Add(HistoryOrder.Confirmations.ToString) 'confirms
+                                'T_LVI.SubItems.Add(T_DEXContract.Address)  'at
 
-                                    Dim T_DEXOrder As S_DEXOrder = New S_DEXOrder
-                                    T_DEXOrder.ContractAddress = T_DEXContract.Address
-                                    T_DEXOrder.Order = HistoryOrder
-                                    T_DEXOrder.Contract = T_DEXContract
+                                'If HistoryOrder.WasSellOrder Then
+                                '    T_LVI.SubItems.Add("SellOrder") 'type
+                                'Else
+                                '    T_LVI.SubItems.Add("BuyOrder") 'type
+                                'End If
 
-                                    'T_LVI = New ListViewItem
+                                'T_LVI.SubItems.Add("Me") 'seller
+                                'T_LVI.SubItems.Add(HistoryOrder.BuyerRS)  'buyer
+                                'T_LVI.SubItems.Add(XItem) 'xitem
+                                'T_LVI.SubItems.Add(Dbl2LVStr(HistoryOrder.XAmount, Decimals)) 'xamount
+                                'T_LVI.SubItems.Add(Dbl2LVStr(HistoryOrder.Amount))  'quantity
+                                'T_LVI.SubItems.Add(Dbl2LVStr(HistoryOrder.Price, Decimals)) 'price
+                                'T_LVI.SubItems.Add(HistoryOrder.Status.ToString) 'status
+                                ''T_LVI.SubItems.Add(Order.Attachment.ToString) 'conditions
+                                'T_LVI.Tag = T_DEXContract
 
-                                    '    T_LVI.Text = HistoryOrder.CreationTransaction.ToString  'first transaction
-                                    '    T_LVI.SubItems.Add(HistoryOrder.LastTransaction.ToString)
+                                MyClosedOrderLVIList.Add(T_DEXOrder)
 
+                                'End If
 
-                                    '    T_LVI.SubItems.Add(HistoryOrder.Confirmations.ToString) 'confirms
-                                    '    T_LVI.SubItems.Add(T_DEXContract.Address)  'at
+                            Catch ex As Exception
+                                IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(SetClosedSellOrder): -> " + ex.Message)
+                            End Try
 
-                                    '    If HistoryOrder.WasSellOrder Then
-                                    '        T_LVI.SubItems.Add("SellOrder") 'type
-                                    '    Else
-                                    '        T_LVI.SubItems.Add("BuyOrder") 'type
-                                    '    End If
+                        ElseIf TBSNOAddress.Text = HistoryOrder.BuyerRS Then ' Order.BuyerRS Then
 
-                                    '    T_LVI.SubItems.Add(HistoryOrder.SellerRS) 'seller
-                                    '    T_LVI.SubItems.Add("Me") 'buyer
-                                    '    T_LVI.SubItems.Add(XItem) 'xitem
-                                    '    T_LVI.SubItems.Add(Dbl2LVStr(HistoryOrder.XAmount, Decimals)) 'xamount
-                                    '    T_LVI.SubItems.Add(Dbl2LVStr(HistoryOrder.Amount)) 'quantity
-                                    '    T_LVI.SubItems.Add(Dbl2LVStr(HistoryOrder.Price, Decimals)) 'price
-                                    '    T_LVI.SubItems.Add(HistoryOrder.Status.ToString)  'status
-                                    '    'T_LVI.SubItems.Add(Order.Attachment.ToString) 'conditions
-                                    '    T_LVI.Tag = T_DEXContract
+                            Try
 
-                                    MyClosedOrderLVIList.Add(T_DEXOrder)
+                                'If MyClosedOrderLVIList.Count < 100 Then
 
-                                    'End If
+                                Dim T_BTCTX As String = GetBitcoinTXFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction)
 
-                                Catch ex As Exception
-                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                        Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(SetClosedBuyOrder): -> " + ex.Message)
+                                If Not T_BTCTX.Trim = "" Then
+                                    Dim RedeemScript As String = GetBitcoinRedeemScriptFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_BTCTX)
+                                    Dim T_BitcoinTransaction As ClsTransaction = New ClsTransaction(T_BTCTX, New List(Of String), RedeemScript)
+
+                                    If T_BitcoinTransaction.IsTimeOut() Then
+
+                                        Dim BitcoinPrivateKey As String = GetBitcoinMainPrivateKey().ToLower()
+
+                                        If Not BitcoinPrivateKey = "" Then
+
+                                            T_BitcoinTransaction.C_FeesNQTPerByte = 5
+
+                                            Dim T_BitcoinRAWTX As String = SignBitcoinTransactionWithRedeemScript(T_BitcoinTransaction, BitcoinPrivateKey)
+
+                                            Dim T_BitcoinTXID As String = ""
+                                            If Not T_BitcoinRAWTX.Trim = "" Then
+                                                T_BitcoinTXID = SendRawBitcoinTransaction(T_BitcoinRAWTX)
+                                            End If
+
+                                            If Not IsErrorOrWarning(T_BitcoinTXID) Then
+                                                Dim T_INIScript As String = GetBitcoinRedeemScriptFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_BTCTX)
+                                                DelBitcoinTXFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_BTCTX, T_INIScript)
+                                            End If
+
+                                        End If
+
                                     End If
 
-                                End Try
+                                End If
 
-                            End If 'myaddress
+                                Dim T_DEXOrder As S_DEXOrder = New S_DEXOrder
+                                T_DEXOrder.ContractAddress = T_DEXContract.Address
+                                T_DEXOrder.Order = HistoryOrder
+                                T_DEXOrder.Contract = T_DEXContract
 
-                        End If 'market
+                                'T_LVI = New ListViewItem
+
+                                '    T_LVI.Text = HistoryOrder.CreationTransaction.ToString  'first transaction
+                                '    T_LVI.SubItems.Add(HistoryOrder.LastTransaction.ToString)
+
+
+                                '    T_LVI.SubItems.Add(HistoryOrder.Confirmations.ToString) 'confirms
+                                '    T_LVI.SubItems.Add(T_DEXContract.Address)  'at
+
+                                '    If HistoryOrder.WasSellOrder Then
+                                '        T_LVI.SubItems.Add("SellOrder") 'type
+                                '    Else
+                                '        T_LVI.SubItems.Add("BuyOrder") 'type
+                                '    End If
+
+                                '    T_LVI.SubItems.Add(HistoryOrder.SellerRS) 'seller
+                                '    T_LVI.SubItems.Add("Me") 'buyer
+                                '    T_LVI.SubItems.Add(XItem) 'xitem
+                                '    T_LVI.SubItems.Add(Dbl2LVStr(HistoryOrder.XAmount, Decimals)) 'xamount
+                                '    T_LVI.SubItems.Add(Dbl2LVStr(HistoryOrder.Amount)) 'quantity
+                                '    T_LVI.SubItems.Add(Dbl2LVStr(HistoryOrder.Price, Decimals)) 'price
+                                '    T_LVI.SubItems.Add(HistoryOrder.Status.ToString)  'status
+                                '    'T_LVI.SubItems.Add(Order.Attachment.ToString) 'conditions
+                                '    T_LVI.Tag = T_DEXContract
+
+                                MyClosedOrderLVIList.Add(T_DEXOrder)
+
+                                'End If
+
+                            Catch ex As Exception
+                                IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(SetClosedBuyOrder): -> " + ex.Message)
+                            End Try
+
+                        End If 'myaddress
+
+                        'End If 'market
 
 #End Region
 
@@ -6492,11 +6282,7 @@ Public Class PFPForm
 #End Region
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(): -> " + ex.ToString)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(): -> " + ex.ToString)
         End Try
 
     End Sub
@@ -6512,8 +6298,8 @@ Public Class PFPForm
         LabXItem.Text = CurrentMarket
         LabXitemAmount.Text = CurrentMarket + " Amount: "
 
-        MarketIsCrypto = GetMarketCurrencyIsCrypto(CurrentMarket)
-        Decimals = GetCurrencyDecimals(CurrentMarket)
+        MarketIsCrypto = ClsDEXContract.CurrencyIsCrypto(CurrentMarket)
+        Decimals = ClsDEXContract.GetCurrencyDecimals(CurrentMarket)
 
         NUDSNOItemAmount.DecimalPlaces = Decimals
 
@@ -6652,6 +6438,9 @@ Public Class PFPForm
 
                     HistoryOrdersString += ClsDEXNET.CreateXMLMessage(ClsSignumAPI.Dbl2Planck(HistoryOrder.Price).ToString, "Price")
 
+                    HistoryOrdersString += ClsDEXNET.CreateXMLMessage(HistoryOrder.ChainSwapKey.ToString, "ChainSwapKey")
+                    'HistoryOrdersString += ClsDEXNET.CreateXMLMessage(HistoryOrder.ChainSwapHash.ToString, "ChainSwapHash")
+
                     HistoryOrdersString += ClsDEXNET.CreateXMLMessage(HistoryOrder.Status.ToString, "Status")
                     HistoryOrdersString += "</" + i.ToString + ">"
 
@@ -6678,10 +6467,7 @@ Public Class PFPForm
             If T_input.GetType.Name = GetType(List(Of Object)).Name Then
                 Input = DirectCast(T_input, List(Of Object))
             Else
-                If GetINISetting(E_Setting.InfoOut, False) Then
-                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                    Out.ErrorLog2File(Application.ProductName + "-error in HistoryLoad(DirectCast): -> " + T_input.GetType.Name)
-                End If
+                IsErrorOrWarning(Application.ProductName + "-error in HistoryLoad(DirectCast): -> " + T_input.GetType.Name)
             End If
 
 
@@ -6759,11 +6545,7 @@ Public Class PFPForm
             End If
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in LoadHistory(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in LoadHistory(): -> " + ex.Message)
         End Try
 
     End Sub
@@ -6908,10 +6690,7 @@ Public Class PFPForm
                 If MAC.GetType.Name = GetType(List(Of Object)).Name Then
                     T_MAC = DirectCast(MAC, List(Of Object))
                 Else
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                        Out.ErrorLog2File(Application.ProductName + "-error in TradeTrackCalcs(DirectCast): -> " + MAC.GetType.Name)
-                    End If
+                    IsErrorOrWarning(Application.ProductName + "-error in TradeTrackCalcs(DirectCast): -> " + MAC.GetType.Name)
                 End If
 
                 If T_MAC.Count > 0 Then
@@ -6977,10 +6756,7 @@ Public Class PFPForm
                 If MSigi.GetType.Name = GetType(List(Of Object)).Name Then
                     TMSigi = DirectCast(MSigi, List(Of Object))
                 Else
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                        Out.ErrorLog2File(Application.ProductName + "-error in TradeTrackCalcs(DirectCast): -> " + MSigi.GetType.Name)
-                    End If
+                    IsErrorOrWarning(Application.ProductName + "-error in TradeTrackCalcs(DirectCast): -> " + MSigi.GetType.Name)
                 End If
 
                 If TMSigi.Count > 0 Then
@@ -7048,10 +6824,7 @@ Public Class PFPForm
                 If RSIi.GetType.Name = GetType(List(Of Object)).Name Then
                     TRSIi = DirectCast(RSIi, List(Of Object))
                 Else
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                        Out.ErrorLog2File(Application.ProductName + "-error in TradeTrackCalcs(DirectCast): -> " + RSIi.GetType.Name)
-                    End If
+                    IsErrorOrWarning(Application.ProductName + "-error in TradeTrackCalcs(DirectCast): -> " + RSIi.GetType.Name)
                 End If
 
                 If TRSIi.Count > 0 Then
@@ -7108,12 +6881,7 @@ Public Class PFPForm
 
 
         Catch ex As Exception
-
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in TradeTrackCalcs(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in TradeTrackCalcs(): -> " + ex.Message)
         End Try
 
         Return True
@@ -7170,11 +6938,7 @@ Public Class PFPForm
             RefreshTCPAPIResponse("GetOpenOrders", Parameters, OpenOrdersJSON)
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in LoadTCPAPIOpenOrders(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in LoadTCPAPIOpenOrders(): -> " + ex.Message)
         End Try
 
     End Sub
@@ -7228,11 +6992,7 @@ Public Class PFPForm
             'LabClients.Text = "Clients: " + TCPAPI.ConnectionList.Count.ToString
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in LoadTCPAPIHistorys(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in LoadTCPAPIHistorys(): -> " + ex.Message)
         End Try
 
     End Sub
@@ -7330,11 +7090,7 @@ Public Class PFPForm
             Return Currency_Day_Tick
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in GetTCPAPICurrencyDaysTicks(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in GetTCPAPICurrencyDaysTicks(): -> " + ex.Message)
             Return New List(Of List(Of String))
         End Try
 
@@ -7348,10 +7104,7 @@ Public Class PFPForm
             If T_Input.GetType.Name = GetType(List(Of Object)).Name Then
                 Input = DirectCast(T_Input, List(Of Object))
             Else
-                If GetINISetting(E_Setting.InfoOut, False) Then
-                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                    Out.ErrorLog2File(Application.ProductName + "-error in LoadTCPAPIHistory(DirectCast): -> " + T_Input.GetType.Name)
-                End If
+                IsErrorOrWarning(Application.ProductName + "-error in LoadTCPAPIHistory(DirectCast): -> " + T_Input.GetType.Name)
             End If
 
 
@@ -7385,11 +7138,7 @@ Public Class PFPForm
             RefreshTCPAPIResponse("GetCandles", Parameters, TradeHistoryJSON)
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in LoadTCPAPIHistory(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in LoadTCPAPIHistory(): -> " + ex.Message)
             MultiInvoker(StatusLabel, "Text", "LoadTCPAPIHistory(): " + ex.Message)
         End Try
 
@@ -7436,13 +7185,8 @@ Public Class PFPForm
             End If
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in RefreshTCPAPIResponse(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in RefreshTCPAPIResponse(): -> " + ex.Message)
         End Try
-
 
     End Sub
     Function CompareLists(ByVal List1 As List(Of String), List2 As List(Of String)) As Boolean
@@ -7492,11 +7236,7 @@ Public Class PFPForm
 
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in CompareLists(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in CompareLists(): -> " + ex.Message)
         End Try
 
         Return True
@@ -7564,10 +7304,7 @@ Public Class PFPForm
             End If
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in InitiateDEXNET(): -> " + ex.Message)
-            End If
+            IsErrorOrWarning(Application.ProductName + "-error in InitiateDEXNET(): -> " + ex.Message)
         End Try
 
         Return True
@@ -7820,14 +7557,7 @@ Public Class PFPForm
 
                                                     Dim Response As String = MyOpenDEXContract.InjectResponder(MasterKeys(0), RM_AccountID, Fee)
 
-                                                    If Response.Contains(Application.ProductName + "-error") Then
-
-                                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                            out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs2): -> " + vbCrLf + Response)
-                                                        End If
-
-                                                    Else
+                                                    If Not IsErrorOrWarning(Response, "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs2): -> " + vbCrLf, True) Then
 
                                                         Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
                                                         Dim UTX As String = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
@@ -7835,14 +7565,7 @@ Public Class PFPForm
                                                         Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                                         Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                                                        If TX.Contains(Application.ProductName + "-error") Then
-
-                                                            If GetINISetting(E_Setting.InfoOut, False) Then
-                                                                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                                out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs3): -> " + vbCrLf + TX)
-                                                            End If
-
-                                                        Else
+                                                        If Not IsErrorOrWarning(TX, "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs3): -> " + vbCrLf, True) Then
 
                                                             Dim PayInfo As String = GetPaymentInfoFromOrderSettings(MyOpenDEXContract.CurrentCreationTransaction, MyOpenDEXContract.CurrentBuySellAmount, MyOpenDEXContract.CurrentXAmount, MyOpenDEXContract.CurrentXItem)
 
@@ -7863,22 +7586,7 @@ Public Class PFPForm
                                                                     Dim T_MsgStr As String = "Account activation"
                                                                     Dim TXr As String = SendBillingInfos(RM_AccountID, PayInfo, False, True, RM_AccountPublicKey) 'TODO: need offchain pubkey
 
-
-                                                                    If TXr.Contains(Application.ProductName + "-error") Then
-                                                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                                            out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf + TXr)
-                                                                        End If
-
-                                                                    ElseIf TXr.Contains(Application.ProductName + "-warning") Then
-                                                                        If GetINISetting(E_Setting.InfoOut, False) Then
-                                                                            Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                                            out.WarningLog2File(Application.ProductName + "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf + TXr)
-                                                                        End If
-                                                                    Else
-
-
-                                                                    End If
+                                                                    IsErrorOrWarning(TXr, "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf, True)
 
                                                                 End If
 
@@ -7892,12 +7600,7 @@ Public Class PFPForm
                                                     RelevantMsgsBuffer(ii) = RelMsg
 
                                                 Else
-
-                                                    If GetINISetting(E_Setting.InfoOut, False) Then
-                                                        Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                        out.WarningLog2File(Application.ProductName + "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs1): -> no Keys")
-                                                    End If
-
+                                                    IsErrorOrWarning(Application.ProductName + "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs1): -> no Keys")
                                                 End If
 
                                             End If
@@ -7984,12 +7687,7 @@ Public Class PFPForm
                     End If
 
                 Else
-
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                        Out.ErrorLog2File(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectedMsgs): -> ASK=" + RM_Ask + " ACCID=" + RM_AccountID.ToString + " Pubkey=" + RM_AccountPublicKey)
-                    End If
-
+                    IsErrorOrWarning(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectedMsgs): -> ASK=" + RM_Ask + " ACCID=" + RM_AccountID.ToString + " Pubkey=" + RM_AccountPublicKey)
                 End If
 
             End If
@@ -8001,7 +7699,7 @@ Public Class PFPForm
 #End Region
 
 
-#Region "SmartContract Interactions"
+#Region "SmartContract + Patie Interactions"
 
     Function SendBillingInfos(ByVal RecipientAddress As String, ByVal Message As String, ByVal ShowPINForm As Boolean, Optional ByVal Encrypt As Boolean = True, Optional ByVal RecipientPublicKey As String = "") As String
         Dim RecipientID As ULong = ClsReedSolomon.Decode(RecipientAddress)
@@ -8077,6 +7775,93 @@ Public Class PFPForm
 
                     End If
 
+                Else
+                    Return Returner
+                End If
+
+            Else
+                Return Returner
+            End If
+
+        End If
+
+    End Function
+
+    Function InjectChainSwapHash(ByVal DEXContract As ClsDEXContract, ByVal ChainSwapHash As String, Optional ByVal ShowPINForm As Boolean = True) As String
+        Dim Masterkeys As List(Of String) = GetPassPhrase()
+
+        If Masterkeys.Count > 0 Then
+            Return DEXContract.InjectChainSwapHash(GlobalPublicKey, ChainSwapHash,, Masterkeys(1))
+        Else
+
+            Dim Returner As String = Application.ProductName + "-warning in InjectChainSwapHash(Form): -> no Keys"
+
+            If ShowPINForm Then
+
+                Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                PinForm.ShowDialog()
+
+                If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" And Not PinForm.AgreeKey = "" Then
+                    Return DEXContract.InjectChainSwapHash(GlobalPublicKey, ChainSwapHash,, PinForm.SignKey)
+                Else
+                    Return Returner
+                End If
+
+            Else
+                Return Returner
+            End If
+
+        End If
+
+    End Function
+
+    Function RejectResponder(ByVal DEXContract As ClsDEXContract, Optional ByVal ShowPINForm As Boolean = True) As String
+
+        Dim Masterkeys As List(Of String) = GetPassPhrase()
+
+        If Masterkeys.Count > 0 Then
+            Return DEXContract.RejectResponder(GlobalPublicKey,, Masterkeys(1))
+        Else
+
+            Dim Returner As String = Application.ProductName + "-warning in RejectResponder(Form): -> no Keys"
+
+            If ShowPINForm Then
+
+                Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                PinForm.ShowDialog()
+
+                If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" And Not PinForm.AgreeKey = "" Then
+                    Return DEXContract.RejectResponder(GlobalPublicKey, , PinForm.SignKey)
+                Else
+                    Return Returner
+                End If
+
+            Else
+                Return Returner
+            End If
+
+        End If
+
+
+    End Function
+
+    Function FinishWithChainSwapKey(ByVal DEXContract As ClsDEXContract, ByVal ChainSwapKey As String, Optional ByVal ShowPINForm As Boolean = True) As String
+
+        Dim Masterkeys As List(Of String) = GetPassPhrase()
+
+        If Masterkeys.Count > 0 Then
+            Return DEXContract.FinishOrderWithChainSwapKey(GlobalPublicKey, ChainSwapKey,, Masterkeys(1))
+        Else
+
+            Dim Returner As String = Application.ProductName + "-warning in FinishWithChainSwapKey(Form): -> no Keys"
+
+            If ShowPINForm Then
+
+                Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                PinForm.ShowDialog()
+
+                If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" And Not PinForm.AgreeKey = "" Then
+                    Return DEXContract.FinishOrderWithChainSwapKey(GlobalPublicKey, ChainSwapKey,, PinForm.SignKey)
                 Else
                     Return Returner
                 End If
@@ -8307,8 +8092,7 @@ Public Class PFPForm
 
 #End Region
 
-#Region "Checking UTX/TX"
-
+#Region "temporary info handling"
     Function CheckBillingInfosAlreadySend(ByVal OpenDEXContract As ClsDEXContract) As String
         Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
         SignumAPI.DEXSmartContractList = DEXSmartContractList
@@ -8480,6 +8264,7 @@ Public Class PFPForm
 
     End Function
 
+
     Function SetAutoinfoTX2INI(ByVal TXID As ULong) As Boolean
 
         Dim AutoinfoTXStr As String = GetINISetting(E_Setting.AutoInfoTransactions, "")
@@ -8526,7 +8311,6 @@ Public Class PFPForm
     Function DelAutoinfoTXFromINI(ByVal TXID As ULong) As Boolean
 
         Dim AutoinfoTXStr As String = GetINISetting(E_Setting.AutoInfoTransactions, "")
-        Dim AutoinfoTXList As List(Of String) = New List(Of String)
 
         Dim Returner As Boolean = False
 
@@ -8588,7 +8372,6 @@ Public Class PFPForm
     Function DelAutosignalTXFromINI(ByVal TXID As ULong) As Boolean
 
         Dim AutosignalTXStr As String = GetINISetting(E_Setting.AutoSignalTransactions, "")
-        Dim AutosignalTXList As List(Of String) = New List(Of String)
 
         Dim Returner As Boolean = False
 
@@ -8602,6 +8385,255 @@ Public Class PFPForm
         Return Returner
 
     End Function
+
+
+    Function SetBitcoinTX2INI(ByVal DEXContract As ClsDEXContract, ByVal BTCTXID As String, ByVal ChainSwapKey As String, ByVal RedeemScript As String) As Boolean
+
+        Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
+
+        '<DEXContract></DEXContract><OrderID></OrderID><BTCTXID></BTCTXID><ChainSwapKey></ChainSwapKey><RedeemScript></RedeemScript>
+
+        Dim SetStr As String = "<DEXContract>" + DEXContract.ID.ToString + "</DEXContract><OrderID>" + DEXContract.CurrentCreationTransaction.ToString + "</OrderID><BTCTXID>" + BTCTXID + "</BTCTXID><ChainSwapKey>" + ChainSwapKey + "</ChainSwapKey><RedeemScript>" + RedeemScript + "</RedeemScript>;"
+
+        If Not BitcoinTransactions.Contains(SetStr) Then
+            If BitcoinTransactions.Trim = "" Then
+                BitcoinTransactions = SetStr
+            ElseIf BitcoinTransactions.Contains(";") Then
+                BitcoinTransactions += SetStr
+            End If
+
+            SetINISetting(E_Setting.BitcoinTransactions, BitcoinTransactions.Trim)
+
+        End If
+
+        Return True
+
+    End Function
+
+    Function SetBitcoinTX2INI(ByVal DEXContract As ClsDEXContract, ByVal BTCTXID As String, ByVal RedeemScript As String) As Boolean
+
+        Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
+
+        '<DEXContract></DEXContract><OrderID></OrderID><BTCTXID></BTCTXID><ChainSwapKey></ChainSwapKey><RedeemScript></RedeemScript>
+
+        Dim SetStr As String = "<DEXContract>" + DEXContract.ID.ToString + "</DEXContract><OrderID>" + DEXContract.CurrentCreationTransaction.ToString + "</OrderID><BTCTXID>" + BTCTXID + "</BTCTXID><ChainSwapKey></ChainSwapKey><RedeemScript>" + RedeemScript + "</RedeemScript>;"
+
+        If Not BitcoinTransactions.Contains(SetStr) Then
+            If BitcoinTransactions.Trim = "" Then
+                BitcoinTransactions = SetStr
+            ElseIf BitcoinTransactions.Contains(";") Then
+                BitcoinTransactions += SetStr
+            End If
+
+            SetINISetting(E_Setting.BitcoinTransactions, BitcoinTransactions.Trim)
+
+        End If
+
+        Return True
+
+    End Function
+
+
+    Function SetBitcoinTX2INI(ByVal DEXContractID As ULong, ByVal OrderID As ULong, ByVal BTCTXID As String, ByVal ChainSwapKey As String, ByVal RedeemScript As String) As Boolean
+
+        Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
+
+        '<DEXContract></DEXContract><OrderID></OrderID><BTCTXID></BTCTXID><ChainSwapKey></ChainSwapKey><RedeemScript></RedeemScript>
+
+        Dim SetStr As String = "<DEXContract>" + DEXContractID.ToString + "</DEXContract><OrderID>" + OrderID.ToString + "</OrderID><BTCTXID>" + BTCTXID + "</BTCTXID><ChainSwapKey>" + ChainSwapKey + "</ChainSwapKey><RedeemScript>" + RedeemScript + "</RedeemScript>;"
+
+        If Not BitcoinTransactions.Contains(SetStr) Then
+            If BitcoinTransactions.Trim = "" Then
+                BitcoinTransactions = SetStr
+            ElseIf BitcoinTransactions.Contains(";") Then
+                BitcoinTransactions += SetStr
+            End If
+
+            SetINISetting(E_Setting.BitcoinTransactions, BitcoinTransactions.Trim)
+
+        End If
+
+        Return True
+
+    End Function
+
+
+    Function GetBitcoinChainSwapKeyFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong, ByVal BTCTXID As String) As String
+
+        Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
+        Dim BitcoinTransactionsList As List(Of String) = New List(Of String)
+
+        If BitcoinTransactions.Contains(";") Then
+            Dim TempList As List(Of String) = New List(Of String)(BitcoinTransactions.Split(";"c))
+            For Each TempTX As String In TempList
+                If Not TempTX.Trim = "" Then
+                    BitcoinTransactionsList.Add(TempTX)
+                End If
+            Next
+        Else
+            If Not BitcoinTransactions.Trim = "" Then
+                BitcoinTransactionsList.Add(BitcoinTransactions)
+            End If
+        End If
+
+        Dim FindStr As String = "<DEXContract>" + DEXContractID.ToString + "</DEXContract><OrderID>" + OrderID.ToString + "</OrderID><BTCTXID>" + BTCTXID + "</BTCTXID>"
+
+        For Each BitcoinTX As String In BitcoinTransactionsList
+            If BitcoinTX.Contains(FindStr) And BitcoinTX.Contains("<ChainSwapKey>") Then
+                Dim ChainSwapKey As String = GetStringBetween(BitcoinTX, "<ChainSwapKey>", "</ChainSwapKey>")
+                Return ChainSwapKey
+            End If
+        Next
+
+        Return ""
+
+    End Function
+
+    Function GetBitcoinChainSwapHashFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong, ByVal BTCTXID As String) As String
+        Dim T_RedeemScript As String = GetBitcoinRedeemScriptFromINI(DEXContractID, OrderID, BTCTXID)
+        Dim T_ChainSwapHash As String = ClsBitcoinNET.GetXFromScript(T_RedeemScript, ClsScriptEntry.E_OP_Code.ChainSwapHash)
+
+        Return T_ChainSwapHash
+
+    End Function
+
+    Function GetBitcoinRedeemScriptFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong, ByVal BTCTXID As String) As String
+
+        Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
+        Dim BitcoinTransactionsList As List(Of String) = New List(Of String)
+
+        If BitcoinTransactions.Contains(";") Then
+            Dim TempList As List(Of String) = New List(Of String)(BitcoinTransactions.Split(";"c))
+            For Each TempTX As String In TempList
+                If Not TempTX.Trim = "" Then
+                    BitcoinTransactionsList.Add(TempTX)
+                End If
+            Next
+        Else
+            If Not BitcoinTransactions.Trim = "" Then
+                BitcoinTransactionsList.Add(BitcoinTransactions)
+            End If
+        End If
+
+        Dim FindStr As String = "<DEXContract>" + DEXContractID.ToString + "</DEXContract><OrderID>" + OrderID.ToString + "</OrderID><BTCTXID>" + BTCTXID + "</BTCTXID>"
+
+        For Each BitcoinTX As String In BitcoinTransactionsList
+            If BitcoinTX.Contains(FindStr) And BitcoinTX.Contains("<RedeemScript>") Then
+                Dim RedeemScript As String = GetStringBetween(BitcoinTX, "<RedeemScript>", "</RedeemScript>")
+                Return RedeemScript
+            End If
+        Next
+
+        Return ""
+
+    End Function
+
+    Function GetBitcoinTXFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong) As String
+
+        Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
+        Dim BitcoinTransactionsList As List(Of String) = New List(Of String)
+
+        If BitcoinTransactions.Contains(";") Then
+            Dim TempList As List(Of String) = New List(Of String)(BitcoinTransactions.Split(";"c))
+            For Each TempTX As String In TempList
+                If Not TempTX.Trim = "" Then
+                    BitcoinTransactionsList.Add(TempTX)
+                End If
+            Next
+        Else
+            If Not BitcoinTransactions.Trim = "" Then
+                BitcoinTransactionsList.Add(BitcoinTransactions)
+            End If
+        End If
+
+        Dim FindStr As String = "<DEXContract>" + DEXContractID.ToString + "</DEXContract><OrderID>" + OrderID.ToString + "</OrderID>"
+        For Each BitcoinTX As String In BitcoinTransactionsList
+            If BitcoinTX.Contains(FindStr) And BitcoinTX.Contains("<BTCTXID>") Then
+                Return GetStringBetween(BitcoinTX, "<BTCTXID>", "</BTCTXID>")
+            End If
+        Next
+
+        Return ""
+
+    End Function
+
+    Function GetBitcoinTXFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong, ByVal RedeemScript As String) As String
+
+        Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
+        Dim BitcoinTransactionsList As List(Of String) = New List(Of String)
+
+        If BitcoinTransactions.Contains(";") Then
+            Dim TempList As List(Of String) = New List(Of String)(BitcoinTransactions.Split(";"c))
+            For Each TempTX As String In TempList
+                If Not TempTX.Trim = "" Then
+                    BitcoinTransactionsList.Add(TempTX)
+                End If
+            Next
+        Else
+            If Not BitcoinTransactions.Trim = "" Then
+                BitcoinTransactionsList.Add(BitcoinTransactions)
+            End If
+        End If
+
+        Dim FindStr As String = "<DEXContract>" + DEXContractID.ToString + "</DEXContract><OrderID>" + OrderID.ToString + "</OrderID>"
+        For Each BitcoinTX As String In BitcoinTransactionsList
+            If BitcoinTX.Contains(FindStr) And BitcoinTX.Contains("<RedeemScript>") And BitcoinTX.Contains("<BTCTXID>") Then
+
+                Dim T_RedeemScript As String = GetStringBetween(BitcoinTX, "<RedeemScript>", "</RedeemScript>").ToLower
+
+                If T_RedeemScript.Contains(RedeemScript.ToLower) Then
+                    Return GetStringBetween(BitcoinTX, "<BTCTXID>", "</BTCTXID>")
+                End If
+            End If
+        Next
+
+        Return ""
+
+    End Function
+
+    Function DelBitcoinTXFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong, ByVal BTCTXID As String, ByVal ChainSwapHash As String) As Boolean
+
+        Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
+        Dim BitcoinTransactionsList As List(Of String) = New List(Of String)
+
+        If BitcoinTransactions.Contains(";") Then
+            Dim TempList As List(Of String) = New List(Of String)(BitcoinTransactions.Split(";"c))
+            For Each TempTX As String In TempList
+                If Not TempTX.Trim = "" Then
+                    BitcoinTransactionsList.Add(TempTX)
+                End If
+            Next
+        Else
+            If Not BitcoinTransactions.Trim = "" Then
+                BitcoinTransactionsList.Add(BitcoinTransactions)
+            End If
+        End If
+
+        Dim Returner As Boolean = False
+
+        Dim FindStr As String = "<DEXContract>" + DEXContractID.ToString + "</DEXContract><OrderID>" + OrderID.ToString + "</OrderID><BTCTXID>" + BTCTXID + "</BTCTXID>"
+        BitcoinTransactions = ""
+        For Each BitcoinTX As String In BitcoinTransactionsList
+            If BitcoinTX.Contains(FindStr) And BitcoinTX.Contains("<RedeemScript>") Then
+
+                Dim T_ChainSwapHash As String = GetStringBetween(BitcoinTX, "<RedeemScript>", "</RedeemScript>").ToLower
+
+                If T_ChainSwapHash.Contains(ChainSwapHash.ToLower) Then
+                    Returner = True
+                Else
+                    BitcoinTransactions += BitcoinTX + ";"
+                End If
+            Else
+                BitcoinTransactions += BitcoinTX + ";"
+            End If
+        Next
+
+        SetINISetting(E_Setting.BitcoinTransactions, BitcoinTransactions.Trim)
+
+        Return Returner
+
+    End Function
+
 
 #End Region
 
@@ -8638,9 +8670,8 @@ Public Class PFPForm
                 Dim SignumNET As ClsSignumNET = New ClsSignumNET
                 Dim Message As String = SignumNET.DecryptFrom(SenderPubkey, DecryptedMessage, Nonce)
 
-                If Message.Contains(Application.ProductName + "-error") Or Message.Contains(Application.ProductName + "-warning") Then
+                If Not IsErrorOrWarning(Message) Then
 
-                Else
                     If Not Message.Trim = "" Then
 
                         If Shorten Then
@@ -8671,6 +8702,39 @@ Public Class PFPForm
         Next
 
         Return ""
+
+    End Function
+
+#End Region
+
+#Region "error and warning handling"
+    Function IsErrorOrWarning(ByVal Message As String, Optional ByVal Addition As String = "", Optional ByVal AdditionBefore As Boolean = False) As Boolean
+
+        If Message.Contains(Application.ProductName + "-error") Then
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                If AdditionBefore Then
+                    out.ErrorLog2File(Addition + Message)
+                Else
+                    out.ErrorLog2File(Message + Addition)
+                End If
+
+            End If
+            Return True
+        ElseIf Message.Contains(Application.ProductName + "-warning") Then
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                If AdditionBefore Then
+                    out.WarningLog2File(Addition + Message)
+                Else
+                    out.WarningLog2File(Message + Addition)
+                End If
+
+            End If
+            Return True
+        End If
+
+        Return False
 
     End Function
 
@@ -8730,11 +8794,7 @@ Public Class PFPForm
                 Try
                     Request = APIRequestList(i)
                 Catch ex As Exception
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                        Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While1): -> " + ex.Message)
-                    End If
-
+                    IsErrorOrWarning(Application.ProductName + "-error in GetThread(While1): -> " + ex.Message)
                 End Try
 
 
@@ -8763,19 +8823,13 @@ Public Class PFPForm
                             Continue While
                         End If
 
-                        'Try
                         APIRequestList(i) = Request
-                        'Catch ex As Exception
-                        '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                        '    Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While2): -> " + ex.Message)
-                        'End Try
 
                         Continue For
 
                     End If
 
                 ElseIf Request.Status = "Not Ready..." Then
-
 
                     NuNodeList.Remove(Request.Node)
                     NodeList.Remove(Request.Node) 'remove from list
@@ -8796,12 +8850,7 @@ Public Class PFPForm
 
                     Request.RequestThread.Start(New List(Of Object)({i, Request}))
 
-                    'Try
                     APIRequestList(i) = Request
-                    'Catch ex As Exception
-                    '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                    '    Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While3): -> " + ex.Message)
-                    'End Try
 
                 ElseIf Request.Status = "Requesting..." Then
                     'loadbalancing
@@ -8820,12 +8869,7 @@ Public Class PFPForm
                                 Continue While
                             End If
 
-                            'Try
                             APIRequestList(i) = Request
-                            'Catch ex As Exception
-                            '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                            '    Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While4): -> " + ex.Message)
-                            'End Try
 
                             Exit For
                         End If
@@ -8839,13 +8883,6 @@ Public Class PFPForm
                 End If
 
             Next
-
-            'Catch ex As Exception
-            '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            '    Out.ErrorLog2File(Application.ProductName + "-error in GetThread(While): -> " + ex.Message)
-
-            '    'MultiInvoker(StatusLabel, "Text", "GetThread(): " + ex.Message)
-            'End Try
 
         End While
 
@@ -8882,11 +8919,7 @@ Public Class PFPForm
             End If
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in GetThread(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in GetThread(): -> " + ex.Message)
         End Try
 
     End Sub
@@ -8904,10 +8937,7 @@ Public Class PFPForm
         If T_Input.GetType.Name = GetType(List(Of Object)).Name Then
             Input = DirectCast(T_Input, List(Of Object))
         Else
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in SubGetThread(DirectCast): -> " + T_Input.GetType.Name)
-            End If
+            IsErrorOrWarning(Application.ProductName + "-error in SubGetThread(DirectCast): -> " + T_Input.GetType.Name)
         End If
 
 
@@ -8979,6 +9009,9 @@ Public Class PFPForm
                         T_HistoryOrder.XItem = ClsDEXNET.GetXMLMessage(HistoryOrderXML, "XItem")
                         T_HistoryOrder.Price = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(ClsDEXNET.GetXMLMessage(HistoryOrderXML, "Price")))
 
+                        T_HistoryOrder.ChainSwapKey = ClsDEXNET.GetXMLMessage(HistoryOrderXML, "ChainSwapKey")
+                        'T_HistoryOrder.ChainSwapHash = ClsDEXNET.GetXMLMessage(HistoryOrderXML, "ChainSwapHash")
+
                         Dim T_StrStatus As String = ClsDEXNET.GetXMLMessage(HistoryOrderXML, "Status")
 
                         Select Case T_StrStatus
@@ -9038,11 +9071,7 @@ Public Class PFPForm
         APIRequestList(Index) = Request
 
         'Catch ex As Exception
-        '    If GetINISetting(E_Setting.InfoOut, False) Then
-        '        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-        '        Out.ErrorLog2File(Application.ProductName + "-error in SubGetThread(M): -> " + ex.Message)
-        '    End If
-
+        ' IsErrorOrWarning(Application.ProductName + "-error in SubGetThread(M): -> " + ex.Message)
         'End Try
 
     End Sub
@@ -9091,11 +9120,7 @@ Public Class PFPForm
             Return True
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in MultithreadMonitor(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in MultithreadMonitor(): -> " + ex.Message)
         End Try
 
         Return False
@@ -9157,11 +9182,7 @@ Public Class PFPForm
 
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in MultiInvoker(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in MultiInvoker(): -> " + ex.Message)
         End Try
 
     End Sub
@@ -9207,10 +9228,7 @@ Public Class PFPForm
                 If value.GetType.Name = GetType(List(Of Object)).Name Then
                     T_Values = DirectCast(value, List(Of Object))
                 Else
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                        Out.ErrorLog2File(Application.ProductName + "-error in SetPropertyValueByName(DirectCast): -> " + value.GetType.Name)
-                    End If
+                    IsErrorOrWarning(Application.ProductName + "-error in SetPropertyValueByName(DirectCast): -> " + value.GetType.Name)
                 End If
 
                 If T_Values.Count > 0 Then
@@ -9227,10 +9245,9 @@ Public Class PFPForm
                     End If
 
                 End If
-
                 Return True
 
-            ElseIf ControlObject.GetType.name = GetType(ListBox).name And PropertyName = "Items" Then
+            ElseIf ControlObject.GetType.Name = GetType(ListBox).Name And PropertyName = "Items" Then
 
                 Dim T_LB As ListBox = DirectCast(ControlObject, ListBox)
                 Dim T_Values As List(Of Object) = New List(Of Object)
@@ -9238,10 +9255,7 @@ Public Class PFPForm
                 If value.GetType.Name = GetType(List(Of Object)).Name Then
                     T_Values = DirectCast(value, List(Of Object))
                 Else
-                    If GetINISetting(E_Setting.InfoOut, False) Then
-                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                        Out.ErrorLog2File(Application.ProductName + "-error in SetPropertyValueByName(DirectCast): -> " + value.GetType.Name)
-                    End If
+                    IsErrorOrWarning(Application.ProductName + "-error in SetPropertyValueByName(DirectCast): -> " + value.GetType.Name)
                 End If
 
 
@@ -9269,11 +9283,7 @@ Public Class PFPForm
             Return False
 
         Catch ex As Exception
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                Out.ErrorLog2File(Application.ProductName + "-error in SetPropertyValueByName(): -> " + ex.Message)
-            End If
-
+            IsErrorOrWarning(Application.ProductName + "-error in SetPropertyValueByName(): -> " + ex.Message)
             Return False
         End Try
 
@@ -9281,7 +9291,7 @@ Public Class PFPForm
 
     Dim GFXFlag As Boolean = True
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles BtChartGFXOnOff.Click
+    Private Sub BtChartGFXOnOff_Click(sender As Object, e As EventArgs) Handles BtChartGFXOnOff.Click
 
         If GFXFlag Then
             GFXFlag = False
@@ -9298,7 +9308,6 @@ Public Class PFPForm
 #End Region
 
 #Region "Test"
-
 
 
 #End Region 'Test

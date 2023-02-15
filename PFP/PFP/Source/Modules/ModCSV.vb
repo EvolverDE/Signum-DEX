@@ -91,7 +91,9 @@ Module ModCSV
 
                 If T_SmartContract(0) = MyOrder(0) Then
                     MyOrder.RemoveAt(0)
-                    LineEntrys.AddRange(MyOrder.ToArray)
+                    If Not MyOrder.Contains("DELETED") Then
+                        LineEntrys.AddRange(MyOrder.ToArray)
+                    End If
                     Exit For
                 End If
 
@@ -127,7 +129,6 @@ Module ModCSV
         Return True
 
     End Function
-
 
     Function ConvertSmartContractsToListList(ByVal T_SmartContractList As List(Of PFPForm.S_SmartContract)) As List(Of List(Of String))
 
@@ -210,7 +211,6 @@ Module ModCSV
 
         For i As Integer = 0 To OrderSettingsBuffer.Count - 1
             Dim T_T_OS As ClsOrderSettings = OrderSettingsBuffer(i)
-
             If T_T_OS.TransactionID = TXID Then
                 T_OSList.Add(T_T_OS)
                 Exit For
@@ -394,10 +394,8 @@ Module ModCSV
         Dim CSVList As List(Of List(Of String)) = New List(Of List(Of String))
 
         For Each TOS As ClsOrderSettings In New_CSV_OrderSettingList
-            If Not TOS.Status = "DELETED" Then
-                Dim LineArray As List(Of String) = New List(Of String)({TOS.SmartContractID.ToString, TOS.TransactionID.ToString, TOS.Type, TOS.PaytypeString, TOS.Infotext, TOS.AutoSendInfotext.ToString, TOS.AutoCompleteSmartContract.ToString, TOS.Status})
-                CSVList.Add(LineArray)
-            End If
+            Dim LineArray As List(Of String) = New List(Of String)({TOS.SmartContractID.ToString, TOS.TransactionID.ToString, TOS.Type, TOS.PaytypeString, TOS.Infotext, TOS.AutoSendInfotext.ToString, TOS.AutoCompleteSmartContract.ToString, TOS.Status})
+            CSVList.Add(LineArray)
         Next
 
         Return CSVList
@@ -406,10 +404,13 @@ Module ModCSV
 
     Function DelOrderSettings(ByVal SmartContractID As ULong) As Boolean
 
-        For Each OrderSetting As ClsOrderSettings In OrderSettingsBuffer
+        For i As Integer = 0 To OrderSettingsBuffer.Count - 1
+
+            Dim OrderSetting As ClsOrderSettings = OrderSettingsBuffer(i)
 
             If OrderSetting.SmartContractID = SmartContractID Then
                 OrderSetting.Status = "DELETED"
+                OrderSettingsBuffer(i) = OrderSetting
                 Exit For
             End If
 

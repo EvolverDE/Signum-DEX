@@ -121,6 +121,7 @@ Partial Class PFPForm
         Me.SplitContainer16 = New System.Windows.Forms.SplitContainer()
         Me.LVMyOpenOrders = New System.Windows.Forms.ListView()
         Me.ColumnHeader41 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.BtExecuteWithChainSwapKey = New System.Windows.Forms.Button()
         Me.BtAppeal = New System.Windows.Forms.Button()
         Me.CoBxCandidateToSend = New System.Windows.Forms.ComboBox()
         Me.BtOpenDispute = New System.Windows.Forms.Button()
@@ -651,7 +652,7 @@ Partial Class PFPForm
         '
         Me.CoBxMarket.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CoBxMarket.FormattingEnabled = True
-        Me.CoBxMarket.Items.AddRange(New Object() {"AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"})
+        Me.CoBxMarket.Items.AddRange(New Object() {"AUD", "BRL", "BTC", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"})
         Me.CoBxMarket.Location = New System.Drawing.Point(55, 3)
         Me.CoBxMarket.Name = "CoBxMarket"
         Me.CoBxMarket.Size = New System.Drawing.Size(97, 21)
@@ -1248,9 +1249,9 @@ Partial Class PFPForm
         '
         Me.CoBxMediatorCandidateToSend.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CoBxMediatorCandidateToSend.FormattingEnabled = True
-        Me.CoBxMediatorCandidateToSend.Location = New System.Drawing.Point(135, 55)
+        Me.CoBxMediatorCandidateToSend.Location = New System.Drawing.Point(135, 54)
         Me.CoBxMediatorCandidateToSend.Name = "CoBxMediatorCandidateToSend"
-        Me.CoBxMediatorCandidateToSend.Size = New System.Drawing.Size(330, 21)
+        Me.CoBxMediatorCandidateToSend.Size = New System.Drawing.Size(539, 21)
         Me.CoBxMediatorCandidateToSend.TabIndex = 11
         Me.CoBxMediatorCandidateToSend.Visible = False
         '
@@ -1258,7 +1259,7 @@ Partial Class PFPForm
         '
         Me.LabProposalPercent.AutoSize = True
         Me.LabProposalPercent.ForeColor = System.Drawing.Color.White
-        Me.LabProposalPercent.Location = New System.Drawing.Point(407, 8)
+        Me.LabProposalPercent.Location = New System.Drawing.Point(617, 8)
         Me.LabProposalPercent.Name = "LabProposalPercent"
         Me.LabProposalPercent.Size = New System.Drawing.Size(57, 13)
         Me.LabProposalPercent.TabIndex = 10
@@ -1268,7 +1269,7 @@ Partial Class PFPForm
         'NUDMediatePercentage
         '
         Me.NUDMediatePercentage.DecimalPlaces = 2
-        Me.NUDMediatePercentage.Location = New System.Drawing.Point(324, 3)
+        Me.NUDMediatePercentage.Location = New System.Drawing.Point(534, 5)
         Me.NUDMediatePercentage.Name = "NUDMediatePercentage"
         Me.NUDMediatePercentage.Size = New System.Drawing.Size(80, 20)
         Me.NUDMediatePercentage.TabIndex = 9
@@ -1279,7 +1280,7 @@ Partial Class PFPForm
         '
         Me.LabProposal.AutoSize = True
         Me.LabProposal.ForeColor = System.Drawing.Color.White
-        Me.LabProposal.Location = New System.Drawing.Point(264, 6)
+        Me.LabProposal.Location = New System.Drawing.Point(474, 8)
         Me.LabProposal.Name = "LabProposal"
         Me.LabProposal.Size = New System.Drawing.Size(51, 13)
         Me.LabProposal.TabIndex = 8
@@ -1290,7 +1291,7 @@ Partial Class PFPForm
         '
         Me.BtSendMediatorMsg.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtSendMediatorMsg.ForeColor = System.Drawing.Color.White
-        Me.BtSendMediatorMsg.Location = New System.Drawing.Point(470, 53)
+        Me.BtSendMediatorMsg.Location = New System.Drawing.Point(680, 53)
         Me.BtSendMediatorMsg.Name = "BtSendMediatorMsg"
         Me.BtSendMediatorMsg.Size = New System.Drawing.Size(94, 23)
         Me.BtSendMediatorMsg.TabIndex = 7
@@ -1317,7 +1318,7 @@ Partial Class PFPForm
         Me.TBMediatorManuMsg.ForeColor = System.Drawing.Color.Black
         Me.TBMediatorManuMsg.Location = New System.Drawing.Point(64, 29)
         Me.TBMediatorManuMsg.Name = "TBMediatorManuMsg"
-        Me.TBMediatorManuMsg.Size = New System.Drawing.Size(500, 20)
+        Me.TBMediatorManuMsg.Size = New System.Drawing.Size(710, 20)
         Me.TBMediatorManuMsg.TabIndex = 5
         Me.TBMediatorManuMsg.Visible = False
         '
@@ -1336,7 +1337,7 @@ Partial Class PFPForm
         '
         Me.BtMediateDispute.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtMediateDispute.ForeColor = System.Drawing.Color.White
-        Me.BtMediateDispute.Location = New System.Drawing.Point(470, 3)
+        Me.BtMediateDispute.Location = New System.Drawing.Point(680, 3)
         Me.BtMediateDispute.Name = "BtMediateDispute"
         Me.BtMediateDispute.Size = New System.Drawing.Size(94, 23)
         Me.BtMediateDispute.TabIndex = 1
@@ -1412,6 +1413,7 @@ Partial Class PFPForm
         '
         'SplitContainer16.Panel2
         '
+        Me.SplitContainer16.Panel2.Controls.Add(Me.BtExecuteWithChainSwapKey)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtAppeal)
         Me.SplitContainer16.Panel2.Controls.Add(Me.CoBxCandidateToSend)
         Me.SplitContainer16.Panel2.Controls.Add(Me.BtOpenDispute)
@@ -1448,12 +1450,23 @@ Partial Class PFPForm
         Me.ColumnHeader41.Text = "Loading..."
         Me.ColumnHeader41.Width = 90
         '
+        'BtExecuteWithChainSwapKey
+        '
+        Me.BtExecuteWithChainSwapKey.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BtExecuteWithChainSwapKey.Location = New System.Drawing.Point(134, 3)
+        Me.BtExecuteWithChainSwapKey.Name = "BtExecuteWithChainSwapKey"
+        Me.BtExecuteWithChainSwapKey.Size = New System.Drawing.Size(158, 23)
+        Me.BtExecuteWithChainSwapKey.TabIndex = 14
+        Me.BtExecuteWithChainSwapKey.Text = "execute with chainswapkey"
+        Me.BtExecuteWithChainSwapKey.UseVisualStyleBackColor = False
+        Me.BtExecuteWithChainSwapKey.Visible = False
+        '
         'BtAppeal
         '
         Me.BtAppeal.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtAppeal.Location = New System.Drawing.Point(234, 3)
+        Me.BtAppeal.Location = New System.Drawing.Point(509, 3)
         Me.BtAppeal.Name = "BtAppeal"
-        Me.BtAppeal.Size = New System.Drawing.Size(94, 23)
+        Me.BtAppeal.Size = New System.Drawing.Size(65, 23)
         Me.BtAppeal.TabIndex = 13
         Me.BtAppeal.Text = "appeal"
         Me.BtAppeal.UseVisualStyleBackColor = False
@@ -1463,18 +1476,18 @@ Partial Class PFPForm
         '
         Me.CoBxCandidateToSend.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CoBxCandidateToSend.FormattingEnabled = True
-        Me.CoBxCandidateToSend.Location = New System.Drawing.Point(134, 55)
+        Me.CoBxCandidateToSend.Location = New System.Drawing.Point(134, 54)
         Me.CoBxCandidateToSend.Name = "CoBxCandidateToSend"
-        Me.CoBxCandidateToSend.Size = New System.Drawing.Size(330, 21)
+        Me.CoBxCandidateToSend.Size = New System.Drawing.Size(540, 21)
         Me.CoBxCandidateToSend.TabIndex = 12
         Me.CoBxCandidateToSend.Visible = False
         '
         'BtOpenDispute
         '
         Me.BtOpenDispute.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtOpenDispute.Location = New System.Drawing.Point(134, 3)
+        Me.BtOpenDispute.Location = New System.Drawing.Point(424, 3)
         Me.BtOpenDispute.Name = "BtOpenDispute"
-        Me.BtOpenDispute.Size = New System.Drawing.Size(94, 23)
+        Me.BtOpenDispute.Size = New System.Drawing.Size(79, 23)
         Me.BtOpenDispute.TabIndex = 8
         Me.BtOpenDispute.Text = "open dispute"
         Me.BtOpenDispute.UseVisualStyleBackColor = False
@@ -1483,7 +1496,7 @@ Partial Class PFPForm
         'BtSendMsg
         '
         Me.BtSendMsg.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtSendMsg.Location = New System.Drawing.Point(469, 53)
+        Me.BtSendMsg.Location = New System.Drawing.Point(680, 53)
         Me.BtSendMsg.Name = "BtSendMsg"
         Me.BtSendMsg.Size = New System.Drawing.Size(94, 23)
         Me.BtSendMsg.TabIndex = 7
@@ -1509,7 +1522,7 @@ Partial Class PFPForm
         Me.TBManuMsg.ForeColor = System.Drawing.Color.Black
         Me.TBManuMsg.Location = New System.Drawing.Point(64, 29)
         Me.TBManuMsg.Name = "TBManuMsg"
-        Me.TBManuMsg.Size = New System.Drawing.Size(500, 20)
+        Me.TBManuMsg.Size = New System.Drawing.Size(710, 20)
         Me.TBManuMsg.TabIndex = 5
         Me.TBManuMsg.Visible = False
         '
@@ -1526,7 +1539,7 @@ Partial Class PFPForm
         'BtReCreatePayPalOrder
         '
         Me.BtReCreatePayPalOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtReCreatePayPalOrder.Location = New System.Drawing.Point(470, 3)
+        Me.BtReCreatePayPalOrder.Location = New System.Drawing.Point(680, 3)
         Me.BtReCreatePayPalOrder.Name = "BtReCreatePayPalOrder"
         Me.BtReCreatePayPalOrder.Size = New System.Drawing.Size(94, 23)
         Me.BtReCreatePayPalOrder.TabIndex = 3
@@ -1537,7 +1550,7 @@ Partial Class PFPForm
         'BtPayOrder
         '
         Me.BtPayOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtPayOrder.Location = New System.Drawing.Point(370, 3)
+        Me.BtPayOrder.Location = New System.Drawing.Point(580, 3)
         Me.BtPayOrder.Name = "BtPayOrder"
         Me.BtPayOrder.Size = New System.Drawing.Size(94, 23)
         Me.BtPayOrder.TabIndex = 2
@@ -2081,4 +2094,5 @@ Partial Class PFPForm
     Friend WithEvents BtAppeal As Button
     Friend WithEvents BtMediatorDeActivateDeniability As Button
     Friend WithEvents ChBxBuyFilterShowOffChainOrders As CheckBox
+    Friend WithEvents BtExecuteWithChainSwapKey As Button
 End Class

@@ -118,12 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="responseopenorder" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\responseopenorder.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="createorder" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\createorder.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="status_offline" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\status_offline.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -133,20 +127,14 @@
   <data name="status_decrypted" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\status_decrypted.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="OpenOrder" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\OpenOrder.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="buyorder" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\buyorder.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="status_encrypted" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\status_encrypted.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="status_online" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\status_online.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="settings" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\settings.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="signum_back3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\signum_back3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="symbol" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\symbol.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -154,10 +142,10 @@
   <data name="status_wait" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\status_wait.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="showmyopenorder" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\showmyopenorder.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="bitcoin_logo_512" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bitcoin_logo_512.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="signum_back3" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\signum_back3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="bitcoin_logo_512_bg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bitcoin_logo_512_bg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

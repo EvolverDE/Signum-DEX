@@ -44,10 +44,16 @@ Module ModGlobalFunctions
 
     End Function
 
-    Function MessageIsHEXString(ByVal Message As String) As Boolean
+    Function MessageIsHEXString(ByVal Message As String, Optional ByVal Length As Integer = -1) As Boolean
 
-        If Message.Length Mod 2 <> 0 Then
-            Return False
+        If Length = -1 Then
+            If Message.Length Mod 2 <> 0 Then
+                Return False
+            End If
+        Else
+            If Message.Length <> Length * 2 Then
+                Return False
+            End If
         End If
 
         Dim CharAry() As Char = Message.ToUpper.ToCharArray

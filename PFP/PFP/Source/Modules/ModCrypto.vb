@@ -1,16 +1,24 @@
 ﻿
 Module ModCrypto
 
-
     Function GetSHA256HashString(ByVal Input As String) As String
 
-        Dim InputBytes() As Byte = System.Text.Encoding.UTF8.GetBytes(Input)
+        Dim InputBytesList As List(Of Byte) = New List(Of Byte)
+
+        If MessageIsHEXString(Input) Then
+            InputBytesList = HEXStringToByteArray(Input).ToList
+        Else
+            InputBytesList = System.Text.Encoding.ASCII.GetBytes(Input).ToList
+        End If
+
+        Dim InputByteArray As Byte() = InputBytesList.ToArray
+
         Dim SHA256 As System.Security.Cryptography.SHA256Managed = New System.Security.Cryptography.SHA256Managed()
-        InputBytes = SHA256.ComputeHash(InputBytes)
+        InputByteArray = SHA256.ComputeHash(InputByteArray)
         Dim HashString As String = ""
 
-        For i As Integer = 0 To InputBytes.Length - 1 'Step 2
-            Dim T_Byte As Byte = InputBytes(i)
+        For i As Integer = 0 To InputByteArray.Length - 1 'Step 2
+            Dim T_Byte As Byte = InputByteArray(i)
 
             Dim T_HEXString As String = Conversion.Hex(T_Byte)
 
@@ -23,6 +31,85 @@ Module ModCrypto
         Next
 
         Return HashString
+
+    End Function
+
+    Function GetSHA256HashString(ByVal Input As List(Of ULong)) As String
+
+        Dim ByteList As List(Of Byte) = New List(Of Byte)
+
+        For i As Integer = 0 To Input.Count - 1
+            ByteList.AddRange(BitConverter.GetBytes(Input(i)))
+        Next
+
+        ByteList.Reverse()
+
+        Dim SHA256 As System.Security.Cryptography.SHA256Managed = New System.Security.Cryptography.SHA256Managed
+        Dim FullHash As List(Of Byte) = SHA256.ComputeHash(ByteList.ToArray).ToList
+
+        Return ByteArrayToHEXString(FullHash.ToArray)
+
+    End Function
+
+    Function GetSHA256HashULongs(ByVal Input As String) As List(Of ULong)
+
+        Dim InputBytesList As List(Of Byte) = New List(Of Byte)
+
+        If MessageIsHEXString(Input) Then
+            InputBytesList = HEXStringToByteArray(Input).ToList
+        Else
+            InputBytesList = System.Text.Encoding.ASCII.GetBytes(Input).ToList
+        End If
+
+        Dim SHA256 As System.Security.Cryptography.SHA256Managed = New System.Security.Cryptography.SHA256Managed
+        Dim FullHash As List(Of Byte) = SHA256.ComputeHash(InputBytesList.ToArray).ToList
+
+        FullHash.Reverse()
+
+        Dim ULongList As List(Of ULong) = New List(Of ULong)
+
+        ULongList.Add(BitConverter.ToUInt64(FullHash.ToArray, 0))
+        ULongList.Add(BitConverter.ToUInt64(FullHash.ToArray, 8))
+        ULongList.Add(BitConverter.ToUInt64(FullHash.ToArray, 16))
+        ULongList.Add(BitConverter.ToUInt64(FullHash.ToArray, 24))
+
+        Return ULongList
+
+    End Function
+
+    Function GetSHA256HashULongs(ByVal Input As List(Of ULong), ByVal CutZeros As Boolean) As List(Of ULong)
+
+        Dim ByteList As List(Of Byte) = New List(Of Byte)
+
+        For i As Integer = 0 To Input.Count - 1
+            ByteList.AddRange(BitConverter.GetBytes(Input(i)))
+        Next
+
+        ByteList.Reverse()
+
+        If CutZeros Then
+            While ByteList.Count > 0 And ByteList(0) = 0
+                ByteList.RemoveAt(0)
+            End While
+        End If
+
+        If ByteList.Count = 0 Then
+            Return New List(Of ULong)
+        End If
+
+        Dim SHA256 As System.Security.Cryptography.SHA256Managed = New System.Security.Cryptography.SHA256Managed
+        Dim FullHash As List(Of Byte) = SHA256.ComputeHash(ByteList.ToArray).ToList
+
+        FullHash.Reverse()
+
+        Dim ULongList As List(Of ULong) = New List(Of ULong)
+
+        ULongList.Add(BitConverter.ToUInt64(FullHash.ToArray, 0))
+        ULongList.Add(BitConverter.ToUInt64(FullHash.ToArray, 8))
+        ULongList.Add(BitConverter.ToUInt64(FullHash.ToArray, 16))
+        ULongList.Add(BitConverter.ToUInt64(FullHash.ToArray, 24))
+
+        Return ULongList
 
     End Function
 
