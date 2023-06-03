@@ -10,9 +10,8 @@ Imports PFP.ClsTransaction
 Module ModBitcoinFunctions
 
     Property BitcoinAddressPrefix As String = "6f" '00=main; 6f=testnet
-    Public BitcoinConfigFile As String = Application.StartupPath + "\Settings.ini"
-    Public BitcoinConfigFileSection As String = "Bitcoin"
-
+    Property BitcoinConfigFile As String = Application.StartupPath + "\Settings.ini"
+    Property BitcoinConfigFileSection As String = "Bitcoin"
 
     Public Function IntToHex(ByVal Int As Integer, Optional ByVal Length As Integer = -1, Optional BigEndian As Boolean = True) As String
         Dim BI As BigInteger = New BigInteger(Int)
@@ -69,10 +68,17 @@ Module ModBitcoinFunctions
 
     End Function
 
-    Function GetBitcoinMainPrivateKey() As String
+    Function GetBitcoinMainPrivateKey(ByVal ShowPINForm As Boolean) As String
 
         If Not CheckPIN() Then
-            Return ""
+            If ShowPINForm Then
+                Dim T_PINForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.EnterPINOnly)
+                Dim Result As DialogResult = T_PINForm.ShowDialog()
+            End If
+
+            If GlobalPIN.Trim = "" Then
+                Return ""
+            End If
         End If
 
         Dim PINFingerprint As String = GetINISetting(E_Setting.PINFingerPrint, "")
@@ -167,6 +173,47 @@ Module ModBitcoinFunctions
 
     End Function
 
+    Function GetBitcoinAddresses(Optional ByVal AddressCount As Integer = -1) As List(Of String)
+
+        Dim T_Accounts As String = GetINISetting(E_Setting.BitcoinAccounts, "")
+
+        If Not T_Accounts.Trim = "" Then
+
+            If T_Accounts.Contains(";") Then
+
+                Dim T_AccList As List(Of String) = New List(Of String)(T_Accounts.Split(";"c))
+
+                Dim T_Accs As List(Of String) = New List(Of String)
+                For Each TAcc As String In T_AccList
+
+                    If TAcc.Contains(":") Then
+                        Dim T_PublicKey As String = TAcc.Split(":"c)(1)
+                        Dim T_Address As String = PubKeyToAddress(T_PublicKey, BitcoinAddressPrefix)
+
+                        T_Accs.Add(T_Address)
+
+                    End If
+
+                Next
+
+                Return T_Accs
+
+            Else
+
+                If T_Accounts.Contains(":") Then
+                    Dim T_PublicKey As String = T_Accounts.Split(":"c)(1)
+                    Dim T_Address As String = PubKeyToAddress(T_PublicKey, BitcoinAddressPrefix)
+                    Return New List(Of String)({T_Address})
+                End If
+
+            End If
+
+        End If
+
+        Return New List(Of String)
+
+    End Function
+
     Function PrivKeyToPubKey(ByVal PrivKey As String) As String
 
         Dim PubKeyAry As Byte() = New Byte(63) {}
@@ -175,7 +222,6 @@ Module ModBitcoinFunctions
 
         Secp256k1Vb.Secp256k1.Start()
 
-        'TODO: Implement Secp256k1
         Dim PubKey As Secp256k1Vb.PublicKey = Secp256k1Vb.Secp256k1.CreatePublicKey(HEXStringToByteArray(PrivKey.ToLower()))
         CompressedPubKey = PubKey.Serialize(True)
 

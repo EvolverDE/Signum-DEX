@@ -121,9 +121,6 @@
   <data name="status_offline" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\status_offline.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\logo.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="status_decrypted" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\status_decrypted.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -136,9 +133,6 @@
   <data name="signum_back3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\signum_back3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="symbol" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\symbol.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="status_wait" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\status_wait.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -147,5 +141,20 @@
   </data>
   <data name="bitcoin_logo_512_bg" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\bitcoin_logo_512_bg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DEX" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DEX.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DEX3D" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DEX3D.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DEX3D2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DEX3D2.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DEXChange" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DEXChange.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="3DEX" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\3DEX.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

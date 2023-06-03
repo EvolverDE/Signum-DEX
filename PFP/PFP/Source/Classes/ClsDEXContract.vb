@@ -4,7 +4,7 @@ Option Explicit On
 Public Class ClsDEXContract
 
 #Region "SmartContract Structure"
-    'SmartContract: 8372890871867317775
+    'SmartContract: 17481325922122010625
 
     'ActivateDeactivateDispute: -9199918549131231789
 
@@ -25,10 +25,10 @@ Public Class ClsDEXContract
 
 #End Region
 
-    'Public Const _ReferenceTX As ULong = 8372890871867317775UL
-    'Public Const _ReferenceTXFullHash As String = "0f1ec3f0e27b327479e559b51a5f32338a60431ec59a64a252269c17932917c8" 
-    'Public Const _DeployFeeNQT As ULong = 230000000UL
-    'Public Const _GasFeeNQT As ULong = 40000000UL
+    'Public Const _ReferenceTX As ULong = 17481325922122010625UL
+    'Public Const _ReferenceTXFullHash As String = "0110e95e4e259af20f9bbb99f7e4abdbe02b43aedf127c7ae3ff5873c1ff4f98" 
+    'Public Const _DeployFeeNQT As ULong = 240000000UL
+    'Public Const _GasFeeNQT As ULong = 50000000UL
 
     Public ReadOnly Property ReferenceDeActivateDeniability As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(-9199918549131231789L), 0) '805352d2a4817dd3
 
@@ -38,7 +38,7 @@ Public Class ClsDEXContract
     Public ReadOnly Property ReferenceInjectResponder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(9213622959462902524L), 0) '7fdd5d44092b6afc
 
     Public ReadOnly Property ReferenceOpenDispute As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(7510787419861318753L), 0) '683bad5d504e7c61
-    Public ReadOnly Property ReferenceMediateDispute As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(1115156232660555199L), 0) '0f79d4af6ccb95bf '1115156232660555199
+    Public ReadOnly Property ReferenceMediateDispute As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(1115156232660555199L), 0) '0f79d4af6ccb95bf
     Public ReadOnly Property ReferenceAppeal As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(7341272028202959329L), 0) '65e17003908c81e1
     Public ReadOnly Property ReferenceCheckCloseDispute As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(-5140474353491861087L), 0) 'b8a95dcf971ca1a1
 
@@ -74,7 +74,6 @@ Public Class ClsDEXContract
             Return C_IsReady
         End Get
     End Property
-
 
     Private Property C_ContractTimestamp As ULong = 0UL
     Public ReadOnly Property ContractTimestamp() As ULong
@@ -124,7 +123,6 @@ Public Class ClsDEXContract
             Return C_CreatorAddress
         End Get
     End Property
-
 
     Private Property C_CurrentCreationTransaction As ULong
     Public ReadOnly Property CurrentCreationTransaction As ULong
@@ -221,7 +219,6 @@ Public Class ClsDEXContract
             Return C_DisputeTimeout
         End Get
     End Property
-
 
     Private Property C_CurrentSellerID As ULong = 0UL
     Public ReadOnly Property CurrentSellerID() As ULong
@@ -354,8 +351,6 @@ Public Class ClsDEXContract
         End Get
     End Property
 
-
-
     Private Property C_PendingAmount As Double = 0.0
     Public ReadOnly Property PendingAmount() As Double
         Get
@@ -401,8 +396,6 @@ Public Class ClsDEXContract
         End Get
     End Property
 
-
-
     Private Property C_Status As E_Status = E_Status.NEW_
     Public ReadOnly Property Status() As E_Status
         Get
@@ -428,7 +421,6 @@ Public Class ClsDEXContract
             Return C_Message
         End Get
     End Property
-
 
     Private Property C_IsFrozen As Boolean = False
     Public ReadOnly Property IsFrozen() As Boolean
@@ -1114,6 +1106,9 @@ Public Class ClsDEXContract
         If ContractList.Count > 0 Then
             C_Address = GetStringBetweenFromList(ContractList, "<atRS>", "</atRS>")
             C_DEXContract = GetBooleanBetweenFromList(ContractList, "<referenceMachineCode>", "</referenceMachineCode>")
+            If C_DEXContract Then
+                C_DEXContract = GetBooleanBetweenFromList(ContractList, "<referenceMachineData>", "</referenceMachineData>")
+            End If
 
             If C_DEXContract Then
 
@@ -1144,6 +1139,9 @@ Public Class ClsDEXContract
         If ContractList.Count > 0 Then
             C_Address = GetStringBetweenFromList(ContractList, "<atRS>", "</atRS>")
             C_DEXContract = GetBooleanBetweenFromList(ContractList, "<referenceMachineCode>", "</referenceMachineCode>")
+            If C_DEXContract Then
+                C_DEXContract = GetBooleanBetweenFromList(ContractList, "<referenceMachineData>", "</referenceMachineData>")
+            End If
 
             If C_DEXContract Then
 
@@ -1579,8 +1577,6 @@ Public Class ClsDEXContract
 
         End While
 
-
-
         Dim T_TXList As List(Of S_TX) = New List(Of S_TX)
 
         For Each TX As List(Of String) In T_ContractTransactionsList
@@ -1612,21 +1608,7 @@ Public Class ClsDEXContract
 
             T_TXList = T_TXList.OrderBy(Function(T_TX As S_TX) T_TX.DateTimestamp).ToList
 
-            Dim T_LastTX As S_TX = T_TXList(T_TXList.Count - 1)
-
-            'If T_LastTX.Recipient = C_ID Then
-            '    If T_LastTX.Confirmations = 0 Then
-
-            '        If CurrentInitiatorID <> 0UL And CurrentResponderID <> 0UL Then
-            '            If T_LastTX.Sender = CurrentInitiatorID Or T_LastTX.Sender = CurrentResponderID Then
-            '                C_Status = E_Status.TX_PENDING
-            '            End If
-            '        Else
-            '            C_Status = E_Status.TX_PENDING
-            '        End If
-
-            '    End If
-            'End If
+            'Dim T_LastTX As S_TX = T_TXList(T_TXList.Count - 1)
 
             Dim T_ContractOrderHistoryList As List(Of S_Order) = New List(Of S_Order)
 
@@ -1638,15 +1620,12 @@ Public Class ClsDEXContract
 
                 If T_TX.Sender = C_ID Then
 
-                    'LastTX = False
-
                     Dim ReferenceTXIDs As String = GetStringBetween(T_TX.Attachment, "<message>", "</message>")
                     If Not ReferenceTXIDs.Trim = "" Then
 
                         Dim ReferenceTXIDList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceTXIDs)
 
                         If Not ReferenceTXIDList(0) = 0UL And Not ReferenceTXIDList(1) = 0UL And Not ReferenceTXIDList(2) = 0UL Then
-                            'referenceTXID
 
                             Dim T_CreationTX As S_TX = Nothing
                             Dim T_AcceptTX As S_TX = Nothing
@@ -1782,7 +1761,7 @@ Public Class ClsDEXContract
 
                                             Dim ChainSwapKeyHEX As String = ByteArrayToHEXString(ChainSwapKeyByteList.ToArray)
 
-                                            'TODO: ##AtomicSwap get chainswapkey 
+                                            'AtomicSwap: get chainswapkey 
 
                                             T_Order.ChainSwapKey = ChainSwapKeyHEX
 
@@ -1846,7 +1825,7 @@ Public Class ClsDEXContract
 
                                             Dim ChainSwapKeyHEX As String = ByteArrayToHEXString(ChainSwapKeyByteList.ToArray)
 
-                                            'TODO: ##AtomicSwap get chainswapkey 
+                                            'AtomicSwap: get chainswapkey 
 
                                             T_Order.ChainSwapKey = ChainSwapKeyHEX
 
@@ -1962,6 +1941,62 @@ Public Class ClsDEXContract
         Next
 
     End Sub
+
+
+    Function GetLastDecryptedMessageFromChat(ByVal RecipientAddress As String, Optional ByVal Shorten As Boolean = False) As String
+
+        Dim Chats As List(Of S_Chat) = New List(Of S_Chat)(C_CurrentChat)
+        Chats.Reverse()
+
+        For Each Chat As ClsDEXContract.S_Chat In Chats
+
+            If Chat.RecipientAddress = RecipientAddress Then
+
+                Dim DecryptedMessage As String = GetStringBetween(Chat.Attachment, "<data>", "</data>")
+                Dim Nonce As String = GetStringBetween(Chat.Attachment, "<nonce>", "</nonce>")
+
+                Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
+                Dim SenderPubkey As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(Chat.SenderAddress)
+
+                Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                Dim Message As String = SignumNET.DecryptFrom(SenderPubkey, DecryptedMessage, Nonce)
+
+                If Not IsErrorOrWarning(Message) Then
+
+                    If Not Message.Trim = "" Then
+
+                        If Shorten Then
+
+                            If Message.Contains("SmartContract=") And Message.Contains("Transaction=") Then
+                                Dim DCSmartContract As String = GetStringBetween(Message, "SmartContract=", " Transaction=")
+                                Dim DCTransaction As ULong = GetULongBetween(Message, "Transaction=", " ")
+                                Dim T_SCTX As String = "SmartContract=" + DCSmartContract + " Transaction=" + DCTransaction.ToString + " "
+
+                                Message = Message.Substring(Message.IndexOf(T_SCTX) + T_SCTX.Length)
+                            End If
+
+                            If Message.Contains("Infotext=") Then
+                                Message = Message.Substring(Message.IndexOf("Infotext=") + 9)
+                            End If
+
+                            Return Message
+
+                        Else
+                            Return Message
+                        End If
+
+                    End If
+                End If
+
+            End If
+
+        Next
+
+        Return ""
+
+    End Function
+
+
 
     Private Sub SetPendings(ByVal PendingAmount As Double, ByVal ReferenceMessageULongList As List(Of ULong))
 

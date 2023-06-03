@@ -425,4 +425,64 @@ Module ModGlobalFunctions
 #End Region
 
 
+#Region "error and warning handling"
+    Function IsErrorOrWarning(ByVal Message As String, Optional ByVal Addition As String = "", Optional ByVal AdditionBefore As Boolean = False) As Boolean
+
+        Dim out As ClsOut = New ClsOut(Application.StartupPath)
+
+        If Message.Contains(Application.ProductName + "-error") Then
+            If GetINISetting(E_Setting.InfoOut, False) Then
+
+                If AdditionBefore Then
+                    out.ErrorLog2File(Addition + Message)
+                Else
+                    out.ErrorLog2File(Message + Addition)
+                End If
+
+            End If
+            Return True
+        ElseIf Message.Contains(Application.ProductName + "-warning") Then
+            If GetINISetting(E_Setting.InfoOut, False) Then
+                If AdditionBefore Then
+                    out.WarningLog2File(Addition + Message)
+                Else
+                    out.WarningLog2File(Message + Addition)
+                End If
+
+            End If
+            Return True
+        ElseIf Message.Contains("<error>") And Message.Contains("</error>") Then
+            Dim Erro As String = GetStringBetween(Message, "<error>", "</error>")
+            If Erro.Trim <> "" Then
+                If GetINISetting(E_Setting.InfoOut, False) Then
+                    If AdditionBefore Then
+                        out.ErrorLog2File(Addition + Erro)
+                    Else
+                        out.ErrorLog2File(Erro + Addition)
+                    End If
+                End If
+                Return True
+            End If
+
+        ElseIf Message.Contains("<warning>") And Message.Contains("</warning>") Then
+            Dim Warn As String = GetStringBetween(Message, "<warning>", "</warning>")
+            If Warn.Trim <> "" Then
+                If GetINISetting(E_Setting.InfoOut, False) Then
+                    If AdditionBefore Then
+                        out.WarningLog2File(Addition + Warn)
+                    Else
+                        out.WarningLog2File(Warn + Addition)
+                    End If
+                End If
+                Return True
+            End If
+
+        End If
+
+        Return False
+
+    End Function
+
+#End Region
+
 End Module

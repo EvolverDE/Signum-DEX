@@ -97,8 +97,8 @@ Partial Class PFPForm
         Me.ChLBBuyFilterMethods = New System.Windows.Forms.CheckedListBox()
         Me.ChBxBuyFilterShowAutoinfo = New System.Windows.Forms.CheckBox()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
-        Me.TabPage1 = New System.Windows.Forms.TabPage()
-        Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.TPMarketdetails = New System.Windows.Forms.TabPage()
+        Me.TPMySections = New System.Windows.Forms.TabPage()
         Me.SplitContainer18 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer19 = New System.Windows.Forms.SplitContainer()
         Me.Label9 = New System.Windows.Forms.Label()
@@ -137,9 +137,74 @@ Partial Class PFPForm
         Me.SplitContainer17 = New System.Windows.Forms.SplitContainer()
         Me.LVMyClosedOrders = New System.Windows.Forms.ListView()
         Me.ColumnHeader16 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.TabPage3 = New System.Windows.Forms.TabPage()
+        Me.TPSettings = New System.Windows.Forms.TabPage()
         Me.SCSettings = New System.Windows.Forms.SplitContainer()
         Me.TVSettings = New System.Windows.Forms.TreeView()
+        Me.TP_AS_BTC = New System.Windows.Forms.TabPage()
+        Me.SplitContainer27 = New System.Windows.Forms.SplitContainer()
+        Me.SplitContainer25 = New System.Windows.Forms.SplitContainer()
+        Me.SplitContainer22 = New System.Windows.Forms.SplitContainer()
+        Me.Label19 = New System.Windows.Forms.Label()
+        Me.SplitContainer24 = New System.Windows.Forms.SplitContainer()
+        Me.LVBitcoinAddresses = New System.Windows.Forms.ListView()
+        Me.ColumnHeader13 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader14 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.LabTotalBitcoin = New System.Windows.Forms.Label()
+        Me.SplitContainer21 = New System.Windows.Forms.SplitContainer()
+        Me.GrpBxSendBitcoin = New System.Windows.Forms.GroupBox()
+        Me.SplitContainer23 = New System.Windows.Forms.SplitContainer()
+        Me.Label21 = New System.Windows.Forms.Label()
+        Me.Label22 = New System.Windows.Forms.Label()
+        Me.NUDBitcoinAmount = New System.Windows.Forms.NumericUpDown()
+        Me.NUDBitcoinTXFee = New System.Windows.Forms.NumericUpDown()
+        Me.Label20 = New System.Windows.Forms.Label()
+        Me.TBBitcoinRecipient = New System.Windows.Forms.TextBox()
+        Me.SCBitcoinSendOption = New System.Windows.Forms.SplitContainer()
+        Me.BtBitcoinGenerateChainSwapKeyHash = New System.Windows.Forms.Button()
+        Me.Label17 = New System.Windows.Forms.Label()
+        Me.TBBitcoinChainSwapKey = New System.Windows.Forms.TextBox()
+        Me.NUDBitcoinLockTime = New System.Windows.Forms.NumericUpDown()
+        Me.LabBitcoinChainSwapHash = New System.Windows.Forms.Label()
+        Me.TBBitcoinChainSwapHash = New System.Windows.Forms.TextBox()
+        Me.LabBitcoinLockTime = New System.Windows.Forms.Label()
+        Me.GroupBox3 = New System.Windows.Forms.GroupBox()
+        Me.RBBitcoinOptionCSHLT = New System.Windows.Forms.RadioButton()
+        Me.RBBitcoinOptionLockTime = New System.Windows.Forms.RadioButton()
+        Me.RBBitcoinOptionChainSwapHash = New System.Windows.Forms.RadioButton()
+        Me.RBBitcoinOptionStandard = New System.Windows.Forms.RadioButton()
+        Me.SplitContainer26 = New System.Windows.Forms.SplitContainer()
+        Me.BtSendBitcoin = New System.Windows.Forms.Button()
+        Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.SplitContainer31 = New System.Windows.Forms.SplitContainer()
+        Me.LV_BitcoinClaim = New System.Windows.Forms.ListView()
+        Me.ColumnHeader15 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader17 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader19 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader20 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.Bt_BitcoinClaimGetInfo = New System.Windows.Forms.Button()
+        Me.Label23 = New System.Windows.Forms.Label()
+        Me.Lab_BitcoinClaimChainSwapKey = New System.Windows.Forms.Label()
+        Me.TB_BitcoinClaimTransaction = New System.Windows.Forms.TextBox()
+        Me.TB_BitcoinClaimChainSwapKey = New System.Windows.Forms.TextBox()
+        Me.Lab_BitcoinClaimUnlockScript = New System.Windows.Forms.Label()
+        Me.TB_BitcoinClaimUnlockingScript = New System.Windows.Forms.TextBox()
+        Me.SplitContainer32 = New System.Windows.Forms.SplitContainer()
+        Me.Bt_BitcoinClaimTransaction = New System.Windows.Forms.Button()
+        Me.SplitContainer28 = New System.Windows.Forms.SplitContainer()
+        Me.SplitContainer29 = New System.Windows.Forms.SplitContainer()
+        Me.Label14 = New System.Windows.Forms.Label()
+        Me.LVBitcoin = New System.Windows.Forms.ListView()
+        Me.ColumnHeader12 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader4 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader5 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader6 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader7 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader8 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.SplitContainer30 = New System.Windows.Forms.SplitContainer()
+        Me.Label15 = New System.Windows.Forms.Label()
+        Me.LVBitcoinLockingScript = New System.Windows.Forms.ListView()
+        Me.ColumnHeader10 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader11 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.SplitContainer12 = New System.Windows.Forms.SplitContainer()
         Me.LabDebug = New System.Windows.Forms.Label()
         Me.BtSetPIN = New System.Windows.Forms.Button()
@@ -213,8 +278,8 @@ Partial Class PFPForm
         Me.SplitContainerBuyFilter.Panel2.SuspendLayout()
         Me.SplitContainerBuyFilter.SuspendLayout()
         Me.TabControl1.SuspendLayout()
-        Me.TabPage1.SuspendLayout()
-        Me.TabPage2.SuspendLayout()
+        Me.TPMarketdetails.SuspendLayout()
+        Me.TPMySections.SuspendLayout()
         CType(Me.SplitContainer18, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer18.Panel1.SuspendLayout()
         Me.SplitContainer18.Panel2.SuspendLayout()
@@ -247,10 +312,67 @@ Partial Class PFPForm
         CType(Me.SplitContainer17, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer17.Panel1.SuspendLayout()
         Me.SplitContainer17.SuspendLayout()
-        Me.TabPage3.SuspendLayout()
+        Me.TPSettings.SuspendLayout()
         CType(Me.SCSettings, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SCSettings.Panel1.SuspendLayout()
         Me.SCSettings.SuspendLayout()
+        Me.TP_AS_BTC.SuspendLayout()
+        CType(Me.SplitContainer27, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer27.Panel1.SuspendLayout()
+        Me.SplitContainer27.Panel2.SuspendLayout()
+        Me.SplitContainer27.SuspendLayout()
+        CType(Me.SplitContainer25, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer25.Panel1.SuspendLayout()
+        Me.SplitContainer25.Panel2.SuspendLayout()
+        Me.SplitContainer25.SuspendLayout()
+        CType(Me.SplitContainer22, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer22.Panel1.SuspendLayout()
+        Me.SplitContainer22.Panel2.SuspendLayout()
+        Me.SplitContainer22.SuspendLayout()
+        CType(Me.SplitContainer24, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer24.Panel1.SuspendLayout()
+        Me.SplitContainer24.Panel2.SuspendLayout()
+        Me.SplitContainer24.SuspendLayout()
+        CType(Me.SplitContainer21, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer21.Panel1.SuspendLayout()
+        Me.SplitContainer21.Panel2.SuspendLayout()
+        Me.SplitContainer21.SuspendLayout()
+        Me.GrpBxSendBitcoin.SuspendLayout()
+        CType(Me.SplitContainer23, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer23.Panel1.SuspendLayout()
+        Me.SplitContainer23.Panel2.SuspendLayout()
+        Me.SplitContainer23.SuspendLayout()
+        CType(Me.NUDBitcoinAmount, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NUDBitcoinTXFee, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.SCBitcoinSendOption, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SCBitcoinSendOption.Panel1.SuspendLayout()
+        Me.SCBitcoinSendOption.Panel2.SuspendLayout()
+        Me.SCBitcoinSendOption.SuspendLayout()
+        CType(Me.NUDBitcoinLockTime, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox3.SuspendLayout()
+        CType(Me.SplitContainer26, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer26.Panel2.SuspendLayout()
+        Me.SplitContainer26.SuspendLayout()
+        Me.GroupBox4.SuspendLayout()
+        CType(Me.SplitContainer31, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer31.Panel1.SuspendLayout()
+        Me.SplitContainer31.Panel2.SuspendLayout()
+        Me.SplitContainer31.SuspendLayout()
+        CType(Me.SplitContainer32, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer32.Panel2.SuspendLayout()
+        Me.SplitContainer32.SuspendLayout()
+        CType(Me.SplitContainer28, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer28.Panel1.SuspendLayout()
+        Me.SplitContainer28.Panel2.SuspendLayout()
+        Me.SplitContainer28.SuspendLayout()
+        CType(Me.SplitContainer29, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer29.Panel1.SuspendLayout()
+        Me.SplitContainer29.Panel2.SuspendLayout()
+        Me.SplitContainer29.SuspendLayout()
+        CType(Me.SplitContainer30, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer30.Panel1.SuspendLayout()
+        Me.SplitContainer30.Panel2.SuspendLayout()
+        Me.SplitContainer30.SuspendLayout()
         CType(Me.SplitContainer12, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer12.Panel1.SuspendLayout()
         Me.SplitContainer12.Panel2.SuspendLayout()
@@ -1093,9 +1215,10 @@ Partial Class PFPForm
         '
         'TabControl1
         '
-        Me.TabControl1.Controls.Add(Me.TabPage1)
-        Me.TabControl1.Controls.Add(Me.TabPage2)
-        Me.TabControl1.Controls.Add(Me.TabPage3)
+        Me.TabControl1.Controls.Add(Me.TPMarketdetails)
+        Me.TabControl1.Controls.Add(Me.TPMySections)
+        Me.TabControl1.Controls.Add(Me.TPSettings)
+        Me.TabControl1.Controls.Add(Me.TP_AS_BTC)
         Me.TabControl1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TabControl1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TabControl1.Location = New System.Drawing.Point(0, 0)
@@ -1104,31 +1227,31 @@ Partial Class PFPForm
         Me.TabControl1.Size = New System.Drawing.Size(1554, 705)
         Me.TabControl1.TabIndex = 15
         '
-        'TabPage1
+        'TPMarketdetails
         '
-        Me.TabPage1.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.TabPage1.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
-        Me.TabPage1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.TabPage1.Controls.Add(Me.SplitContainer1)
-        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(1546, 679)
-        Me.TabPage1.TabIndex = 0
-        Me.TabPage1.Text = "Marketdetails"
+        Me.TPMarketdetails.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.TPMarketdetails.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
+        Me.TPMarketdetails.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.TPMarketdetails.Controls.Add(Me.SplitContainer1)
+        Me.TPMarketdetails.Location = New System.Drawing.Point(4, 22)
+        Me.TPMarketdetails.Name = "TPMarketdetails"
+        Me.TPMarketdetails.Padding = New System.Windows.Forms.Padding(3)
+        Me.TPMarketdetails.Size = New System.Drawing.Size(1546, 679)
+        Me.TPMarketdetails.TabIndex = 0
+        Me.TPMarketdetails.Text = "Marketdetails"
         '
-        'TabPage2
+        'TPMySections
         '
-        Me.TabPage2.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.TabPage2.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
-        Me.TabPage2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.TabPage2.Controls.Add(Me.SplitContainer18)
-        Me.TabPage2.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage2.Name = "TabPage2"
-        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(1546, 679)
-        Me.TabPage2.TabIndex = 1
-        Me.TabPage2.Text = "MySmartContracts & Orders"
+        Me.TPMySections.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.TPMySections.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
+        Me.TPMySections.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
+        Me.TPMySections.Controls.Add(Me.SplitContainer18)
+        Me.TPMySections.Location = New System.Drawing.Point(4, 22)
+        Me.TPMySections.Name = "TPMySections"
+        Me.TPMySections.Padding = New System.Windows.Forms.Padding(3)
+        Me.TPMySections.Size = New System.Drawing.Size(1546, 679)
+        Me.TPMySections.TabIndex = 1
+        Me.TPMySections.Text = "MySmartContracts & Orders"
         '
         'SplitContainer18
         '
@@ -1636,18 +1759,18 @@ Partial Class PFPForm
         '
         Me.ColumnHeader16.Text = "Loading..."
         '
-        'TabPage3
+        'TPSettings
         '
-        Me.TabPage3.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.TabPage3.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
-        Me.TabPage3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.TabPage3.Controls.Add(Me.SCSettings)
-        Me.TabPage3.ForeColor = System.Drawing.Color.White
-        Me.TabPage3.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage3.Name = "TabPage3"
-        Me.TabPage3.Size = New System.Drawing.Size(1546, 679)
-        Me.TabPage3.TabIndex = 2
-        Me.TabPage3.Text = "Settings"
+        Me.TPSettings.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.TPSettings.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
+        Me.TPSettings.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
+        Me.TPSettings.Controls.Add(Me.SCSettings)
+        Me.TPSettings.ForeColor = System.Drawing.Color.White
+        Me.TPSettings.Location = New System.Drawing.Point(4, 22)
+        Me.TPSettings.Name = "TPSettings"
+        Me.TPSettings.Size = New System.Drawing.Size(1546, 679)
+        Me.TPSettings.TabIndex = 2
+        Me.TPSettings.Text = "Settings"
         '
         'SCSettings
         '
@@ -1680,6 +1803,728 @@ Partial Class PFPForm
         Me.TVSettings.Nodes.AddRange(New System.Windows.Forms.TreeNode() {TreeNode1, TreeNode2, TreeNode3})
         Me.TVSettings.Size = New System.Drawing.Size(226, 679)
         Me.TVSettings.TabIndex = 0
+        '
+        'TP_AS_BTC
+        '
+        Me.TP_AS_BTC.BackColor = System.Drawing.Color.FromArgb(CType(CType(77, Byte), Integer), CType(CType(77, Byte), Integer), CType(CType(77, Byte), Integer))
+        Me.TP_AS_BTC.BackgroundImage = Global.PFP.My.Resources.Resources.bitcoin_logo_512_bg
+        Me.TP_AS_BTC.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.TP_AS_BTC.Controls.Add(Me.SplitContainer27)
+        Me.TP_AS_BTC.Location = New System.Drawing.Point(4, 22)
+        Me.TP_AS_BTC.Name = "TP_AS_BTC"
+        Me.TP_AS_BTC.Size = New System.Drawing.Size(1546, 679)
+        Me.TP_AS_BTC.TabIndex = 3
+        Me.TP_AS_BTC.Text = "Bitcoin"
+        '
+        'SplitContainer27
+        '
+        Me.SplitContainer27.BackColor = System.Drawing.Color.Transparent
+        Me.SplitContainer27.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer27.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer27.Name = "SplitContainer27"
+        Me.SplitContainer27.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer27.Panel1
+        '
+        Me.SplitContainer27.Panel1.Controls.Add(Me.SplitContainer25)
+        '
+        'SplitContainer27.Panel2
+        '
+        Me.SplitContainer27.Panel2.Controls.Add(Me.SplitContainer28)
+        Me.SplitContainer27.Size = New System.Drawing.Size(1546, 679)
+        Me.SplitContainer27.SplitterDistance = 261
+        Me.SplitContainer27.TabIndex = 29
+        '
+        'SplitContainer25
+        '
+        Me.SplitContainer25.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer25.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
+        Me.SplitContainer25.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer25.Name = "SplitContainer25"
+        '
+        'SplitContainer25.Panel1
+        '
+        Me.SplitContainer25.Panel1.Controls.Add(Me.SplitContainer22)
+        '
+        'SplitContainer25.Panel2
+        '
+        Me.SplitContainer25.Panel2.Controls.Add(Me.SplitContainer21)
+        Me.SplitContainer25.Size = New System.Drawing.Size(1546, 261)
+        Me.SplitContainer25.SplitterDistance = 572
+        Me.SplitContainer25.TabIndex = 28
+        '
+        'SplitContainer22
+        '
+        Me.SplitContainer22.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer22.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer22.IsSplitterFixed = True
+        Me.SplitContainer22.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer22.Name = "SplitContainer22"
+        Me.SplitContainer22.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer22.Panel1
+        '
+        Me.SplitContainer22.Panel1.Controls.Add(Me.Label19)
+        '
+        'SplitContainer22.Panel2
+        '
+        Me.SplitContainer22.Panel2.Controls.Add(Me.SplitContainer24)
+        Me.SplitContainer22.Size = New System.Drawing.Size(572, 261)
+        Me.SplitContainer22.SplitterDistance = 25
+        Me.SplitContainer22.TabIndex = 27
+        '
+        'Label19
+        '
+        Me.Label19.AutoSize = True
+        Me.Label19.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
+        Me.Label19.ForeColor = System.Drawing.Color.White
+        Me.Label19.Location = New System.Drawing.Point(4, 6)
+        Me.Label19.Name = "Label19"
+        Me.Label19.Size = New System.Drawing.Size(59, 13)
+        Me.Label19.TabIndex = 3
+        Me.Label19.Text = "Addresses:"
+        '
+        'SplitContainer24
+        '
+        Me.SplitContainer24.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer24.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
+        Me.SplitContainer24.IsSplitterFixed = True
+        Me.SplitContainer24.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer24.Name = "SplitContainer24"
+        Me.SplitContainer24.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer24.Panel1
+        '
+        Me.SplitContainer24.Panel1.Controls.Add(Me.LVBitcoinAddresses)
+        '
+        'SplitContainer24.Panel2
+        '
+        Me.SplitContainer24.Panel2.Controls.Add(Me.LabTotalBitcoin)
+        Me.SplitContainer24.Size = New System.Drawing.Size(572, 232)
+        Me.SplitContainer24.SplitterDistance = 203
+        Me.SplitContainer24.TabIndex = 0
+        '
+        'LVBitcoinAddresses
+        '
+        Me.LVBitcoinAddresses.BackColor = System.Drawing.Color.FromArgb(CType(CType(77, Byte), Integer), CType(CType(77, Byte), Integer), CType(CType(77, Byte), Integer))
+        Me.LVBitcoinAddresses.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader13, Me.ColumnHeader14})
+        Me.LVBitcoinAddresses.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LVBitcoinAddresses.ForeColor = System.Drawing.Color.White
+        Me.LVBitcoinAddresses.FullRowSelect = True
+        Me.LVBitcoinAddresses.GridLines = True
+        Me.LVBitcoinAddresses.HideSelection = False
+        Me.LVBitcoinAddresses.Location = New System.Drawing.Point(0, 0)
+        Me.LVBitcoinAddresses.Name = "LVBitcoinAddresses"
+        Me.LVBitcoinAddresses.Size = New System.Drawing.Size(572, 203)
+        Me.LVBitcoinAddresses.TabIndex = 2
+        Me.LVBitcoinAddresses.UseCompatibleStateImageBehavior = False
+        Me.LVBitcoinAddresses.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader13
+        '
+        Me.ColumnHeader13.Text = "Address"
+        '
+        'ColumnHeader14
+        '
+        Me.ColumnHeader14.Text = "Balance"
+        '
+        'LabTotalBitcoin
+        '
+        Me.LabTotalBitcoin.AutoSize = True
+        Me.LabTotalBitcoin.Dock = System.Windows.Forms.DockStyle.Right
+        Me.LabTotalBitcoin.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LabTotalBitcoin.ForeColor = System.Drawing.Color.White
+        Me.LabTotalBitcoin.Location = New System.Drawing.Point(468, 0)
+        Me.LabTotalBitcoin.Name = "LabTotalBitcoin"
+        Me.LabTotalBitcoin.Size = New System.Drawing.Size(104, 20)
+        Me.LabTotalBitcoin.TabIndex = 2
+        Me.LabTotalBitcoin.Text = "0.00000000"
+        Me.LabTotalBitcoin.TextAlign = System.Drawing.ContentAlignment.TopRight
+        '
+        'SplitContainer21
+        '
+        Me.SplitContainer21.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer21.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer21.Name = "SplitContainer21"
+        '
+        'SplitContainer21.Panel1
+        '
+        Me.SplitContainer21.Panel1.Controls.Add(Me.GrpBxSendBitcoin)
+        '
+        'SplitContainer21.Panel2
+        '
+        Me.SplitContainer21.Panel2.Controls.Add(Me.GroupBox4)
+        Me.SplitContainer21.Size = New System.Drawing.Size(970, 261)
+        Me.SplitContainer21.SplitterDistance = 479
+        Me.SplitContainer21.TabIndex = 27
+        '
+        'GrpBxSendBitcoin
+        '
+        Me.GrpBxSendBitcoin.Controls.Add(Me.SplitContainer23)
+        Me.GrpBxSendBitcoin.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.GrpBxSendBitcoin.ForeColor = System.Drawing.Color.White
+        Me.GrpBxSendBitcoin.Location = New System.Drawing.Point(0, 0)
+        Me.GrpBxSendBitcoin.Name = "GrpBxSendBitcoin"
+        Me.GrpBxSendBitcoin.Size = New System.Drawing.Size(479, 261)
+        Me.GrpBxSendBitcoin.TabIndex = 26
+        Me.GrpBxSendBitcoin.TabStop = False
+        Me.GrpBxSendBitcoin.Text = "Send Bitcoin"
+        '
+        'SplitContainer23
+        '
+        Me.SplitContainer23.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer23.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer23.IsSplitterFixed = True
+        Me.SplitContainer23.Location = New System.Drawing.Point(3, 16)
+        Me.SplitContainer23.Name = "SplitContainer23"
+        Me.SplitContainer23.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer23.Panel1
+        '
+        Me.SplitContainer23.Panel1.Controls.Add(Me.Label21)
+        Me.SplitContainer23.Panel1.Controls.Add(Me.Label22)
+        Me.SplitContainer23.Panel1.Controls.Add(Me.NUDBitcoinAmount)
+        Me.SplitContainer23.Panel1.Controls.Add(Me.NUDBitcoinTXFee)
+        Me.SplitContainer23.Panel1.Controls.Add(Me.Label20)
+        Me.SplitContainer23.Panel1.Controls.Add(Me.TBBitcoinRecipient)
+        '
+        'SplitContainer23.Panel2
+        '
+        Me.SplitContainer23.Panel2.Controls.Add(Me.SCBitcoinSendOption)
+        Me.SplitContainer23.Size = New System.Drawing.Size(473, 242)
+        Me.SplitContainer23.SplitterDistance = 83
+        Me.SplitContainer23.TabIndex = 32
+        '
+        'Label21
+        '
+        Me.Label21.AutoSize = True
+        Me.Label21.Location = New System.Drawing.Point(3, 0)
+        Me.Label21.Name = "Label21"
+        Me.Label21.Size = New System.Drawing.Size(96, 13)
+        Me.Label21.TabIndex = 27
+        Me.Label21.Text = "Recipient Address:"
+        '
+        'Label22
+        '
+        Me.Label22.AutoSize = True
+        Me.Label22.Location = New System.Drawing.Point(122, 39)
+        Me.Label22.Name = "Label22"
+        Me.Label22.Size = New System.Drawing.Size(45, 13)
+        Me.Label22.TabIndex = 31
+        Me.Label22.Text = "TX-Fee:"
+        '
+        'NUDBitcoinAmount
+        '
+        Me.NUDBitcoinAmount.DecimalPlaces = 8
+        Me.NUDBitcoinAmount.Location = New System.Drawing.Point(6, 55)
+        Me.NUDBitcoinAmount.Maximum = New Decimal(New Integer() {-1, -1, -1, 0})
+        Me.NUDBitcoinAmount.Name = "NUDBitcoinAmount"
+        Me.NUDBitcoinAmount.Size = New System.Drawing.Size(113, 20)
+        Me.NUDBitcoinAmount.TabIndex = 25
+        '
+        'NUDBitcoinTXFee
+        '
+        Me.NUDBitcoinTXFee.DecimalPlaces = 8
+        Me.NUDBitcoinTXFee.Location = New System.Drawing.Point(125, 55)
+        Me.NUDBitcoinTXFee.Maximum = New Decimal(New Integer() {-1, -1, -1, 0})
+        Me.NUDBitcoinTXFee.Name = "NUDBitcoinTXFee"
+        Me.NUDBitcoinTXFee.Size = New System.Drawing.Size(113, 20)
+        Me.NUDBitcoinTXFee.TabIndex = 30
+        '
+        'Label20
+        '
+        Me.Label20.AutoSize = True
+        Me.Label20.Location = New System.Drawing.Point(3, 39)
+        Me.Label20.Name = "Label20"
+        Me.Label20.Size = New System.Drawing.Size(46, 13)
+        Me.Label20.TabIndex = 26
+        Me.Label20.Text = "Amount:"
+        '
+        'TBBitcoinRecipient
+        '
+        Me.TBBitcoinRecipient.Location = New System.Drawing.Point(6, 16)
+        Me.TBBitcoinRecipient.Name = "TBBitcoinRecipient"
+        Me.TBBitcoinRecipient.Size = New System.Drawing.Size(373, 20)
+        Me.TBBitcoinRecipient.TabIndex = 28
+        '
+        'SCBitcoinSendOption
+        '
+        Me.SCBitcoinSendOption.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SCBitcoinSendOption.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
+        Me.SCBitcoinSendOption.IsSplitterFixed = True
+        Me.SCBitcoinSendOption.Location = New System.Drawing.Point(0, 0)
+        Me.SCBitcoinSendOption.Name = "SCBitcoinSendOption"
+        Me.SCBitcoinSendOption.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SCBitcoinSendOption.Panel1
+        '
+        Me.SCBitcoinSendOption.Panel1.Controls.Add(Me.BtBitcoinGenerateChainSwapKeyHash)
+        Me.SCBitcoinSendOption.Panel1.Controls.Add(Me.Label17)
+        Me.SCBitcoinSendOption.Panel1.Controls.Add(Me.TBBitcoinChainSwapKey)
+        Me.SCBitcoinSendOption.Panel1.Controls.Add(Me.NUDBitcoinLockTime)
+        Me.SCBitcoinSendOption.Panel1.Controls.Add(Me.LabBitcoinChainSwapHash)
+        Me.SCBitcoinSendOption.Panel1.Controls.Add(Me.TBBitcoinChainSwapHash)
+        Me.SCBitcoinSendOption.Panel1.Controls.Add(Me.LabBitcoinLockTime)
+        Me.SCBitcoinSendOption.Panel1.Controls.Add(Me.GroupBox3)
+        '
+        'SCBitcoinSendOption.Panel2
+        '
+        Me.SCBitcoinSendOption.Panel2.BackColor = System.Drawing.Color.Transparent
+        Me.SCBitcoinSendOption.Panel2.Controls.Add(Me.SplitContainer26)
+        Me.SCBitcoinSendOption.Size = New System.Drawing.Size(473, 155)
+        Me.SCBitcoinSendOption.SplitterDistance = 126
+        Me.SCBitcoinSendOption.TabIndex = 0
+        '
+        'BtBitcoinGenerateChainSwapKeyHash
+        '
+        Me.BtBitcoinGenerateChainSwapKeyHash.BackColor = System.Drawing.Color.FromArgb(CType(CType(239, Byte), Integer), CType(CType(147, Byte), Integer), CType(CType(38, Byte), Integer))
+        Me.BtBitcoinGenerateChainSwapKeyHash.Location = New System.Drawing.Point(410, 59)
+        Me.BtBitcoinGenerateChainSwapKeyHash.Name = "BtBitcoinGenerateChainSwapKeyHash"
+        Me.BtBitcoinGenerateChainSwapKeyHash.Size = New System.Drawing.Size(57, 23)
+        Me.BtBitcoinGenerateChainSwapKeyHash.TabIndex = 30
+        Me.BtBitcoinGenerateChainSwapKeyHash.Text = "generate"
+        Me.BtBitcoinGenerateChainSwapKeyHash.UseVisualStyleBackColor = False
+        '
+        'Label17
+        '
+        Me.Label17.AutoSize = True
+        Me.Label17.Location = New System.Drawing.Point(3, 45)
+        Me.Label17.Name = "Label17"
+        Me.Label17.Size = New System.Drawing.Size(82, 13)
+        Me.Label17.TabIndex = 6
+        Me.Label17.Text = "ChainSwapKey:"
+        '
+        'TBBitcoinChainSwapKey
+        '
+        Me.TBBitcoinChainSwapKey.Location = New System.Drawing.Point(6, 61)
+        Me.TBBitcoinChainSwapKey.Name = "TBBitcoinChainSwapKey"
+        Me.TBBitcoinChainSwapKey.Size = New System.Drawing.Size(398, 20)
+        Me.TBBitcoinChainSwapKey.TabIndex = 5
+        '
+        'NUDBitcoinLockTime
+        '
+        Me.NUDBitcoinLockTime.Enabled = False
+        Me.NUDBitcoinLockTime.Location = New System.Drawing.Point(411, 100)
+        Me.NUDBitcoinLockTime.Maximum = New Decimal(New Integer() {127, 0, 0, 0})
+        Me.NUDBitcoinLockTime.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.NUDBitcoinLockTime.Name = "NUDBitcoinLockTime"
+        Me.NUDBitcoinLockTime.Size = New System.Drawing.Size(56, 20)
+        Me.NUDBitcoinLockTime.TabIndex = 4
+        Me.NUDBitcoinLockTime.Value = New Decimal(New Integer() {1, 0, 0, 0})
+        '
+        'LabBitcoinChainSwapHash
+        '
+        Me.LabBitcoinChainSwapHash.AutoSize = True
+        Me.LabBitcoinChainSwapHash.Enabled = False
+        Me.LabBitcoinChainSwapHash.Location = New System.Drawing.Point(3, 84)
+        Me.LabBitcoinChainSwapHash.Name = "LabBitcoinChainSwapHash"
+        Me.LabBitcoinChainSwapHash.Size = New System.Drawing.Size(89, 13)
+        Me.LabBitcoinChainSwapHash.TabIndex = 3
+        Me.LabBitcoinChainSwapHash.Text = "ChainSwapHash:"
+        '
+        'TBBitcoinChainSwapHash
+        '
+        Me.TBBitcoinChainSwapHash.Enabled = False
+        Me.TBBitcoinChainSwapHash.Location = New System.Drawing.Point(6, 100)
+        Me.TBBitcoinChainSwapHash.Name = "TBBitcoinChainSwapHash"
+        Me.TBBitcoinChainSwapHash.Size = New System.Drawing.Size(398, 20)
+        Me.TBBitcoinChainSwapHash.TabIndex = 2
+        '
+        'LabBitcoinLockTime
+        '
+        Me.LabBitcoinLockTime.AutoSize = True
+        Me.LabBitcoinLockTime.Enabled = False
+        Me.LabBitcoinLockTime.Location = New System.Drawing.Point(411, 84)
+        Me.LabBitcoinLockTime.Name = "LabBitcoinLockTime"
+        Me.LabBitcoinLockTime.Size = New System.Drawing.Size(57, 13)
+        Me.LabBitcoinLockTime.TabIndex = 1
+        Me.LabBitcoinLockTime.Text = "LockTime:"
+        '
+        'GroupBox3
+        '
+        Me.GroupBox3.Controls.Add(Me.RBBitcoinOptionCSHLT)
+        Me.GroupBox3.Controls.Add(Me.RBBitcoinOptionLockTime)
+        Me.GroupBox3.Controls.Add(Me.RBBitcoinOptionChainSwapHash)
+        Me.GroupBox3.Controls.Add(Me.RBBitcoinOptionStandard)
+        Me.GroupBox3.ForeColor = System.Drawing.Color.White
+        Me.GroupBox3.Location = New System.Drawing.Point(6, 3)
+        Me.GroupBox3.Name = "GroupBox3"
+        Me.GroupBox3.Size = New System.Drawing.Size(462, 39)
+        Me.GroupBox3.TabIndex = 0
+        Me.GroupBox3.TabStop = False
+        Me.GroupBox3.Text = "Transaction Type"
+        '
+        'RBBitcoinOptionCSHLT
+        '
+        Me.RBBitcoinOptionCSHLT.AutoSize = True
+        Me.RBBitcoinOptionCSHLT.Location = New System.Drawing.Point(286, 19)
+        Me.RBBitcoinOptionCSHLT.Name = "RBBitcoinOptionCSHLT"
+        Me.RBBitcoinOptionCSHLT.Size = New System.Drawing.Size(175, 17)
+        Me.RBBitcoinOptionCSHLT.TabIndex = 3
+        Me.RBBitcoinOptionCSHLT.Text = "ChainSwapHash and LockTime"
+        Me.RBBitcoinOptionCSHLT.UseVisualStyleBackColor = True
+        '
+        'RBBitcoinOptionLockTime
+        '
+        Me.RBBitcoinOptionLockTime.AutoSize = True
+        Me.RBBitcoinOptionLockTime.Location = New System.Drawing.Point(199, 19)
+        Me.RBBitcoinOptionLockTime.Name = "RBBitcoinOptionLockTime"
+        Me.RBBitcoinOptionLockTime.Size = New System.Drawing.Size(81, 17)
+        Me.RBBitcoinOptionLockTime.TabIndex = 2
+        Me.RBBitcoinOptionLockTime.Text = "+ LockTime"
+        Me.RBBitcoinOptionLockTime.UseVisualStyleBackColor = True
+        '
+        'RBBitcoinOptionChainSwapHash
+        '
+        Me.RBBitcoinOptionChainSwapHash.AutoSize = True
+        Me.RBBitcoinOptionChainSwapHash.Location = New System.Drawing.Point(80, 19)
+        Me.RBBitcoinOptionChainSwapHash.Name = "RBBitcoinOptionChainSwapHash"
+        Me.RBBitcoinOptionChainSwapHash.Size = New System.Drawing.Size(113, 17)
+        Me.RBBitcoinOptionChainSwapHash.TabIndex = 1
+        Me.RBBitcoinOptionChainSwapHash.Text = "+ ChainSwapHash"
+        Me.RBBitcoinOptionChainSwapHash.UseVisualStyleBackColor = True
+        '
+        'RBBitcoinOptionStandard
+        '
+        Me.RBBitcoinOptionStandard.AutoSize = True
+        Me.RBBitcoinOptionStandard.Checked = True
+        Me.RBBitcoinOptionStandard.Location = New System.Drawing.Point(6, 19)
+        Me.RBBitcoinOptionStandard.Name = "RBBitcoinOptionStandard"
+        Me.RBBitcoinOptionStandard.Size = New System.Drawing.Size(68, 17)
+        Me.RBBitcoinOptionStandard.TabIndex = 0
+        Me.RBBitcoinOptionStandard.TabStop = True
+        Me.RBBitcoinOptionStandard.Text = "Standard"
+        Me.RBBitcoinOptionStandard.UseVisualStyleBackColor = True
+        '
+        'SplitContainer26
+        '
+        Me.SplitContainer26.BackColor = System.Drawing.Color.Transparent
+        Me.SplitContainer26.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer26.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
+        Me.SplitContainer26.IsSplitterFixed = True
+        Me.SplitContainer26.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer26.Name = "SplitContainer26"
+        '
+        'SplitContainer26.Panel2
+        '
+        Me.SplitContainer26.Panel2.Controls.Add(Me.BtSendBitcoin)
+        Me.SplitContainer26.Size = New System.Drawing.Size(473, 25)
+        Me.SplitContainer26.SplitterDistance = 387
+        Me.SplitContainer26.TabIndex = 30
+        '
+        'BtSendBitcoin
+        '
+        Me.BtSendBitcoin.BackColor = System.Drawing.Color.FromArgb(CType(CType(239, Byte), Integer), CType(CType(147, Byte), Integer), CType(CType(38, Byte), Integer))
+        Me.BtSendBitcoin.Location = New System.Drawing.Point(3, 1)
+        Me.BtSendBitcoin.Name = "BtSendBitcoin"
+        Me.BtSendBitcoin.Size = New System.Drawing.Size(75, 23)
+        Me.BtSendBitcoin.TabIndex = 29
+        Me.BtSendBitcoin.Text = "send"
+        Me.BtSendBitcoin.UseVisualStyleBackColor = False
+        '
+        'GroupBox4
+        '
+        Me.GroupBox4.Controls.Add(Me.SplitContainer31)
+        Me.GroupBox4.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.GroupBox4.ForeColor = System.Drawing.Color.White
+        Me.GroupBox4.Location = New System.Drawing.Point(0, 0)
+        Me.GroupBox4.Name = "GroupBox4"
+        Me.GroupBox4.Size = New System.Drawing.Size(487, 261)
+        Me.GroupBox4.TabIndex = 0
+        Me.GroupBox4.TabStop = False
+        Me.GroupBox4.Text = "Claim Bitcoin"
+        '
+        'SplitContainer31
+        '
+        Me.SplitContainer31.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer31.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
+        Me.SplitContainer31.IsSplitterFixed = True
+        Me.SplitContainer31.Location = New System.Drawing.Point(3, 16)
+        Me.SplitContainer31.Name = "SplitContainer31"
+        Me.SplitContainer31.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer31.Panel1
+        '
+        Me.SplitContainer31.Panel1.Controls.Add(Me.LV_BitcoinClaim)
+        Me.SplitContainer31.Panel1.Controls.Add(Me.Bt_BitcoinClaimGetInfo)
+        Me.SplitContainer31.Panel1.Controls.Add(Me.Label23)
+        Me.SplitContainer31.Panel1.Controls.Add(Me.Lab_BitcoinClaimChainSwapKey)
+        Me.SplitContainer31.Panel1.Controls.Add(Me.TB_BitcoinClaimTransaction)
+        Me.SplitContainer31.Panel1.Controls.Add(Me.TB_BitcoinClaimChainSwapKey)
+        Me.SplitContainer31.Panel1.Controls.Add(Me.Lab_BitcoinClaimUnlockScript)
+        Me.SplitContainer31.Panel1.Controls.Add(Me.TB_BitcoinClaimUnlockingScript)
+        '
+        'SplitContainer31.Panel2
+        '
+        Me.SplitContainer31.Panel2.Controls.Add(Me.SplitContainer32)
+        Me.SplitContainer31.Size = New System.Drawing.Size(481, 242)
+        Me.SplitContainer31.SplitterDistance = 210
+        Me.SplitContainer31.TabIndex = 11
+        '
+        'LV_BitcoinClaim
+        '
+        Me.LV_BitcoinClaim.BackColor = System.Drawing.Color.FromArgb(CType(CType(77, Byte), Integer), CType(CType(77, Byte), Integer), CType(CType(77, Byte), Integer))
+        Me.LV_BitcoinClaim.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader15, Me.ColumnHeader17, Me.ColumnHeader19, Me.ColumnHeader20})
+        Me.LV_BitcoinClaim.ForeColor = System.Drawing.Color.White
+        Me.LV_BitcoinClaim.FullRowSelect = True
+        Me.LV_BitcoinClaim.GridLines = True
+        Me.LV_BitcoinClaim.HideSelection = False
+        Me.LV_BitcoinClaim.Location = New System.Drawing.Point(3, 42)
+        Me.LV_BitcoinClaim.Name = "LV_BitcoinClaim"
+        Me.LV_BitcoinClaim.Size = New System.Drawing.Size(473, 87)
+        Me.LV_BitcoinClaim.TabIndex = 38
+        Me.LV_BitcoinClaim.UseCompatibleStateImageBehavior = False
+        Me.LV_BitcoinClaim.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader15
+        '
+        Me.ColumnHeader15.Text = "Input Index"
+        Me.ColumnHeader15.Width = 68
+        '
+        'ColumnHeader17
+        '
+        Me.ColumnHeader17.Text = "Type"
+        Me.ColumnHeader17.Width = 52
+        '
+        'ColumnHeader19
+        '
+        Me.ColumnHeader19.Text = "Amount"
+        '
+        'ColumnHeader20
+        '
+        Me.ColumnHeader20.Text = "Spendable"
+        '
+        'Bt_BitcoinClaimGetInfo
+        '
+        Me.Bt_BitcoinClaimGetInfo.BackColor = System.Drawing.Color.FromArgb(CType(CType(239, Byte), Integer), CType(CType(147, Byte), Integer), CType(CType(38, Byte), Integer))
+        Me.Bt_BitcoinClaimGetInfo.Location = New System.Drawing.Point(346, 14)
+        Me.Bt_BitcoinClaimGetInfo.Name = "Bt_BitcoinClaimGetInfo"
+        Me.Bt_BitcoinClaimGetInfo.Size = New System.Drawing.Size(57, 23)
+        Me.Bt_BitcoinClaimGetInfo.TabIndex = 37
+        Me.Bt_BitcoinClaimGetInfo.Text = "get info"
+        Me.Bt_BitcoinClaimGetInfo.UseVisualStyleBackColor = False
+        '
+        'Label23
+        '
+        Me.Label23.AutoSize = True
+        Me.Label23.ForeColor = System.Drawing.Color.White
+        Me.Label23.Location = New System.Drawing.Point(0, 0)
+        Me.Label23.Name = "Label23"
+        Me.Label23.Size = New System.Drawing.Size(66, 13)
+        Me.Label23.TabIndex = 5
+        Me.Label23.Text = "Transaction:"
+        '
+        'Lab_BitcoinClaimChainSwapKey
+        '
+        Me.Lab_BitcoinClaimChainSwapKey.AutoSize = True
+        Me.Lab_BitcoinClaimChainSwapKey.Location = New System.Drawing.Point(0, 171)
+        Me.Lab_BitcoinClaimChainSwapKey.Name = "Lab_BitcoinClaimChainSwapKey"
+        Me.Lab_BitcoinClaimChainSwapKey.Size = New System.Drawing.Size(82, 13)
+        Me.Lab_BitcoinClaimChainSwapKey.TabIndex = 10
+        Me.Lab_BitcoinClaimChainSwapKey.Text = "ChainSwapKey:"
+        '
+        'TB_BitcoinClaimTransaction
+        '
+        Me.TB_BitcoinClaimTransaction.Location = New System.Drawing.Point(3, 16)
+        Me.TB_BitcoinClaimTransaction.Name = "TB_BitcoinClaimTransaction"
+        Me.TB_BitcoinClaimTransaction.Size = New System.Drawing.Size(337, 20)
+        Me.TB_BitcoinClaimTransaction.TabIndex = 6
+        '
+        'TB_BitcoinClaimChainSwapKey
+        '
+        Me.TB_BitcoinClaimChainSwapKey.Location = New System.Drawing.Point(3, 187)
+        Me.TB_BitcoinClaimChainSwapKey.Name = "TB_BitcoinClaimChainSwapKey"
+        Me.TB_BitcoinClaimChainSwapKey.Size = New System.Drawing.Size(400, 20)
+        Me.TB_BitcoinClaimChainSwapKey.TabIndex = 9
+        '
+        'Lab_BitcoinClaimUnlockScript
+        '
+        Me.Lab_BitcoinClaimUnlockScript.AutoSize = True
+        Me.Lab_BitcoinClaimUnlockScript.ForeColor = System.Drawing.Color.White
+        Me.Lab_BitcoinClaimUnlockScript.Location = New System.Drawing.Point(0, 132)
+        Me.Lab_BitcoinClaimUnlockScript.Name = "Lab_BitcoinClaimUnlockScript"
+        Me.Lab_BitcoinClaimUnlockScript.Size = New System.Drawing.Size(88, 13)
+        Me.Lab_BitcoinClaimUnlockScript.TabIndex = 7
+        Me.Lab_BitcoinClaimUnlockScript.Text = "Unlocking Script:"
+        '
+        'TB_BitcoinClaimUnlockingScript
+        '
+        Me.TB_BitcoinClaimUnlockingScript.Location = New System.Drawing.Point(3, 148)
+        Me.TB_BitcoinClaimUnlockingScript.Name = "TB_BitcoinClaimUnlockingScript"
+        Me.TB_BitcoinClaimUnlockingScript.Size = New System.Drawing.Size(400, 20)
+        Me.TB_BitcoinClaimUnlockingScript.TabIndex = 8
+        '
+        'SplitContainer32
+        '
+        Me.SplitContainer32.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer32.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
+        Me.SplitContainer32.IsSplitterFixed = True
+        Me.SplitContainer32.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer32.Name = "SplitContainer32"
+        '
+        'SplitContainer32.Panel2
+        '
+        Me.SplitContainer32.Panel2.Controls.Add(Me.Bt_BitcoinClaimTransaction)
+        Me.SplitContainer32.Size = New System.Drawing.Size(481, 28)
+        Me.SplitContainer32.SplitterDistance = 396
+        Me.SplitContainer32.TabIndex = 0
+        '
+        'Bt_BitcoinClaimTransaction
+        '
+        Me.Bt_BitcoinClaimTransaction.BackColor = System.Drawing.Color.FromArgb(CType(CType(239, Byte), Integer), CType(CType(147, Byte), Integer), CType(CType(38, Byte), Integer))
+        Me.Bt_BitcoinClaimTransaction.ForeColor = System.Drawing.Color.White
+        Me.Bt_BitcoinClaimTransaction.Location = New System.Drawing.Point(3, 3)
+        Me.Bt_BitcoinClaimTransaction.Name = "Bt_BitcoinClaimTransaction"
+        Me.Bt_BitcoinClaimTransaction.Size = New System.Drawing.Size(75, 23)
+        Me.Bt_BitcoinClaimTransaction.TabIndex = 4
+        Me.Bt_BitcoinClaimTransaction.Text = "claim"
+        Me.Bt_BitcoinClaimTransaction.UseVisualStyleBackColor = False
+        '
+        'SplitContainer28
+        '
+        Me.SplitContainer28.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer28.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer28.Name = "SplitContainer28"
+        '
+        'SplitContainer28.Panel1
+        '
+        Me.SplitContainer28.Panel1.Controls.Add(Me.SplitContainer29)
+        '
+        'SplitContainer28.Panel2
+        '
+        Me.SplitContainer28.Panel2.Controls.Add(Me.SplitContainer30)
+        Me.SplitContainer28.Size = New System.Drawing.Size(1546, 414)
+        Me.SplitContainer28.SplitterDistance = 1063
+        Me.SplitContainer28.TabIndex = 0
+        '
+        'SplitContainer29
+        '
+        Me.SplitContainer29.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer29.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer29.IsSplitterFixed = True
+        Me.SplitContainer29.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer29.Name = "SplitContainer29"
+        Me.SplitContainer29.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer29.Panel1
+        '
+        Me.SplitContainer29.Panel1.Controls.Add(Me.Label14)
+        '
+        'SplitContainer29.Panel2
+        '
+        Me.SplitContainer29.Panel2.Controls.Add(Me.LVBitcoin)
+        Me.SplitContainer29.Size = New System.Drawing.Size(1063, 414)
+        Me.SplitContainer29.SplitterDistance = 25
+        Me.SplitContainer29.TabIndex = 0
+        '
+        'Label14
+        '
+        Me.Label14.AutoSize = True
+        Me.Label14.BackColor = System.Drawing.Color.Transparent
+        Me.Label14.ForeColor = System.Drawing.Color.White
+        Me.Label14.Location = New System.Drawing.Point(4, 6)
+        Me.Label14.Name = "Label14"
+        Me.Label14.Size = New System.Drawing.Size(86, 13)
+        Me.Label14.TabIndex = 3
+        Me.Label14.Text = "Details (UTXOs):"
+        '
+        'LVBitcoin
+        '
+        Me.LVBitcoin.BackColor = System.Drawing.Color.FromArgb(CType(CType(77, Byte), Integer), CType(CType(77, Byte), Integer), CType(CType(77, Byte), Integer))
+        Me.LVBitcoin.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader12, Me.ColumnHeader4, Me.ColumnHeader5, Me.ColumnHeader6, Me.ColumnHeader7, Me.ColumnHeader8})
+        Me.LVBitcoin.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LVBitcoin.ForeColor = System.Drawing.Color.White
+        Me.LVBitcoin.FullRowSelect = True
+        Me.LVBitcoin.GridLines = True
+        Me.LVBitcoin.HideSelection = False
+        Me.LVBitcoin.Location = New System.Drawing.Point(0, 0)
+        Me.LVBitcoin.Name = "LVBitcoin"
+        Me.LVBitcoin.Size = New System.Drawing.Size(1063, 385)
+        Me.LVBitcoin.TabIndex = 0
+        Me.LVBitcoin.UseCompatibleStateImageBehavior = False
+        Me.LVBitcoin.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader12
+        '
+        Me.ColumnHeader12.Text = "Confirmations"
+        Me.ColumnHeader12.Width = 85
+        '
+        'ColumnHeader4
+        '
+        Me.ColumnHeader4.Text = "Transaction ID"
+        Me.ColumnHeader4.Width = 89
+        '
+        'ColumnHeader5
+        '
+        Me.ColumnHeader5.Text = "Output Index"
+        Me.ColumnHeader5.Width = 83
+        '
+        'ColumnHeader6
+        '
+        Me.ColumnHeader6.Text = "Type"
+        '
+        'ColumnHeader7
+        '
+        Me.ColumnHeader7.Text = "Address"
+        '
+        'ColumnHeader8
+        '
+        Me.ColumnHeader8.Text = "Amount"
+        '
+        'SplitContainer30
+        '
+        Me.SplitContainer30.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer30.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
+        Me.SplitContainer30.IsSplitterFixed = True
+        Me.SplitContainer30.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer30.Name = "SplitContainer30"
+        Me.SplitContainer30.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer30.Panel1
+        '
+        Me.SplitContainer30.Panel1.Controls.Add(Me.Label15)
+        '
+        'SplitContainer30.Panel2
+        '
+        Me.SplitContainer30.Panel2.Controls.Add(Me.LVBitcoinLockingScript)
+        Me.SplitContainer30.Size = New System.Drawing.Size(479, 414)
+        Me.SplitContainer30.SplitterDistance = 25
+        Me.SplitContainer30.TabIndex = 0
+        '
+        'Label15
+        '
+        Me.Label15.AutoSize = True
+        Me.Label15.BackColor = System.Drawing.Color.Transparent
+        Me.Label15.ForeColor = System.Drawing.Color.White
+        Me.Label15.Location = New System.Drawing.Point(3, 6)
+        Me.Label15.Name = "Label15"
+        Me.Label15.Size = New System.Drawing.Size(75, 13)
+        Me.Label15.TabIndex = 4
+        Me.Label15.Text = "LockingScript:"
+        '
+        'LVBitcoinLockingScript
+        '
+        Me.LVBitcoinLockingScript.BackColor = System.Drawing.Color.FromArgb(CType(CType(77, Byte), Integer), CType(CType(77, Byte), Integer), CType(CType(77, Byte), Integer))
+        Me.LVBitcoinLockingScript.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader10, Me.ColumnHeader11})
+        Me.LVBitcoinLockingScript.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LVBitcoinLockingScript.ForeColor = System.Drawing.Color.White
+        Me.LVBitcoinLockingScript.FullRowSelect = True
+        Me.LVBitcoinLockingScript.GridLines = True
+        Me.LVBitcoinLockingScript.HideSelection = False
+        Me.LVBitcoinLockingScript.Location = New System.Drawing.Point(0, 0)
+        Me.LVBitcoinLockingScript.Name = "LVBitcoinLockingScript"
+        Me.LVBitcoinLockingScript.Size = New System.Drawing.Size(479, 385)
+        Me.LVBitcoinLockingScript.TabIndex = 2
+        Me.LVBitcoinLockingScript.UseCompatibleStateImageBehavior = False
+        Me.LVBitcoinLockingScript.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader10
+        '
+        Me.ColumnHeader10.Text = "OP Code"
+        '
+        'ColumnHeader11
+        '
+        Me.ColumnHeader11.Text = "OP Value"
         '
         'SplitContainer12
         '
@@ -1906,8 +2751,8 @@ Partial Class PFPForm
         CType(Me.SplitContainerBuyFilter, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainerBuyFilter.ResumeLayout(False)
         Me.TabControl1.ResumeLayout(False)
-        Me.TabPage1.ResumeLayout(False)
-        Me.TabPage2.ResumeLayout(False)
+        Me.TPMarketdetails.ResumeLayout(False)
+        Me.TPMySections.ResumeLayout(False)
         Me.SplitContainer18.Panel1.ResumeLayout(False)
         Me.SplitContainer18.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer18, System.ComponentModel.ISupportInitialize).EndInit()
@@ -1945,10 +2790,75 @@ Partial Class PFPForm
         Me.SplitContainer17.Panel1.ResumeLayout(False)
         CType(Me.SplitContainer17, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer17.ResumeLayout(False)
-        Me.TabPage3.ResumeLayout(False)
+        Me.TPSettings.ResumeLayout(False)
         Me.SCSettings.Panel1.ResumeLayout(False)
         CType(Me.SCSettings, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SCSettings.ResumeLayout(False)
+        Me.TP_AS_BTC.ResumeLayout(False)
+        Me.SplitContainer27.Panel1.ResumeLayout(False)
+        Me.SplitContainer27.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer27, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer27.ResumeLayout(False)
+        Me.SplitContainer25.Panel1.ResumeLayout(False)
+        Me.SplitContainer25.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer25, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer25.ResumeLayout(False)
+        Me.SplitContainer22.Panel1.ResumeLayout(False)
+        Me.SplitContainer22.Panel1.PerformLayout()
+        Me.SplitContainer22.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer22, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer22.ResumeLayout(False)
+        Me.SplitContainer24.Panel1.ResumeLayout(False)
+        Me.SplitContainer24.Panel2.ResumeLayout(False)
+        Me.SplitContainer24.Panel2.PerformLayout()
+        CType(Me.SplitContainer24, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer24.ResumeLayout(False)
+        Me.SplitContainer21.Panel1.ResumeLayout(False)
+        Me.SplitContainer21.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer21, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer21.ResumeLayout(False)
+        Me.GrpBxSendBitcoin.ResumeLayout(False)
+        Me.SplitContainer23.Panel1.ResumeLayout(False)
+        Me.SplitContainer23.Panel1.PerformLayout()
+        Me.SplitContainer23.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer23, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer23.ResumeLayout(False)
+        CType(Me.NUDBitcoinAmount, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NUDBitcoinTXFee, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SCBitcoinSendOption.Panel1.ResumeLayout(False)
+        Me.SCBitcoinSendOption.Panel1.PerformLayout()
+        Me.SCBitcoinSendOption.Panel2.ResumeLayout(False)
+        CType(Me.SCBitcoinSendOption, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SCBitcoinSendOption.ResumeLayout(False)
+        CType(Me.NUDBitcoinLockTime, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupBox3.ResumeLayout(False)
+        Me.GroupBox3.PerformLayout()
+        Me.SplitContainer26.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer26, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer26.ResumeLayout(False)
+        Me.GroupBox4.ResumeLayout(False)
+        Me.SplitContainer31.Panel1.ResumeLayout(False)
+        Me.SplitContainer31.Panel1.PerformLayout()
+        Me.SplitContainer31.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer31, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer31.ResumeLayout(False)
+        Me.SplitContainer32.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer32, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer32.ResumeLayout(False)
+        Me.SplitContainer28.Panel1.ResumeLayout(False)
+        Me.SplitContainer28.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer28, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer28.ResumeLayout(False)
+        Me.SplitContainer29.Panel1.ResumeLayout(False)
+        Me.SplitContainer29.Panel1.PerformLayout()
+        Me.SplitContainer29.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer29, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer29.ResumeLayout(False)
+        Me.SplitContainer30.Panel1.ResumeLayout(False)
+        Me.SplitContainer30.Panel1.PerformLayout()
+        Me.SplitContainer30.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer30, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer30.ResumeLayout(False)
         Me.SplitContainer12.Panel1.ResumeLayout(False)
         Me.SplitContainer12.Panel1.PerformLayout()
         Me.SplitContainer12.Panel2.ResumeLayout(False)
@@ -2004,8 +2914,8 @@ Partial Class PFPForm
     Friend WithEvents SplitContainer10 As SplitContainer
     Friend WithEvents SplitContainer11 As SplitContainer
     Friend WithEvents TabControl1 As TabControl
-    Friend WithEvents TabPage1 As TabPage
-    Friend WithEvents TabPage2 As TabPage
+    Friend WithEvents TPMarketdetails As TabPage
+    Friend WithEvents TPMySections As TabPage
     Friend WithEvents SplitContainer12 As SplitContainer
     Friend WithEvents Label4 As Label
     Friend WithEvents LVMyOpenOrders As ListView
@@ -2019,7 +2929,7 @@ Partial Class PFPForm
     Friend WithEvents SplitContainer15 As SplitContainer
     Friend WithEvents SplitContainer17 As SplitContainer
     Friend WithEvents ColumnHeader34 As ColumnHeader
-    Friend WithEvents TabPage3 As TabPage
+    Friend WithEvents TPSettings As TabPage
     Friend WithEvents ColumnHeader41 As ColumnHeader
     Friend WithEvents BtPayOrder As Button
     Friend WithEvents TBManuMsg As TextBox
@@ -2061,8 +2971,6 @@ Partial Class PFPForm
     'Friend WithEvents TSSStatusImage As ToolStripStatusLabel
     Friend WithEvents TBSNOBalance As TextBox
     Friend WithEvents BtSetPIN As Button
-    'Friend WithEvents TSSCryptStatus As ToolStripStatusLabel
-    Friend WithEvents Panel1 As Panel
     Friend WithEvents LabDebug As Label
     Friend WithEvents StatusStrip1 As StatusStrip
     Friend WithEvents StatusLabel As ToolStripStatusLabel
@@ -2095,4 +3003,70 @@ Partial Class PFPForm
     Friend WithEvents BtMediatorDeActivateDeniability As Button
     Friend WithEvents ChBxBuyFilterShowOffChainOrders As CheckBox
     Friend WithEvents BtExecuteWithChainSwapKey As Button
+    Friend WithEvents TP_AS_BTC As TabPage
+    Friend WithEvents LVBitcoin As ListView
+    Friend WithEvents ColumnHeader4 As ColumnHeader
+    Friend WithEvents ColumnHeader5 As ColumnHeader
+    Friend WithEvents ColumnHeader6 As ColumnHeader
+    Friend WithEvents ColumnHeader7 As ColumnHeader
+    Friend WithEvents ColumnHeader8 As ColumnHeader
+    Friend WithEvents LVBitcoinLockingScript As ListView
+    Friend WithEvents ColumnHeader10 As ColumnHeader
+    Friend WithEvents ColumnHeader11 As ColumnHeader
+    Friend WithEvents Label15 As Label
+    Friend WithEvents Label14 As Label
+    Friend WithEvents ColumnHeader12 As ColumnHeader
+    Friend WithEvents Label19 As Label
+    Friend WithEvents LVBitcoinAddresses As ListView
+    Friend WithEvents ColumnHeader13 As ColumnHeader
+    Friend WithEvents ColumnHeader14 As ColumnHeader
+    Friend WithEvents GrpBxSendBitcoin As GroupBox
+    Friend WithEvents SplitContainer23 As SplitContainer
+    Friend WithEvents Label21 As Label
+    Friend WithEvents Label22 As Label
+    Friend WithEvents NUDBitcoinAmount As NumericUpDown
+    Friend WithEvents NUDBitcoinTXFee As NumericUpDown
+    Friend WithEvents Label20 As Label
+    Friend WithEvents TBBitcoinRecipient As TextBox
+    Friend WithEvents SCBitcoinSendOption As SplitContainer
+    Friend WithEvents BtSendBitcoin As Button
+    Friend WithEvents GroupBox3 As GroupBox
+    Friend WithEvents RBBitcoinOptionCSHLT As RadioButton
+    Friend WithEvents RBBitcoinOptionLockTime As RadioButton
+    Friend WithEvents RBBitcoinOptionChainSwapHash As RadioButton
+    Friend WithEvents RBBitcoinOptionStandard As RadioButton
+    Friend WithEvents NUDBitcoinLockTime As NumericUpDown
+    Friend WithEvents LabBitcoinChainSwapHash As Label
+    Friend WithEvents TBBitcoinChainSwapHash As TextBox
+    Friend WithEvents LabBitcoinLockTime As Label
+    Friend WithEvents SplitContainer22 As SplitContainer
+    Friend WithEvents SplitContainer24 As SplitContainer
+    Friend WithEvents SplitContainer27 As SplitContainer
+    Friend WithEvents SplitContainer25 As SplitContainer
+    Friend WithEvents SplitContainer26 As SplitContainer
+    Friend WithEvents SplitContainer28 As SplitContainer
+    Friend WithEvents SplitContainer29 As SplitContainer
+    Friend WithEvents SplitContainer30 As SplitContainer
+    Friend WithEvents LabTotalBitcoin As Label
+    Friend WithEvents Panel1 As Panel
+    Friend WithEvents BtBitcoinGenerateChainSwapKeyHash As Button
+    Friend WithEvents Label17 As Label
+    Friend WithEvents TBBitcoinChainSwapKey As TextBox
+    Friend WithEvents TB_BitcoinClaimUnlockingScript As TextBox
+    Friend WithEvents Lab_BitcoinClaimUnlockScript As Label
+    Friend WithEvents TB_BitcoinClaimTransaction As TextBox
+    Friend WithEvents Label23 As Label
+    Friend WithEvents Bt_BitcoinClaimTransaction As Button
+    Friend WithEvents SplitContainer21 As SplitContainer
+    Friend WithEvents GroupBox4 As GroupBox
+    Friend WithEvents SplitContainer31 As SplitContainer
+    Friend WithEvents Lab_BitcoinClaimChainSwapKey As Label
+    Friend WithEvents TB_BitcoinClaimChainSwapKey As TextBox
+    Friend WithEvents SplitContainer32 As SplitContainer
+    Friend WithEvents Bt_BitcoinClaimGetInfo As Button
+    Friend WithEvents LV_BitcoinClaim As ListView
+    Friend WithEvents ColumnHeader15 As ColumnHeader
+    Friend WithEvents ColumnHeader17 As ColumnHeader
+    Friend WithEvents ColumnHeader19 As ColumnHeader
+    Friend WithEvents ColumnHeader20 As ColumnHeader
 End Class

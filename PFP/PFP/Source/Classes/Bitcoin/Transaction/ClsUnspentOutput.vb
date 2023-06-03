@@ -37,6 +37,7 @@ Public Class ClsUnspentOutput
 
     Property InputIndex As Integer = 0
     Property Confirmations As Integer = 0
+    Property Spendable As Boolean = False
     Property Sequence As ULong = 4294967295UL
 
     Public Structure S_UTXEntry

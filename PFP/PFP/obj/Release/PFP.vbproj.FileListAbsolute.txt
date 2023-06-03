@@ -41,8 +41,6 @@ C:\temper\testings\PFP\PFP\obj\Release\PFP.exe
 C:\temper\testings\PFP\PFP\obj\Release\PFP.xml
 C:\temper\testings\PFP\PFP\obj\Release\PFP.pdb
 C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Release\PFP.exe.config
-C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Release\PFP.exe.manifest
-C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Release\PFP.application
 C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Release\PFP.exe
 C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Release\PFP.pdb
 C:\Current_Develpements\Signum\Signum\PFP\PFP\bin\Release\PFP.xml
@@ -59,9 +57,9 @@ C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.TradeTrackerTimeLi
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.TradeTrackerTimeRail.resources
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.vbproj.GenerateResource.cache
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.vbproj.CoreCompileInputs.cache
-C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.exe.manifest
-C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.application
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.exe
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.xml
 C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.pdb
-C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.vbprojAssemblyReference.cache
+C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.vbproj.AssemblyReference.cache
+C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.vbproj.SuggestedBindingRedirects.cache
+C:\Current_Develpements\Signum\Signum\PFP\PFP\obj\Release\PFP.FrmBitcoinAccounts.resources

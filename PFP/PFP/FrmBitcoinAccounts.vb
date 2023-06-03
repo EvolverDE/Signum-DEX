@@ -1,6 +1,5 @@
 ﻿Imports System.Net
 Imports System.Security.Cryptography
-Imports System.Security.Cryptography.X509Certificates
 
 Public Class FrmBitcoinAccounts
 
@@ -110,7 +109,6 @@ Public Class FrmBitcoinAccounts
     End Function
 
 
-
     Private Sub BtShowHideMnemonic_Click(sender As Object, e As EventArgs) Handles BtShowHideMnemonic.Click
 
         If TBBitcoinMnemonic.UseSystemPasswordChar Then
@@ -138,7 +136,8 @@ Public Class FrmBitcoinAccounts
     Private Sub BtGenerateMnemonic_Click(sender As Object, e As EventArgs) Handles BtGenerateMnemonic.Click
 
         Dim sha As SHA256 = SHA256.Create()
-        TBPrivateKey.Text = ByteArrayToHEXString(sha.ComputeHash(HEXStringToByteArray(TBBitcoinMnemonic.Text)))
+
+        TBPrivateKey.Text = ByteArrayToHEXString(sha.ComputeHash(HEXStringToByteArray(StringToHEXString(TBBitcoinMnemonic.Text))))
         TBPublicKey.Text = PrivKeyToPubKey(TBPrivateKey.Text)
         TBAddress.Text = PubKeyToAddress(TBPublicKey.Text, BitcoinAddressPrefix)
 
@@ -209,18 +208,20 @@ Public Class FrmBitcoinAccounts
 
     Private Function AddAddress(ByVal Address As String) As Boolean
 
+        Dim XItem As ClsBitcoin = New ClsBitcoin
+
         If ChBxReScan.Checked Then
-            If LoadBitcoinWallet(GetINISetting(E_Setting.BitcoinWallet, "")) Then
+            If XItem.LoadBitcoinWallet(GetINISetting(E_Setting.BitcoinWallet, "")) Then
             End If
-            If ImportNewBitcoinAddress(Address) Then
+            If XItem.ImportNewBitcoinAddress(Address) Then
                 ClsMsgs.MBox(Address + " successfully added to " + GetINISetting(E_Setting.BitcoinWallet, ""))
                 Return True
             End If
 
         Else
-            If LoadBitcoinWallet(GetINISetting(E_Setting.BitcoinWallet, "")) Then
+            If XItem.LoadBitcoinWallet(GetINISetting(E_Setting.BitcoinWallet, "")) Then
             End If
-            If CreateNewBitcoinAddress(Address) Then
+            If XItem.CreateNewBitcoinAddress(Address) Then
                 ClsMsgs.MBox(Address + " successfully added to " + GetINISetting(E_Setting.BitcoinWallet, ""))
                 Return True
             End If
@@ -232,14 +233,18 @@ Public Class FrmBitcoinAccounts
     End Function
 
     Private Sub BtLoadWallet_Click(sender As Object, e As EventArgs) Handles BtLoadWallet.Click
-        LoadBitcoinWallet(TBWallet.Text)
+        Dim XItem As ClsBitcoin = New ClsBitcoin
+        XItem.LoadBitcoinWallet(TBWallet.Text)
     End Sub
 
     Private Sub BtCreateWallet_Click(sender As Object, e As EventArgs) Handles BtCreateWallet.Click
-        CreateNewBitcoinWallet(TBWallet.Text)
+        Dim XItem As ClsBitcoin = New ClsBitcoin
+        XItem.CreateNewBitcoinWallet(TBWallet.Text)
     End Sub
 
     Private Sub BtUnloadWallet_Click(sender As Object, e As EventArgs) Handles BtUnloadWallet.Click
-        UnloadBitcoinWallet(TBWallet.Text)
+        Dim XItem As ClsBitcoin = New ClsBitcoin
+        XItem.UnloadBitcoinWallet(TBWallet.Text)
     End Sub
+
 End Class

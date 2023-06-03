@@ -26,6 +26,32 @@ Partial Class FrmDevelope
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmDevelope))
         Me.TestTabControl = New System.Windows.Forms.TabControl()
         Me.TabPage6 = New System.Windows.Forms.TabPage()
+        Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.TBTestHashHEX = New System.Windows.Forms.TextBox()
+        Me.Label58 = New System.Windows.Forms.Label()
+        Me.TBTestHashUL4 = New System.Windows.Forms.TextBox()
+        Me.Label54 = New System.Windows.Forms.Label()
+        Me.TBTestHashUL2 = New System.Windows.Forms.TextBox()
+        Me.Label55 = New System.Windows.Forms.Label()
+        Me.TBTestHashUL1 = New System.Windows.Forms.TextBox()
+        Me.Label56 = New System.Windows.Forms.Label()
+        Me.TBTestHashUL3 = New System.Windows.Forms.TextBox()
+        Me.Label57 = New System.Windows.Forms.Label()
+        Me.TBTestKeyUL4 = New System.Windows.Forms.TextBox()
+        Me.Label53 = New System.Windows.Forms.Label()
+        Me.TBTestKeyUL2 = New System.Windows.Forms.TextBox()
+        Me.Label52 = New System.Windows.Forms.Label()
+        Me.TBTestKeyUL1 = New System.Windows.Forms.TextBox()
+        Me.Label51 = New System.Windows.Forms.Label()
+        Me.TBTestKeyUL3 = New System.Windows.Forms.TextBox()
+        Me.Label50 = New System.Windows.Forms.Label()
+        Me.BtTestHash = New System.Windows.Forms.Button()
+        Me.TBTestHashULHEX = New System.Windows.Forms.TextBox()
+        Me.Label49 = New System.Windows.Forms.Label()
+        Me.TBTestKeyHEX = New System.Windows.Forms.TextBox()
+        Me.Label48 = New System.Windows.Forms.Label()
+        Me.TBTestKeyString = New System.Windows.Forms.TextBox()
+        Me.Label47 = New System.Windows.Forms.Label()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
         Me.BtTestRecursiveXMLSearch = New System.Windows.Forms.Button()
         Me.TBTestRecursiveXMLSearch = New System.Windows.Forms.TextBox()
@@ -87,6 +113,7 @@ Partial Class FrmDevelope
         Me.BtTestPPCheckAPI = New System.Windows.Forms.Button()
         Me.LiBoPayPalComs = New System.Windows.Forms.ListBox()
         Me.TabPage9 = New System.Windows.Forms.TabPage()
+        Me.RTBTestDebug = New System.Windows.Forms.RichTextBox()
         Me.TestGrpBxATCom = New System.Windows.Forms.GroupBox()
         Me.NUDTestAmount = New System.Windows.Forms.NumericUpDown()
         Me.NUDTestXAmount = New System.Windows.Forms.NumericUpDown()
@@ -232,34 +259,9 @@ Partial Class FrmDevelope
         Me.Label29 = New System.Windows.Forms.Label()
         Me.TBTestMyPublicKey = New System.Windows.Forms.TextBox()
         Me.Label28 = New System.Windows.Forms.Label()
-        Me.GroupBox4 = New System.Windows.Forms.GroupBox()
-        Me.Label47 = New System.Windows.Forms.Label()
-        Me.TBTestKeyString = New System.Windows.Forms.TextBox()
-        Me.Label48 = New System.Windows.Forms.Label()
-        Me.TBTestKeyHEX = New System.Windows.Forms.TextBox()
-        Me.Label49 = New System.Windows.Forms.Label()
-        Me.TBTestHashULHEX = New System.Windows.Forms.TextBox()
-        Me.BtTestHash = New System.Windows.Forms.Button()
-        Me.Label50 = New System.Windows.Forms.Label()
-        Me.TBTestKeyUL3 = New System.Windows.Forms.TextBox()
-        Me.Label51 = New System.Windows.Forms.Label()
-        Me.TBTestKeyUL1 = New System.Windows.Forms.TextBox()
-        Me.TBTestKeyUL2 = New System.Windows.Forms.TextBox()
-        Me.Label52 = New System.Windows.Forms.Label()
-        Me.TBTestKeyUL4 = New System.Windows.Forms.TextBox()
-        Me.Label53 = New System.Windows.Forms.Label()
-        Me.TBTestHashUL4 = New System.Windows.Forms.TextBox()
-        Me.Label54 = New System.Windows.Forms.Label()
-        Me.TBTestHashUL2 = New System.Windows.Forms.TextBox()
-        Me.Label55 = New System.Windows.Forms.Label()
-        Me.TBTestHashUL1 = New System.Windows.Forms.TextBox()
-        Me.Label56 = New System.Windows.Forms.Label()
-        Me.TBTestHashUL3 = New System.Windows.Forms.TextBox()
-        Me.Label57 = New System.Windows.Forms.Label()
-        Me.TBTestHashHEX = New System.Windows.Forms.TextBox()
-        Me.Label58 = New System.Windows.Forms.Label()
         Me.TestTabControl.SuspendLayout()
         Me.TabPage6.SuspendLayout()
+        Me.GroupBox4.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox5.SuspendLayout()
@@ -345,7 +347,6 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel1.SuspendLayout()
         Me.SplitContainer11.Panel2.SuspendLayout()
         Me.SplitContainer11.SuspendLayout()
-        Me.GroupBox4.SuspendLayout()
         Me.SuspendLayout()
         '
         'TestTabControl
@@ -379,6 +380,254 @@ Partial Class FrmDevelope
         Me.TabPage6.TabIndex = 0
         Me.TabPage6.Text = "Convertings"
         Me.TabPage6.UseVisualStyleBackColor = True
+        '
+        'GroupBox4
+        '
+        Me.GroupBox4.Controls.Add(Me.TBTestHashHEX)
+        Me.GroupBox4.Controls.Add(Me.Label58)
+        Me.GroupBox4.Controls.Add(Me.TBTestHashUL4)
+        Me.GroupBox4.Controls.Add(Me.Label54)
+        Me.GroupBox4.Controls.Add(Me.TBTestHashUL2)
+        Me.GroupBox4.Controls.Add(Me.Label55)
+        Me.GroupBox4.Controls.Add(Me.TBTestHashUL1)
+        Me.GroupBox4.Controls.Add(Me.Label56)
+        Me.GroupBox4.Controls.Add(Me.TBTestHashUL3)
+        Me.GroupBox4.Controls.Add(Me.Label57)
+        Me.GroupBox4.Controls.Add(Me.TBTestKeyUL4)
+        Me.GroupBox4.Controls.Add(Me.Label53)
+        Me.GroupBox4.Controls.Add(Me.TBTestKeyUL2)
+        Me.GroupBox4.Controls.Add(Me.Label52)
+        Me.GroupBox4.Controls.Add(Me.TBTestKeyUL1)
+        Me.GroupBox4.Controls.Add(Me.Label51)
+        Me.GroupBox4.Controls.Add(Me.TBTestKeyUL3)
+        Me.GroupBox4.Controls.Add(Me.Label50)
+        Me.GroupBox4.Controls.Add(Me.BtTestHash)
+        Me.GroupBox4.Controls.Add(Me.TBTestHashULHEX)
+        Me.GroupBox4.Controls.Add(Me.Label49)
+        Me.GroupBox4.Controls.Add(Me.TBTestKeyHEX)
+        Me.GroupBox4.Controls.Add(Me.Label48)
+        Me.GroupBox4.Controls.Add(Me.TBTestKeyString)
+        Me.GroupBox4.Controls.Add(Me.Label47)
+        Me.GroupBox4.Location = New System.Drawing.Point(8, 197)
+        Me.GroupBox4.Name = "GroupBox4"
+        Me.GroupBox4.Size = New System.Drawing.Size(1056, 216)
+        Me.GroupBox4.TabIndex = 39
+        Me.GroupBox4.TabStop = False
+        Me.GroupBox4.Text = "SHA256"
+        '
+        'TBTestHashHEX
+        '
+        Me.TBTestHashHEX.Location = New System.Drawing.Point(69, 117)
+        Me.TBTestHashHEX.Name = "TBTestHashHEX"
+        Me.TBTestHashHEX.Size = New System.Drawing.Size(406, 20)
+        Me.TBTestHashHEX.TabIndex = 24
+        '
+        'Label58
+        '
+        Me.Label58.AutoSize = True
+        Me.Label58.ForeColor = System.Drawing.Color.Black
+        Me.Label58.Location = New System.Drawing.Point(6, 120)
+        Me.Label58.Name = "Label58"
+        Me.Label58.Size = New System.Drawing.Size(57, 13)
+        Me.Label58.TabIndex = 23
+        Me.Label58.Text = "HashHEX:"
+        '
+        'TBTestHashUL4
+        '
+        Me.TBTestHashUL4.Location = New System.Drawing.Point(872, 91)
+        Me.TBTestHashUL4.Name = "TBTestHashUL4"
+        Me.TBTestHashUL4.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestHashUL4.TabIndex = 22
+        '
+        'Label54
+        '
+        Me.Label54.AutoSize = True
+        Me.Label54.ForeColor = System.Drawing.Color.Black
+        Me.Label54.Location = New System.Drawing.Point(814, 94)
+        Me.Label54.Name = "Label54"
+        Me.Label54.Size = New System.Drawing.Size(55, 13)
+        Me.Label54.TabIndex = 21
+        Me.Label54.Text = "HashUL4:"
+        '
+        'TBTestHashUL2
+        '
+        Me.TBTestHashUL2.Location = New System.Drawing.Point(872, 65)
+        Me.TBTestHashUL2.Name = "TBTestHashUL2"
+        Me.TBTestHashUL2.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestHashUL2.TabIndex = 20
+        '
+        'Label55
+        '
+        Me.Label55.AutoSize = True
+        Me.Label55.ForeColor = System.Drawing.Color.Black
+        Me.Label55.Location = New System.Drawing.Point(814, 68)
+        Me.Label55.Name = "Label55"
+        Me.Label55.Size = New System.Drawing.Size(55, 13)
+        Me.Label55.TabIndex = 19
+        Me.Label55.Text = "HashUL2:"
+        '
+        'TBTestHashUL1
+        '
+        Me.TBTestHashUL1.Location = New System.Drawing.Point(639, 65)
+        Me.TBTestHashUL1.Name = "TBTestHashUL1"
+        Me.TBTestHashUL1.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestHashUL1.TabIndex = 18
+        '
+        'Label56
+        '
+        Me.Label56.AutoSize = True
+        Me.Label56.ForeColor = System.Drawing.Color.Black
+        Me.Label56.Location = New System.Drawing.Point(578, 68)
+        Me.Label56.Name = "Label56"
+        Me.Label56.Size = New System.Drawing.Size(55, 13)
+        Me.Label56.TabIndex = 17
+        Me.Label56.Text = "HashUL1:"
+        '
+        'TBTestHashUL3
+        '
+        Me.TBTestHashUL3.Location = New System.Drawing.Point(639, 91)
+        Me.TBTestHashUL3.Name = "TBTestHashUL3"
+        Me.TBTestHashUL3.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestHashUL3.TabIndex = 16
+        '
+        'Label57
+        '
+        Me.Label57.AutoSize = True
+        Me.Label57.ForeColor = System.Drawing.Color.Black
+        Me.Label57.Location = New System.Drawing.Point(578, 94)
+        Me.Label57.Name = "Label57"
+        Me.Label57.Size = New System.Drawing.Size(55, 13)
+        Me.Label57.TabIndex = 15
+        Me.Label57.Text = "HashUL3:"
+        '
+        'TBTestKeyUL4
+        '
+        Me.TBTestKeyUL4.Location = New System.Drawing.Point(872, 39)
+        Me.TBTestKeyUL4.Name = "TBTestKeyUL4"
+        Me.TBTestKeyUL4.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestKeyUL4.TabIndex = 14
+        '
+        'Label53
+        '
+        Me.Label53.AutoSize = True
+        Me.Label53.ForeColor = System.Drawing.Color.Black
+        Me.Label53.Location = New System.Drawing.Point(818, 42)
+        Me.Label53.Name = "Label53"
+        Me.Label53.Size = New System.Drawing.Size(48, 13)
+        Me.Label53.TabIndex = 13
+        Me.Label53.Text = "KeyUL4:"
+        '
+        'TBTestKeyUL2
+        '
+        Me.TBTestKeyUL2.Location = New System.Drawing.Point(872, 13)
+        Me.TBTestKeyUL2.Name = "TBTestKeyUL2"
+        Me.TBTestKeyUL2.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestKeyUL2.TabIndex = 12
+        '
+        'Label52
+        '
+        Me.Label52.AutoSize = True
+        Me.Label52.ForeColor = System.Drawing.Color.Black
+        Me.Label52.Location = New System.Drawing.Point(818, 16)
+        Me.Label52.Name = "Label52"
+        Me.Label52.Size = New System.Drawing.Size(48, 13)
+        Me.Label52.TabIndex = 11
+        Me.Label52.Text = "KeyUL2:"
+        '
+        'TBTestKeyUL1
+        '
+        Me.TBTestKeyUL1.Location = New System.Drawing.Point(639, 13)
+        Me.TBTestKeyUL1.Name = "TBTestKeyUL1"
+        Me.TBTestKeyUL1.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestKeyUL1.TabIndex = 10
+        '
+        'Label51
+        '
+        Me.Label51.AutoSize = True
+        Me.Label51.ForeColor = System.Drawing.Color.Black
+        Me.Label51.Location = New System.Drawing.Point(585, 16)
+        Me.Label51.Name = "Label51"
+        Me.Label51.Size = New System.Drawing.Size(48, 13)
+        Me.Label51.TabIndex = 9
+        Me.Label51.Text = "KeyUL1:"
+        '
+        'TBTestKeyUL3
+        '
+        Me.TBTestKeyUL3.Location = New System.Drawing.Point(639, 39)
+        Me.TBTestKeyUL3.Name = "TBTestKeyUL3"
+        Me.TBTestKeyUL3.Size = New System.Drawing.Size(173, 20)
+        Me.TBTestKeyUL3.TabIndex = 8
+        '
+        'Label50
+        '
+        Me.Label50.AutoSize = True
+        Me.Label50.ForeColor = System.Drawing.Color.Black
+        Me.Label50.Location = New System.Drawing.Point(585, 42)
+        Me.Label50.Name = "Label50"
+        Me.Label50.Size = New System.Drawing.Size(48, 13)
+        Me.Label50.TabIndex = 7
+        Me.Label50.Text = "KeyUL3:"
+        '
+        'BtTestHash
+        '
+        Me.BtTestHash.ForeColor = System.Drawing.Color.Black
+        Me.BtTestHash.Location = New System.Drawing.Point(491, 13)
+        Me.BtTestHash.Name = "BtTestHash"
+        Me.BtTestHash.Size = New System.Drawing.Size(75, 47)
+        Me.BtTestHash.TabIndex = 6
+        Me.BtTestHash.Text = "hash"
+        Me.BtTestHash.UseVisualStyleBackColor = True
+        '
+        'TBTestHashULHEX
+        '
+        Me.TBTestHashULHEX.Location = New System.Drawing.Point(639, 117)
+        Me.TBTestHashULHEX.Name = "TBTestHashULHEX"
+        Me.TBTestHashULHEX.Size = New System.Drawing.Size(406, 20)
+        Me.TBTestHashULHEX.TabIndex = 5
+        '
+        'Label49
+        '
+        Me.Label49.AutoSize = True
+        Me.Label49.ForeColor = System.Drawing.Color.Black
+        Me.Label49.Location = New System.Drawing.Point(576, 120)
+        Me.Label49.Name = "Label49"
+        Me.Label49.Size = New System.Drawing.Size(57, 13)
+        Me.Label49.TabIndex = 4
+        Me.Label49.Text = "HashHEX:"
+        '
+        'TBTestKeyHEX
+        '
+        Me.TBTestKeyHEX.Location = New System.Drawing.Point(69, 39)
+        Me.TBTestKeyHEX.Name = "TBTestKeyHEX"
+        Me.TBTestKeyHEX.Size = New System.Drawing.Size(406, 20)
+        Me.TBTestKeyHEX.TabIndex = 3
+        '
+        'Label48
+        '
+        Me.Label48.AutoSize = True
+        Me.Label48.ForeColor = System.Drawing.Color.Black
+        Me.Label48.Location = New System.Drawing.Point(6, 42)
+        Me.Label48.Name = "Label48"
+        Me.Label48.Size = New System.Drawing.Size(53, 13)
+        Me.Label48.TabIndex = 2
+        Me.Label48.Text = "Key HEX:"
+        '
+        'TBTestKeyString
+        '
+        Me.TBTestKeyString.Location = New System.Drawing.Point(69, 13)
+        Me.TBTestKeyString.Name = "TBTestKeyString"
+        Me.TBTestKeyString.Size = New System.Drawing.Size(406, 20)
+        Me.TBTestKeyString.TabIndex = 1
+        '
+        'Label47
+        '
+        Me.Label47.AutoSize = True
+        Me.Label47.ForeColor = System.Drawing.Color.Black
+        Me.Label47.Location = New System.Drawing.Point(6, 16)
+        Me.Label47.Name = "Label47"
+        Me.Label47.Size = New System.Drawing.Size(58, 13)
+        Me.Label47.TabIndex = 0
+        Me.Label47.Text = "Key String:"
         '
         'GroupBox2
         '
@@ -984,6 +1233,7 @@ Partial Class FrmDevelope
         'TabPage9
         '
         Me.TabPage9.AutoScroll = True
+        Me.TabPage9.Controls.Add(Me.RTBTestDebug)
         Me.TabPage9.Controls.Add(Me.TestGrpBxATCom)
         Me.TabPage9.Controls.Add(Me.Label1)
         Me.TabPage9.Controls.Add(Me.Label21)
@@ -995,6 +1245,14 @@ Partial Class FrmDevelope
         Me.TabPage9.TabIndex = 3
         Me.TabPage9.Text = "AT Communication"
         Me.TabPage9.UseVisualStyleBackColor = True
+        '
+        'RTBTestDebug
+        '
+        Me.RTBTestDebug.Location = New System.Drawing.Point(798, 336)
+        Me.RTBTestDebug.Name = "RTBTestDebug"
+        Me.RTBTestDebug.Size = New System.Drawing.Size(416, 342)
+        Me.RTBTestDebug.TabIndex = 71
+        Me.RTBTestDebug.Text = ""
         '
         'TestGrpBxATCom
         '
@@ -2470,254 +2728,6 @@ Partial Class FrmDevelope
         Me.Label28.TabIndex = 0
         Me.Label28.Text = "My Public Key:"
         '
-        'GroupBox4
-        '
-        Me.GroupBox4.Controls.Add(Me.TBTestHashHEX)
-        Me.GroupBox4.Controls.Add(Me.Label58)
-        Me.GroupBox4.Controls.Add(Me.TBTestHashUL4)
-        Me.GroupBox4.Controls.Add(Me.Label54)
-        Me.GroupBox4.Controls.Add(Me.TBTestHashUL2)
-        Me.GroupBox4.Controls.Add(Me.Label55)
-        Me.GroupBox4.Controls.Add(Me.TBTestHashUL1)
-        Me.GroupBox4.Controls.Add(Me.Label56)
-        Me.GroupBox4.Controls.Add(Me.TBTestHashUL3)
-        Me.GroupBox4.Controls.Add(Me.Label57)
-        Me.GroupBox4.Controls.Add(Me.TBTestKeyUL4)
-        Me.GroupBox4.Controls.Add(Me.Label53)
-        Me.GroupBox4.Controls.Add(Me.TBTestKeyUL2)
-        Me.GroupBox4.Controls.Add(Me.Label52)
-        Me.GroupBox4.Controls.Add(Me.TBTestKeyUL1)
-        Me.GroupBox4.Controls.Add(Me.Label51)
-        Me.GroupBox4.Controls.Add(Me.TBTestKeyUL3)
-        Me.GroupBox4.Controls.Add(Me.Label50)
-        Me.GroupBox4.Controls.Add(Me.BtTestHash)
-        Me.GroupBox4.Controls.Add(Me.TBTestHashULHEX)
-        Me.GroupBox4.Controls.Add(Me.Label49)
-        Me.GroupBox4.Controls.Add(Me.TBTestKeyHEX)
-        Me.GroupBox4.Controls.Add(Me.Label48)
-        Me.GroupBox4.Controls.Add(Me.TBTestKeyString)
-        Me.GroupBox4.Controls.Add(Me.Label47)
-        Me.GroupBox4.Location = New System.Drawing.Point(8, 197)
-        Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(1056, 216)
-        Me.GroupBox4.TabIndex = 39
-        Me.GroupBox4.TabStop = False
-        Me.GroupBox4.Text = "SHA256"
-        '
-        'Label47
-        '
-        Me.Label47.AutoSize = True
-        Me.Label47.ForeColor = System.Drawing.Color.Black
-        Me.Label47.Location = New System.Drawing.Point(6, 16)
-        Me.Label47.Name = "Label47"
-        Me.Label47.Size = New System.Drawing.Size(58, 13)
-        Me.Label47.TabIndex = 0
-        Me.Label47.Text = "Key String:"
-        '
-        'TBTestKeyString
-        '
-        Me.TBTestKeyString.Location = New System.Drawing.Point(69, 13)
-        Me.TBTestKeyString.Name = "TBTestKeyString"
-        Me.TBTestKeyString.Size = New System.Drawing.Size(406, 20)
-        Me.TBTestKeyString.TabIndex = 1
-        '
-        'Label48
-        '
-        Me.Label48.AutoSize = True
-        Me.Label48.ForeColor = System.Drawing.Color.Black
-        Me.Label48.Location = New System.Drawing.Point(6, 42)
-        Me.Label48.Name = "Label48"
-        Me.Label48.Size = New System.Drawing.Size(53, 13)
-        Me.Label48.TabIndex = 2
-        Me.Label48.Text = "Key HEX:"
-        '
-        'TBTestKeyHEX
-        '
-        Me.TBTestKeyHEX.Location = New System.Drawing.Point(69, 39)
-        Me.TBTestKeyHEX.Name = "TBTestKeyHEX"
-        Me.TBTestKeyHEX.Size = New System.Drawing.Size(406, 20)
-        Me.TBTestKeyHEX.TabIndex = 3
-        '
-        'Label49
-        '
-        Me.Label49.AutoSize = True
-        Me.Label49.ForeColor = System.Drawing.Color.Black
-        Me.Label49.Location = New System.Drawing.Point(576, 120)
-        Me.Label49.Name = "Label49"
-        Me.Label49.Size = New System.Drawing.Size(57, 13)
-        Me.Label49.TabIndex = 4
-        Me.Label49.Text = "HashHEX:"
-        '
-        'TBTestHashULHEX
-        '
-        Me.TBTestHashULHEX.Location = New System.Drawing.Point(639, 117)
-        Me.TBTestHashULHEX.Name = "TBTestHashULHEX"
-        Me.TBTestHashULHEX.Size = New System.Drawing.Size(406, 20)
-        Me.TBTestHashULHEX.TabIndex = 5
-        '
-        'BtTestHash
-        '
-        Me.BtTestHash.ForeColor = System.Drawing.Color.Black
-        Me.BtTestHash.Location = New System.Drawing.Point(491, 13)
-        Me.BtTestHash.Name = "BtTestHash"
-        Me.BtTestHash.Size = New System.Drawing.Size(75, 47)
-        Me.BtTestHash.TabIndex = 6
-        Me.BtTestHash.Text = "hash"
-        Me.BtTestHash.UseVisualStyleBackColor = True
-        '
-        'Label50
-        '
-        Me.Label50.AutoSize = True
-        Me.Label50.ForeColor = System.Drawing.Color.Black
-        Me.Label50.Location = New System.Drawing.Point(585, 42)
-        Me.Label50.Name = "Label50"
-        Me.Label50.Size = New System.Drawing.Size(48, 13)
-        Me.Label50.TabIndex = 7
-        Me.Label50.Text = "KeyUL3:"
-        '
-        'TBTestKeyUL3
-        '
-        Me.TBTestKeyUL3.Location = New System.Drawing.Point(639, 39)
-        Me.TBTestKeyUL3.Name = "TBTestKeyUL3"
-        Me.TBTestKeyUL3.Size = New System.Drawing.Size(173, 20)
-        Me.TBTestKeyUL3.TabIndex = 8
-        '
-        'Label51
-        '
-        Me.Label51.AutoSize = True
-        Me.Label51.ForeColor = System.Drawing.Color.Black
-        Me.Label51.Location = New System.Drawing.Point(585, 16)
-        Me.Label51.Name = "Label51"
-        Me.Label51.Size = New System.Drawing.Size(48, 13)
-        Me.Label51.TabIndex = 9
-        Me.Label51.Text = "KeyUL1:"
-        '
-        'TBTestKeyUL1
-        '
-        Me.TBTestKeyUL1.Location = New System.Drawing.Point(639, 13)
-        Me.TBTestKeyUL1.Name = "TBTestKeyUL1"
-        Me.TBTestKeyUL1.Size = New System.Drawing.Size(173, 20)
-        Me.TBTestKeyUL1.TabIndex = 10
-        '
-        'TBTestKeyUL2
-        '
-        Me.TBTestKeyUL2.Location = New System.Drawing.Point(872, 13)
-        Me.TBTestKeyUL2.Name = "TBTestKeyUL2"
-        Me.TBTestKeyUL2.Size = New System.Drawing.Size(173, 20)
-        Me.TBTestKeyUL2.TabIndex = 12
-        '
-        'Label52
-        '
-        Me.Label52.AutoSize = True
-        Me.Label52.ForeColor = System.Drawing.Color.Black
-        Me.Label52.Location = New System.Drawing.Point(818, 16)
-        Me.Label52.Name = "Label52"
-        Me.Label52.Size = New System.Drawing.Size(48, 13)
-        Me.Label52.TabIndex = 11
-        Me.Label52.Text = "KeyUL2:"
-        '
-        'TBTestKeyUL4
-        '
-        Me.TBTestKeyUL4.Location = New System.Drawing.Point(872, 39)
-        Me.TBTestKeyUL4.Name = "TBTestKeyUL4"
-        Me.TBTestKeyUL4.Size = New System.Drawing.Size(173, 20)
-        Me.TBTestKeyUL4.TabIndex = 14
-        '
-        'Label53
-        '
-        Me.Label53.AutoSize = True
-        Me.Label53.ForeColor = System.Drawing.Color.Black
-        Me.Label53.Location = New System.Drawing.Point(818, 42)
-        Me.Label53.Name = "Label53"
-        Me.Label53.Size = New System.Drawing.Size(48, 13)
-        Me.Label53.TabIndex = 13
-        Me.Label53.Text = "KeyUL4:"
-        '
-        'TBTestHashUL4
-        '
-        Me.TBTestHashUL4.Location = New System.Drawing.Point(872, 91)
-        Me.TBTestHashUL4.Name = "TBTestHashUL4"
-        Me.TBTestHashUL4.Size = New System.Drawing.Size(173, 20)
-        Me.TBTestHashUL4.TabIndex = 22
-        '
-        'Label54
-        '
-        Me.Label54.AutoSize = True
-        Me.Label54.ForeColor = System.Drawing.Color.Black
-        Me.Label54.Location = New System.Drawing.Point(814, 94)
-        Me.Label54.Name = "Label54"
-        Me.Label54.Size = New System.Drawing.Size(55, 13)
-        Me.Label54.TabIndex = 21
-        Me.Label54.Text = "HashUL4:"
-        '
-        'TBTestHashUL2
-        '
-        Me.TBTestHashUL2.Location = New System.Drawing.Point(872, 65)
-        Me.TBTestHashUL2.Name = "TBTestHashUL2"
-        Me.TBTestHashUL2.Size = New System.Drawing.Size(173, 20)
-        Me.TBTestHashUL2.TabIndex = 20
-        '
-        'Label55
-        '
-        Me.Label55.AutoSize = True
-        Me.Label55.ForeColor = System.Drawing.Color.Black
-        Me.Label55.Location = New System.Drawing.Point(814, 68)
-        Me.Label55.Name = "Label55"
-        Me.Label55.Size = New System.Drawing.Size(55, 13)
-        Me.Label55.TabIndex = 19
-        Me.Label55.Text = "HashUL2:"
-        '
-        'TBTestHashUL1
-        '
-        Me.TBTestHashUL1.Location = New System.Drawing.Point(639, 65)
-        Me.TBTestHashUL1.Name = "TBTestHashUL1"
-        Me.TBTestHashUL1.Size = New System.Drawing.Size(173, 20)
-        Me.TBTestHashUL1.TabIndex = 18
-        '
-        'Label56
-        '
-        Me.Label56.AutoSize = True
-        Me.Label56.ForeColor = System.Drawing.Color.Black
-        Me.Label56.Location = New System.Drawing.Point(578, 68)
-        Me.Label56.Name = "Label56"
-        Me.Label56.Size = New System.Drawing.Size(55, 13)
-        Me.Label56.TabIndex = 17
-        Me.Label56.Text = "HashUL1:"
-        '
-        'TBTestHashUL3
-        '
-        Me.TBTestHashUL3.Location = New System.Drawing.Point(639, 91)
-        Me.TBTestHashUL3.Name = "TBTestHashUL3"
-        Me.TBTestHashUL3.Size = New System.Drawing.Size(173, 20)
-        Me.TBTestHashUL3.TabIndex = 16
-        '
-        'Label57
-        '
-        Me.Label57.AutoSize = True
-        Me.Label57.ForeColor = System.Drawing.Color.Black
-        Me.Label57.Location = New System.Drawing.Point(578, 94)
-        Me.Label57.Name = "Label57"
-        Me.Label57.Size = New System.Drawing.Size(55, 13)
-        Me.Label57.TabIndex = 15
-        Me.Label57.Text = "HashUL3:"
-        '
-        'TBTestHashHEX
-        '
-        Me.TBTestHashHEX.Location = New System.Drawing.Point(69, 117)
-        Me.TBTestHashHEX.Name = "TBTestHashHEX"
-        Me.TBTestHashHEX.Size = New System.Drawing.Size(406, 20)
-        Me.TBTestHashHEX.TabIndex = 24
-        '
-        'Label58
-        '
-        Me.Label58.AutoSize = True
-        Me.Label58.ForeColor = System.Drawing.Color.Black
-        Me.Label58.Location = New System.Drawing.Point(6, 120)
-        Me.Label58.Name = "Label58"
-        Me.Label58.Size = New System.Drawing.Size(57, 13)
-        Me.Label58.TabIndex = 23
-        Me.Label58.Text = "HashHEX:"
-        '
         'FrmDevelope
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2726,10 +2736,13 @@ Partial Class FrmDevelope
         Me.ClientSize = New System.Drawing.Size(1240, 799)
         Me.Controls.Add(Me.SplitContainer11)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "FrmDevelope"
         Me.Text = "FrmDevelope"
         Me.TestTabControl.ResumeLayout(False)
         Me.TabPage6.ResumeLayout(False)
+        Me.GroupBox4.ResumeLayout(False)
+        Me.GroupBox4.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)
         Me.GroupBox2.PerformLayout()
         Me.GroupBox1.ResumeLayout(False)
@@ -2840,8 +2853,6 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer11, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer11.ResumeLayout(False)
-        Me.GroupBox4.ResumeLayout(False)
-        Me.GroupBox4.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -3079,4 +3090,5 @@ Partial Class FrmDevelope
     Friend WithEvents Label47 As Label
     Friend WithEvents TBTestHashHEX As TextBox
     Friend WithEvents Label58 As Label
+    Friend WithEvents RTBTestDebug As RichTextBox
 End Class

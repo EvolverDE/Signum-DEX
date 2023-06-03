@@ -136,6 +136,10 @@ Public Class ClsTransaction
 
     Private Property AddressesFiltered As Boolean = False
 
+    Sub New(ByVal TransactionID As String, ByVal FilterAddress As String, Optional ByVal RedeemScript As String = "")
+        Me.New(TransactionID, New List(Of String)({FilterAddress}), RedeemScript)
+    End Sub
+
     Sub New(ByVal TransactionID As String, ByVal FilterAddresses As List(Of String), Optional ByVal RedeemScript As String = "")
         Me.New(New List(Of String)({TransactionID}), FilterAddresses, RedeemScript)
     End Sub
@@ -178,7 +182,7 @@ Public Class ClsTransaction
     End Sub
 
     Sub New(ByVal UTXOs As List(Of ClsBitcoinNET.S_UnspentTransactionOutput))
-        'TODO: ##AtomicSwap use Redeemscript instead of scriptPubKey
+        'AtomicSwap: use Redeemscript instead of scriptPubKey
 
         For i As Integer = 0 To UTXOs.Count - 1
             Dim UTXO As ClsBitcoinNET.S_UnspentTransactionOutput = UTXOs(i)
@@ -192,7 +196,7 @@ Public Class ClsTransaction
     End Sub
 
     Private Sub AddUnspentTransactionOutput(ByVal UTXO As ClsBitcoinNET.S_UnspentTransactionOutput)
-        'TODO: convert S_UnspentTXO to Input
+
         Dim k As ClsOutput = New ClsOutput(UTXO.LockingScript)
 
         'prevent double addresses
@@ -341,8 +345,10 @@ Public Class ClsTransaction
             Dim TempUTXO As String = BitNET.GetTXOut(TransactionID, T_PrevTX.InputIndex)
 
             If Not TempUTXO.Trim = "" Then
+                T_PrevTX.Spendable = True
                 T_PrevTX.Confirmations = GetIntegerBetween(TempUTXO, "<confirmations>", "</confirmations>")
             Else
+                T_PrevTX.Spendable = False
                 T_PrevTX.Confirmations = -1
             End If
 
@@ -379,9 +385,9 @@ Public Class ClsTransaction
     ''' <param name="RecipientAddress">the Address of the recipient address</param>
     ''' <param name="Amount">the amount in BTC</param>
     ''' <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
-    Public Sub CreateOutput(ByVal RecipientAddress As String, ByVal Amount As Double, Optional ByVal ScriptLockTime As Integer = 3)
+    Public Sub CreateOutput(ByVal RecipientAddress As String, ByVal Amount As Double, Optional ByVal ScriptLockTime As Integer = 12)
         Dim T_Output As ClsOutput = New ClsOutput(RecipientAddress, Amount, ScriptLockTime)
-        'TODO: ###AtomicSwap P2SH
+        'AtomicSwap: P2SH
         CreateOutput(T_Output)
     End Sub
 
@@ -395,7 +401,7 @@ Public Class ClsTransaction
     ''' <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
     Public Sub CreateOutput(ByVal RecipientAddress As String, ByVal ChainSwapHash As String, ByVal SenderAddress As String, ByVal Amount As Double, Optional ByVal ScriptLockTime As Integer = 12)
         Dim T_Output As ClsOutput = New ClsOutput(RecipientAddress, ChainSwapHash, SenderAddress, Amount, ScriptLockTime)
-        'TODO: ###AtomicSwap P2SH
+        'AtomicSwap: P2SH
 
         CreateOutput(T_Output)
 
@@ -436,6 +442,9 @@ Public Class ClsTransaction
         Next
 
         If TotalAmountDifferenceNQT > 0UL Then
+
+
+
             Dim T_OutputChange As ClsOutput = New ClsOutput(ChangeAddress, Satoshi2Dbl(TotalAmountDifferenceNQT), True)
             C_Outputs.Add(T_OutputChange)
         End If
@@ -591,7 +600,7 @@ Public Class ClsTransaction
                 End If
 
 
-                'TODO: ### AtomicSwap bitcoin locktime
+                'AtomicSwap: bitcoin locktime
                 Dim T_seq As ClsUnspentOutput.S_UTXEntry = New ClsUnspentOutput.S_UTXEntry
                 T_seq.Key = ClsUnspentOutput.E_UTXEntry.sequence
 
@@ -713,8 +722,6 @@ Public Class ClsTransaction
 
         Next
 
-
-
     End Sub
 
     Public Function SignTransaction(ByVal PrivateKey As String) As String
@@ -802,21 +809,37 @@ Public Class ClsTransaction
 
                 If T_Input.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
 
-                    If PrivateKeys(j).ChainSwapKey.Trim = "" Then
-                        Dim T_SenderAddress As String = RIPE160ToAddress(ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.RIPE160Sender), BitcoinAddressPrefix)
+                    Select Case GetScriptType(T_Input.Script)
 
-                        If T_SenderAddress = T_Addr Then
-                            SignPart(PrivateKeys(j).PrivateKey, i, "")
-                        End If
+                        Case AbsClsOutputs.E_Type.ChainSwapHashWithLockTime
 
-                    Else
-                        Dim T_RecipientAddress As String = RIPE160ToAddress(ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient), BitcoinAddressPrefix)
+                            If PrivateKeys(j).ChainSwapKey.Trim = "" Then
+                                Dim T_SenderAddress As String = RIPE160ToAddress(ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.RIPE160Sender), BitcoinAddressPrefix)
 
-                        If T_RecipientAddress = T_Addr Then
-                            SignPart(PrivateKeys(j).PrivateKey, i, PrivateKeys(j).ChainSwapKey)
-                        End If
+                                If T_SenderAddress = T_Addr Then
+                                    SignPart(PrivateKeys(j).PrivateKey, i, "")
+                                End If
 
-                    End If
+                            Else
+                                Dim T_RecipientAddress As String = RIPE160ToAddress(ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient), BitcoinAddressPrefix)
+
+                                If T_RecipientAddress = T_Addr Then
+                                    SignPart(PrivateKeys(j).PrivateKey, i, PrivateKeys(j).ChainSwapKey)
+                                End If
+
+                            End If
+
+                        Case AbsClsOutputs.E_Type.LockTime
+
+                            Dim T_RecipientAddress As String = RIPE160ToAddress(ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient), BitcoinAddressPrefix)
+
+                            If T_RecipientAddress = T_Addr Then
+                                SignPart(PrivateKeys(j).PrivateKey, i, "")
+                            End If
+
+                        Case Else
+
+                    End Select
 
                 Else
                     If T_Input.SignerAddress = T_Addr Then
@@ -851,21 +874,39 @@ Public Class ClsTransaction
 
                 If T_Input.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
 
-                    If PrivateKeys(j).ChainSwapKey.Trim = "" Then
-                        Dim T_SenderAddress As String = RIPE160ToAddress(ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.RIPE160Sender), BitcoinAddressPrefix)
+                    Select Case GetScriptType(T_Input.Script)
 
-                        If T_SenderAddress = T_Addr Then
-                            SignPart(PrivateKeys(j).PrivateKey, i, "")
-                        End If
+                        Case AbsClsOutputs.E_Type.ChainSwapHashWithLockTime
 
-                    Else
-                        Dim T_RecipientAddress As String = RIPE160ToAddress(ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient), BitcoinAddressPrefix)
+                            If PrivateKeys(j).ChainSwapKey.Trim = "" Then
+                                Dim T_SenderAddress As String = RIPE160ToAddress(ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.RIPE160Sender), BitcoinAddressPrefix)
 
-                        If T_RecipientAddress = T_Addr Then
-                            SignPart(PrivateKeys(j).PrivateKey, i, PrivateKeys(j).ChainSwapKey)
-                        End If
+                                If T_SenderAddress = T_Addr Then
+                                    SignPart(PrivateKeys(j).PrivateKey, i, "")
+                                End If
 
-                    End If
+                            Else
+                                Dim T_RecipientAddress As String = RIPE160ToAddress(ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient), BitcoinAddressPrefix)
+
+                                If T_RecipientAddress = T_Addr Then
+                                    SignPart(PrivateKeys(j).PrivateKey, i, PrivateKeys(j).ChainSwapKey)
+                                End If
+
+                            End If
+
+                        Case AbsClsOutputs.E_Type.LockTime
+
+                            Dim T_RecipientAddress As String = RIPE160ToAddress(ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient), BitcoinAddressPrefix)
+
+                            If T_RecipientAddress = T_Addr Then
+                                SignPart(PrivateKeys(j).PrivateKey, i, "")
+                            End If
+
+                        Case Else
+
+                    End Select
+
+
 
                 Else
                     If T_Input.SignerAddress = T_Addr Then
@@ -947,8 +988,8 @@ Public Class ClsTransaction
             '        T_Signature.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.OP_FALSE))
             '    End If
 
-        ElseIf Inputs(PartIndex).OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
-            'TODO: ### AtomicSwap sign with P2SH
+        ElseIf Inputs(PartIndex).OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash And GetScriptType(Inputs(PartIndex).Script) = AbsClsOutputs.E_Type.ChainSwapHashWithLockTime Then
+            'AtomicSwap: sign with P2SH
 
             If Inputs(PartIndex).Addresses(0) = PubKeyToAddress(T_PublicKey, BitcoinAddressPrefix) Then
                 T_Signature.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.ChainSwapKey, ChainSwapKey))
@@ -962,6 +1003,14 @@ Public Class ClsTransaction
             T_Signature.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.Unknown, IntToHex(Inputs(PartIndex).LengthOfScript,,)))
             T_Signature.AddRange(T_RedeemScriptList.ToArray())
             'T_Signature.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.OP_DUP))
+
+        ElseIf Inputs(PartIndex).OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash And GetScriptType(Inputs(PartIndex).Script) = AbsClsOutputs.E_Type.LockTime Then
+
+            Dim T_RedeemScriptList As List(Of ClsScriptEntry) = Inputs(PartIndex).Script
+            'T_Signature.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.OP_PUSHDATA1))
+            'T_Signature.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.Unknown, IntToHex(Inputs(PartIndex).LengthOfScript,,)))
+            T_Signature.AddRange(GetPushDataSequenceFromLength(Inputs(PartIndex).LengthOfScript))
+            T_Signature.AddRange(T_RedeemScriptList.ToArray())
 
         End If
 
@@ -1072,11 +1121,13 @@ Public Class ClsTransaction
 
             T_SignedTransactionHex += T_sig.Value ' T_Signature
 
-            'TODO: ### AtomicSwap bitcoin locktime
+            'AtomicSwap: bitcoin locktime
             Dim T_seq As S_TXEntry = New S_TXEntry
             T_seq.Key = E_TXEntry.sequence
 
-            If T_Input.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
+            Dim result1 As Boolean = T_Input.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash And (GetScriptType(T_Input.Script) = AbsClsOutputs.E_Type.ChainSwapHashWithLockTime Or GetScriptType(T_Input.Script) = AbsClsOutputs.E_Type.LockTime)
+
+            If result1 Then
 
                 Dim T_timeout As String = ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.LockTime)
                 'T_timeout = ChangeHEXStrEndian(T_timeout)
@@ -1250,20 +1301,34 @@ Public Class ClsTransaction
             Next
 
             If Not T_ChangeOutput Is Nothing Then
+                If T_ChangeOutput.AmountNQT > TotalFeeNQT Then
 
-                If T_ChangeOutput.AmountNQT - TotalFeeNQT >= TotalFeeNQT Then
+                    If T_ChangeOutput.AmountNQT - TotalFeeNQT >= TotalFeeNQT Then
 
-                    For i As Integer = 0 To Outputs.Count - 1
-                        Dim T_Output As ClsOutput = Outputs(i)
+                        For i As Integer = 0 To Outputs.Count - 1
+                            Dim T_Output As ClsOutput = Outputs(i)
 
-                        If T_Output.ChangeOutput Then
-                            T_Output.AmountNQT -= TotalFeeNQT
-                            Outputs(i) = T_Output
-                            Exit For
-                        End If
+                            If T_Output.ChangeOutput Then
+                                T_Output.AmountNQT -= TotalFeeNQT
+                                Outputs(i) = T_Output
+                                Exit For
+                            End If
 
-                    Next
+                        Next
 
+                    Else
+                        'ChangeAmount not enough, delete changeoutput
+
+                        For i As Integer = 0 To Outputs.Count - 1
+                            Dim T_Output As ClsOutput = Outputs(i)
+
+                            If T_Output.ChangeOutput Then
+                                Outputs.RemoveAt(i)
+                                Exit For
+                            End If
+                        Next
+
+                    End If
                 Else
                     'ChangeAmount not enough, delete changeoutput
 
@@ -1275,8 +1340,8 @@ Public Class ClsTransaction
                             Exit For
                         End If
                     Next
-
                 End If
+
             End If
 
 
@@ -1345,7 +1410,7 @@ Public Class ClsTransaction
 
                     Dim ULLockTime As ULong = HEXStringToULongList(LockTime)(0)
 
-                    If T_BTCTXInput.Confirmations >= Convert.ToInt32(ULLockTime) Or True Then
+                    If T_BTCTXInput.Confirmations >= Convert.ToInt32(ULLockTime) Then
                         'GetBack
 
                         CreateOutput(AddressSender, Satoshi2Dbl(T_BTCTXInput.AmountNQT))
@@ -1492,7 +1557,7 @@ Public Class ClsTransaction
 
         Dim CreateStandardLockingScriptBoolList As List(Of Boolean) = New List(Of Boolean)
         'Dim CreateChainSwapLockingScriptBoolList As List(Of Boolean) = New List(Of Boolean)
-        'Dim CreateLockTimedLockingScriptBoolList As List(Of Boolean) = New List(Of Boolean)
+        Dim CreateLockTimedLockingScriptBoolList As List(Of Boolean) = New List(Of Boolean)
         Dim CreateLockTimedChainSwapLockingScriptBoolList As List(Of Boolean) = New List(Of Boolean)
         Dim CreatePay2ScriptHashList As List(Of Boolean) = New List(Of Boolean)
 
@@ -1504,7 +1569,7 @@ Public Class ClsTransaction
 
                 Case 0
 
-                    'CreateLockTimedLockingScriptBoolList.Add(True) 'LTHEX
+                    CreateLockTimedLockingScriptBoolList.Add(True) 'LTHEX
 
                     Select Case T_ScriptEntry.Key
                         Case ClsScriptEntry.E_OP_Code.OP_DUP
@@ -1543,19 +1608,19 @@ Public Class ClsTransaction
                     Select Case T_ScriptEntry.Key
                         Case ClsScriptEntry.E_OP_Code.OP_HASH160
                             CreateStandardLockingScriptBoolList.Add(True)
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_CHECKSEQUENCEVERIFY
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_CHECKSEQUENCEVERIFY
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(False) 'OP_SHA256
                         Case ClsScriptEntry.E_OP_Code.OP_CHECKSEQUENCEVERIFY
                             CreateStandardLockingScriptBoolList.Add(False)
-                            'CreateLockTimedLockingScriptBoolList.Add(True) 'OP_CHECKSEQUENCEVERIFY
+                            CreateLockTimedLockingScriptBoolList.Add(True) 'OP_CHECKSEQUENCEVERIFY
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(False)'OP_SHA256
                         Case ClsScriptEntry.E_OP_Code.OP_SHA256
                             CreateStandardLockingScriptBoolList.Add(False)
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_CHECKSEQUENCEVERIFY
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_CHECKSEQUENCEVERIFY
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(True) 'OP_SHA256
                         Case Else
                             CreateStandardLockingScriptBoolList.Add(False)
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_CHECKSEQUENCEVERIFY
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_CHECKSEQUENCEVERIFY
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(False) 'OP_SHA256
                     End Select
                 Case 2
@@ -1566,23 +1631,23 @@ Public Class ClsTransaction
                     Select Case T_ScriptEntry.Key
                         Case ClsScriptEntry.E_OP_Code.OP_HASH160
                             'CreateChainSwapLockingScriptBoolList.Add(False) 'OP_EQUALVERIFY
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DROP
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DROP
                             CreatePay2ScriptHashList.Add(False) 'OP_EQUAL
                         Case ClsScriptEntry.E_OP_Code.OP_EQUALVERIFY
                             'CreateChainSwapLockingScriptBoolList.Add(False) 'OP_EQUALVERIFY
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DROP
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DROP
                             CreatePay2ScriptHashList.Add(False) 'OP_EQUAL
                         Case ClsScriptEntry.E_OP_Code.OP_DROP
                             'CreateChainSwapLockingScriptBoolList.Add(False) 'OP_EQUALVERIFY
-                            'CreateLockTimedLockingScriptBoolList.Add(True) 'OP_DROP
+                            CreateLockTimedLockingScriptBoolList.Add(True) 'OP_DROP
                             CreatePay2ScriptHashList.Add(False) 'OP_EQUAL
                         Case ClsScriptEntry.E_OP_Code.OP_EQUAL
                             'CreateChainSwapLockingScriptBoolList.Add(False) 'OP_EQUALVERIFY
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DROP
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DROP
                             CreatePay2ScriptHashList.Add(True) 'OP_EQUAL
                         Case Else
                             'CreateChainSwapLockingScriptBoolList.Add(False) 'OP_EQUALVERIFY
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DROP
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DROP
                             CreatePay2ScriptHashList.Add(False) 'OP_EQUAL
                     End Select
 
@@ -1594,22 +1659,22 @@ Public Class ClsTransaction
                         Case ClsScriptEntry.E_OP_Code.OP_EQUALVERIFY
                             CreateStandardLockingScriptBoolList.Add(True)
                             'CreateChainSwapLockingScriptBoolList.Add(False) 'OP_DUP
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DUP
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DUP
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(True) 'OP_EQUALVERIFY
                         Case ClsScriptEntry.E_OP_Code.OP_HASH160
                             CreateStandardLockingScriptBoolList.Add(True)
                             'CreateChainSwapLockingScriptBoolList.Add(False) 'OP_DUP
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DUP
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DUP
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(False) 'OP_EQUALVERIFY
                         Case ClsScriptEntry.E_OP_Code.OP_DUP
                             CreateStandardLockingScriptBoolList.Add(False)
                             'CreateChainSwapLockingScriptBoolList.Add(True) 'OP_DUP
-                            'CreateLockTimedLockingScriptBoolList.Add(True) 'OP_DUP
+                            CreateLockTimedLockingScriptBoolList.Add(True) 'OP_DUP
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(False) 'OP_EQUALVERIFY
                         Case Else
                             CreateStandardLockingScriptBoolList.Add(False)
                             'CreateChainSwapLockingScriptBoolList.Add(False) 'OP_DUP
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DUP
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_DUP
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(False) 'OP_EQUALVERIFY
                     End Select
 
@@ -1622,22 +1687,22 @@ Public Class ClsTransaction
                         Case ClsScriptEntry.E_OP_Code.OP_CHECKSIG
                             CreateStandardLockingScriptBoolList.Add(True) 'OP_CHECKSIG
                             'CreateChainSwapLockingScriptBoolList.Add(False) 'OP_HASH160
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_HASH160
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_HASH160
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(False) 'OP_DUP
                         Case ClsScriptEntry.E_OP_Code.OP_HASH160
                             CreateStandardLockingScriptBoolList.Add(False) 'OP_CHECKSIG
                             'CreateChainSwapLockingScriptBoolList.Add(True) 'OP_HASH160
-                            'CreateLockTimedLockingScriptBoolList.Add(True) 'OP_HASH160
+                            CreateLockTimedLockingScriptBoolList.Add(True) 'OP_HASH160
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(False) 'OP_DUP
                         Case ClsScriptEntry.E_OP_Code.OP_DUP
                             CreateStandardLockingScriptBoolList.Add(False) 'OP_CHECKSIG
                             'CreateChainSwapLockingScriptBoolList.Add(False) 'OP_HASH160
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_HASH160
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_HASH160
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(True) 'OP_DUP
                         Case ClsScriptEntry.E_OP_Code.OP_EQUALVERIFY
                             CreateStandardLockingScriptBoolList.Add(False) 'OP_CHECKSIG
                             'CreateChainSwapLockingScriptBoolList.Add(False) 'OP_HASH160
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_HASH160
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_HASH160
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(False) 'OP_DUP
                         Case Else
                             CreateStandardLockingScriptBoolList.Add(False) 'OP_CHECKSIG
@@ -1650,7 +1715,7 @@ Public Class ClsTransaction
 
                     CreateStandardLockingScriptBoolList.Add(False) 'Nothing
                     'CreateChainSwapLockingScriptBoolList.Add(True) 'RIPE160
-                    'CreateLockTimedLockingScriptBoolList.Add(True) 'RIPE160
+                    CreateLockTimedLockingScriptBoolList.Add(True) 'RIPE160
                     CreatePay2ScriptHashList.Add(False) 'Nothing
 
                     Select Case T_ScriptEntry.Key
@@ -1674,13 +1739,13 @@ Public Class ClsTransaction
                     Select Case T_ScriptEntry.Key
                         Case ClsScriptEntry.E_OP_Code.OP_EQUALVERIFY
                             'CreateChainSwapLockingScriptBoolList.Add(True)
-                            'CreateLockTimedLockingScriptBoolList.Add(True)'OP_EQUALVERIFY
+                            CreateLockTimedLockingScriptBoolList.Add(True)'OP_EQUALVERIFY
                         Case ClsScriptEntry.E_OP_Code.OP_CHECKSIG
                             'CreateChainSwapLockingScriptBoolList.Add(False)
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_EQUALVERIFY
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_EQUALVERIFY
                         Case Else
                             'CreateChainSwapLockingScriptBoolList.Add(False)
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_EQUALVERIFY
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_EQUALVERIFY
                     End Select
 
                 Case 7
@@ -1692,19 +1757,19 @@ Public Class ClsTransaction
                     Select Case T_ScriptEntry.Key
                         Case ClsScriptEntry.E_OP_Code.OP_CHECKSIG
                             'CreateChainSwapLockingScriptBoolList.Add(True)
-                            'CreateLockTimedLockingScriptBoolList.Add(True) 'OP_CHECKSIG
+                            CreateLockTimedLockingScriptBoolList.Add(True) 'OP_CHECKSIG
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(False) 'OP_ELSE
                         Case ClsScriptEntry.E_OP_Code.OP_EQUALVERIFY
                             'CreateChainSwapLockingScriptBoolList.Add(False)
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_CHECKSIG
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_CHECKSIG
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(False) 'OP_ELSE
                         Case ClsScriptEntry.E_OP_Code.OP_ELSE
                             'CreateChainSwapLockingScriptBoolList.Add(False)
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_CHECKSIG
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_CHECKSIG
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(True) 'OP_ELSE
                         Case Else
                             'CreateChainSwapLockingScriptBoolList.Add(False)
-                            'CreateLockTimedLockingScriptBoolList.Add(False) 'OP_CHECKSIG
+                            CreateLockTimedLockingScriptBoolList.Add(False) 'OP_CHECKSIG
                             CreateLockTimedChainSwapLockingScriptBoolList.Add(False) 'OP_ELSE
                     End Select
 
@@ -1712,7 +1777,7 @@ Public Class ClsTransaction
 
                     CreateStandardLockingScriptBoolList.Add(False) 'Nothing
                     'CreateChainSwapLockingScriptBoolList.Add(False) 'Nothing
-                    'CreateLockTimedLockingScriptBoolList.Add(False)'Nothing
+                    CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
                     CreateLockTimedChainSwapLockingScriptBoolList.Add(True) 'LockTime
                     CreatePay2ScriptHashList.Add(False) 'Nothing
 
@@ -1720,7 +1785,7 @@ Public Class ClsTransaction
 
                     CreateStandardLockingScriptBoolList.Add(False) 'Nothing
                     'CreateChainSwapLockingScriptBoolList.Add(False) 'Nothing
-                    'CreateLockTimedLockingScriptBoolList.Add(False)'Nothing
+                    CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
                     CreatePay2ScriptHashList.Add(False) 'Nothing
 
                     If T_ScriptEntry.Key = ClsScriptEntry.E_OP_Code.OP_CHECKSEQUENCEVERIFY Then
@@ -1733,7 +1798,7 @@ Public Class ClsTransaction
 
                     CreateStandardLockingScriptBoolList.Add(False) 'Nothing
                     'CreateChainSwapLockingScriptBoolList.Add(False) 'Nothing
-                    'CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
+                    CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
                     CreatePay2ScriptHashList.Add(False) 'Nothing
 
                     If T_ScriptEntry.Key = ClsScriptEntry.E_OP_Code.OP_DROP Then
@@ -1746,7 +1811,7 @@ Public Class ClsTransaction
 
                     CreateStandardLockingScriptBoolList.Add(False) 'Nothing
                     'CreateChainSwapLockingScriptBoolList.Add(False) 'Nothing
-                    'CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
+                    CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
                     CreatePay2ScriptHashList.Add(False) 'Nothing
 
                     If T_ScriptEntry.Key = ClsScriptEntry.E_OP_Code.OP_DUP Then
@@ -1759,7 +1824,7 @@ Public Class ClsTransaction
 
                     CreateStandardLockingScriptBoolList.Add(False) 'Nothing
                     'CreateChainSwapLockingScriptBoolList.Add(False) 'Nothing
-                    'CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
+                    CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
                     CreatePay2ScriptHashList.Add(False) 'Nothing
 
                     If T_ScriptEntry.Key = ClsScriptEntry.E_OP_Code.OP_HASH160 Then
@@ -1772,7 +1837,7 @@ Public Class ClsTransaction
 
                     CreateStandardLockingScriptBoolList.Add(False) 'Nothing
                     'CreateChainSwapLockingScriptBoolList.Add(False) 'Nothing
-                    'CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
+                    CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
                     CreateLockTimedChainSwapLockingScriptBoolList.Add(True) 'RIPE160B
                     CreatePay2ScriptHashList.Add(False) 'Nothing
 
@@ -1780,7 +1845,7 @@ Public Class ClsTransaction
 
                     CreateStandardLockingScriptBoolList.Add(False) 'Nothing
                     'CreateChainSwapLockingScriptBoolList.Add(False) 'Nothing
-                    'CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
+                    CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
                     CreatePay2ScriptHashList.Add(False) 'Nothing
 
                     If T_ScriptEntry.Key = ClsScriptEntry.E_OP_Code.OP_ENDIF Then
@@ -1793,7 +1858,7 @@ Public Class ClsTransaction
 
                     CreateStandardLockingScriptBoolList.Add(False) 'Nothing
                     'CreateChainSwapLockingScriptBoolList.Add(False) 'Nothing
-                    'CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
+                    CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
                     CreatePay2ScriptHashList.Add(False) 'Nothing
 
                     If T_ScriptEntry.Key = ClsScriptEntry.E_OP_Code.OP_EQUALVERIFY Then
@@ -1806,7 +1871,7 @@ Public Class ClsTransaction
 
                     CreateStandardLockingScriptBoolList.Add(False) 'Nothing
                     'CreateChainSwapLockingScriptBoolList.Add(False) 'Nothing
-                    'CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
+                    CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
                     CreatePay2ScriptHashList.Add(False) 'Nothing
 
                     If T_ScriptEntry.Key = ClsScriptEntry.E_OP_Code.OP_CHECKSIG Then
@@ -1818,7 +1883,7 @@ Public Class ClsTransaction
                 Case Else
                     CreateStandardLockingScriptBoolList.Add(False) 'Nothing
                     'CreateChainSwapLockingScriptBoolList.Add(False) 'Nothing
-                    'CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
+                    CreateLockTimedLockingScriptBoolList.Add(False) 'Nothing
                     CreateLockTimedChainSwapLockingScriptBoolList.Add(False)
                     CreatePay2ScriptHashList.Add(False)
             End Select
@@ -1827,7 +1892,7 @@ Public Class ClsTransaction
 
         Dim CSt As Boolean = GetFalseOfList(CreateStandardLockingScriptBoolList)
         Dim CCS As Boolean = False ' GetFalseOfList(CreateChainSwapLockingScriptBoolList)
-        Dim CLT As Boolean = False ' GetFalseOfList(CreateLockTimedLockingScriptBoolList)
+        Dim CLT As Boolean = GetFalseOfList(CreateLockTimedLockingScriptBoolList)
         Dim CLTCS As Boolean = GetFalseOfList(CreateLockTimedChainSwapLockingScriptBoolList)
         Dim P2SH As Boolean = GetFalseOfList(CreatePay2ScriptHashList)
 
@@ -1861,6 +1926,42 @@ Public Class ClsTransaction
         Next
 
         Return True
+
+    End Function
+
+    Private Function GetPushDataSequenceFromLength(ByVal Length As Integer) As List(Of ClsScriptEntry)
+
+        Dim LengthSequence As List(Of ClsScriptEntry) = New List(Of ClsScriptEntry)
+
+        Select Case Length
+            Case 1 To 75
+                LengthSequence.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.PUSHDATALENGTH, IntToHex(Length, 1, False)))
+            Case 76 To 255
+                LengthSequence.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.OP_PUSHDATA1))
+                LengthSequence.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.PUSHDATALENGTH, IntToHex(Length, 1, False)))
+            Case 256 To 65535
+                LengthSequence.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.OP_PUSHDATA2))
+                LengthSequence.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.PUSHDATALENGTH, IntToHex(Length, 2, False)))
+            Case Is > 65535
+                LengthSequence.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.OP_PUSHDATA4))
+                LengthSequence.Add(New ClsScriptEntry(ClsScriptEntry.E_OP_Code.PUSHDATALENGTH, IntToHex(Length, 4, False)))
+            Case Else
+                'negative
+        End Select
+
+        Return LengthSequence
+
+    End Function
+
+    Private Function GetPushDataSequenceStringFromLength(ByVal Length As Integer) As String
+        Dim LengthSequence As List(Of ClsScriptEntry) = GetPushDataSequenceFromLength(Length)
+
+        Dim SequenceString As String = ""
+        For Each Len As ClsScriptEntry In LengthSequence
+            SequenceString += Len.ValueHex
+        Next
+
+        Return SequenceString
 
     End Function
 

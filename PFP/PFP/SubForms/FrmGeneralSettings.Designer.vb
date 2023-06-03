@@ -22,6 +22,7 @@ Partial Class FrmGeneralSettings
     'Das Bearbeiten mit dem Code-Editor ist nicht möglich.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmGeneralSettings))
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.TBDEXNETPort = New System.Windows.Forms.TextBox()
         Me.Label3 = New System.Windows.Forms.Label()
@@ -594,6 +595,7 @@ Partial Class FrmGeneralSettings
         Me.Controls.Add(Me.BtSaveSettings)
         Me.DoubleBuffered = True
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "FrmGeneralSettings"
         Me.Text = "FrmGeneralSettings"
         Me.GroupBox3.ResumeLayout(False)

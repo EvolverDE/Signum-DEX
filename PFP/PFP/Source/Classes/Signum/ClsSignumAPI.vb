@@ -4,11 +4,12 @@ Option Explicit On
 Imports System.IO
 Imports System.Net
 Imports System.Text
+Imports PFP.ClsDEXContract
 
 Public Class ClsSignumAPI
 
 #Region "SmartContract Structure"
-    'SmartContract: 8372890871867317775
+    'SmartContract: 2095252730760019711
 
     'ActivateDeactivateDispute: -9199918549131231789
 
@@ -29,13 +30,13 @@ Public Class ClsSignumAPI
 
 #End Region
 
-    Public Const _ReferenceTX As ULong = 8372890871867317775UL
-    Public Const _ReferenceTXFullHash As String = "0f1ec3f0e27b327479e559b51a5f32338a60431ec59a64a252269c17932917c8"
-    Public Const _DeployFeeNQT As ULong = 230000000UL
-    Public Const _GasFeeNQT As ULong = 40000000UL
+    Public Const _ReferenceTX As ULong = 17481325922122010625UL
+    Public Const _ReferenceTXFullHash As String = "0110e95e4e259af20f9bbb99f7e4abdbe02b43aedf127c7ae3ff5873c1ff4f98"
+    Public Const _DeployFeeNQT As ULong = 240000000UL
+    Public Const _GasFeeNQT As ULong = 50000000UL
     Public Const _AddressPreFix As String = "TS-"
-    Public Const _DefaultNode As String = "https://testnet.signum.zone/burst"
-    Public Const _Nodes As String = _DefaultNode '+ ";" + "http://tordek.ddns.net:6876/burst" + ";" + "http://lmsi.club:6876/burst"
+    Public Const _DefaultNode As String = "https://testnet.signum.zone/api"
+    Public Const _Nodes As String = _DefaultNode '+ ";" + "http://tordek.ddns.net:6876/api" + ";" + "http://lmsi.club:6876/api"
 
     'Public ReadOnly Property ReferenceCreateOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(716726961670769723L), 0)
     'Public ReadOnly Property ReferenceAcceptOrder As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(4714436802908501638L), 0)
@@ -44,14 +45,15 @@ Public Class ClsSignumAPI
     'Public ReadOnly Property ReferenceInjectChainSwapHash As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(2770910189976301362L), 0)
     'Public ReadOnly Property ReferenceFinishOrderWithChainSwapKey As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(-3992805468895771487L), 0)
 
-    Private ReadOnly Property C_ReferenceCreationBytes As String
     ReadOnly Property C_ReferenceMachineCode As String
+    ReadOnly Property C_ReferenceMachineCodeHash As String
+    ReadOnly Property C_ReferenceMachineCodeHashID As ULong
 
+    Private ReadOnly Property C_CreationMachineData As String = "0000000000000000000000000000000000000000000000000100000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    Private ReadOnly Property C_ReferenceMachineData As String
 
     Property C_Node As String = ""
 
-    'Public Property C_PromptPIN As Boolean = True
-    'Property C_PassPhrase As String = ""
     Property C_AccountID As ULong
     Property C_Address As String
 
@@ -69,26 +71,17 @@ Public Class ClsSignumAPI
             C_Node = GetINISetting(E_Setting.DefaultNode, _DefaultNode)
         End If
 
-        'If Not PassPhrase.Trim = "" Then
-        '    C_PassPhrase = PassPhrase
-        'End If
-
-        'C_PromptPIN = PromptPIN
-
         If Not Account = 0UL Then
             C_AccountID = Account
         End If
 
-
-        'PFPForm.MultiInvoker(PFPForm.E_MainFormControls.LabDebug, "Visible", True)
-        'PFPForm.MultiInvoker(PFPForm.E_MainFormControls.LabDebug, "Text", "New()")
-
         Dim ReferenceTXDetails As List(Of String) = GetTransaction(ReferenceTX)
-        C_ReferenceCreationBytes = GetStringBetweenFromList(ReferenceTXDetails, "<creationBytes>", "</creationBytes>")
 
         Dim ReferenceSmartContractDetails = GetSmartContractDetails(ReferenceTX)
         C_ReferenceMachineCode = GetStringBetweenFromList(ReferenceSmartContractDetails, "<machineCode>", "</machineCode>")
-        'TODO: detect defect contract (wrong machinedata)
+        C_ReferenceMachineCodeHashID = GetULongBetweenFromList(ReferenceSmartContractDetails, "<machineCodeHashId>", "</machineCodeHashId>")
+        C_ReferenceMachineData = GetStringBetweenFromList(ReferenceSmartContractDetails, "<creationMachineData>", "</creationMachineData>")
+
     End Sub
 
 
@@ -133,7 +126,6 @@ Public Class ClsSignumAPI
     End Function
 
     Function SignumRequest(ByVal postData As String) As String
-
 
         Try
 
@@ -228,6 +220,149 @@ Public Class ClsSignumAPI
         End If
 
     End Function
+
+    Private Structure S_TX
+        Dim Transaction As ULong
+        Dim Type As Integer
+        Dim Timestamp As ULong
+
+        Dim DateTimestamp As Date
+
+        Dim Sender As ULong
+        Dim SenderRS As String
+
+        Dim AmountNQT As ULong
+        Dim FeeNQT As ULong
+        Dim Attachment As String
+
+        Dim Recipient As ULong
+        Dim RecipientRS As String
+
+        Dim Confirmations As ULong
+    End Structure
+
+    Public Function IsValidDEXContract(ByVal ContractID As ULong, ByVal MachineData As String) As Boolean
+
+        If C_ReferenceMachineData = MachineData Or MachineData.Contains(C_ReferenceMachineData) Then
+            Return True
+        End If
+
+        Dim T_ContractTransactionsPieceList As List(Of List(Of String)) = GetAccountTransactions(ContractID)
+        Dim T_ContractTransactionsList As List(Of List(Of String)) = New List(Of List(Of String))
+        T_ContractTransactionsList.AddRange(T_ContractTransactionsPieceList.ToArray)
+
+        Dim W500 As Integer = T_ContractTransactionsPieceList.Count
+        While W500 >= 500
+
+            T_ContractTransactionsPieceList = GetAccountTransactions(ContractID, 0, Convert.ToUInt64(W500))
+
+            Dim T_W500 As Integer = T_ContractTransactionsPieceList.Count
+
+            If T_W500 >= 500 Then
+                W500 += 500
+            Else
+                W500 = 0
+            End If
+
+            T_ContractTransactionsList.AddRange(T_ContractTransactionsPieceList.ToArray)
+
+        End While
+
+
+        Dim T_TXList As List(Of S_TX) = New List(Of S_TX)
+
+        For Each TX As List(Of String) In T_ContractTransactionsList
+            Dim T_TX As S_TX = New S_TX
+
+            T_TX.Transaction = GetULongBetweenFromList(TX, "<transaction>", "</transaction>")
+            T_TX.Type = GetIntegerBetweenFromList(TX, "<type>", "</type>")
+            T_TX.Timestamp = GetULongBetweenFromList(TX, "<timestamp>", "</timestamp>")
+
+            T_TX.DateTimestamp = ClsSignumAPI.UnixToTime(T_TX.Timestamp.ToString)
+
+            T_TX.Sender = GetULongBetweenFromList(TX, "<sender>", "</sender>")
+            T_TX.SenderRS = GetStringBetweenFromList(TX, "<senderRS>", "</senderRS>")
+
+            T_TX.AmountNQT = GetULongBetweenFromList(TX, "<amountNQT>", "</amountNQT>")
+            T_TX.FeeNQT = GetULongBetweenFromList(TX, "<feeNQT>", "</feeNQT>")
+            T_TX.Attachment = GetStringBetweenFromList(TX, "<attachment>", "</attachment>")
+
+            T_TX.Recipient = GetULongBetweenFromList(TX, "<recipient>", "</recipient>")
+            T_TX.RecipientRS = GetStringBetweenFromList(TX, "<recipientRS>", "</recipientRS>")
+
+            T_TX.Confirmations = GetULongBetweenFromList(TX, "<confirmations>", "</confirmations>")
+
+            T_TXList.Add(T_TX)
+
+        Next
+
+        If T_TXList.Count > 0 Then
+
+            T_TXList = T_TXList.OrderBy(Function(T_TX As S_TX) T_TX.DateTimestamp).ToList
+
+            Dim T_LastTX As S_TX = T_TXList(T_TXList.Count - 1)
+
+            Dim T_ContractOrderHistoryList As List(Of S_Order) = New List(Of S_Order)
+
+            T_TXList = T_TXList.Where(Function(c As S_TX) c.Sender = ContractID).ToList()
+
+            Dim FirstTX As S_TX = T_TXList.FirstOrDefault(Function(c As S_TX) c.Sender = ContractID)
+
+            For Each ContractTX As S_TX In T_TXList
+
+                Dim ReferenceTXIDs As String = GetStringBetween(ContractTX.Attachment, "<message>", "</message>")
+                If Not ReferenceTXIDs.Trim = "" Then
+                    Dim ReferenceTXIDList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceTXIDs)
+                    If Not ReferenceTXIDList(0) = 0UL And ReferenceTXIDList(1) = 0UL And ReferenceTXIDList(2) = 0UL And ReferenceTXIDList(3) = 0UL Then
+                        If T_TXList.Where(Function(s As S_TX) s.Transaction = ReferenceTXIDList(0)).Any() Then
+                            Return True
+                        End If
+                    End If
+                End If
+
+            Next
+
+            'For i As Integer = 0 To T_TXList.Count - 1
+
+            '    Dim T_TX As S_TX = T_TXList(i)
+
+            '    If T_TX.Sender = ContractID Then
+
+            '        Dim ReferenceTXIDs As String = GetStringBetween(T_TX.Attachment, "<message>", "</message>")
+            '        If Not ReferenceTXIDs.Trim = "" Then
+
+            '            Dim ReferenceTXIDList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceTXIDs)
+
+            '            If Not ReferenceTXIDList(0) = 0UL And ReferenceTXIDList(1) = 0UL And ReferenceTXIDList(2) = 0UL And ReferenceTXIDList(3) = 0UL Then
+
+            '                If T_TXList.Where(Function(s As S_TX) s.Transaction = ReferenceTXIDList(0)).Any() Then
+
+            '                End If
+
+            '                For Each R_TX As S_TX In T_TXList
+
+            '                    If R_TX.Transaction = ReferenceTXIDList(0) Then
+            '                        Return True
+            '                    End If
+
+            '                Next
+
+            '            End If
+
+            '        End If
+
+            '        Exit For
+
+            '    End If
+
+            'Next
+
+        End If
+
+        Return False
+
+    End Function
+
 
     'Public Function GetAccountFromPassPhrase() As List(Of String)
 
@@ -1257,7 +1392,7 @@ Public Class ClsSignumAPI
 
         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
 
-        Dim Response As String = SignumRequest("requestType=getATIds")
+        Dim Response As String = SignumRequest("requestType=getATIds&machineCodeHashId=" + C_ReferenceMachineCodeHashID.ToString())
 
         If Response.Contains(Application.ProductName + "-error") Then
             'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetSmartContractIds(): -> " + Response
@@ -1311,6 +1446,8 @@ Public Class ClsSignumAPI
 
                             If SubEntry(0).GetType.Name = GetType(List(Of String)).Name Then
                                 RetList = DirectCast(SubEntry(0), List(Of String))
+                            ElseIf SubEntry(0).GetType.Name = GetType(String).Name Then
+                                RetList.Add(SubEntry(0).ToString())
                             End If
 
                             'Try
@@ -1340,7 +1477,7 @@ Public Class ClsSignumAPI
 
         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
 
-        Dim Response As String = SignumRequest("requestType=getATDetails&at=" + SmartContractID.ToString)
+        Dim Response As String = SignumRequest("requestType=getAT&at=" + SmartContractID.ToString)
 
         If Response.Contains(Application.ProductName + "-error") Then
             If GetINISetting(E_Setting.InfoOut, False) Then
@@ -1401,7 +1538,7 @@ Public Class ClsSignumAPI
                         SmartContractDetailList.Add("<machineCode>" + Entry(1).ToString + "</machineCode>")
 
                         If Not C_ReferenceMachineCode Is Nothing Then
-                            If C_ReferenceMachineCode.Trim = Entry(1).ToString.Trim Then
+                            If C_ReferenceMachineCode.Trim() = Entry(1).ToString().Trim() Then
                                 SmartContractDetailList.Add("<referenceMachineCode>True</referenceMachineCode>")
                             Else
                                 SmartContractDetailList.Add("<referenceMachineCode>False</referenceMachineCode>")
@@ -1409,9 +1546,25 @@ Public Class ClsSignumAPI
                         Else
                             SmartContractDetailList.Add("<referenceMachineCode>False</referenceMachineCode>")
                         End If
+                    Case "machineCodeHashId"
+                        SmartContractDetailList.Add("<machineCodeHashId>" + Entry(1).ToString + "</machineCodeHashId>")
 
                     Case "machineData"
                         SmartContractDetailList.Add("<machineData>" + Entry(1).ToString + "</machineData>")
+
+                    Case "creationMachineData"
+                        SmartContractDetailList.Add("<creationMachineData>" + Entry(1).ToString + "</creationMachineData>")
+
+                        If Not C_ReferenceMachineData Is Nothing Then
+                            If C_ReferenceMachineData.Trim = Entry(1).ToString.Trim Then
+                                SmartContractDetailList.Add("<referenceMachineData>True</referenceMachineData>")
+                            Else
+                                SmartContractDetailList.Add("<referenceMachineData>False</referenceMachineData>")
+                            End If
+
+                        End If
+
+                        'SmartContractDetailList.Add("<creationMachineData>" + Entry(1).ToString + "</creationMachineData>")
 
                     Case "balanceNQT"
                         SmartContractDetailList.Add("<balanceNQT>" + Entry(1).ToString + "</balanceNQT>")
@@ -1760,19 +1913,19 @@ Public Class ClsSignumAPI
 
         Dim postDataRL As String = "requestType=createATProgram"
         postDataRL += "&name=CarbonDEXContract"
-        postDataRL += "&description=OptimizedContract"
+        postDataRL += "&description=v12OptimizedContract"
         'postDataRL += "&creationBytes=" + C_ReferenceCreationBytes
         'postDataRL += "&code=" 
-        postDataRL += "&data=0000000000000000000000000000000000000000000000000100000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001c0000000000000000000000000000000000000000000000000000000000000000000000000000002100000000000000"
-        postDataRL += "&dpages=2"
-        postDataRL += "&cspages=1"
-        postDataRL += "&uspages=1"
+        postDataRL += "&data=" + C_ReferenceMachineData
+        'postDataRL += "&dpages=2"
+        'postDataRL += "&cspages=1"
+        'postDataRL += "&uspages=1"
         postDataRL += "&minActivationAmountNQT=" + _GasFeeNQT.ToString
+        postDataRL += "&referencedTransactionFullHash=" + _ReferenceTXFullHash
+        postDataRL += "&feeNQT=" + _DeployFeeNQT.ToString
         'postDataRL += "&secretPhrase=" + C_PassPhrase
         postDataRL += "&publicKey=" + PublicKey
-        postDataRL += "&feeNQT=" + _DeployFeeNQT.ToString
         postDataRL += "&deadline=1440"
-        postDataRL += "&referencedTransactionFullHash=" + _ReferenceTXFullHash
         'postDataRL += "&broadcast=true"
         'postDataRL += "&message="
         'postDataRL += "&messageIsText="
@@ -1787,7 +1940,7 @@ Public Class ClsSignumAPI
         'postDataRL += "&recipientPublicKey"
 
         Dim Response As String = SignumRequest(postDataRL)
-
+        '{"errorCode":4,"errorDescription":"Invalid AT creation bytes","requestProcessingTime":37}
         If Response.Contains(Application.ProductName + "-error") Then
             Return Application.ProductName + "-error in CreateSmartContract(): ->" + vbCrLf + Response
         End If

@@ -61,6 +61,16 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+        '''</summary>
+        Friend ReadOnly Property _3DEX() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("3DEX", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property bitcoin_logo_512() As System.Drawing.Bitmap
@@ -83,9 +93,39 @@ Namespace My.Resources
         '''<summary>
         '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
         '''</summary>
-        Friend ReadOnly Property logo() As System.Drawing.Icon
+        Friend ReadOnly Property DEX() As System.Drawing.Icon
             Get
-                Dim obj As Object = ResourceManager.GetObject("logo", resourceCulture)
+                Dim obj As Object = ResourceManager.GetObject("DEX", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+        '''</summary>
+        Friend ReadOnly Property DEX3D() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("DEX3D", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+        '''</summary>
+        Friend ReadOnly Property DEX3D2() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("DEX3D2", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+        '''</summary>
+        Friend ReadOnly Property DEXChange() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("DEXChange", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
             End Get
         End Property
@@ -146,16 +186,6 @@ Namespace My.Resources
         Friend ReadOnly Property status_wait() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("status_wait", resourceCulture)
-                Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        '''</summary>
-        Friend ReadOnly Property symbol() As System.Drawing.Bitmap
-            Get
-                Dim obj As Object = ResourceManager.GetObject("symbol", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property

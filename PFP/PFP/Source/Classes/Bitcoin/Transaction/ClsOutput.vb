@@ -50,12 +50,22 @@
     ''' <param name="RecipientAddress">the Address of the recipient address</param>
     ''' <param name="Amount">the amount in BTC</param>
     ''' <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
-    Sub New(ByVal RecipientAddress As String, ByVal Amount As Double, Optional ByVal ScriptLockTime As Integer = 3)
+    Sub New(ByVal RecipientAddress As String, ByVal Amount As Double, Optional ByVal ScriptLockTime As Integer = 12)
         Me.Addresses.Add(RecipientAddress)
-        Me.OutputType = E_Type.LockTime
+        Me.OutputType = E_Type.Pay2ScriptHash
         Me.AmountNQT = Dbl2Satoshi(Amount)
         CreateLockTimeScript(AddressToRipe160(RecipientAddress), ScriptLockTime)
         ConvertScriptToHex()
+
+        Dim P2SH As String = PubKeyToRipe160(Me.ScriptHex)
+
+        Dim HASH160 As ClsScriptEntry = New ClsScriptEntry(ClsScriptEntry.E_OP_Code.OP_HASH160)
+        Dim EQUAL As ClsScriptEntry = New ClsScriptEntry(ClsScriptEntry.E_OP_Code.OP_EQUAL)
+
+        P2SH = HASH160.ValueHex + IntToHex(Convert.ToInt32(P2SH.Length / 2)) + P2SH + EQUAL.ValueHex
+
+        Me.ScriptHash = P2SH
+
     End Sub
     ''' <summary>
     ''' Create a ChainSwapHash script with LockTime for payback option when the time is up
@@ -65,7 +75,7 @@
     ''' <param name="SenderAddress">the Address of the sender address</param>
     ''' <param name="Amount">the amount in BTC</param>
     ''' <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
-    Sub New(ByVal RecipientAddress As String, ByVal ChainSwapHash As String, ByVal SenderAddress As String, ByVal Amount As Double, Optional ByVal ScriptLockTime As Integer = 3)
+    Sub New(ByVal RecipientAddress As String, ByVal ChainSwapHash As String, ByVal SenderAddress As String, ByVal Amount As Double, Optional ByVal ScriptLockTime As Integer = 12)
         Me.Addresses.AddRange({RecipientAddress, SenderAddress})
         Me.OutputType = E_Type.Pay2ScriptHash
         Me.AmountNQT = Dbl2Satoshi(Amount)
@@ -105,13 +115,23 @@
         AddScriptEntry(ClsScriptEntry.E_OP_Code.OP_CHECKSIG)
 
     End Sub
-    Private Sub CreateLockTimeScript(ByVal RIPE160Recipient As String, Optional ByVal ScriptLockTime As Integer = 3)
+    Private Sub CreateLockTimeScript(ByVal RIPE160Recipient As String, Optional ByVal ScriptLockTime As Integer = 12)
 
-        If ScriptLockTime >= 127 Then
-            ScriptLockTime = 127
+        'If ScriptLockTime >= 127 Then
+        '    ScriptLockTime = 127
+        'End If
+
+        If ScriptLockTime >= 2 And ScriptLockTime <= 16 Then
+            AddScriptEntry(ClsScriptEntry.E_OP_Code.LockTime, IntToHex(ScriptLockTime - 2 + 82, 1, False))
+        ElseIf ScriptLockTime > 16 And ScriptLockTime <= 255 Then
+            Dim PushData As String = "01" + IntToHex(ScriptLockTime, 1, False)
+            AddScriptEntry(ClsScriptEntry.E_OP_Code.LockTime, PushData)
+        ElseIf ScriptLockTime > 255 And ScriptLockTime <= 65535 Then
+            Dim PushData As String = "02" + IntToHex(ScriptLockTime, 2, False)
+            AddScriptEntry(ClsScriptEntry.E_OP_Code.LockTime, PushData)
         End If
 
-        AddScriptEntry(ClsScriptEntry.E_OP_Code.LockTime, IntToHex(ScriptLockTime, 8, True))
+        'AddScriptEntry(ClsScriptEntry.E_OP_Code.LockTime, IntToHex(ScriptLockTime, 8, True))
         AddScriptEntry(ClsScriptEntry.E_OP_Code.OP_CHECKSEQUENCEVERIFY)
         AddScriptEntry(ClsScriptEntry.E_OP_Code.OP_DROP)
         AddScriptEntry(ClsScriptEntry.E_OP_Code.OP_DUP)
@@ -122,11 +142,11 @@
         AddScriptEntry(ClsScriptEntry.E_OP_Code.OP_CHECKSIG)
 
     End Sub
-    Private Sub CreateChainSwapWithLockTimeScript(ByVal RIPE160Recipient As String, ByVal ChainSwapHash As String, ByVal RIPE160Sender As String, Optional ByVal ScriptLockTime As Integer = 3)
+    Private Sub CreateChainSwapWithLockTimeScript(ByVal RIPE160Recipient As String, ByVal ChainSwapHash As String, ByVal RIPE160Sender As String, Optional ByVal ScriptLockTime As Integer = 12)
 
-        If ScriptLockTime >= 127 Then
-            ScriptLockTime = 127
-        End If
+        'If ScriptLockTime >= 127 Then
+        '    ScriptLockTime = 127
+        'End If
 
         AddScriptEntry(ClsScriptEntry.E_OP_Code.OP_IF)
 

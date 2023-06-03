@@ -8,7 +8,7 @@ Imports System.Threading
 ''' this class is for data preparation from BTC_API
 ''' </summary>
 Public Class ClsBitcoinNET
-    Private Property BTC_API As ClsBTCAPI
+    Private Property BTC_API As ClsBitcoinAPI
 
     Private Property C_Transaction As ClsTransaction
 
@@ -53,7 +53,7 @@ Public Class ClsBitcoinNET
         Dim API_User As String = GetBitcoinConfig(E_BitcoinConfigEntry.BITCOINAPIUSER, "bitcoin")
         Dim API_Password As String = GetBitcoinConfig(E_BitcoinConfigEntry.BITCOINAPIPASSWORD, "bitcoin")
 
-        BTC_API = New ClsBTCAPI(API_URL, API_Wallet, API_User, API_Password)
+        BTC_API = New ClsBitcoinAPI(API_URL, API_Wallet, API_User, API_Password)
 
     End Sub
 
@@ -69,17 +69,8 @@ Public Class ClsBitcoinNET
         Dim Result As String = ConvertJSONToXML(BTC_API.CreateWallet(WalletName))
         '<name>DEXWALLET</name><warning></warning>
 
-        If Result.Contains("<error>") Then
-            'TODO:Log out
+        If IsErrorOrWarning(Result) Then
             Return False
-        ElseIf Result.Contains("<warning>") Then
-
-            Dim Warning As String = GetStringBetween(Result, "<warning>", "</warning>")
-
-            If Not Warning.Trim = "" Then
-                Return False
-            End If
-
         End If
 
         Return True
@@ -96,17 +87,9 @@ Public Class ClsBitcoinNET
         Dim Result As String = ConvertJSONToXML(BTC_API.LoadWallet(WalletName))
         '<name>DEXWALLET</name><warning></warning>
         '<error><code>-35</code><0>message</0><1>Wallet file verification failed. Refusing to load database. Data file 'C</1><2>\\Coinz\\bitcoin_testnet\\testnet3\\wallets\\DEXWALLET\\wallet.dat' is already loaded.</2></error>
-        If Result.Contains("<error>") Then
-            'TODO: Log out
+
+        If IsErrorOrWarning(Result) Then
             Return False
-        ElseIf Result.Contains("<warning>") Then
-
-            Dim Warning As String = GetStringBetween(Result, "<warning>", "</warning>")
-
-            If Not Warning.Trim = "" Then
-                Return False
-            End If
-
         End If
 
         Return True
@@ -123,17 +106,8 @@ Public Class ClsBitcoinNET
         Dim Result As String = ConvertJSONToXML(BTC_API.UnloadWallet(WalletName))
         '<name>DEXWALLET</name><warning></warning>
 
-        If Result.Contains("<error>") Then
-            'TODO: Log out
+        If IsErrorOrWarning(Result) Then
             Return False
-        ElseIf Result.Contains("<warning>") Then
-
-            Dim Warning As String = GetStringBetween(Result, "<warning>", "</warning>")
-
-            If Not Warning.Trim = "" Then
-                Return False
-            End If
-
         End If
 
         Return True
@@ -159,17 +133,8 @@ Public Class ClsBitcoinNET
         '{"result":null, "error": null, "id": 1}
         Result = ConvertJSONToXML(Result)
 
-        If Result.Contains("<error>") Then
-            'TODO: Log out
+        If IsErrorOrWarning(Result) Then
             Return False
-        ElseIf Result.Contains("<warning>") Then
-
-            Dim Warning As String = GetStringBetween(Result, "<warning>", "</warning>")
-
-            If Not Warning.Trim = "" Then
-                Return False
-            End If
-
         End If
 
         Return True
@@ -194,17 +159,8 @@ Public Class ClsBitcoinNET
         '{"result":null, "error": null, "id": 1}
         Result = ConvertJSONToXML(Result)
 
-        If Result.Contains("<error>") Then
-            'TODO: Log out
+        If IsErrorOrWarning(Result) Then
             Return False
-        ElseIf Result.Contains("<warning>") Then
-
-            Dim Warning As String = GetStringBetween(Result, "<warning>", "</warning>")
-
-            If Not Warning.Trim = "" Then
-                Return False
-            End If
-
         End If
 
         Return True
@@ -216,9 +172,9 @@ Public Class ClsBitcoinNET
 
 #Region "Get"
 
-    Public Function GetUnspent() As List(Of S_UnspentTransactionOutput)
+    Public Function GetUnspent(Optional ByVal Address As String = "") As List(Of S_UnspentTransactionOutput)
 
-        Dim XML_Vouts As List(Of String) = BTC_API.ListUnspent()
+        Dim XML_Vouts As List(Of String) = BTC_API.ListUnspent(Address)
 
         Dim T_PrevTXList As List(Of S_UnspentTransactionOutput) = New List(Of S_UnspentTransactionOutput)
         Dim MaxIDX As Integer = -1
@@ -417,7 +373,7 @@ Public Class ClsBitcoinNET
 
     Public Function GetFilteredTransactions(ByVal Address As String, ByVal Amount As Double) As List(Of S_UnspentTransactionOutput)
 
-        Dim AmountNQT As ULong = Dbl2Satoshi(Amount)
+        Dim AmountNQT As ULong = Dbl2Satoshi(Amount * 1.1)
 
         Dim FilteredTXOs As List(Of S_UnspentTransactionOutput) = New List(Of S_UnspentTransactionOutput)
 

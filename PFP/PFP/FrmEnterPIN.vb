@@ -32,7 +32,6 @@ Public Class FrmEnterPIN
     End Enum
 
 
-
     Sub New(ByVal Mode As E_Mode)
 
         ' Dieser Aufruf ist für den Designer erforderlich.
@@ -43,9 +42,7 @@ Public Class FrmEnterPIN
 
         Dim PINFingerPrint As String = GetINISetting(E_Setting.PINFingerPrint, "")
 
-        If PINFingerPrint.Trim = "" Then
-            SplitContainer1.Panel1Collapsed = True
-        End If
+        If PINFingerPrint.Trim = "" Then SplitContainer1.Panel1Collapsed = True
 
         If C_Mode = E_Mode.ChangePIN Then
             Me.Text = "Change PIN"
@@ -55,9 +52,7 @@ Public Class FrmEnterPIN
             ChBxPIN.Enabled = True
             SplitContainer1.Panel2Collapsed = True
 
-            If Not GlobalPIN = "" Then
-                TBOldPIN.Text = GlobalPIN
-            End If
+            If Not GlobalPIN = "" Then TBOldPIN.Text = GlobalPIN
 
         ElseIf C_Mode = E_Mode.EnterPINOnly Then
             Me.Text = "Enter PIN"

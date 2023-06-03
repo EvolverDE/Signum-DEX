@@ -379,7 +379,20 @@ Public Class ClsJSON
 
                 Dim T_List As List(Of Object) = New List(Of Object)
 
-                T_List.AddRange(DirectCast(T_Key_Vals, List(Of Object)).ToArray)
+                Dim fulln As String = T_Key_Vals.GetType.FullName
+                Dim shortn As String = T_Key_Vals.GetType.Name
+
+
+
+                If fulln = GetType(List(Of String)).FullName Then
+
+                    T_List.AddRange(DirectCast(T_Key_Vals, List(Of String)).ToArray)
+
+                Else
+                    T_List.AddRange(DirectCast(T_Key_Vals, List(Of Object)).ToArray)
+                End If
+
+
 
                 If T_List.Count > 2 Then
 

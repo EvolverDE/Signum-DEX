@@ -27,7 +27,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>PFP</ProductName>
-    <PublisherName>The Burstcoin Community</PublisherName>
+    <PublisherName>The Signum Community</PublisherName>
     <ApplicationRevision>3</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
@@ -67,7 +67,7 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\3DEX.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>9DC4CE73C7BF0570EAD782C43028397D71ED8340</ManifestCertificateThumbprint>
@@ -144,6 +144,7 @@
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -156,17 +157,20 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Source\Classes\Bitcoin\ClsBitcoinNET.vb" />
-    <Compile Include="Source\Classes\Bitcoin\ClsBTCAPI.vb" />
+    <Compile Include="Source\Classes\Bitcoin\ClsBitcoinAPI.vb" />
     <Compile Include="Source\Classes\Bitcoin\ModBitcoinFunctions.vb" />
-    <Compile Include="Source\Classes\Bitcoin\ModBitcoinHelper.vb" />
     <Compile Include="Source\Classes\Bitcoin\Transaction\AbsClsOutputs.vb" />
     <Compile Include="Source\Classes\Bitcoin\Transaction\ClsOutput.vb" />
     <Compile Include="Source\Classes\Bitcoin\Transaction\ClsScriptEntry.vb" />
     <Compile Include="Source\Classes\Bitcoin\Transaction\ClsTransaction.vb" />
     <Compile Include="Source\Classes\Bitcoin\Transaction\ClsUnspentOutput.vb" />
+    <Compile Include="Source\Classes\AtomicSwap\ClsBitcoin.vb" />
     <Compile Include="Source\Classes\ClsCSV.vb" />
     <Compile Include="Source\Classes\ClsDEXContract.vb" />
     <Compile Include="Source\Classes\ClsINITool.vb" />
+    <Compile Include="Source\Classes\Signum\ClsSignumInteractions.vb" />
+    <Compile Include="Source\Classes\AtomicSwap\AbsClsXItem.vb" />
+    <Compile Include="Source\Classes\AtomicSwap\ClsXItemAdapter.vb" />
     <Compile Include="Source\Classes\Crypto\Bitcoin_specific\CryptoRandom.vb" />
     <Compile Include="Source\Classes\Crypto\Bitcoin_specific\EXPList.vb" />
     <Compile Include="Source\Classes\Crypto\Bitcoin_specific\Math_Modulo.vb" />
@@ -313,16 +317,20 @@
     <Content Include="bin\Debug\PFP.exe" />
     <Content Include="bin\Debug\PFP.pdb" />
     <Content Include="bin\Debug\PFP.xml" />
-    <Content Include="logo.ico" />
+    <Content Include="DEX.ico" />
     <Content Include="obj\Debug\TempPE\My Project.Resources.Designer.vb.dll" />
     <Content Include="obj\Debug\PFP.exe" />
     <Content Include="obj\Debug\PFP.pdb" />
     <Content Include="obj\Debug\PFP.vbproj.FileListAbsolute.txt" />
     <Content Include="obj\Debug\PFP.xml" />
+    <None Include="Resources\3DEX.ico" />
+    <None Include="Resources\DEXChange.ico" />
+    <None Include="Resources\DEX3D2.ico" />
+    <None Include="Resources\DEX3D.ico" />
+    <None Include="Resources\DEX.ico" />
     <None Include="Resources\bitcoin_logo_512_bg.png" />
     <None Include="Resources\bitcoin_logo_512_bg.jpg" />
     <None Include="Resources\bitcoin_logo_512.jpg" />
-    <Content Include="Resources\logo.bmp" />
     <None Include="Resources\signum_back3.png" />
     <None Include="Resources\status_decrypted.png" />
     <None Include="Resources\status_encrypted.png" />
@@ -330,14 +338,6 @@
     <None Include="Resources\status_online.png" />
     <None Include="Resources\status_offline.png" />
     <None Include="PFP_TemporaryKey.pfx" />
-    <None Include="Resources\logo.ico" />
-    <None Include="Resources\symbol.jpg" />
-    <None Include="Resources\settings.jpg" />
-    <None Include="Resources\OpenOrder.jpg" />
-    <None Include="Resources\buyorder.jpg" />
-    <None Include="Resources\responseopenorder.jpg" />
-    <None Include="Resources\showmyopenorder.jpg" />
-    <None Include="Resources\createorder.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Release\" />

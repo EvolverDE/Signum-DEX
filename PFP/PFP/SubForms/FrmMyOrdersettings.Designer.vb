@@ -22,6 +22,7 @@ Partial Class FrmMyOrderSettings
     'Das Bearbeiten mit dem Code-Editor ist nicht möglich.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmMyOrderSettings))
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.LVOrders = New System.Windows.Forms.ListView()
@@ -242,6 +243,7 @@ Partial Class FrmMyOrderSettings
         Me.Controls.Add(Me.SplitContainer1)
         Me.DoubleBuffered = True
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "FrmMyOrderSettings"
         Me.Text = "FrmMyOrdersettings"
         Me.SplitContainer1.Panel1.ResumeLayout(False)

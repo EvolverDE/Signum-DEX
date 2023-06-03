@@ -6,7 +6,10 @@ Public Class FrmDevelope
     Dim C_MainForm As PFPForm = CType(Me.ParentForm, PFPForm)
     Dim SpecialTimer As Integer = 0
 
-    Dim CurrentContract As ClsDEXContract = Nothing
+    Private Property CurrentContract As ClsDEXContract = Nothing
+
+    Private Property DEXContractList As List(Of ClsDEXContract) = New List(Of ClsDEXContract)
+    Private Property T_DEXContractList As List(Of List(Of String)) = New List(Of List(Of String))
 
     Sub New(ByVal MainForm As PFPForm)
 
@@ -16,26 +19,43 @@ Public Class FrmDevelope
         ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
         C_MainForm = MainForm
 
+        T_DEXContractList = GetDEXContractsFromCSV(False)
+
+        For Each T_DEX As List(Of String) In T_DEXContractList
+            Dim T_Contract = New ClsDEXContract(MainForm, MainForm.PrimaryNode, ULong.Parse(T_DEX(0)))
+            DEXContractList.Add(T_Contract)
+        Next
 
         CoBxTestATComATID.Items.Clear()
 
-        For Each x In C_MainForm.DEXContractList
+        For Each x In DEXContractList
             CoBxTestATComATID.Items.Add(x.Address)
         Next
 
         If CoBxTestATComATID.Items.Count > 0 Then
             CoBxTestATComATID.SelectedItem = CoBxTestATComATID.Items(0)
-            CurrentContract = C_MainForm.DEXContractList(0)
+            CurrentContract = DEXContractList(0)
         End If
 
     End Sub
     Private Sub FrmDevelope_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         CoBxTestATComATID.Items.Clear()
-        For i As Integer = 0 To C_MainForm.DEXSmartContractList.Count - 1
-            Dim DEXAT As String = C_MainForm.DEXSmartContractList(i)
-            CoBxTestATComATID.Items.Add(ClsReedSolomon.Encode(ULong.Parse(DEXAT)))
+
+        For Each T_DEX As List(Of String) In T_DEXContractList
+            'If T_DEX(1) = "True" Then
+            '    DEXSmartContractList.Add(T_DEX(0))
+            'End If
+
+            'Dim DEXAT As String = C_MainForm.DEXSmartContractList(i)
+            CoBxTestATComATID.Items.Add(ClsReedSolomon.Encode(ULong.Parse(T_DEX(0))))
+
         Next
+
+        'For i As Integer = 0 To C_MainForm.DEXSmartContractList.Count - 1
+        '    Dim DEXAT As String = C_MainForm.DEXSmartContractList(i)
+        '    CoBxTestATComATID.Items.Add(ClsReedSolomon.Encode(ULong.Parse(DEXAT)))
+        'Next
 
         If CoBxTestATComATID.Items.Count > 0 Then
             CoBxTestATComATID.SelectedIndex = 0
@@ -445,9 +465,12 @@ Public Class FrmDevelope
         If Not CurrentContract Is Nothing Then
             Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
             Dim TXID As String = CurrentContract.DeActivateDeniability(Masterkeys(0),, Masterkeys(1))
-            With LVTestDEXContractBasic.Items.Add("TXID")
-                .SubItems.Add("" + TXID)
-            End With
+
+            RTBTestDebug.AppendText(TXID + vbCrLf + vbCrLf)
+
+            'With LVTestDEXContractBasic.Items.Add("TXID")
+            '    .SubItems.Add("" + TXID)
+            'End With
         End If
     End Sub
 
@@ -465,6 +488,8 @@ Public Class FrmDevelope
 
             Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
             Dim TXID As String = CurrentContract.CreateOrderWithResponder(Masterkeys(0), Amount, Recipient, TBTestXItem.Text, XAmount,, Masterkeys(1))
+
+            RTBTestDebug.AppendText(TXID + vbCrLf + vbCrLf)
 
         End If
 
@@ -489,9 +514,11 @@ Public Class FrmDevelope
                 TXID = CurrentContract.CreateBuyOrder(Masterkeys(0), Amount, Collateral, TBTestXItem.Text, XAmount,, Masterkeys(1))
             End If
 
-            With LVTestDEXContractBasic.Items.Add("TXID")
-                .SubItems.Add("" + TXID)
-            End With
+            RTBTestDebug.AppendText(TXID + vbCrLf + vbCrLf)
+
+            'With LVTestDEXContractBasic.Items.Add("TXID")
+            '    .SubItems.Add("" + TXID)
+            'End With
 
         End If
     End Sub
@@ -509,9 +536,11 @@ Public Class FrmDevelope
                 TXID = CurrentContract.AcceptBuyOrder(Masterkeys(0),,,, Masterkeys(1))
             End If
 
-            With LVTestDEXContractBasic.Items.Add("TXID")
-                .SubItems.Add("" + TXID)
-            End With
+            RTBTestDebug.AppendText(TXID + vbCrLf + vbCrLf)
+
+            'With LVTestDEXContractBasic.Items.Add("TXID")
+            '    .SubItems.Add("" + TXID)
+            'End With
         End If
 
     End Sub
@@ -520,9 +549,12 @@ Public Class FrmDevelope
         If Not CurrentContract Is Nothing Then
             Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
             Dim TXID As String = CurrentContract.InjectResponder(Masterkeys(0), ULong.Parse(TBTestResponder.Text),, Masterkeys(1))
-            With LVTestDEXContractBasic.Items.Add("TXID")
-                .SubItems.Add("" + TXID)
-            End With
+
+            RTBTestDebug.AppendText(TXID + vbCrLf + vbCrLf)
+
+            'With LVTestDEXContractBasic.Items.Add("TXID")
+            '    .SubItems.Add("" + TXID)
+            'End With
         End If
     End Sub
 
@@ -530,9 +562,12 @@ Public Class FrmDevelope
         If Not CurrentContract Is Nothing Then
             Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
             Dim TXID As String = CurrentContract.OpenDispute(Masterkeys(0),, Masterkeys(1))
-            With LVTestDEXContractBasic.Items.Add("TXID")
-                .SubItems.Add("" + TXID)
-            End With
+
+            RTBTestDebug.AppendText(TXID + vbCrLf + vbCrLf)
+
+            'With LVTestDEXContractBasic.Items.Add("TXID")
+            '    .SubItems.Add("" + TXID)
+            'End With
         End If
     End Sub
 
@@ -541,9 +576,12 @@ Public Class FrmDevelope
             Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
 
             Dim TXID As String = CurrentContract.MediateDispute(Masterkeys(0), NUDTestMediateAmount.Value,, Masterkeys(1))
-            With LVTestDEXContractBasic.Items.Add("TXID")
-                .SubItems.Add("" + TXID)
-            End With
+
+            RTBTestDebug.AppendText(TXID + vbCrLf + vbCrLf)
+
+            'With LVTestDEXContractBasic.Items.Add("TXID")
+            '    .SubItems.Add("" + TXID)
+            'End With
         End If
     End Sub
 
@@ -551,9 +589,12 @@ Public Class FrmDevelope
         If Not CurrentContract Is Nothing Then
             Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
             Dim TXID As String = CurrentContract.Appeal(Masterkeys(0),, Masterkeys(1))
-            With LVTestDEXContractBasic.Items.Add("TXID")
-                .SubItems.Add("" + TXID)
-            End With
+
+            RTBTestDebug.AppendText(TXID + vbCrLf + vbCrLf)
+
+            'With LVTestDEXContractBasic.Items.Add("TXID")
+            '    .SubItems.Add("" + TXID)
+            'End With
         End If
     End Sub
 
@@ -561,9 +602,12 @@ Public Class FrmDevelope
         If Not CurrentContract Is Nothing Then
             Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
             Dim TXID As String = CurrentContract.CheckCloseDispute(Masterkeys(0),, Masterkeys(1))
-            With LVTestDEXContractBasic.Items.Add("TXID")
-                .SubItems.Add("" + TXID)
-            End With
+
+            RTBTestDebug.AppendText(TXID + vbCrLf + vbCrLf)
+
+            'With LVTestDEXContractBasic.Items.Add("TXID")
+            '    .SubItems.Add("" + TXID)
+            'End With
         End If
     End Sub
 
@@ -571,9 +615,12 @@ Public Class FrmDevelope
         If Not CurrentContract Is Nothing Then
             Dim Masterkeys As List(Of String) = GetMasterKeys(TBTestPP.Text)
             Dim TXID As String = CurrentContract.FinishOrder(Masterkeys(0),, Masterkeys(1))
-            With LVTestDEXContractBasic.Items.Add("TXID")
-                .SubItems.Add("" + TXID)
-            End With
+
+            RTBTestDebug.AppendText(TXID + vbCrLf + vbCrLf)
+
+            'With LVTestDEXContractBasic.Items.Add("TXID")
+            '    .SubItems.Add("" + TXID)
+            'End With
         End If
     End Sub
 
@@ -589,9 +636,11 @@ Public Class FrmDevelope
 
             Dim TXID As String = CurrentContract.InjectChainSwapHash(Masterkeys(0), TBTestChainSwapHashLong1.Text,, Masterkeys(1))
 
-            With LVTestDEXContractBasic.Items.Add("TXID")
-                .SubItems.Add("" + TXID)
-            End With
+            RTBTestDebug.AppendText(TXID + vbCrLf + vbCrLf)
+
+            'With LVTestDEXContractBasic.Items.Add("TXID")
+            '    .SubItems.Add("" + TXID)
+            'End With
 
         End If
     End Sub
@@ -628,19 +677,21 @@ Public Class FrmDevelope
 
             Dim TXID As String = CurrentContract.FinishOrderWithChainSwapKey(Masterkeys(0), TBTestChainSwapKey.Text,, Masterkeys(1))
 
-            With LVTestDEXContractBasic.Items.Add("TXID")
-                .SubItems.Add("" + TXID)
-            End With
+            RTBTestDebug.AppendText(TXID + vbCrLf + vbCrLf)
+
+            'With LVTestDEXContractBasic.Items.Add("TXID")
+            '    .SubItems.Add("" + TXID)
+            'End With
 
         End If
     End Sub
 
-    Private Sub CoBxTestATComATID_SelectedIndexChanged(sender As Object, e As EventArgs)
+    Private Sub CoBxTestATComATID_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CoBxTestATComATID.SelectedIndexChanged
 
         If Not CoBxTestATComATID.SelectedItem Is Nothing Then
             Dim ItemAddress As String = CoBxTestATComATID.SelectedItem.ToString
-            For Each T_Contract As ClsDEXContract In C_MainForm.DEXContractList
-                If T_Contract.Address.Trim = ItemAddress.Trim Then
+            For Each T_Contract As ClsDEXContract In DEXContractList
+                If T_Contract.Address.Trim.Contains(ItemAddress.Trim) Then
                     CurrentContract = T_Contract
                     Exit For
                 End If
@@ -935,13 +986,13 @@ Public Class FrmDevelope
             End With
 
             With LVTestDEXContractBasic.Items.Add("CreatorID")
-                .SubItems.Add("" + CurrentContract.CreatorID.ToString)
+                .SubItems.Add("" + CurrentContract.CreatorID.ToString())
             End With
             With LVTestDEXContractBasic.Items.Add("CreatorAddress")
                 .SubItems.Add("" + CurrentContract.CreatorAddress)
             End With
             With LVTestDEXContractBasic.Items.Add("ID")
-                .SubItems.Add("" + CurrentContract.ID.ToString)
+                .SubItems.Add("" + CurrentContract.ID.ToString())
             End With
             With LVTestDEXContractBasic.Items.Add("Address")
                 .SubItems.Add("" + CurrentContract.Address)
@@ -954,19 +1005,19 @@ Public Class FrmDevelope
             End With
 
             With LVTestDEXContractBasic.Items.Add("Balance")
-                .SubItems.Add("" + CurrentContract.CurrentBalance.ToString)
+                .SubItems.Add("" + CurrentContract.CurrentBalance.ToString())
             End With
 
             With LVTestDEXContractBasic.Items.Add("isDEXContract")
-                .SubItems.Add("" + CurrentContract.IsDEXContract.ToString)
+                .SubItems.Add("" + CurrentContract.IsDEXContract.ToString())
             End With
 
             With LVTestDEXContractBasic.Items.Add("Deniability")
-                .SubItems.Add("" + CurrentContract.Deniability.ToString)
+                .SubItems.Add("" + CurrentContract.Deniability.ToString())
             End With
 
             With LVTestDEXContractBasic.Items.Add("HistoryOrders")
-                .SubItems.Add("" + CurrentContract.ContractOrderHistoryList.Count.ToString)
+                .SubItems.Add("" + CurrentContract.ContractOrderHistoryList.Count.ToString())
             End With
 
             With LVTestDEXContractBasic.Items.Add("")
@@ -974,36 +1025,36 @@ Public Class FrmDevelope
             End With
 
             With LVTestDEXContractBasic.Items.Add("isFrozen")
-                .SubItems.Add("" + CurrentContract.IsFrozen.ToString)
+                .SubItems.Add("" + CurrentContract.IsFrozen.ToString())
             End With
             With LVTestDEXContractBasic.Items.Add("isRunning")
-                .SubItems.Add("" + CurrentContract.IsRunning.ToString)
+                .SubItems.Add("" + CurrentContract.IsRunning.ToString())
             End With
             With LVTestDEXContractBasic.Items.Add("isStopped")
-                .SubItems.Add("" + CurrentContract.IsStopped.ToString)
+                .SubItems.Add("" + CurrentContract.IsStopped.ToString())
             End With
             With LVTestDEXContractBasic.Items.Add("isFinished")
-                .SubItems.Add("" + CurrentContract.IsFinished.ToString)
+                .SubItems.Add("" + CurrentContract.IsFinished.ToString())
             End With
             With LVTestDEXContractBasic.Items.Add("isDead")
-                .SubItems.Add("" + CurrentContract.IsDead.ToString)
+                .SubItems.Add("" + CurrentContract.IsDead.ToString())
             End With
 
             'LVTestDEXContractBasic.Items.Add("--------------------")
 
             With LVTestCurrentOrder.Items.Add("CurrentCreationTransaction")
-                .SubItems.Add("" + CurrentContract.CurrentCreationTransaction.ToString)
+                .SubItems.Add("" + CurrentContract.CurrentCreationTransaction.ToString())
             End With
             With LVTestCurrentOrder.Items.Add("CurrentConfirmations")
-                .SubItems.Add("" + CurrentContract.CurrentConfirmations.ToString)
+                .SubItems.Add("" + CurrentContract.CurrentConfirmations.ToString())
             End With
 
             With LVTestCurrentOrder.Items.Add("isCurrentSellOrder")
-                .SubItems.Add("" + CurrentContract.IsSellOrder.ToString)
+                .SubItems.Add("" + CurrentContract.IsSellOrder.ToString())
             End With
 
             With LVTestCurrentOrder.Items.Add("isInDispute")
-                .SubItems.Add("" + CurrentContract.Dispute.ToString)
+                .SubItems.Add("" + CurrentContract.Dispute.ToString())
             End With
 
             With LVTestCurrentOrder.Items.Add("CurrentSeller")
@@ -1013,24 +1064,25 @@ Public Class FrmDevelope
                 .SubItems.Add("" + CurrentContract.CurrentBuyerAddress)
             End With
             With LVTestCurrentOrder.Items.Add("CurrentInitiatorsCollateral")
-                .SubItems.Add("" + Math.Round(CurrentContract.CurrentInitiatorsCollateral, 2).ToString("0.00") + " Signa")
+
+                .SubItems.Add("" + Math.Round(CurrentContract.CurrentInitiatorsCollateral, 8).ToString() + " Signa")
             End With
             With LVTestCurrentOrder.Items.Add("CurrentRespondersCollateral")
-                .SubItems.Add("" + Math.Round(CurrentContract.CurrentRespondersCollateral, 2).ToString("0.00") + " Signa")
+                .SubItems.Add("" + Math.Round(CurrentContract.CurrentRespondersCollateral, 8).ToString() + " Signa")
             End With
 
             If CurrentContract.IsSellOrder Then
                 With LVTestCurrentOrder.Items.Add("CurrentSellAmount")
-                    .SubItems.Add("" + Math.Round(CurrentContract.CurrentBuySellAmount, 2).ToString("0.00") + " Signa")
+                    .SubItems.Add("" + PFPForm.Dbl2LVStr(CurrentContract.CurrentBuySellAmount) + " Signa")
                 End With
             Else
                 With LVTestCurrentOrder.Items.Add("CurrentBuyAmount")
-                    .SubItems.Add("" + Math.Round(CurrentContract.CurrentBuySellAmount, 2).ToString("0.00") + " Signa")
+                    .SubItems.Add("" + PFPForm.Dbl2LVStr(CurrentContract.CurrentBuySellAmount) + " Signa")
                 End With
             End If
 
             With LVTestCurrentOrder.Items.Add("CurrentMediatorsDeposit")
-                .SubItems.Add("" + Math.Round(CurrentContract.CurrentMediatorsDeposit, 2).ToString("0.00") + " Signa")
+                .SubItems.Add("" + PFPForm.Dbl2LVStr(CurrentContract.CurrentMediatorsDeposit) + " Signa")
             End With
 
             With LVTestCurrentOrder.Items.Add("CurrentDisputeTimeoutBlock")
@@ -1041,11 +1093,11 @@ Public Class FrmDevelope
                     diffblock = CLng(CurrentContract.CurrentDisputeTimeout) - CLng(CurrentBlockHeight)
                 End If
 
-                .SubItems.Add(CurrentBlockHeight.ToString + " / " + CurrentContract.CurrentDisputeTimeout.ToString + " (in " + diffblock.ToString + " Blocks)")
+                .SubItems.Add(CurrentBlockHeight.ToString() + " / " + CurrentContract.CurrentDisputeTimeout.ToString() + " (in " + diffblock.ToString() + " Blocks)")
             End With
 
             With LVTestCurrentOrder.Items.Add("CurrentObjection")
-                .SubItems.Add("" + CurrentContract.CurrentObjection.ToString)
+                .SubItems.Add("" + CurrentContract.CurrentObjection.ToString())
             End With
 
 
@@ -1053,30 +1105,32 @@ Public Class FrmDevelope
 
                 Dim percentage As Double = 100 / CurrentContract.CurrentBuySellAmount * CurrentContract.CurrentConciliationAmount
 
-                .SubItems.Add("" + Math.Round(CurrentContract.CurrentConciliationAmount, 2).ToString("0.00") + " Signa / " + percentage.ToString + "%")
+                .SubItems.Add("" + PFPForm.Dbl2LVStr(CurrentContract.CurrentConciliationAmount) + " Signa / " + percentage.ToString() + "%")
             End With
 
             With LVTestCurrentOrder.Items.Add("CurrentChainSwapHashLong1")
-                .SubItems.Add("" + CurrentContract.CurrentChainSwapHashULong1.ToString)
+                .SubItems.Add("" + CurrentContract.CurrentChainSwapHashULong1.ToString())
             End With
             With LVTestCurrentOrder.Items.Add("CurrentChainSwapHashLong2")
-                .SubItems.Add("" + CurrentContract.CurrentChainSwapHashULong2.ToString)
+                .SubItems.Add("" + CurrentContract.CurrentChainSwapHashULong2.ToString())
             End With
             With LVTestCurrentOrder.Items.Add("CurrentChainSwapHashLong3")
-                .SubItems.Add("" + CurrentContract.CurrentChainSwapHashULong3.ToString)
+                .SubItems.Add("" + CurrentContract.CurrentChainSwapHashULong3.ToString())
             End With
             With LVTestCurrentOrder.Items.Add("CurrentChainSwapHashLong4")
-                .SubItems.Add("" + CurrentContract.CurrentChainSwapHashULong4.ToString)
+                .SubItems.Add("" + CurrentContract.CurrentChainSwapHashULong4.ToString())
             End With
 
             With LVTestCurrentOrder.Items.Add("CurrentXItem")
-                .SubItems.Add("" + Math.Round(CurrentContract.CurrentXAmount, 2).ToString("0.00") + " " + CurrentContract.CurrentXItem)
+
+                .SubItems.Add("" + PFPForm.Dbl2LVStr(CurrentContract.CurrentXAmount) + " " + CurrentContract.CurrentXItem)
             End With
             With LVTestCurrentOrder.Items.Add("CurrentPrice")
-                .SubItems.Add("" + Math.Round(CurrentContract.CurrentPrice, 2).ToString("0.00") + " " + CurrentContract.CurrentXItem)
+
+                .SubItems.Add("" + PFPForm.Dbl2LVStr(CurrentContract.CurrentPrice) + " " + CurrentContract.CurrentXItem)
             End With
             With LVTestCurrentOrder.Items.Add("CurrentStatus")
-                .SubItems.Add("" + CurrentContract.Status.ToString)
+                .SubItems.Add("" + CurrentContract.Status.ToString())
             End With
 
             If CurrentContract.IsSellOrder Then
@@ -1145,7 +1199,7 @@ Public Class FrmDevelope
         'Dim contractIDAddressList As List(Of List(Of String)) = New List(Of List(Of String))
         Dim out As ClsOut = New ClsOut()
         Dim str As String = ""
-        For Each T_Contract As ClsDEXContract In C_MainForm.DEXContractList
+        For Each T_Contract As ClsDEXContract In DEXContractList
             str += T_Contract.ID.ToString + ";" + T_Contract.Address + vbCrLf
             'contractIDAddressList.Add(New List(Of String)({T_Contract.ID.ToString, T_Contract.Name}))
         Next

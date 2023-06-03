@@ -48,7 +48,7 @@ Module ModCSV
         End Try
 
     End Function
-    Function GetDEXContractsFromCSV() As List(Of List(Of String))
+    Function GetDEXContractsFromCSV(Optional ByVal IsDEXContract As Boolean = True) As List(Of List(Of String))
 
         Dim SmartContractList As List(Of List(Of String)) = GetSmartContractsFromCSV()
 
@@ -56,7 +56,11 @@ Module ModCSV
 
         For Each SmartContract As List(Of String) In SmartContractList
 
-            If SmartContract(1) = "True" Then
+            If IsDEXContract Then
+                If SmartContract(1) = IsDEXContract.ToString() Then
+                    DEXContractList.Add(SmartContract)
+                End If
+            Else
                 DEXContractList.Add(SmartContract)
             End If
 

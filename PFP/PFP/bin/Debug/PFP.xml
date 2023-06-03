@@ -22,6 +22,11 @@ PFP
   Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
 </summary>
 </member>
+<member name="P:PFP.My.Resources.Resources._3DEX">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+</summary>
+</member>
 <member name="P:PFP.My.Resources.Resources.bitcoin_logo_512">
 <summary>
   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
@@ -32,7 +37,22 @@ PFP
   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
 </summary>
 </member>
-<member name="P:PFP.My.Resources.Resources.logo">
+<member name="P:PFP.My.Resources.Resources.DEX">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+</summary>
+</member>
+<member name="P:PFP.My.Resources.Resources.DEX3D">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+</summary>
+</member>
+<member name="P:PFP.My.Resources.Resources.DEX3D2">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+</summary>
+</member>
+<member name="P:PFP.My.Resources.Resources.DEXChange">
 <summary>
   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
 </summary>
@@ -63,11 +83,6 @@ PFP
 </summary>
 </member>
 <member name="P:PFP.My.Resources.Resources.status_wait">
-<summary>
-  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-</summary>
-</member>
-<member name="P:PFP.My.Resources.Resources.symbol">
 <summary>
   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
 </summary>
@@ -139,12 +154,12 @@ PFP
  this class is for data preparation from BTC_API
  </summary>
 </member>
-<member name="T:PFP.ClsBTCAPI">
+<member name="T:PFP.ClsBitcoinAPI">
  <summary>
  this class is used for raw communication with the bitcoin-node
  </summary>
 </member>
-<member name="M:PFP.ClsBTCAPI.GetTXOut(System.String,System.Int32,System.Boolean)">
+<member name="M:PFP.ClsBitcoinAPI.GetTXOut(System.String,System.Int32,System.Boolean)">
  <summary>
  Gets the unconfirmed transaction output
  </summary>
@@ -152,11 +167,6 @@ PFP
  <param name="VOut">The output index of the given Transaction</param>
  <param name="UnconformedToo">The Boolean to check in Unconfirmed ones</param>
  <returns>vout,confirmations,value and hex of the lockingscript</returns>
-</member>
-<member name="T:PFP.ModBitcoinHelper">
- <summary>
- this module is to simplify global using
- </summary>
 </member>
 <member name="M:PFP.ClsOutput.#ctor(System.String,System.Double,System.Boolean)">
  <summary>

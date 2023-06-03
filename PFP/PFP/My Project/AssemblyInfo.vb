@@ -10,10 +10,10 @@ Imports System.Runtime.InteropServices
 ' Werte der Assemblyattribute überprüfen
 
 <Assembly: AssemblyTitle("PFP")>
-<Assembly: AssemblyDescription("Decentral PayPal Gateway")>
-<Assembly: AssemblyCompany("The Burstcoin/Signum Community")>
+<Assembly: AssemblyDescription("Decentral Crypto Exchange")>
+<Assembly: AssemblyCompany("The Signum Community")>
 <Assembly: AssemblyProduct("PFP")>
-<Assembly: AssemblyCopyright("Copyright ©  2020 The Burstcoin/Signum Community")>
+<Assembly: AssemblyCopyright("Copyright ©  2020 The Signum Community")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(True)>

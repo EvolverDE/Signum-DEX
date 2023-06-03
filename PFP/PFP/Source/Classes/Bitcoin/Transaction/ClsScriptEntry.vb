@@ -190,7 +190,9 @@ Public Class ClsScriptEntry
         S_Value = -14
         DER_End = -15
 
-        EntryLength = -16
+        PUSHDATALENGTH = -16
+
+        Value = -17
 
         Unknown = -999
 
