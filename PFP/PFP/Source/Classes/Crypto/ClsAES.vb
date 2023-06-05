@@ -58,6 +58,7 @@ Public Class ClsAES
             Return DecryptedValue
 
         Catch ex As Exception
+
             Dim ErrorValue As Byte() = Nothing
             Return ErrorValue
         End Try

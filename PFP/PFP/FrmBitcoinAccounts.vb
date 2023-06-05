@@ -1,5 +1,6 @@
 ﻿Imports System.Net
 Imports System.Security.Cryptography
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 
 Public Class FrmBitcoinAccounts
 
@@ -143,26 +144,75 @@ Public Class FrmBitcoinAccounts
 
     End Sub
 
+    Private Sub BtAbortScan_Click(sender As Object, e As EventArgs) Handles BtAbortScan.Click
+
+        Dim XItem As ClsBitcoin = New ClsBitcoin
+        XItem.AbortReScan()
+
+    End Sub
+
     Private Sub BtAdd_Click(sender As Object, e As EventArgs) Handles BtAdd.Click
 
         Dim T_BitAddress As String = PubKeyToAddress(TBPublicKey.Text, BitcoinAddressPrefix)
 
+        If ChBxReScan.Checked Then
+            Dim Result As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("The (Re)scanning process will take some Time" + vbCrLf + "Do you really want to continue?", "Add Address", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList.Yes_No), , ClsMsgs.Status.Question)
+
+            If Result = ClsMsgs.CustomDialogResult.No Or Result = ClsMsgs.CustomDialogResult.Close Then
+                Exit Sub
+            End If
+
+        End If
+
         If AddAddress(T_BitAddress) Then
 
             Dim T_Accounts As String = GetINISetting(E_Setting.BitcoinAccounts, "")
+            Dim Fingerprint As String = GetINISetting(E_Setting.PINFingerPrint, "")
 
-            If T_Accounts.Contains(";") Then
-                T_Accounts += ";" + TBBitcoinMnemonic.Text + ":" + TBPublicKey.Text
-            Else
-                If T_Accounts.Trim = "" Then
-                    T_Accounts += TBBitcoinMnemonic.Text + ":" + TBPublicKey.Text
-                Else
+            If Fingerprint.Trim = "" Then
+
+                If T_Accounts.Contains(";") Then
                     T_Accounts += ";" + TBBitcoinMnemonic.Text + ":" + TBPublicKey.Text
+                Else
+                    If T_Accounts.Trim = "" Then
+                        T_Accounts += TBBitcoinMnemonic.Text + ":" + TBPublicKey.Text
+                    Else
+                        T_Accounts += ";" + TBBitcoinMnemonic.Text + ":" + TBPublicKey.Text
+                    End If
+                End If
+
+            Else
+
+                If GlobalPIN.Trim = "" Then
+                    Dim PINForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.EnterPINOnly)
+                    Dim Result As DialogResult = PINForm.ShowDialog()
+
+                    If Result = DialogResult.Abort Or Result = DialogResult.Cancel Or Result = DialogResult.None Then
+                        Exit Sub
+                    End If
+
+                End If
+
+                Dim EncryptedMnemonic As String = AESEncrypt2HEXStr(TBBitcoinMnemonic.Text, GlobalPIN)
+
+                GlobalPIN = ""
+
+                If T_Accounts.Contains(";") Then
+                    T_Accounts += ";" + EncryptedMnemonic + ":" + TBPublicKey.Text
+                Else
+                    If T_Accounts.Trim = "" Then
+                        T_Accounts += EncryptedMnemonic + ":" + TBPublicKey.Text
+                    Else
+                        T_Accounts += ";" + EncryptedMnemonic + ":" + TBPublicKey.Text
+                    End If
+
                 End If
 
             End If
 
             SetINISetting(E_Setting.BitcoinAccounts, T_Accounts)
+
+            ClsMsgs.MBox(PubKeyToAddress(TBPublicKey.Text, BitcoinAddressPrefix) + " successfully added to " + GetINISetting(E_Setting.BitcoinWallet, ""))
 
             Dim T_Accounts2 As String = GetINISetting(E_Setting.BitcoinAccounts, "")
 
@@ -213,16 +263,45 @@ Public Class FrmBitcoinAccounts
         If ChBxReScan.Checked Then
             If XItem.LoadBitcoinWallet(GetINISetting(E_Setting.BitcoinWallet, "")) Then
             End If
-            If XItem.ImportNewBitcoinAddress(Address) Then
-                ClsMsgs.MBox(Address + " successfully added to " + GetINISetting(E_Setting.BitcoinWallet, ""))
-                Return True
-            End If
+
+            Dim Result As Boolean = False
+            Dim LambdaThread As New Threading.Thread(
+                Sub()
+                    Result = XItem.ImportNewBitcoinAddress(Address)
+                End Sub
+            )
+            LambdaThread.Start()
+
+            'While LambdaThread.IsAlive
+            '    Application.DoEvents()
+
+            'Dim WalletInfo As String = XItem.GetWalletInfo()
+            ''<walletname>DEXWALLET</walletname><walletversion>169900</walletversion><format>bdb</format><balance>0.00000000</balance><unconfirmed_balance>0.00000000</unconfirmed_balance><immature_balance>0.00000000</immature_balance><txcount>46</txcount><keypoololdest>1673007808</keypoololdest><keypoolsize>1000</keypoolsize><hdseedid>d3eb50b74aab6b30fc1ef5de130dfff614170668</hdseedid><keypoolsize_hd_internal>1000</keypoolsize_hd_internal><paytxfee>0.00000000</paytxfee><private_keys_enabled>true</private_keys_enabled><avoid_reuse>false</avoid_reuse><scanning><duration>16</duration><progress>0.004873486990590367</progress></scanning><descriptors>false</descriptors>
+            'WalletInfo = WalletInfo
+
+            'Dim Scanning As String = GetStringBetween(WalletInfo, "<scanning>", "</scanning>")
+            'Dim Progress As Double = GetDoubleBetween(Scanning, "<progress>", "</progress>")
+
+
+            'For i As Integer = 0 To 100
+            '    Threading.Thread.Sleep(1)
+            '    Application.DoEvents()
+            'Next
+
+            'End While
+
+
+            'If XItem.ImportNewBitcoinAddress(Address) Then
+            '    ClsMsgs.MBox(Address + " successfully added to " + GetINISetting(E_Setting.BitcoinWallet, ""))
+            Return True
+            'End If
 
         Else
+
             If XItem.LoadBitcoinWallet(GetINISetting(E_Setting.BitcoinWallet, "")) Then
             End If
             If XItem.CreateNewBitcoinAddress(Address) Then
-                ClsMsgs.MBox(Address + " successfully added to " + GetINISetting(E_Setting.BitcoinWallet, ""))
+                'ClsMsgs.MBox(Address + " successfully added to " + GetINISetting(E_Setting.BitcoinWallet, ""))
                 Return True
             End If
 
@@ -245,6 +324,30 @@ Public Class FrmBitcoinAccounts
     Private Sub BtUnloadWallet_Click(sender As Object, e As EventArgs) Handles BtUnloadWallet.Click
         Dim XItem As ClsBitcoin = New ClsBitcoin
         XItem.UnloadBitcoinWallet(TBWallet.Text)
+    End Sub
+
+    Private Sub ScanningTime_Tick(sender As Object, e As EventArgs) Handles ScanningTime.Tick
+
+        Dim XItem As ClsBitcoin = New ClsBitcoin
+        Dim WalletInfo As String = XItem.GetWalletInfo()
+
+        WalletInfo = WalletInfo
+
+        Dim Scanning As String = GetStringBetween(WalletInfo, "<scanning>", "</scanning>")
+        Dim Progress As Double = GetDoubleBetween(Scanning, "<progress>", "</progress>")
+
+        If Progress = 0.0 Then
+            StatusLabel.Text = ""
+            StatusBar.Value = 0
+            StatusBar.Visible = False
+            BtAbortScan.Enabled = False
+        Else
+            StatusLabel.Text = "(Re)scanning... " + Math.Round(Progress * 100, 2).ToString() + " %"
+            StatusBar.Visible = True
+            StatusBar.Value = Progress * 100
+            BtAbortScan.Enabled = True
+        End If
+
     End Sub
 
 End Class

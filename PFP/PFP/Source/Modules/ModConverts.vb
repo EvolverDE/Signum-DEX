@@ -37,9 +37,9 @@ Module ModConverts
 
             Next
 
-            Return TempBytlist.ToArray
+            Return TempBytlist.ToArray()
         Else
-            Return TempBytlist.ToArray
+            Return TempBytlist.ToArray()
         End If
 
     End Function

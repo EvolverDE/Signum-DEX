@@ -1,5 +1,7 @@
 ﻿Option Strict On
 Option Explicit On
+Imports System.Globalization
+Imports System.Text.RegularExpressions
 
 Module ModJSON
 
@@ -188,7 +190,10 @@ Module ModJSON
                     input = input.Remove(input.IndexOf(endchar))
                 End If
 
-                Return Convert.ToDouble(input)
+
+                'Dim test = Double.Parse(Regex.Replace(input, "[.,]", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator))
+
+                Return Convert.ToDouble(Regex.Replace(input, "[.,]", CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator))
 
             End If
         End If

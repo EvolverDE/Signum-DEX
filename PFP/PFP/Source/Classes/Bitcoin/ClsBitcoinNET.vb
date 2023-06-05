@@ -143,20 +143,21 @@ Public Class ClsBitcoinNET
 
     Public Function ImportAddress(ByVal Address As String) As Boolean
 
-        Dim Result As String = ""
+        Dim Result As String = BTC_API.ImportAddress(Address, "", True)
 
-        Dim LambdaThread As New Threading.Thread(
-            Sub()
-                Result = BTC_API.ImportAddress(Address, "", True)
-            End Sub
-        )
-        LambdaThread.Start()
+        'Dim LambdaThread As New Threading.Thread(
+        '    Sub()
+        '        Result = BTC_API.ImportAddress(Address, "", True)
+        '    End Sub
+        ')
+        'LambdaThread.Start()
 
-        While LambdaThread.IsAlive
-            Application.DoEvents()
-        End While
+        'While LambdaThread.IsAlive
+        '    Application.DoEvents()
+        'End While
 
         '{"result":null, "error": null, "id": 1}
+        '{"result":null,"error":{"code":-4,"message":"Wallet is currently rescanning. Abort existing rescan or wait."},"id":1}
         Result = ConvertJSONToXML(Result)
 
         If IsErrorOrWarning(Result) Then
@@ -318,6 +319,14 @@ Public Class ClsBitcoinNET
 
     Public Function GetMiningInfo() As String
         Return ConvertJSONToXML(BTC_API.GetMiningInfo())
+    End Function
+
+    Public Function GetWalletInfo() As String
+        Return ConvertJSONToXML(BTC_API.GetWalletInfo())
+    End Function
+
+    Public Function AbortReScan() As String
+        Return ConvertJSONToXML(BTC_API.AbortRescan())
     End Function
 
     Public Function GetRawTransaction(ByVal RawTX As String) As String

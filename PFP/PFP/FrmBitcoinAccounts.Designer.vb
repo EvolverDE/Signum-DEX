@@ -22,6 +22,7 @@ Partial Class FrmBitcoinAccounts
     'Das Bearbeiten mit dem Code-Editor ist nicht möglich.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmBitcoinAccounts))
         Me.Label1 = New System.Windows.Forms.Label()
         Me.TBBitcoinMnemonic = New System.Windows.Forms.TextBox()
@@ -44,6 +45,13 @@ Partial Class FrmBitcoinAccounts
         Me.ChBxReScan = New System.Windows.Forms.CheckBox()
         Me.BtLoadWallet = New System.Windows.Forms.Button()
         Me.BtUnloadWallet = New System.Windows.Forms.Button()
+        Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
+        Me.StatusLabel = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.bouncer = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.StatusBar = New System.Windows.Forms.ToolStripProgressBar()
+        Me.ScanningTime = New System.Windows.Forms.Timer(Me.components)
+        Me.BtAbortScan = New System.Windows.Forms.Button()
+        Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
         'Label1
@@ -189,7 +197,7 @@ Partial Class FrmBitcoinAccounts
         Me.LVAddresses.Location = New System.Drawing.Point(84, 162)
         Me.LVAddresses.MultiSelect = False
         Me.LVAddresses.Name = "LVAddresses"
-        Me.LVAddresses.Size = New System.Drawing.Size(400, 137)
+        Me.LVAddresses.Size = New System.Drawing.Size(400, 96)
         Me.LVAddresses.TabIndex = 13
         Me.LVAddresses.UseCompatibleStateImageBehavior = False
         Me.LVAddresses.View = System.Windows.Forms.View.Details
@@ -266,6 +274,53 @@ Partial Class FrmBitcoinAccounts
         Me.BtUnloadWallet.Text = "unload"
         Me.BtUnloadWallet.UseVisualStyleBackColor = False
         '
+        'StatusStrip1
+        '
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.StatusLabel, Me.bouncer, Me.StatusBar})
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 289)
+        Me.StatusStrip1.Name = "StatusStrip1"
+        Me.StatusStrip1.Size = New System.Drawing.Size(629, 22)
+        Me.StatusStrip1.TabIndex = 21
+        Me.StatusStrip1.Text = "StatusStrip1"
+        '
+        'StatusLabel
+        '
+        Me.StatusLabel.BackColor = System.Drawing.Color.Transparent
+        Me.StatusLabel.Name = "StatusLabel"
+        Me.StatusLabel.Size = New System.Drawing.Size(16, 17)
+        Me.StatusLabel.Text = "   "
+        '
+        'bouncer
+        '
+        Me.bouncer.BackColor = System.Drawing.Color.Transparent
+        Me.bouncer.Name = "bouncer"
+        Me.bouncer.Size = New System.Drawing.Size(598, 17)
+        Me.bouncer.Spring = True
+        '
+        'StatusBar
+        '
+        Me.StatusBar.Name = "StatusBar"
+        Me.StatusBar.Size = New System.Drawing.Size(100, 16)
+        Me.StatusBar.Step = 1
+        Me.StatusBar.Visible = False
+        '
+        'ScanningTime
+        '
+        Me.ScanningTime.Enabled = True
+        Me.ScanningTime.Interval = 1000
+        '
+        'BtAbortScan
+        '
+        Me.BtAbortScan.BackColor = System.Drawing.Color.FromArgb(CType(CType(247, Byte), Integer), CType(CType(147, Byte), Integer), CType(CType(26, Byte), Integer))
+        Me.BtAbortScan.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtAbortScan.ForeColor = System.Drawing.Color.White
+        Me.BtAbortScan.Location = New System.Drawing.Point(537, 146)
+        Me.BtAbortScan.Name = "BtAbortScan"
+        Me.BtAbortScan.Size = New System.Drawing.Size(80, 23)
+        Me.BtAbortScan.TabIndex = 22
+        Me.BtAbortScan.Text = "Abort scan"
+        Me.BtAbortScan.UseVisualStyleBackColor = False
+        '
         'FrmBitcoinAccounts
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -274,6 +329,8 @@ Partial Class FrmBitcoinAccounts
         Me.BackgroundImage = Global.PFP.My.Resources.Resources.bitcoin_logo_512
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
         Me.ClientSize = New System.Drawing.Size(629, 311)
+        Me.Controls.Add(Me.BtAbortScan)
+        Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.BtUnloadWallet)
         Me.Controls.Add(Me.BtLoadWallet)
         Me.Controls.Add(Me.ChBxReScan)
@@ -298,6 +355,8 @@ Partial Class FrmBitcoinAccounts
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "FrmBitcoinAccounts"
         Me.Text = "Bitcoin Address Settings"
+        Me.StatusStrip1.ResumeLayout(False)
+        Me.StatusStrip1.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -324,4 +383,10 @@ Partial Class FrmBitcoinAccounts
     Friend WithEvents ChBxReScan As CheckBox
     Friend WithEvents BtLoadWallet As Button
     Friend WithEvents BtUnloadWallet As Button
+    Friend WithEvents StatusStrip1 As StatusStrip
+    Friend WithEvents StatusLabel As ToolStripStatusLabel
+    Friend WithEvents StatusBar As ToolStripProgressBar
+    Friend WithEvents bouncer As ToolStripStatusLabel
+    Friend WithEvents ScanningTime As Timer
+    Friend WithEvents BtAbortScan As Button
 End Class

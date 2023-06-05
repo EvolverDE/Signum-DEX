@@ -106,9 +106,12 @@ Public Class FrmEnterPIN
                 For Each BitAcc As String In EncryptedBitcoinAccsList
 
                     If BitAcc.Contains(":") Then
-                        Dim T_Mnemonic As String = AESDecrypt(BitAcc.Split(":")(0), TBOldPIN.Text)
 
+                        Dim EncryptedMnemonic As String = BitAcc.Split(":")(0)
+
+                        Dim T_Mnemonic As String = AESDecrypt(EncryptedMnemonic, TBOldPIN.Text)
                         Dim T_PublicKey As String = BitAcc.Split(":")(1)
+
                         DecryptedBitcoinAccsList.Add(New List(Of String)({T_Mnemonic, T_PublicKey}))
 
                     End If
@@ -210,9 +213,10 @@ Public Class FrmEnterPIN
                     T_EncryptedBitcoinAccs += AESEncrypt2HEXStr(DecryptedBitcoinAcc(0), TBPIN.Text) + ":" + DecryptedBitcoinAcc(1) + ";"
                 Next
 
-                T_EncryptedBitcoinAccs = T_EncryptedBitcoinAccs.Remove(T_EncryptedBitcoinAccs.Length - 1)
-
-                SetINISetting(E_Setting.BitcoinAccounts, T_EncryptedBitcoinAccs)
+                If Not T_EncryptedBitcoinAccs.Trim() = "" Then
+                    T_EncryptedBitcoinAccs = T_EncryptedBitcoinAccs.Remove(T_EncryptedBitcoinAccs.Length - 1)
+                    SetINISetting(E_Setting.BitcoinAccounts, T_EncryptedBitcoinAccs)
+                End If
 
 #End Region
 

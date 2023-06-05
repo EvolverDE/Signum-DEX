@@ -990,14 +990,35 @@ Public Class PFPForm
             Dim Info As String = XItem.GetXItemInfo()
 
             If Not IsErrorOrWarning(Info) Then
-                CurrentMarket = NuMarket
+                If (Not GlobalPIN.Trim() = "" And Not GetINISetting(E_Setting.PINFingerPrint, "").Trim() = "") Or GetINISetting(E_Setting.PINFingerPrint, "").Trim() = "" Then
+                    CurrentMarket = NuMarket
 
-                TabPageAdder("TP_AS_" + NuMarket)
+                    TabPageAdder("TP_AS_" + NuMarket)
 
-                SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
-                ResetLVColumns()
-                ForceReload = True
+                    SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
+                    ResetLVColumns()
+                    ForceReload = True
+                    TSSCryptStatus.Enabled = False
+
+                Else
+
+                    Dim Message As String = "You need to unlock the DEX (the lock on the bottom right corner) " + vbCrLf
+                    Message += "so the DEX can interact with both Blockchains for timelocked " + vbCrLf + "AtomicSwaps automatically!"
+                    ClsMsgs.MBox(Message, "Error",,, ClsMsgs.Status.Erro, 3, ClsMsgs.Timer_Type.ButtonEnable)
+
+                    TabPageRemover("TP_AS_" + NuMarket)
+
+                    CoBxMarket.SelectedItem = "USD"
+
+                    SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
+                    ResetLVColumns()
+                    ForceReload = True
+                    TSSCryptStatus.Enabled = True
+
+                End If
+
             Else
+
                 'TODO: XItem adapter
                 Dim Message As String = NuMarket + "-Node not reachable on " + GetINISetting(E_Setting.BitcoinAPINode, "https://127.0.0.1") + vbCrLf
                 Message += "please make sure your Node is up and running and have the right settings." + vbCrLf + vbCrLf
@@ -1012,6 +1033,7 @@ Public Class PFPForm
                 SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
                 ResetLVColumns()
                 ForceReload = True
+                TSSCryptStatus.Enabled = True
 
             End If
 
@@ -1021,6 +1043,7 @@ Public Class PFPForm
             SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
             ResetLVColumns()
             ForceReload = True
+            TSSCryptStatus.Enabled = True
         End If
 
     End Sub

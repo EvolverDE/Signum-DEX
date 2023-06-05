@@ -337,6 +337,16 @@
 
 #Region "Bitcoin Account Form"
 
+    Public Function GetWalletInfo() As String
+        Dim BitNET As ClsBitcoinNET = New ClsBitcoinNET()
+        Return BitNET.GetWalletInfo()
+    End Function
+
+    Public Function AbortReScan() As String
+        Dim BitNET As ClsBitcoinNET = New ClsBitcoinNET()
+        Return BitNET.AbortReScan()
+    End Function
+
     'Public Function GetBitcoinRawTransaction(ByVal RawTransaction As String) As String
     '    Dim BitNET As ClsBitcoinNET = New ClsBitcoinNET()
     '    Return BitNET.GetRawTransaction(RawTransaction)

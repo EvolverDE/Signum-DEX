@@ -321,6 +321,7 @@ Public Class ClsBitcoinAPI
                 'Note:   the wallet RPCs are only available If Bitcoin Core was built With wallet support, which Is the Default.
             Case BTC_API_CALLS.abandontransaction
             Case BTC_API_CALLS.abortrescan
+                RequestString = "{""jsonrpc"":""1.0"", ""id"":""1"",""method"":""abortrescan"",""params"": []}"
             Case BTC_API_CALLS.addmultisigaddress
             Case BTC_API_CALLS.backupwallet
             Case BTC_API_CALLS.bumpfee
@@ -343,6 +344,7 @@ Public Class ClsBitcoinAPI
                 RequestString = "{""jsonrpc"":""1.0"", ""id"":1,""method"":""gettransaction"",""params"":[" + Params + "]}"
             Case BTC_API_CALLS.getunconfirmedbalance
             Case BTC_API_CALLS.getwalletinfo
+                RequestString = "{""jsonrpc"":""1.0"", ""id"":1, ""method"":""getwalletinfo"", ""params"":[]}"
             Case BTC_API_CALLS.importaddress
                 'TODO: import address after create wallet
                 '["myaddress", "testing", false]
@@ -583,7 +585,7 @@ Public Class ClsBitcoinAPI
 
     Public Function ImportAddress(ByVal Address As String, Optional ByVal Label As String = "", Optional ByVal Rescan As Boolean = False) As String
         '["myaddress", "testing", false]
-        Dim ImportAddressResponse As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.importaddress, """" + Address + """, """ + Label + """, " + Rescan.ToString.ToLower)), 600000)
+        Dim ImportAddressResponse As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.importaddress, """" + Address + """, """ + Label + """, " + Rescan.ToString.ToLower)), 60000)
         Return ImportAddressResponse
     End Function
 
@@ -632,6 +634,16 @@ Public Class ClsBitcoinAPI
         Return MiningInfo
     End Function
 
+    Public Function GetWalletInfo() As String
+        Dim WalletInfo As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.getwalletinfo, "")), 1000)
+        Return WalletInfo
+    End Function
+
+    Public Function AbortRescan() As String
+        Dim Abort As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.abortrescan, "")), 1000)
+        Return Abort
+    End Function
+
     Public Function ListReceivedByAddress() As List(Of String)
         Dim AddressTX As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.listreceivedbyaddress, "0, true")))
         Dim JSON As ClsJSON = New ClsJSON
@@ -664,7 +676,7 @@ Public Class ClsBitcoinAPI
     End Function
 
 
-    Function RequestFromBitcoinNode(ByVal URL As String, ByVal ByteArray As Byte(), Optional ByVal TimeOut As Integer = 100000) As String
+    Function RequestFromBitcoinNode(ByVal URL As String, ByVal ByteArray As Byte(), Optional ByVal TimeOut As Integer = 60000) As String
 
         Try
 

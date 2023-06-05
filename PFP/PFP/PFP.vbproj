@@ -317,7 +317,6 @@
     <Content Include="bin\Debug\PFP.exe" />
     <Content Include="bin\Debug\PFP.pdb" />
     <Content Include="bin\Debug\PFP.xml" />
-    <Content Include="DEX.ico" />
     <Content Include="obj\Debug\TempPE\My Project.Resources.Designer.vb.dll" />
     <Content Include="obj\Debug\PFP.exe" />
     <Content Include="obj\Debug\PFP.pdb" />
