@@ -662,7 +662,6 @@ Partial Class PFPForm
         Me.BtSNOSetCurFee.TabIndex = 23
         Me.BtSNOSetCurFee.Text = "set Current Slotfee"
         Me.BtSNOSetCurFee.UseVisualStyleBackColor = False
-        Me.BtSNOSetCurFee.Visible = False
         '
         'Label8
         '
@@ -2628,7 +2627,7 @@ Partial Class PFPForm
         'StatusLabel
         '
         Me.StatusLabel.Name = "StatusLabel"
-        Me.StatusLabel.Size = New System.Drawing.Size(1033, 17)
+        Me.StatusLabel.Size = New System.Drawing.Size(1118, 17)
         Me.StatusLabel.Spring = True
         Me.StatusLabel.Text = "Status"
         Me.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft

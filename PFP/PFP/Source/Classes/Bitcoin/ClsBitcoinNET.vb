@@ -325,6 +325,10 @@ Public Class ClsBitcoinNET
         Return ConvertJSONToXML(BTC_API.GetWalletInfo())
     End Function
 
+    Public Function GetFee(Optional ByVal Blocks As Integer = 1) As String
+        Return ConvertJSONToXML(BTC_API.GetFee(Blocks))
+    End Function
+
     Public Function AbortReScan() As String
         Return ConvertJSONToXML(BTC_API.AbortRescan())
     End Function
@@ -557,7 +561,6 @@ Public Class ClsBitcoinNET
     End Function
 
 #End Region 'Convert/Encode/Decode
-
 
     'Public Function GetScriptTypesFromTransaction(ByVal TX As String) As List(Of E_ScriptType)
 

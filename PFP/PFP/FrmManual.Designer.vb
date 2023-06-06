@@ -39,7 +39,6 @@ Partial Class FrmManual
         Me.Label1 = New System.Windows.Forms.Label()
         Me.btManualSetPassPhrase = New System.Windows.Forms.Button()
         Me.BtClose = New System.Windows.Forms.Button()
-        Me.TabPage3 = New System.Windows.Forms.TabPage()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
@@ -61,7 +60,6 @@ Partial Class FrmManual
         '
         Me.TabControl1.Controls.Add(Me.TabPage1)
         Me.TabControl1.Controls.Add(Me.TabPage2)
-        Me.TabControl1.Controls.Add(Me.TabPage3)
         Me.TabControl1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TabControl1.Location = New System.Drawing.Point(0, 0)
         Me.TabControl1.Name = "TabControl1"
@@ -249,16 +247,6 @@ Partial Class FrmManual
         Me.BtClose.UseVisualStyleBackColor = False
         Me.BtClose.Visible = False
         '
-        'TabPage3
-        '
-        Me.TabPage3.AutoScroll = True
-        Me.TabPage3.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.TabPage3.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage3.Name = "TabPage3"
-        Me.TabPage3.Size = New System.Drawing.Size(776, 335)
-        Me.TabPage3.TabIndex = 2
-        Me.TabPage3.Text = "Example"
-        '
         'FrmManual
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -296,7 +284,6 @@ Partial Class FrmManual
     Friend WithEvents TabPage1 As TabPage
     Friend WithEvents TabPage2 As TabPage
     Friend WithEvents LabWelcome As Label
-    Friend WithEvents TabPage3 As TabPage
     Friend WithEvents SplitContainer15 As SplitContainer
     Friend WithEvents BtClose As Button
     Friend WithEvents SplitContainer1 As SplitContainer

@@ -331,8 +331,6 @@ Public Class FrmBitcoinAccounts
         Dim XItem As ClsBitcoin = New ClsBitcoin
         Dim WalletInfo As String = XItem.GetWalletInfo()
 
-        WalletInfo = WalletInfo
-
         Dim Scanning As String = GetStringBetween(WalletInfo, "<scanning>", "</scanning>")
         Dim Progress As Double = GetDoubleBetween(Scanning, "<progress>", "</progress>")
 

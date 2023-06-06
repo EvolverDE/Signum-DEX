@@ -1639,7 +1639,8 @@ Public Class PFPForm
     End Sub
 
     Private Sub BtSNOSetCurFee_Click(sender As Object, e As EventArgs) Handles BtSNOSetCurFee.Click
-        NUDSNOTXFee.Value = CDec(Fee)
+        Dim SAPI As ClsSignumAPI = New ClsSignumAPI
+        NUDSNOTXFee.Value = CDec(SAPI.GetTXFee())
     End Sub
 
     Private Sub LVSellorders_MouseUp(sender As Object, e As MouseEventArgs) Handles LVSellorders.MouseUp

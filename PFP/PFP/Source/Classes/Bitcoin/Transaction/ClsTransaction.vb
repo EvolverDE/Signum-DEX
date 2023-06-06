@@ -197,7 +197,7 @@ Public Class ClsTransaction
 
     Private Sub AddUnspentTransactionOutput(ByVal UTXO As ClsBitcoinNET.S_UnspentTransactionOutput)
 
-        Dim k As ClsOutput = New ClsOutput(UTXO.LockingScript)
+        Dim Output As ClsOutput = New ClsOutput(UTXO.LockingScript)
 
         'prevent double addresses
         For Each Address As String In UTXO.Addresses
@@ -221,10 +221,10 @@ Public Class ClsTransaction
             .OutputType = UTXO.Typ,
             .Confirmations = UTXO.Confirmations,
             .Script = UTXO.LockingScript,
-            .ScriptHex = k.ScriptHex,
+            .ScriptHex = Output.ScriptHex,
             .Addresses = UTXO.Addresses,
             .AmountNQT = UTXO.AmountNQT,
-            .LengthOfScript = k.LengthOfScript
+            .LengthOfScript = Output.LengthOfScript
         }
 
         If UTXO.Typ = AbsClsOutputs.E_Type.ChainSwapHashWithLockTime Or UTXO.Typ = AbsClsOutputs.E_Type.LockTime Then

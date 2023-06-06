@@ -24,8 +24,6 @@ Public Class ClsSignumNET
 
     'End Function
 
-
-
     Public Structure S_Signature
         Dim AgreementKey As String
         Dim SignatureKey As String
@@ -135,7 +133,6 @@ Public Class ClsSignumNET
         Return {OutputHexStr, NonceHexStr}
 
     End Function
-
 
     'Public Function DecryptFrom(ByVal AccountID As ULong, ByVal data As String, ByVal nonce As String) As String
     '    Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()

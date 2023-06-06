@@ -311,6 +311,7 @@ Public Class ClsBitcoinAPI
             Case BTC_API_CALLS.createmultisig
             Case BTC_API_CALLS.deriveaddresses
             Case BTC_API_CALLS.estimatesmartfee
+                RequestString = "{""jsonrpc"":""1.0"", ""id"":1,""method"":""estimatesmartfee"",""params"":[" + Params + "]}"
             Case BTC_API_CALLS.getdescriptorinfo
             Case BTC_API_CALLS.getindexinfo
             Case BTC_API_CALLS.signmessagewithprivkey
@@ -637,6 +638,11 @@ Public Class ClsBitcoinAPI
     Public Function GetWalletInfo() As String
         Dim WalletInfo As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.getwalletinfo, "")), 1000)
         Return WalletInfo
+    End Function
+
+    Public Function GetFee(Optional Blocks As Integer = 1) As String
+        Dim Fee As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.estimatesmartfee, Blocks.ToString())), 1000)
+        Return Fee
     End Function
 
     Public Function AbortRescan() As String

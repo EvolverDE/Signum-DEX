@@ -342,6 +342,31 @@
         Return BitNET.GetWalletInfo()
     End Function
 
+    Public Function GetFeeBTCPerKiloByte(Optional ByVal Blocks As Integer = 1) As Double
+        Dim BitNET As ClsBitcoinNET = New ClsBitcoinNET()
+        '<feerate>0.00001000</feerate><blocks>2</blocks>
+        Dim XMLStr As String = BitNET.GetFee(Blocks)
+        Return GetDoubleBetween(XMLStr, "<feerate>", "</feerate>")
+    End Function
+
+    Public Function GetFeeNQT(Optional ByVal PerByte As Boolean = False, Optional ByVal Blocks As Integer = 1) As ULong
+
+        Dim FeeNQT As ULong = ClsSignumAPI.Dbl2Planck(GetFeeBTCPerKiloByte(Blocks))
+
+        If PerByte Then
+
+            If FeeNQT / 1024 < 1 Then
+                Return 1
+            Else
+                Return Convert.ToInt64(FeeNQT / 1024)
+            End If
+
+        Else
+            Return FeeNQT
+        End If
+
+    End Function
+
     Public Function AbortReScan() As String
         Dim BitNET As ClsBitcoinNET = New ClsBitcoinNET()
         Return BitNET.AbortReScan()
@@ -514,7 +539,7 @@
         Dim BitcoinPrivateKey As String = GetBitcoinMainPrivateKey(False).ToLower()
 
         If Not BitcoinPrivateKey = "" Then
-            T_BTCTransaction.C_FeesNQTPerByte = 5
+            T_BTCTransaction.C_FeesNQTPerByte = GetFeeNQT(True)
             Dim T_BitcoinRAWTX As String = SignBitcoinTransaction(T_BTCTransaction, BitcoinPrivateKey) 'AtomicSwap: Sign BitcoinTX with PrivateKey
 
             If Not T_BitcoinRAWTX.Trim = "" Then
@@ -543,7 +568,7 @@
         Dim BitcoinPrivateKey As String = GetBitcoinMainPrivateKey(False).ToLower()
 
         If Not BitcoinPrivateKey = "" Then
-            T_BTCTransaction.C_FeesNQTPerByte = 5
+            T_BTCTransaction.C_FeesNQTPerByte = GetFeeNQT(True)
             Dim T_BitcoinRAWTX As String = SignBitcoinTransaction(T_BTCTransaction, BitcoinPrivateKey) 'AtomicSwap: Sign BitcoinTX with PrivateKey
 
             If Not T_BitcoinRAWTX.Trim = "" Then
@@ -712,7 +737,7 @@
 
             If Not BitcoinPrivateKey = "" Then
 
-                T_BitcoinTransaction.C_FeesNQTPerByte = 5
+                T_BitcoinTransaction.C_FeesNQTPerByte = GetFeeNQT(True)
 
                 Dim T_BitcoinRAWTX As String = T_BitcoinTransaction.SignTransaction(BitcoinPrivateKey, "")
 
