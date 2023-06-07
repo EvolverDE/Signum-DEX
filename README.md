@@ -1,4 +1,4 @@
-Scroll down for English
+~~Scroll down for English version~~
 
 # Was ist PFP?
 PFP (Perls for Pigs) ist der codename für eine dezentrale Krypto-Tauschbörse mit PayPal-Integration.
@@ -7,7 +7,7 @@ PFP soll einen einfachen Einstieg in die Krypto-Welt ermöglichen.
 # Welche Währungen werden unterstützt?
 PFP basiert auf den Smart Contracts der Signum.network Blockchain und unterstützt neben dessen Coin "Signa" alle verfügbaren Fiat-Währungen die PayPal auch unterstützt. Diese sind unter folgendem Link zu finden: https://developer.paypal.com/docs/api/reference/currency-codes/
 
-Des weiteren wird nun mit der ersten zusätzlichen Blockchain-implementierung AtomicSwaps mit bitcoin (BTC) möglich
+Des weiteren wird nun mit der ersten zusätzlichen Blockchain-implementierung AtomicSwaps mit bitcoin (BTC) möglich.
 Für die Interaktion mit BTC muss bitcoin core installiert sein und der Daemon mit zusätzlichen parametern gestartet werden:
 
 `C:\coins\bitcoind.exe -testnet -datadir=C:\coindata\bitcoin_testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex`
@@ -69,5 +69,5 @@ Beside the Settings.ini other files like "cache.dat" and possible .LOG files are
 - continuous loop in PayPal sandbox when trying to pay PayPal orders via the sandbox
 - every now and then errors occur, which are either thrown in the lower status bar of the program or in an error.log
 
-#DISCLAIMER
+# DISCLAIMER
 THE SOFTWARE IS DELIVERED AS IS. NO LIABILITY IS ASSUMED FOR DAMAGES OF ANY KIND.
