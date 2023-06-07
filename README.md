@@ -1,4 +1,4 @@
-~~Scroll down for English version~~
+Scroll down for English version
 
 # Was ist PFP?
 PFP (Perls for Pigs) ist der codename für eine dezentrale Krypto-Tauschbörse mit PayPal-Integration.
