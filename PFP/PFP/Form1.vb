@@ -4602,7 +4602,7 @@ Public Class PFPForm
             MultiInvoker(LVMyOpenOrders, "Items", New List(Of Object)({"Add", MyOpenOrder}))
         Next
 
-        MyClosedOrderLVIList = MyClosedOrderLVIList.OrderByDescending(Function(T_Order As S_DEXOrder) T_Order.Order.StartTimestamp).ToList
+        MyClosedOrderLVIList = MyClosedOrderLVIList.OrderByDescending(Function(T_Order As S_DEXOrder) T_Order.Order.StartTimestamp).ToList()
 
         LVMyClosedOrders.Items.Clear()
         For i As Integer = 0 To MyClosedOrderLVIList.Count - 1
@@ -4662,8 +4662,6 @@ Public Class PFPForm
             Next
         End If
 
-
-
         BroadcastMsgs.Clear()
 
         LVMyOpenOrders.ListViewItemSorter = New ListViewItemExtremeSorter(SortOrder.Ascending, 0)
@@ -4675,8 +4673,7 @@ Public Class PFPForm
         LVMyOpenOrders.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
         LVMyClosedOrders.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
 
-#End Region
-        'setLVs
+#End Region 'setLVs
 
         Dim T_BlockFeeThread As Threading.Thread = New Threading.Thread(AddressOf BlockFeeThread)
 

@@ -169,7 +169,7 @@ Module ModCrypto
     End Function
 
     ''' <summary>
-    ''' Generates the Masterkeys from KeyHash
+    ''' Generates the Masterkeys from KeyHash 0=PublicKey; 1=SignKey; 2=AgreementKey
     ''' </summary>
     ''' <param name="KeyHash">The 32 Byte hashed PassPhrase</param>
     ''' <returns>Array of Masterkeys</returns>

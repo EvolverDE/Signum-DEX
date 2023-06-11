@@ -34,13 +34,48 @@ Module ModGlobalFunctions
         Return ClsReedSolomon.Decode(AccountRS)
     End Function
 
-    Function RandomBytes(ByVal Length As Integer) As Byte()
+    Function RandomBytes(ByVal Length As Integer, Optional ByVal Entropy As Integer = 1) As Byte()
+
+        If Entropy <= 0 Then
+            Entropy = 1
+        End If
 
         Dim rnd As Random = New Random
         Dim b(Length) As Byte
-        rnd.NextBytes(b)
+
+        For i As Integer = 0 To Entropy
+            rnd.NextBytes(b)
+        Next
 
         Return b
+
+    End Function
+
+    Function GetRandomBytesWithTimeEntropy(ByVal Length As Integer) As Byte()
+
+        Dim Max As Long = Environment.TickCount
+        Dim CheckSum As Integer = GetCheckSum(Now.Ticks)
+        Max /= CheckSum
+        Max = Max Mod Byte.MaxValue * 4
+        Dim Entropy As Integer = Convert.ToInt32(Max)
+        Return RandomBytes(Length, Entropy)
+
+    End Function
+
+    Function GetCheckSum(ByVal Input As Long) As Integer
+
+        Dim InpStr As String = Input.ToString()
+
+        Dim Returner As Long = 0L
+        For i As Integer = 0 To InpStr.Count - 1
+            Returner += CInt(InpStr(i).ToString())
+        Next
+
+        If Returner > Integer.MaxValue - 1 Then
+            Returner = Returner Mod Integer.MaxValue - 1
+        End If
+
+        Return Convert.ToInt32(Returner)
 
     End Function
 

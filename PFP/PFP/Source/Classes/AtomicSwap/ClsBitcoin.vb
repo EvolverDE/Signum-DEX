@@ -532,7 +532,6 @@
     '    Return Transaction.SignTransaction(PrivateKey, "")
     'End Function
 
-
     Public Function SendXItemTransaction(ByVal RecipientAddress As String, ByVal Amount As Double) As String
 
         Dim T_BTCTransaction As ClsTransaction = CreateBitcoinTransaction(Amount, RecipientAddress, GetBitcoinMainAddress())

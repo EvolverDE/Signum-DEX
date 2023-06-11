@@ -551,54 +551,63 @@ Public Class FrmGeneralSettings
             TBBitcoindPath.Text = OFD.FileName
         End If
 
-
     End Sub
 
     Private Sub BtBitcoinAddresses_Click(sender As Object, e As EventArgs) Handles BtBitcoinAddresses.Click
 
-        Dim BCA As FrmBitcoinAccounts = New FrmBitcoinAccounts()
-        BCA.StartPosition = FormStartPosition.CenterParent
-        BCA.ShowDialog()
+        Dim XItem As AbsClsXItem = ClsXItemAdapter.NewXItem("BTC")
+        Dim Info As String = XItem.GetXItemInfo()
 
+        If Not IsErrorOrWarning(Info) Then
 
-        Dim T_Accounts As String = GetINISetting(E_Setting.BitcoinAccounts, "")
+            Dim BCA As FrmBitcoinAccounts = New FrmBitcoinAccounts()
+            BCA.StartPosition = FormStartPosition.CenterParent
+            BCA.ShowDialog()
 
-        If Not T_Accounts.Trim = "" Then
+            Dim T_Accounts As String = GetINISetting(E_Setting.BitcoinAccounts, "")
 
-            LVBitcoinAddress.Items.Clear()
+            If Not T_Accounts.Trim = "" Then
 
-            If T_Accounts.Contains(";") Then
+                LVBitcoinAddress.Items.Clear()
 
-                Dim T_AccountList As List(Of String) = New List(Of String)(T_Accounts.Split(";"c).ToArray)
+                If T_Accounts.Contains(";") Then
 
-                For Each T_KeyPair As String In T_AccountList
+                    Dim T_AccountList As List(Of String) = New List(Of String)(T_Accounts.Split(";"c).ToArray)
 
-                    If T_KeyPair.Contains(":") Then
+                    For Each T_KeyPair As String In T_AccountList
 
-                        'Dim Mnemonic As String = T_KeyPair.Split(":"c)(0)
-                        Dim T_PublicKey As String = T_KeyPair.Split(":"c)(1)
+                        If T_KeyPair.Contains(":") Then
+
+                            'Dim Mnemonic As String = T_KeyPair.Split(":"c)(0)
+                            Dim T_PublicKey As String = T_KeyPair.Split(":"c)(1)
+                            Dim T_Address As String = PubKeyToAddress(T_PublicKey, BitcoinAddressPrefix)
+                            LVBitcoinAddress.Items.Add(T_Address)
+
+                        End If
+
+                    Next
+
+                Else
+
+                    If T_Accounts.Contains(":") Then
+
+                        'Dim Mnemonic As String = T_Addresses.Split(":"c)(0)
+                        Dim T_PublicKey As String = T_Accounts.Split(":"c)(1)
                         Dim T_Address As String = PubKeyToAddress(T_PublicKey, BitcoinAddressPrefix)
                         LVBitcoinAddress.Items.Add(T_Address)
 
                     End If
 
-                Next
-
-            Else
-
-                If T_Accounts.Contains(":") Then
-
-                    'Dim Mnemonic As String = T_Addresses.Split(":"c)(0)
-                    Dim T_PublicKey As String = T_Accounts.Split(":"c)(1)
-                    Dim T_Address As String = PubKeyToAddress(T_PublicKey, BitcoinAddressPrefix)
-                    LVBitcoinAddress.Items.Add(T_Address)
-
                 End If
 
             End If
 
-        End If
+        Else
 
+            Dim Message As String = "BTC-Node not reachable on " + GetINISetting(E_Setting.BitcoinAPINode, "https://127.0.0.1") + vbCrLf
+            ClsMsgs.MBox(Message, "Error",,, ClsMsgs.Status.Erro, 3, ClsMsgs.Timer_Type.ButtonEnable)
+
+        End If
 
     End Sub
 
