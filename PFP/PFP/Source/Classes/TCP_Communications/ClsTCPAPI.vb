@@ -272,6 +272,7 @@ Public Class ClsTCPAPI
                         For Each Response As API_Response In ResponseMSGList
                             If Response.API_Interface = APIRequest.C_Interface And Response.API_Version = APIRequest.C_Version And Response.API_Command = APIRequest.Command.ToString() Then
                                 FoundStaticResponse = True
+                                ResponseHTML = Response.API_Response
                             End If
                         Next
 

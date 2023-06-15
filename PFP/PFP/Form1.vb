@@ -621,12 +621,13 @@ Public Class PFPForm
 
         Dim DEXAPIInfo As String = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""GetInfo"","
         DEXAPIInfo += """requests"":{"
-        DEXAPIInfo += """GetInfo"":""shows this info"","
-        DEXAPIInfo += """GetCandles"":[{""queryExample"":""/API/v1.0/GetCandles?pair=USD_SIGNA&days=3&tickmin=15""},"
+        DEXAPIInfo += """GetInfo"":{""description"":""shows this info"",""queryExample"":""/API/v1.0/GetInfo""},"
+        DEXAPIInfo += """GetCandles"":[{""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1.0/GetCandles?pair=USD_SIGNA&days=3&tickmin=15""},"
         DEXAPIInfo += GetCandlesInfo
         DEXAPIInfo += "],"
-        DEXAPIInfo += """GetOpenOrders"":""shows the list of open orders"","
-        DEXAPIInfo += """AcceptOrder"":{""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51""}"
+        DEXAPIInfo += """GetOpenOrders"":{""description"":""shows the list of open orders"",""queryExample"":""/API/v1.0/GetOpenOrders""},"
+        DEXAPIInfo += """AcceptOrder"":{""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1.0/AcceptOrder?DEXContractAddress=TS-L623-BTHG-FX7M-H7K87&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51""},"
+        DEXAPIInfo += """CreateBitcoinTransaction"":{""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1.0/CreateBitcoinTransaction?BitcoinTransaction=8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957&BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinRecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinChainSwapHash=abcdef&BitcoinAmountNQT=2120""}"
         DEXAPIInfo += "}}"
 
         Dim DEXAPIGetInfoResponse As ClsTCPAPI.API_Response = New ClsTCPAPI.API_Response

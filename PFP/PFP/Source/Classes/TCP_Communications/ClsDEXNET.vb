@@ -1595,6 +1595,14 @@ Public Class ClsDEXNET
     End Function
     Function CheckHostIsNotIP(ByVal IPorHost As String, ByVal IP As String) As Boolean
 
+        If IPorHost.Contains(":") Then
+            IPorHost = IPorHost.Remove(IPorHost.IndexOf(":"))
+        End If
+
+        If IP.Contains(":") Then
+            IP = IP.Remove(IP.IndexOf(":"))
+        End If
+
         If IPorHost.Trim = "" Then
             Return False
         End If
