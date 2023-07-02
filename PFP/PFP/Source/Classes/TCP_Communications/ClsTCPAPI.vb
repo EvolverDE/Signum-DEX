@@ -6,9 +6,8 @@ Option Explicit On
 
 Imports System.Net
 Imports System.Net.Sockets
-Imports System.Threading
 Imports System.Text
-Imports System.Windows.Input
+Imports System.Threading
 
 Public Class ClsTCPAPI
 
@@ -229,7 +228,7 @@ Public Class ClsTCPAPI
             TCPClient.SendTimeout = 1000
             TCPClient.ReceiveTimeout = 1000
 
-            Dim recvBytes(1024) As Byte
+            Dim recvBytes(CInt(Integer.MaxValue * 0.5)) As Byte
             Dim htmlReq As String = Nothing
             Dim bytes As Integer = 0
 
@@ -242,7 +241,7 @@ Public Class ClsTCPAPI
 
                 Dim APIRequest As ClsAPIRequest = New ClsAPIRequest(htmlReq)
 
-                If APIRequest.Command <> ClsAPIRequest.E_Command.NONE Then
+                If APIRequest.Endpoint <> ClsAPIRequest.E_Endpoint.NONE Then
 
                     Dim ResponseHTML As String = "{""response"":""no data.""}"
 
@@ -270,102 +269,29 @@ Public Class ClsTCPAPI
 #End Region
                         Dim FoundStaticResponse As Boolean = False
                         For Each Response As API_Response In ResponseMSGList
-                            If Response.API_Interface = APIRequest.C_Interface And Response.API_Version = APIRequest.C_Version And Response.API_Command = APIRequest.Command.ToString() Then
+                            If Response.API_Interface = APIRequest.C_Interface And Response.API_Version = APIRequest.C_Version And Response.API_Command = APIRequest.Endpoint.ToString() Then
                                 FoundStaticResponse = True
-                                ResponseHTML = Response.API_Response
+
+                                For Each para In APIRequest.Parameters
+
+                                    Dim paraStr = para.Parameter.ToString() + "=" + para.Value.ToString()
+
+                                    If Not Response.API_Parameters.Contains(paraStr) Then
+                                        FoundStaticResponse = False
+                                        Exit For
+                                    End If
+                                Next
+
+                                If FoundStaticResponse Then
+                                    ResponseHTML = Response.API_Response
+                                    Exit For
+                                End If
+
                             End If
                         Next
 
                         If Not FoundStaticResponse Then
-                            If APIRequest.Command = ClsAPIRequest.E_Command.AcceptOrder Then
-                                Dim PublicKey As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PublicKey).Value
-                                Dim DEXContractAddress As String = APIRequest.Parameters.FirstOrDefault(Function(CAddr) CAddr.Parameter = ClsAPIRequest.E_Parameter.DEXContractAddress).Value
-                                Dim DEXContractID As String = APIRequest.Parameters.FirstOrDefault(Function(CID) CID.Parameter = ClsAPIRequest.E_Parameter.DEXContractID).Value
 
-                                If DEXContractID Is Nothing And Not DEXContractAddress Is Nothing Then
-                                    DEXContractID = ClsReedSolomon.Decode(DEXContractAddress).ToString
-                                End If
-
-                                If Not DEXContractID Is Nothing And MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
-                                    For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
-                                        If T_DEXContract.ID.ToString = DEXContractID Then
-                                            'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
-                                            'publickey = 6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
-                                            'http://127.0.0.1:8130/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
-
-                                            If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
-                                                Dim T_UnsignedTransactionBytes As String = T_DEXContract.AcceptSellOrder(PublicKey)
-
-                                                If T_UnsignedTransactionBytes.Contains("errorCode") Then
-                                                    ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
-                                                ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
-
-                                                Else
-                                                    '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                    ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
-                                                End If
-
-
-
-                                            End If
-
-                                        End If
-                                    Next
-
-                                End If
-
-                            ElseIf APIRequest.Command = ClsAPIRequest.E_Command.CreateBitcoinTransaction Then
-
-                                'http://127.0.0.1:8130/API/v1.0/CreateBitcoinTransaction?BitcoinTransaction=8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957&BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinRecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinChainSwapHash=abcdef&BitcoinAmountNQT=2120
-
-                                Dim BTCInputTX As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinTransaction).Value
-                                Dim BTCSender As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinSenderAddress).Value
-                                Dim BTCRecipient As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinRecipientAddress).Value
-                                Dim BTCAmountNQT As ULong = Convert.ToUInt64(APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinAmountNQT).Value)
-                                Dim BTCTimeOut As Integer = Convert.ToInt32(APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinTimeOut).Value)
-                                Dim BTCChainSwapHash As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinChainSwapHash).Value
-
-                                Dim BTCTX As ClsTransaction = New ClsTransaction(BTCInputTX, BTCSender)
-                                BTCTX.CreateOutput(BTCRecipient, BTCChainSwapHash, "", ClsSignumAPI.Planck2Dbl(BTCAmountNQT))
-
-                                BTCTX.FinalizingOutputs()
-
-                                Dim ResponseData As String = ""
-
-                                ResponseData += """inputs"":["
-
-                                For Each x As ClsUnspentOutput In BTCTX.Inputs
-                                    ResponseData += "{"
-                                    ResponseData += """TransactionID"":""" + x.TransactionID + ""","
-                                    ResponseData += """OutputType"":""" + x.OutputType.ToString() + ""","
-                                    ResponseData += """ScriptHex"":""" + x.ScriptHex + ""","
-                                    ResponseData += """ScriptHash"":""" + x.ScriptHash + ""","
-                                    ResponseData += """UnsignedTransactionHex"":""" + x.UnsignedTransactionHex + """"
-                                    ResponseData += "},"
-                                Next
-
-                                ResponseData = ResponseData.Remove(ResponseData.Count - 1)
-                                ResponseData += "],"
-
-                                ResponseData += """outputs"":["
-
-                                For Each x As ClsOutput In BTCTX.Outputs
-
-                                    ResponseData += "{"
-                                    ResponseData += """AmountNQT"":" + x.AmountNQT.ToString() + ","
-                                    ResponseData += """OutputType"":""" + x.OutputType.ToString() + "(" + AbsClsOutputs.E_Type.ChainSwapHashWithLockTime.ToString() + ")"","
-                                    ResponseData += """ScriptHex"":""" + x.ScriptHex + ""","
-                                    ResponseData += """ScriptHash"":""" + x.ScriptHash + """"
-                                    ResponseData += "},"
-                                Next
-
-                                ResponseData = ResponseData.Remove(ResponseData.Count - 1)
-
-                                ResponseData += "]"
-
-                                ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateBitcoinTransaction"",""data"":{" + ResponseData + "}}"
-
-                            End If
                         End If
 
                     ElseIf APIRequest.Method = ClsAPIRequest.E_Method.HTTP_POST Then
@@ -396,6 +322,91 @@ Public Class ClsTCPAPI
                         '		(20)	"APIUser=apimann&APIKey=apipass"	String
 
 #End Region
+
+                        If APIRequest.Endpoint = ClsAPIRequest.E_Endpoint.Orders Then
+
+                            Dim PublicKey As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.SenderPublicKey).Value
+                            Dim OrderID As String = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.OrderID).Value
+
+                            If Not OrderID Is Nothing And MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
+                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                    If T_DEXContract.ID.ToString() = OrderID Then
+                                        'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
+                                        'publickey = 6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
+                                        'http://127.0.0.1:8130/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
+
+                                        If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
+                                            Dim T_UnsignedTransactionBytes As String = T_DEXContract.AcceptSellOrder(PublicKey)
+
+                                            If T_UnsignedTransactionBytes.Contains("errorCode") Then
+                                                ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
+                                            ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
+
+                                            Else
+                                                '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                            End If
+
+                                        End If
+
+                                    End If
+                                Next
+
+                            End If
+
+                        ElseIf APIRequest.Endpoint = ClsAPIRequest.E_Endpoint.Transaction Then
+
+                            ''http://127.0.0.1:8130/API/v1.0/CreateBitcoinTransaction?BitcoinTransaction=8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957&BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinRecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinChainSwapHash=abcdef&BitcoinAmountNQT=2120
+
+                            'Dim BTCInputTX As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinTransaction).Value
+                            'Dim BTCSender As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinSenderAddress).Value
+                            'Dim BTCRecipient As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinRecipientAddress).Value
+                            'Dim BTCAmountNQT As ULong = Convert.ToUInt64(APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinAmountNQT).Value)
+                            'Dim BTCTimeOut As Integer = Convert.ToInt32(APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinTimeOut).Value)
+                            'Dim BTCChainSwapHash As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinChainSwapHash).Value
+
+                            'Dim BTCTX As ClsTransaction = New ClsTransaction(BTCInputTX, BTCSender)
+                            'BTCTX.CreateOutput(BTCRecipient, BTCChainSwapHash, "", ClsSignumAPI.Planck2Dbl(BTCAmountNQT))
+
+                            'BTCTX.FinalizingOutputs()
+
+                            'Dim ResponseData As String = ""
+
+                            'ResponseData += """inputs"":["
+
+                            'For Each x As ClsUnspentOutput In BTCTX.Inputs
+                            '    ResponseData += "{"
+                            '    ResponseData += """TransactionID"":""" + x.TransactionID + ""","
+                            '    ResponseData += """OutputType"":""" + x.OutputType.ToString() + ""","
+                            '    ResponseData += """ScriptHex"":""" + x.ScriptHex + ""","
+                            '    ResponseData += """ScriptHash"":""" + x.ScriptHash + ""","
+                            '    ResponseData += """UnsignedTransactionHex"":""" + x.UnsignedTransactionHex + """"
+                            '    ResponseData += "},"
+                            'Next
+
+                            'ResponseData = ResponseData.Remove(ResponseData.Count - 1)
+                            'ResponseData += "],"
+
+                            'ResponseData += """outputs"":["
+
+                            'For Each x As ClsOutput In BTCTX.Outputs
+
+                            '    ResponseData += "{"
+                            '    ResponseData += """AmountNQT"":" + x.AmountNQT.ToString() + ","
+                            '    ResponseData += """OutputType"":""" + x.OutputType.ToString() + "(" + AbsClsOutputs.E_Type.ChainSwapHashWithLockTime.ToString() + ")"","
+                            '    ResponseData += """ScriptHex"":""" + x.ScriptHex + ""","
+                            '    ResponseData += """ScriptHash"":""" + x.ScriptHash + """"
+                            '    ResponseData += "},"
+                            'Next
+
+                            'ResponseData = ResponseData.Remove(ResponseData.Count - 1)
+
+                            'ResponseData += "]"
+
+                            'ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateBitcoinTransaction"",""data"":{" + ResponseData + "}}"
+
+                        End If
+
 
                     Else
                         ResponseHTML = "{""response"":""error wrong request""}"

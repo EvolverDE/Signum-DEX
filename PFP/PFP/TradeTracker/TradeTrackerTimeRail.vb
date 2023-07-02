@@ -5,8 +5,6 @@ Option Explicit On
 Imports System.ComponentModel
 Imports PFP.Graph
 
-Imports System.Runtime.Serialization
-
 Public Class TradeTrackerTimeRail
 
     Inherits System.Windows.Forms.UserControl

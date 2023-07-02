@@ -1,4 +1,6 @@
-﻿Public Class ClsSignumInteractions
+﻿Imports System.Resources.ResXFileRef
+
+Public Class ClsSignumInteractions
 
     Private ReadOnly Property T_PrimaryNode As String
 
@@ -22,10 +24,11 @@
         If Masterkeys.Count > 0 Then
             Dim Response As String = SignumAPI.SendMessage(Masterkeys(0), Masterkeys(2), RecipientID, Message,, Encrypt,, RecipientPublicKey)
 
-            Dim JSON As ClsJSON = New ClsJSON
-            Dim RespList As Object = JSON.JSONRecursive(Response)
-            Dim Error0 As Object = JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+            Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
+            'Dim JSON As ClsJSON = New ClsJSON
+            'Dim RespList As Object = JSON.JSONRecursive(Response)
 
+            Dim Error0 As Object = Converter.FirstValue("errorCode") '  JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
             If Error0.GetType.Name = GetType(Boolean).Name Then
                 'TX OK
             ElseIf Error0.GetType.Name = GetType(String).Name Then

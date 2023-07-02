@@ -371,7 +371,6 @@ Module ModGlobalFunctions
 
     End Function
 
-
 #Region "PayPal Interactions"
     Function CheckPayPalAPI() As String
 
@@ -488,7 +487,7 @@ Module ModGlobalFunctions
             Return True
         ElseIf Message.Contains("<error>") And Message.Contains("</error>") Then
             Dim Erro As String = GetStringBetween(Message, "<error>", "</error>")
-            If Erro.Trim <> "" Then
+            If Erro.Trim <> "" And Erro.Trim <> "null" Then
                 If GetINISetting(E_Setting.InfoOut, False) Then
                     If AdditionBefore Then
                         out.ErrorLog2File(Addition + Erro)

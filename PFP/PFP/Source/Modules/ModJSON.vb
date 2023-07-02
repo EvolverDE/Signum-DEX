@@ -231,7 +231,22 @@ Module ModJSON
     ''' <param name="LastIdxOf">Legt fest, ob bis zum letzten endchar gelesen werden soll</param>
     ''' <returns>Vorzugsweise ein Double , andernfalls z.b. ein Integer</returns>
     ''' <remarks></remarks>
-    Function GetStringBetween(ByVal input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional LastIdxOf As Boolean = False) As String
+    Function GetStringBetween(ByVal input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional LastIdxOf As Boolean = False, Optional ByVal CaseSensitive As Boolean = True) As String
+
+        If Not CaseSensitive Then
+            startchar = startchar.ToLower()
+            endchar = endchar.ToLower()
+
+            Dim LowerInput As String = input.ToLower()
+            Dim startidx = LowerInput.IndexOf(startchar)
+
+            If startidx = -1 Then
+                Return ""
+            End If
+
+            Dim OldTag As String = GetStringBetween(input.Substring(startidx), "<", ">")
+            input = input.Replace(OldTag, startchar.Replace("<", "").Replace(">", ""))
+        End If
 
         If input.Trim <> "" Then
             If input.Contains(startchar) And input.Contains(endchar) Then
@@ -254,21 +269,15 @@ Module ModJSON
     End Function
 
     Function Between2List(ByVal Input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")") As List(Of String)
-
-        Dim Output As String = ""
-        Dim Rest As String = ""
         Dim Temp1 As String = ""
         Dim Temp2 As String = ""
 
         Try
 
-            If Input.Trim <> "" Then
+            If Input.Trim() <> "" Then
                 If Input.Contains(startchar) And Input.Contains(endchar) Then
 
-                    'Dim StartIdx As Integer = -1
-                    'Dim EndIdx As Integer = -1
                     Dim CntIdx As Integer = 0
-
 
                     Dim StartList As List(Of Integer) = CharCounterList(Input, startchar)
                     Dim EndList As List(Of Integer) = CharCounterList(Input, endchar)
@@ -299,12 +308,20 @@ Module ModJSON
 
                     Next
 
+                    'abc[x],[],def
+                    'abc[x[x]x],def
+
                     If SplitIdx <> -1 Then
                         Temp1 = Input.Remove(SplitIdx)
                     End If
 
-                    Temp1 = Temp1.Remove(FinalList(0), 1)
+                    'abc[x
+                    'abc[x[x]x
 
+                    Temp1 = Temp1.Substring(FinalList(0) + 1)
+
+                    'x
+                    'x[x]x
 
                     Try
                         Temp2 = Input.Replace(Temp1, "")
@@ -312,8 +329,8 @@ Module ModJSON
 
                     End Try
 
-                    Output = Temp1
-                    Rest = Temp2
+                    Dim Output As String = Temp1
+                    Dim Rest As String = Temp2
 
                     Try
                         Rest = Input.Replace(Output, "")
@@ -322,12 +339,11 @@ Module ModJSON
                     End Try
 
 
-                    If Output.Trim = "" Then
-                        Return New List(Of String)({Output, Rest})
-                    Else
-                        Return New List(Of String)({Output, Rest})
-                    End If
-
+                    'If Output.Trim() = "" Then
+                    Return New List(Of String)({Output, Rest})
+                    'Else
+                    '    Return New List(Of String)({Output, Rest})
+                    'End If
 
                 End If
             End If

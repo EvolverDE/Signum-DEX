@@ -1,10 +1,6 @@
 ﻿
 Option Strict On
 Option Explicit On
-
-Imports System
-Imports System.Threading
-
 Imports PFP.ClsCurve25519
 
 

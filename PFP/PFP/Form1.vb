@@ -1,8 +1,6 @@
 ﻿Option Strict On
 Option Explicit On
 Option Infer Off
-Imports System.Reflection
-Imports System.Security.Cryptography
 Imports PFP.ClsOrderSettings
 
 Public Class PFPForm
@@ -238,10 +236,10 @@ Public Class PFPForm
 
                                 If Not IsErrorOrWarning(Response, Application.ProductName + "-error in CheckPayPalTransaction(1): -> " + vbCrLf, True) Then
 
-                                    Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
-                                    Dim UTX As String = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
+                                    'Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
+                                    'Dim UTX As String = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
                                     Dim SignumNET As ClsSignumNET = New ClsSignumNET
-                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                    Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(Response, MasterKeys(1))
                                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
                                     If Not IsErrorOrWarning(TX, Application.ProductName + "-error in CheckPayPalTransaction(2): -> " + vbCrLf, True) Then
@@ -3090,7 +3088,7 @@ Public Class PFPForm
 
             Dim Seller As String = Convert.ToString(GetLVColNameFromSubItem(LVMyOpenOrders, "Seller", LVi))
             Dim Buyer As String = Convert.ToString(GetLVColNameFromSubItem(LVMyOpenOrders, "Buyer", LVi))
-            Dim Status As String = Convert.ToString(GetLVColNameFromSubItem(LVMyOpenOrders, "Status", LVi))
+            Dim Infotext As String = Convert.ToString(GetLVColNameFromSubItem(LVMyOpenOrders, "Infotext", LVi))
 
             Dim T_DexContract As ClsDEXContract = DirectCast(LVi.Tag, ClsDEXContract)
 
@@ -3113,13 +3111,13 @@ Public Class PFPForm
             Dim LVContextMenu As ContextMenuStrip = New ContextMenuStrip
 
             Dim LVCMItem As ToolStripMenuItem = New ToolStripMenuItem
-            LVCMItem.Text = "copy status"
-            LVCMItem.Tag = Status
+            LVCMItem.Text = "copy Infotext"
+            LVCMItem.Tag = Infotext
 
             AddHandler LVCMItem.Click, AddressOf Copy2CB
             LVContextMenu.Items.Add(LVCMItem)
 
-            If Status.Contains("http") Then
+            If Infotext.Contains("http") Then
                 'only shows on buyer side
 
                 If Buyer = "Me" Then
@@ -3150,7 +3148,7 @@ Public Class PFPForm
 
                 End If
 
-            ElseIf Status = "No Payment received" Then
+            ElseIf Infotext = "No Payment received" Then
                 'only shows on seller side
 
                 If Buyer = "Me" Then

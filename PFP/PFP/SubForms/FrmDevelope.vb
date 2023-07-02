@@ -335,18 +335,13 @@ Public Class FrmDevelope
 
     End Sub
     Private Sub BtTestJSONToXML_Click(sender As Object, e As EventArgs) Handles BtTestJSONToXML.Click
-        Dim JSON As ClsJSON = New ClsJSON
-        Dim JSONList As List(Of Object) = JSON.JSONRecursive(TBTestJSONInput.Text)
-        Dim XMLStr As String = JSON.JSONListToXMLRecursive(JSONList)
-        TBTestXMLOutput.Text = XMLStr
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(TBTestJSONInput.Text, ClsJSONAndXMLConverter.E_ParseType.JSON)
+        TBTestXMLOutput.Text = Converter.XMLString
     End Sub
 
     Private Sub BtTestRecursiveXMLSearch_Click(sender As Object, e As EventArgs) Handles BtTestRecursiveXMLSearch.Click
-        Dim JSON As ClsJSON = New ClsJSON
-        Dim JSONList As List(Of Object) = JSON.JSONRecursive(TBTestJSONInput.Text)
-        Dim XMLStr As String = JSON.JSONListToXMLRecursive(JSONList)
-        XMLStr = JSON.RecursiveXMLSearch(XMLStr, TBTestRecursiveXMLSearch.Text)
-        TBTestXMLOutput.Text = XMLStr
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(TBTestJSONInput.Text, ClsJSONAndXMLConverter.E_ParseType.JSON)
+        TBTestXMLOutput.Text = Converter.FirstValue(TBTestRecursiveXMLSearch.Text).ToString()
     End Sub
 
 #End Region

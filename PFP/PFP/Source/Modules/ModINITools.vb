@@ -2,8 +2,6 @@
 Option Strict On
 Option Explicit On
 
-Imports PFP.ClsINITool
-
 Module ModINITools
 
     Dim INISettings As ClsINITool = New ClsINITool()

@@ -1,7 +1,5 @@
 Option Strict On
 Option Explicit On
-
-Imports System.ComponentModel
 Imports System.Security.Cryptography
 
 Namespace Secp256k1Vb.Randoms

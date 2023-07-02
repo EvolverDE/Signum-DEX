@@ -1,6 +1,4 @@
-﻿Imports System.Net
-Imports System.Security.Cryptography
-Imports System.Windows.Forms.VisualStyles.VisualStyleElement
+﻿Imports System.Security.Cryptography
 
 Public Class FrmBitcoinAccounts
 

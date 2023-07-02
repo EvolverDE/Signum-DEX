@@ -4,8 +4,6 @@ Option Explicit On
 
 Imports System.Numerics
 Imports System.Security.Cryptography
-Imports System.Security.Principal
-Imports PFP.ClsTransaction
 
 Module ModBitcoinFunctions
 

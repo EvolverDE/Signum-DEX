@@ -399,7 +399,7 @@ PFP
  <param name="PublicKey">The Public Key as HEX String</param>
  <returns></returns>
 </member>
-<member name="M:PFP.ModJSON.GetStringBetween(System.String,System.String,System.String,System.Boolean)">
+<member name="M:PFP.ModJSON.GetStringBetween(System.String,System.String,System.String,System.Boolean,System.Boolean)">
  <summary>
  Einen String aus einem Bereich auslesen
  </summary>

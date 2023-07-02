@@ -13,8 +13,8 @@ Option Explicit On
 ' 												* 
 ' *********************************************************************************************
 
-Imports System.Numerics
 Imports System.Globalization
+Imports System.Numerics
 Imports CRand = PFP.Secp256k1Vb.Randoms.CryptoRandom
 ' TestSecp256k1Vb.Secp256k1Vb.Randoms.CryptoRandom
 

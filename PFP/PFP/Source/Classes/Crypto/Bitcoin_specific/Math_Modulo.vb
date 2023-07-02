@@ -9,8 +9,8 @@ Option Explicit On
 '                                          						*
 ' ************************************************************************************** 
 
-Imports System.Numerics
 Imports System.Globalization
+Imports System.Numerics
 
 Namespace Secp256k1Vb
 

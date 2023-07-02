@@ -1,8 +1,5 @@
-﻿
-Imports System.Globalization
-Imports System.IO
+﻿Imports System.IO
 Imports System.Net
-Imports System.Runtime.Serialization
 Imports System.Text
 'Imports BitcoinNET.ClsBitcoinNET
 
@@ -463,12 +460,11 @@ Public Class ClsBitcoinAPI
     Public Function GetTXOut(ByVal TX As String, ByVal VOut As Integer, Optional ByVal UnconformedToo As Boolean = True) As String
         Dim TXOUT As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.gettxout, """" + TX + """, " + VOut.ToString + ", " + UnconformedToo.ToString.ToLower + "")))
 
-        Dim JSON As ClsJSON = New ClsJSON
-        Dim XML As String = JSON.JSONToXML(TXOUT)
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(TXOUT, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Confirmations As String = JSON.RecursiveXMLSearch(XML, "confirmations").ToString
-        Dim Value As String = JSON.RecursiveXMLSearch(XML, "value").ToString
-        Dim HEX As String = JSON.RecursiveXMLSearch(XML, "hex").ToString
+        Dim Confirmations As String = Converter.FirstValue("confirmations").ToString()
+        Dim Value As String = Converter.FirstValue("value").ToString()
+        Dim HEX As String = Converter.FirstValue("hex").ToString()
 
         If Not Confirmations.Trim = "" Or Not Value.Trim = "" Or Not HEX.Trim = "" Then
             Return "<vout>" + VOut.ToString + "</vout><confirmations>" + Confirmations + "</confirmations><value>" + Value + "</value><hex>" + HEX + "</hex>"
@@ -510,24 +506,19 @@ Public Class ClsBitcoinAPI
 
     End Function
 
-    Public Function GetRawTransaction(ByVal TX As String, Optional ByVal Path As String = "result/vout", Optional ByVal SenderRIPE160 As String = "") As List(Of String)
-        Dim RawTxInfo As String = GetRawTransaction(TX)
+    'Public Function GetRawTransaction(ByVal TX As String, Optional ByVal Path As String = "result/vout", Optional ByVal SenderRIPE160 As String = "") As List(Of String)
+    '    Dim RawTxInfo As String = GetRawTransaction(TX)
 
-        If RawTxInfo.Contains("result") Then
-            Dim JSON As ClsJSON = New ClsJSON
-            Dim JSONList As List(Of Object) = JSON.JSONRecursive(RawTxInfo)
-            Dim Result As String = JSON.RecursiveListSearch(JSONList, "result").ToString
+    '    If RawTxInfo.Contains("result") Then
+    '        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(RawTxInfo, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-            RawTxInfo = DecodeRawTransaction(Result)
+    '    Else
 
-            Dim XML_Vouts As List(Of String) = JSON.GetFromJSON(RawTxInfo, Path, SenderRIPE160)
+    '    End If
 
-            Return XML_Vouts
-        Else
-            Return New List(Of String)
-        End If
+    '    Return New List(Of String)
 
-    End Function
+    'End Function
 
     Public Function VerifyMessage(ByVal Address As String, ByVal Signature As String, ByVal Message As String) As String
         Dim VerifyResponse As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.verifymessage, """" + Address + """, """ + Signature + """, """ + Message + """")))
@@ -650,23 +641,37 @@ Public Class ClsBitcoinAPI
         Return Abort
     End Function
 
-    Public Function ListReceivedByAddress() As List(Of String)
-        Dim AddressTX As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.listreceivedbyaddress, "0, true")))
-        Dim JSON As ClsJSON = New ClsJSON
-        Dim XML_Addresses As List(Of String) = JSON.GetFromJSON(AddressTX, "result/")
-        Return XML_Addresses
-    End Function
+    'Public Function ListReceivedByAddress() As List(Of String)
+    '    Dim AddressTX As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.listreceivedbyaddress, "0, true")))
 
-    Public Function ListUnspent(Optional ByVal Address As String = "") As List(Of String)
+    '    Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(AddressTX, ClsJSONAndXMLConverter.E_ParseType.JSON)
+
+    '    'Dim JSON As ClsJSON = New ClsJSON
+    '    Dim XML_Addresses As String = Converter.FirstValue("address").ToString() ' JSON.GetFromJSON(AddressTX, "result/")
+    '    Return New List(Of String)
+    'End Function
+
+    Public Function ListUnspent(Optional ByVal Address As String = "") As List(Of KeyValuePair(Of String, Object))
         LoadWallet()
         If Address.Trim <> "" Then
             Address = """" + Address + """"
         End If
 
         Dim Unspends As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.listunspent, Address)))
-        Dim JSON As ClsJSON = New ClsJSON
-        Dim XML_Vouts As List(Of String) = JSON.GetFromJSON(Unspends, "result/")
-        Return XML_Vouts
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Unspends, ClsJSONAndXMLConverter.E_ParseType.JSON)
+
+        'Dim JSON As ClsJSON = New ClsJSON
+        'Dim XML_Vouts As String = Converter.FirstValue("unspent").ToString() ' JSON.GetFromJSON(Unspends, "result/")
+
+        Dim Result As List(Of KeyValuePair(Of String, Object)) = Converter.Search(Of List(Of KeyValuePair(Of String, Object)))("result")
+
+        If Result(0).Value.GetType = GetType(List(Of KeyValuePair(Of String, Object))) Then
+            Dim KeyVals As List(Of KeyValuePair(Of String, Object)) = DirectCast(Result(0).Value, List(Of KeyValuePair(Of String, Object)))
+            Return KeyVals
+        End If
+
+        Return New List(Of KeyValuePair(Of String, Object))
+
     End Function
 
 

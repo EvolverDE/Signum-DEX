@@ -7,7 +7,7 @@ Public Class ClsINITool
 
     Private _Path As String
     Private _File As String
-    Private _INIEntrys As System.Collections.Concurrent.ConcurrentBag(Of S_Section) = New Concurrent.ConcurrentBag(Of S_Section)
+    Private Property _INIEntrys As System.Collections.Concurrent.ConcurrentBag(Of S_Section) = New Concurrent.ConcurrentBag(Of S_Section)
     Private Blocked As Boolean = False
 
     Structure S_Section

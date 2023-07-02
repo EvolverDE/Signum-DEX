@@ -168,6 +168,7 @@
     <Compile Include="Source\Classes\ClsCSV.vb" />
     <Compile Include="Source\Classes\ClsDEXContract.vb" />
     <Compile Include="Source\Classes\ClsINITool.vb" />
+    <Compile Include="Source\Classes\ClsJSONAndXMLConverter.vb" />
     <Compile Include="Source\Classes\Signum\ClsSignumInteractions.vb" />
     <Compile Include="Source\Classes\AtomicSwap\AbsClsXItem.vb" />
     <Compile Include="Source\Classes\AtomicSwap\ClsXItemAdapter.vb" />
@@ -202,7 +203,6 @@
     <Compile Include="SubForms\FrmMyOrderSettings.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Source\Classes\ClsJSON.vb" />
     <Compile Include="Source\Classes\ClsOrderSettings.vb" />
     <Compile Include="Source\Classes\Crypto\ClsAES.vb" />
     <Compile Include="Source\Classes\TCP_Communications\ClsDEXNET.vb" />

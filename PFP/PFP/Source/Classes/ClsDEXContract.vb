@@ -1,5 +1,6 @@
 ﻿Option Strict On
 Option Explicit On
+Imports System.Resources.ResXFileRef
 
 Public Class ClsDEXContract
 
@@ -1159,388 +1160,395 @@ Public Class ClsDEXContract
         End If
 
     End Sub
-    Private Sub LoadUpTransactions(ByVal SetStartTimeStamp As ULong)
 
-        Dim SignumAPI = New ClsSignumAPI(C_Node)
 
-        Dim T_ContractTransactionsRAWPieceList As List(Of String) = SignumAPI.GetAccountTransactionsRAWList(C_ID, SetStartTimeStamp)
-        Dim T_ContractTransactionsRAWList As List(Of String) = New List(Of String)(T_ContractTransactionsRAWPieceList.ToArray)
+#Region "deactivated"
+    'Private Sub LoadUpTransactions(ByVal SetStartTimeStamp As ULong)
 
-        Dim W500 As Integer = T_ContractTransactionsRAWPieceList.Count
-        While W500 >= 500
+    '    Dim SignumAPI = New ClsSignumAPI(C_Node)
 
-            C_StartForm.MultiInvoker(C_StartForm.SubStatusLabel, "Text", "LoadHistoryTransactions(" + C_ID.ToString + "): " + W500.ToString)
+    '    Dim T_ContractTransactionsRAWPieceList As List(Of String) = SignumAPI.GetAccountTransactionsRAWList(C_ID, SetStartTimeStamp)
+    '    Dim T_ContractTransactionsRAWList As List(Of String) = New List(Of String)(T_ContractTransactionsRAWPieceList.ToArray)
 
-            T_ContractTransactionsRAWPieceList = SignumAPI.GetAccountTransactionsRAWList(C_ID, SetStartTimeStamp, Convert.ToUInt64(W500))
+    '    Dim W500 As Integer = T_ContractTransactionsRAWPieceList.Count
+    '    While W500 >= 500
 
-            Dim T_W500 As Integer = T_ContractTransactionsRAWPieceList.Count
+    '        C_StartForm.MultiInvoker(C_StartForm.SubStatusLabel, "Text", "LoadHistoryTransactions(" + C_ID.ToString + "): " + W500.ToString)
 
-            If T_W500 >= 500 Then
-                W500 += 500
-            Else
-                W500 = 0
-            End If
+    '        T_ContractTransactionsRAWPieceList = SignumAPI.GetAccountTransactionsRAWList(C_ID, SetStartTimeStamp, Convert.ToUInt64(W500))
 
-            T_ContractTransactionsRAWList.AddRange(T_ContractTransactionsRAWPieceList.ToArray)
+    '        Dim T_W500 As Integer = T_ContractTransactionsRAWPieceList.Count
 
-        End While
+    '        If T_W500 >= 500 Then
+    '            W500 += 500
+    '        Else
+    '            W500 = 0
+    '        End If
 
-        Dim C_ThreadList As List(Of Threading.Thread) = New List(Of Threading.Thread)
+    '        T_ContractTransactionsRAWList.AddRange(T_ContractTransactionsRAWPieceList.ToArray)
 
-        C_StartForm.MultiInvoker(C_StartForm.SubStatusLabel, "Text", "ProcessingHistoryTransactions(" + C_ID.ToString + ")")
+    '    End While
 
+    '    Dim C_ThreadList As List(Of Threading.Thread) = New List(Of Threading.Thread)
 
-        For i As Integer = 0 To T_ContractTransactionsRAWList.Count - 1
+    '    C_StartForm.MultiInvoker(C_StartForm.SubStatusLabel, "Text", "ProcessingHistoryTransactions(" + C_ID.ToString + ")")
 
-            Dim T_JSONStr As String = T_ContractTransactionsRAWList(i)
 
-            Dim C_Thread As Threading.Thread = New Threading.Thread(AddressOf ConvertThread)
-            C_Thread.Start(T_JSONStr)
-            C_ThreadList.Add(C_Thread)
+    '    For i As Integer = 0 To T_ContractTransactionsRAWList.Count - 1
 
-        Next
+    '        Dim T_JSONStr As String = T_ContractTransactionsRAWList(i)
 
-        Dim SubThreadsFinished As Boolean = False
+    '        Dim C_Thread As Threading.Thread = New Threading.Thread(AddressOf ConvertThread)
+    '        C_Thread.Start(T_JSONStr)
+    '        C_ThreadList.Add(C_Thread)
 
-        While Not SubThreadsFinished
-            SubThreadsFinished = True
+    '    Next
 
-            For Each T_Thread As Threading.Thread In C_ThreadList
+    '    Dim SubThreadsFinished As Boolean = False
 
-                If T_Thread.IsAlive Then
-                    SubThreadsFinished = False
-                    Application.DoEvents()
-                    Exit For
-                End If
+    '    While Not SubThreadsFinished
+    '        SubThreadsFinished = True
 
-            Next
+    '        For Each T_Thread As Threading.Thread In C_ThreadList
 
-        End While
+    '            If T_Thread.IsAlive Then
+    '                SubThreadsFinished = False
+    '                Application.DoEvents()
+    '                Exit For
+    '            End If
 
+    '        Next
 
-        Dim T_TXList As List(Of S_TX) = New List(Of S_TX)
+    '    End While
 
-        For Each TX As List(Of String) In XMLList
-            Dim T_TX As S_TX = New S_TX
 
-            T_TX.Transaction = GetULongBetweenFromList(TX, "<transaction>", "</transaction>")
-            T_TX.Type = GetIntegerBetweenFromList(TX, "<type>", "</type>")
-            T_TX.Timestamp = GetULongBetweenFromList(TX, "<timestamp>", "</timestamp>")
+    '    Dim T_TXList As List(Of S_TX) = New List(Of S_TX)
 
-            T_TX.DateTimestamp = ClsSignumAPI.UnixToTime(T_TX.Timestamp.ToString)
+    '    For Each TX As List(Of String) In XMLList
+    '        Dim T_TX As S_TX = New S_TX
 
-            T_TX.Sender = GetULongBetweenFromList(TX, "<sender>", "</sender>")
-            T_TX.SenderRS = GetStringBetweenFromList(TX, "<senderRS>", "</senderRS>")
+    '        T_TX.Transaction = GetULongBetweenFromList(TX, "<transaction>", "</transaction>")
+    '        T_TX.Type = GetIntegerBetweenFromList(TX, "<type>", "</type>")
+    '        T_TX.Timestamp = GetULongBetweenFromList(TX, "<timestamp>", "</timestamp>")
 
-            T_TX.AmountNQT = GetULongBetweenFromList(TX, "<amountNQT>", "</amountNQT>")
-            T_TX.FeeNQT = GetULongBetweenFromList(TX, "<feeNQT>", "</feeNQT>")
-            T_TX.Attachment = GetStringBetweenFromList(TX, "<attachment>", "</attachment>")
+    '        T_TX.DateTimestamp = ClsSignumAPI.UnixToTime(T_TX.Timestamp.ToString)
 
-            T_TX.Recipient = GetULongBetweenFromList(TX, "<recipient>", "</recipient>")
-            T_TX.RecipientRS = GetStringBetweenFromList(TX, "<recipientRS>", "</recipientRS>")
+    '        T_TX.Sender = GetULongBetweenFromList(TX, "<sender>", "</sender>")
+    '        T_TX.SenderRS = GetStringBetweenFromList(TX, "<senderRS>", "</senderRS>")
 
-            T_TX.Confirmations = GetULongBetweenFromList(TX, "<confirmations>", "</confirmations>")
+    '        T_TX.AmountNQT = GetULongBetweenFromList(TX, "<amountNQT>", "</amountNQT>")
+    '        T_TX.FeeNQT = GetULongBetweenFromList(TX, "<feeNQT>", "</feeNQT>")
+    '        T_TX.Attachment = GetStringBetweenFromList(TX, "<attachment>", "</attachment>")
 
-            T_TXList.Add(T_TX)
+    '        T_TX.Recipient = GetULongBetweenFromList(TX, "<recipient>", "</recipient>")
+    '        T_TX.RecipientRS = GetStringBetweenFromList(TX, "<recipientRS>", "</recipientRS>")
 
-        Next
+    '        T_TX.Confirmations = GetULongBetweenFromList(TX, "<confirmations>", "</confirmations>")
 
-        XMLList.Clear()
+    '        T_TXList.Add(T_TX)
 
-        If T_TXList.Count > 0 Then
+    '    Next
 
-            T_TXList = T_TXList.OrderBy(Function(T_TX As S_TX) T_TX.Timestamp).ToList
+    '    XMLList.Clear()
 
-            Dim T_LastTX As S_TX = T_TXList(T_TXList.Count - 1)
+    '    If T_TXList.Count > 0 Then
 
-            If T_LastTX.Recipient = C_ID Then
-                If T_LastTX.Confirmations < 2 Then
+    '        T_TXList = T_TXList.OrderBy(Function(T_TX As S_TX) T_TX.Timestamp).ToList
 
-                    If CurrentInitiatorID <> 0UL And CurrentResponderID <> 0UL Then
-                        If T_LastTX.Sender = CurrentInitiatorID Or T_LastTX.Sender = CurrentResponderID Then
-                            C_Status = E_Status.TX_PENDING
-                        End If
-                    Else
-                        C_Status = E_Status.TX_PENDING
-                    End If
+    '        Dim T_LastTX As S_TX = T_TXList(T_TXList.Count - 1)
 
-                End If
-            End If
+    '        If T_LastTX.Recipient = C_ID Then
+    '            If T_LastTX.Confirmations < 2 Then
 
-            Dim T_ContractOrderHistoryList As List(Of S_Order) = New List(Of S_Order)
+    '                If CurrentInitiatorID <> 0UL And CurrentResponderID <> 0UL Then
+    '                    If T_LastTX.Sender = CurrentInitiatorID Or T_LastTX.Sender = CurrentResponderID Then
+    '                        C_Status = E_Status.TX_PENDING
+    '                    End If
+    '                Else
+    '                    C_Status = E_Status.TX_PENDING
+    '                End If
 
-            For i As Integer = 0 To T_TXList.Count - 1
+    '            End If
+    '        End If
 
-                Dim T_TX As S_TX = T_TXList(i)
+    '        Dim T_ContractOrderHistoryList As List(Of S_Order) = New List(Of S_Order)
 
-                C_StartForm.MultiInvoker(C_StartForm.SubStatusLabel, "Text", "ProcessingHistoryTransactions(" + C_ID.ToString + ") (" + i.ToString + "/" + T_TXList.Count.ToString + ")")
+    '        For i As Integer = 0 To T_TXList.Count - 1
 
-                If T_TX.Sender = C_ID Then
+    '            Dim T_TX As S_TX = T_TXList(i)
 
-                    'LastTX = False
+    '            C_StartForm.MultiInvoker(C_StartForm.SubStatusLabel, "Text", "ProcessingHistoryTransactions(" + C_ID.ToString + ") (" + i.ToString + "/" + T_TXList.Count.ToString + ")")
 
-                    Dim ReferenceTXIDs As String = GetStringBetween(T_TX.Attachment, "<message>", "</message>")
-                    If Not ReferenceTXIDs.Trim = "" Then
+    '            If T_TX.Sender = C_ID Then
 
-                        Dim ReferenceTXIDList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceTXIDs)
+    '                'LastTX = False
 
-                        If Not ReferenceTXIDList(0) = 0UL And Not ReferenceTXIDList(1) = 0UL And Not ReferenceTXIDList(2) = 0UL Then
-                            'referenceTXID
+    '                Dim ReferenceTXIDs As String = GetStringBetween(T_TX.Attachment, "<message>", "</message>")
+    '                If Not ReferenceTXIDs.Trim = "" Then
 
-                            Dim T_CreationTX As S_TX = Nothing
-                            Dim T_AcceptTX As S_TX = Nothing
-                            Dim T_FinishTX As S_TX = Nothing
+    '                    Dim ReferenceTXIDList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceTXIDs)
 
-                            For Each R_TX As S_TX In T_TXList
-                                Select Case R_TX.Transaction
-                                    Case ReferenceTXIDList(0)
-                                        T_CreationTX = R_TX
-                                    Case ReferenceTXIDList(1)
-                                        T_AcceptTX = R_TX
-                                    Case ReferenceTXIDList(2)
-                                        T_FinishTX = R_TX
-                                End Select
+    '                    If Not ReferenceTXIDList(0) = 0UL And Not ReferenceTXIDList(1) = 0UL And Not ReferenceTXIDList(2) = 0UL Then
+    '                        'referenceTXID
 
-                                If R_TX.Transaction = ReferenceTXIDList(1) And ReferenceTXIDList(1) = ReferenceTXIDList(2) Then
-                                    T_AcceptTX = R_TX
-                                    T_FinishTX = R_TX
-                                End If
+    '                        Dim T_CreationTX As S_TX = Nothing
+    '                        Dim T_AcceptTX As S_TX = Nothing
+    '                        Dim T_FinishTX As S_TX = Nothing
 
-                                If Not T_CreationTX.Transaction = 0UL And Not T_AcceptTX.Transaction = 0UL And Not T_FinishTX.Transaction = 0UL Then
-                                    Exit For
-                                End If
+    '                        For Each R_TX As S_TX In T_TXList
+    '                            Select Case R_TX.Transaction
+    '                                Case ReferenceTXIDList(0)
+    '                                    T_CreationTX = R_TX
+    '                                Case ReferenceTXIDList(1)
+    '                                    T_AcceptTX = R_TX
+    '                                Case ReferenceTXIDList(2)
+    '                                    T_FinishTX = R_TX
+    '                            End Select
 
-                            Next
+    '                            If R_TX.Transaction = ReferenceTXIDList(1) And ReferenceTXIDList(1) = ReferenceTXIDList(2) Then
+    '                                T_AcceptTX = R_TX
+    '                                T_FinishTX = R_TX
+    '                            End If
 
-                            If Not T_CreationTX.Transaction = 0UL And Not T_AcceptTX.Transaction = 0UL And Not T_FinishTX.Transaction = 0UL Then
+    '                            If Not T_CreationTX.Transaction = 0UL And Not T_AcceptTX.Transaction = 0UL And Not T_FinishTX.Transaction = 0UL Then
+    '                                Exit For
+    '                            End If
 
-                                Dim ReferenceCreationMessage As String = GetStringBetween(T_CreationTX.Attachment, "<message>", "</message>")
-                                Dim ReferenceCreationMessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceCreationMessage)
+    '                        Next
 
-                                Dim ReferenceAcceptMessage As String = GetStringBetween(T_AcceptTX.Attachment, "<message>", "</message>")
-                                Dim ReferenceAcceptMessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceAcceptMessage)
+    '                        If Not T_CreationTX.Transaction = 0UL And Not T_AcceptTX.Transaction = 0UL And Not T_FinishTX.Transaction = 0UL Then
 
-                                Dim ReferenceFinishMessage As String = GetStringBetween(T_FinishTX.Attachment, "<message>", "</message>")
-                                Dim ReferenceFinishMessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceFinishMessage)
+    '                            Dim ReferenceCreationMessage As String = GetStringBetween(T_CreationTX.Attachment, "<message>", "</message>")
+    '                            Dim ReferenceCreationMessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceCreationMessage)
 
-                                If ReferenceCreateOrder = ReferenceCreationMessageList(0) And (ReferenceAcceptOrder = ReferenceAcceptMessageList(0) Or ReferenceInjectResponder = ReferenceAcceptMessageList(0)) And ((ReferenceFinishOrder = ReferenceFinishMessageList(0) Or ReferenceFinishOrderWithChainSwapKey = ReferenceFinishMessageList(0)) Or (ReferenceAcceptMessageList(0) = ReferenceFinishMessageList(0) And T_AcceptTX.Transaction = T_FinishTX.Transaction)) Then
+    '                            Dim ReferenceAcceptMessage As String = GetStringBetween(T_AcceptTX.Attachment, "<message>", "</message>")
+    '                            Dim ReferenceAcceptMessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceAcceptMessage)
 
-                                    Dim T_Order As S_Order = New S_Order
+    '                            Dim ReferenceFinishMessage As String = GetStringBetween(T_FinishTX.Attachment, "<message>", "</message>")
+    '                            Dim ReferenceFinishMessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceFinishMessage)
 
-                                    T_Order.CreationTransaction = T_CreationTX.Transaction
-                                    T_Order.LastTransaction = T_FinishTX.Transaction
+    '                            If ReferenceCreateOrder = ReferenceCreationMessageList(0) And (ReferenceAcceptOrder = ReferenceAcceptMessageList(0) Or ReferenceInjectResponder = ReferenceAcceptMessageList(0)) And ((ReferenceFinishOrder = ReferenceFinishMessageList(0) Or ReferenceFinishOrderWithChainSwapKey = ReferenceFinishMessageList(0)) Or (ReferenceAcceptMessageList(0) = ReferenceFinishMessageList(0) And T_AcceptTX.Transaction = T_FinishTX.Transaction)) Then
 
-                                    T_Order.Confirmations = T_CreationTX.Confirmations
+    '                                Dim T_Order As S_Order = New S_Order
 
-                                    T_Order.StartTimestamp = T_CreationTX.Timestamp
-                                    T_Order.EndTimestamp = T_TX.Timestamp + 1UL
+    '                                T_Order.CreationTransaction = T_CreationTX.Transaction
+    '                                T_Order.LastTransaction = T_FinishTX.Transaction
 
-                                    T_Order.ChainSwapKey = ""
-                                    'T_Order.ChainSwapHash = ""
+    '                                T_Order.Confirmations = T_CreationTX.Confirmations
 
-                                    'T_Order.StartDate = ClsSignumAPI.UnixToTime(T_Order.StartTimestamp.ToString) 'Debug
-                                    'T_Order.EndDate = ClsSignumAPI.UnixToTime(T_Order.EndTimestamp.ToString) 'Debug
+    '                                T_Order.StartTimestamp = T_CreationTX.Timestamp
+    '                                T_Order.EndTimestamp = T_TX.Timestamp + 1UL
 
-                                    Dim T_Collateral As ULong = ReferenceCreationMessageList(1)
-                                    Dim T_Amount As ULong = T_CreationTX.AmountNQT '- T_Collateral - ClsSignumAPI._GasFeeNQT
+    '                                T_Order.ChainSwapKey = ""
+    '                                'T_Order.ChainSwapHash = ""
 
-                                    If T_Amount > T_Collateral Then
+    '                                'T_Order.StartDate = ClsSignumAPI.UnixToTime(T_Order.StartTimestamp.ToString) 'Debug
+    '                                'T_Order.EndDate = ClsSignumAPI.UnixToTime(T_Order.EndTimestamp.ToString) 'Debug
 
-                                        '(0) ULong   Creation Method SellOrder
-                                        '(1) ULong   Collateral
-                                        '(2) ULong   XAmountNQT
-                                        '(3) ULong   XItem USD
+    '                                Dim T_Collateral As ULong = ReferenceCreationMessageList(1)
+    '                                Dim T_Amount As ULong = T_CreationTX.AmountNQT '- T_Collateral - ClsSignumAPI._GasFeeNQT
 
-                                        T_Order.WasSellOrder = True
+    '                                If T_Amount > T_Collateral Then
 
-                                        T_Order.SellerID = T_CreationTX.Sender
-                                        T_Order.SellerRS = T_CreationTX.SenderRS
-                                        T_Order.BuyerID = T_AcceptTX.Sender
-                                        T_Order.BuyerRS = T_AcceptTX.SenderRS
+    '                                    '(0) ULong   Creation Method SellOrder
+    '                                    '(1) ULong   Collateral
+    '                                    '(2) ULong   XAmountNQT
+    '                                    '(3) ULong   XItem USD
 
-                                        T_Order.Amount = ClsSignumAPI.Planck2Dbl(T_Amount - T_Collateral - ClsSignumAPI._GasFeeNQT)
-                                        T_Order.Collateral = ClsSignumAPI.Planck2Dbl(ReferenceCreationMessageList(1))
+    '                                    T_Order.WasSellOrder = True
 
-                                        T_Order.XAmount = ClsSignumAPI.Planck2Dbl(ReferenceCreationMessageList(2))
-                                        T_Order.XItem = ClsSignumAPI.ULng2String(ReferenceCreationMessageList(3))
+    '                                    T_Order.SellerID = T_CreationTX.Sender
+    '                                    T_Order.SellerRS = T_CreationTX.SenderRS
+    '                                    T_Order.BuyerID = T_AcceptTX.Sender
+    '                                    T_Order.BuyerRS = T_AcceptTX.SenderRS
 
-                                        T_Order.Price = T_Order.XAmount / T_Order.Amount
+    '                                    T_Order.Amount = ClsSignumAPI.Planck2Dbl(T_Amount - T_Collateral - ClsSignumAPI._GasFeeNQT)
+    '                                    T_Order.Collateral = ClsSignumAPI.Planck2Dbl(ReferenceCreationMessageList(1))
 
-                                        Dim Finisher As ULong = T_FinishTX.Sender
+    '                                    T_Order.XAmount = ClsSignumAPI.Planck2Dbl(ReferenceCreationMessageList(2))
+    '                                    T_Order.XItem = ClsSignumAPI.ULng2String(ReferenceCreationMessageList(3))
 
-                                        If ReferenceFinishOrder = ReferenceFinishMessageList(0) Then
-                                            If Finisher = T_Order.SellerID Then
-                                                T_Order.Status = E_Status.CLOSED
-                                            Else 'If Finisher = o.BuyerID Then
-                                                T_Order.Status = E_Status.CANCELED
-                                            End If
-                                        ElseIf ReferenceAcceptOrder = ReferenceFinishMessageList(0) Then
-                                            'initiator canceled Order
-                                            T_Order.Status = E_Status.CANCELED
-                                        ElseIf ReferenceFinishOrderWithChainSwapKey = ReferenceFinishMessageList(0) Then
-                                            T_Order.Status = E_Status.CLOSED
-                                        End If
+    '                                    T_Order.Price = T_Order.XAmount / T_Order.Amount
 
+    '                                    Dim Finisher As ULong = T_FinishTX.Sender
 
-                                    Else
+    '                                    If ReferenceFinishOrder = ReferenceFinishMessageList(0) Then
+    '                                        If Finisher = T_Order.SellerID Then
+    '                                            T_Order.Status = E_Status.CLOSED
+    '                                        Else 'If Finisher = o.BuyerID Then
+    '                                            T_Order.Status = E_Status.CANCELED
+    '                                        End If
+    '                                    ElseIf ReferenceAcceptOrder = ReferenceFinishMessageList(0) Then
+    '                                        'initiator canceled Order
+    '                                        T_Order.Status = E_Status.CANCELED
+    '                                    ElseIf ReferenceFinishOrderWithChainSwapKey = ReferenceFinishMessageList(0) Then
+    '                                        T_Order.Status = E_Status.CLOSED
+    '                                    End If
 
-                                        '(0) ULong   Creation Method BuyOrder
-                                        '(1) ULong   WantToBuyAmount
-                                        '(2) ULong   XAmountNQT
-                                        '(3) ULong   XItem USD
 
-                                        T_Order.WasSellOrder = False
+    '                                Else
 
-                                        T_Order.BuyerID = T_CreationTX.Sender
-                                        T_Order.BuyerRS = T_CreationTX.SenderRS
-                                        T_Order.SellerID = T_AcceptTX.Sender
-                                        T_Order.SellerRS = T_AcceptTX.SenderRS
+    '                                    '(0) ULong   Creation Method BuyOrder
+    '                                    '(1) ULong   WantToBuyAmount
+    '                                    '(2) ULong   XAmountNQT
+    '                                    '(3) ULong   XItem USD
 
-                                        T_Order.Amount = ClsSignumAPI.Planck2Dbl(ReferenceCreationMessageList(1))
-                                        T_Order.Collateral = ClsSignumAPI.Planck2Dbl(T_Amount - ClsSignumAPI._GasFeeNQT)
+    '                                    T_Order.WasSellOrder = False
 
-                                        T_Order.XAmount = ClsSignumAPI.Planck2Dbl(ReferenceCreationMessageList(2))
-                                        T_Order.XItem = ClsSignumAPI.ULng2String(ReferenceCreationMessageList(3))
+    '                                    T_Order.BuyerID = T_CreationTX.Sender
+    '                                    T_Order.BuyerRS = T_CreationTX.SenderRS
+    '                                    T_Order.SellerID = T_AcceptTX.Sender
+    '                                    T_Order.SellerRS = T_AcceptTX.SenderRS
 
-                                        T_Order.Price = T_Order.XAmount / T_Order.Amount
+    '                                    T_Order.Amount = ClsSignumAPI.Planck2Dbl(ReferenceCreationMessageList(1))
+    '                                    T_Order.Collateral = ClsSignumAPI.Planck2Dbl(T_Amount - ClsSignumAPI._GasFeeNQT)
 
-                                        Dim Finisher As ULong = T_FinishTX.Sender
+    '                                    T_Order.XAmount = ClsSignumAPI.Planck2Dbl(ReferenceCreationMessageList(2))
+    '                                    T_Order.XItem = ClsSignumAPI.ULng2String(ReferenceCreationMessageList(3))
 
-                                        If ReferenceFinishOrder = ReferenceFinishMessageList(0) Then
-                                            If Finisher = T_Order.SellerID Then
-                                                T_Order.Status = E_Status.CLOSED
-                                            Else 'If Finisher = o.BuyerID Then
-                                                T_Order.Status = E_Status.CANCELED
-                                            End If
-                                        ElseIf ReferenceAcceptOrder = ReferenceFinishMessageList(0) Then
-                                            'initiator canceled Order
-                                            T_Order.Status = E_Status.CANCELED
-                                        ElseIf ReferenceFinishOrderWithChainSwapKey = ReferenceFinishMessageList(0) Then
-                                            T_Order.Status = E_Status.CLOSED
-                                        End If
+    '                                    T_Order.Price = T_Order.XAmount / T_Order.Amount
 
-                                    End If
+    '                                    Dim Finisher As ULong = T_FinishTX.Sender
 
-                                    T_ContractOrderHistoryList.Add(T_Order)
+    '                                    If ReferenceFinishOrder = ReferenceFinishMessageList(0) Then
+    '                                        If Finisher = T_Order.SellerID Then
+    '                                            T_Order.Status = E_Status.CLOSED
+    '                                        Else 'If Finisher = o.BuyerID Then
+    '                                            T_Order.Status = E_Status.CANCELED
+    '                                        End If
+    '                                    ElseIf ReferenceAcceptOrder = ReferenceFinishMessageList(0) Then
+    '                                        'initiator canceled Order
+    '                                        T_Order.Status = E_Status.CANCELED
+    '                                    ElseIf ReferenceFinishOrderWithChainSwapKey = ReferenceFinishMessageList(0) Then
+    '                                        T_Order.Status = E_Status.CLOSED
+    '                                    End If
 
-                                End If
+    '                                End If
 
-                            End If
+    '                                T_ContractOrderHistoryList.Add(T_Order)
 
-                        End If
+    '                            End If
 
-                    End If
+    '                        End If
 
-                End If
+    '                    End If
 
-            Next
+    '                End If
 
-            'If SetStartTimeStamp = 0UL Then
-            C_ContractOrderHistoryList = T_ContractOrderHistoryList.OrderBy(Function(T_TX As S_Order) T_TX.StartTimestamp).ToList
-            'Else
-            '    T_ContractOrderHistoryList = T_ContractOrderHistoryList.OrderBy(Function(T_TX As S_Order) T_TX.StartTimestamp).ToList
-            '    C_ContractOrderHistoryList.AddRange(T_ContractOrderHistoryList.ToArray)
-            'End If
+    '            End If
 
-        Else
+    '        Next
 
-        End If
+    '        'If SetStartTimeStamp = 0UL Then
+    '        C_ContractOrderHistoryList = T_ContractOrderHistoryList.OrderBy(Function(T_TX As S_Order) T_TX.StartTimestamp).ToList
+    '        'Else
+    '        '    T_ContractOrderHistoryList = T_ContractOrderHistoryList.OrderBy(Function(T_TX As S_Order) T_TX.StartTimestamp).ToList
+    '        '    C_ContractOrderHistoryList.AddRange(T_ContractOrderHistoryList.ToArray)
+    '        'End If
 
-        C_StartForm.MultiInvoker(C_StartForm.SubStatusLabel, "Text", "")
+    '    Else
 
-    End Sub
+    '    End If
 
-    Private Sub ConvertThread(ByVal Input As Object)
+    '    C_StartForm.MultiInvoker(C_StartForm.SubStatusLabel, "Text", "")
 
-        Dim JSONStr As String = Convert.ToString(Input)
+    'End Sub
 
-        Dim JSON As ClsJSON = New ClsJSON
-        Dim RespList As Object = JSON.JSONRecursive(JSONStr)
+    'Private Sub ConvertThread(ByVal Input As Object)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
-            'TX OK
+    '    Dim JSONStr As String = Convert.ToString(Input)
 
-            Dim TempList As List(Of String) = New List(Of String)
+    '    Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(JSONStr, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-            For Each T_SubEntry In DirectCast(RespList, List(Of Object))
+    '    'Dim JSON As ClsJSON = New ClsJSON
+    '    'Dim RespList As Object = JSON.JSONRecursive(JSONStr)
 
-                Dim SubEntry As List(Of Object) = New List(Of Object)
+    '    Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+    '    If Error0.GetType.Name = GetType(Boolean).Name Then
+    '        'TX OK
 
-                If T_SubEntry.GetType.Name = GetType(List(Of Object)).Name Then
-                    SubEntry = DirectCast(T_SubEntry, List(Of Object))
-                End If
+    '        Dim TempList As List(Of String) = New List(Of String)
 
-                If SubEntry.Count > 0 Then
+    '        'For Each T_SubEntry In DirectCast(RespList, List(Of Object))
 
-                    Select Case True
-                        Case SubEntry(0).ToString = "type"
-                            TempList.Add("<type>" + SubEntry(1).ToString + "</type>")
-                        Case SubEntry(0).ToString = "timestamp"
-                            TempList.Add("<timestamp>" + SubEntry(1).ToString + "</timestamp>")
-                        Case SubEntry(0).ToString = "recipient"
-                            TempList.Add("<recipient>" + SubEntry(1).ToString + "</recipient>")
-                        Case SubEntry(0).ToString = "recipientRS"
-                            TempList.Add("<recipientRS>" + SubEntry(1).ToString + "</recipientRS>")
-                        Case SubEntry(0).ToString = "amountNQT"
-                            TempList.Add("<amountNQT>" + SubEntry(1).ToString + "</amountNQT>")
-                        Case SubEntry(0).ToString = "feeNQT"
-                            TempList.Add("<feeNQT>" + SubEntry(1).ToString + "</feeNQT>")
-                        Case SubEntry(0).ToString = "transaction"
-                            TempList.Add("<transaction>" + SubEntry(1).ToString + "</transaction>")
-                        Case SubEntry(0).ToString = "attachment"
+    '        '    Dim SubEntry As List(Of Object) = New List(Of Object)
 
-                            Dim TMsg As String = "<attachment>"
-                            Dim Message As String = JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "message").ToString
+    '        '    If T_SubEntry.GetType.Name = GetType(List(Of Object)).Name Then
+    '        '        SubEntry = DirectCast(T_SubEntry, List(Of Object))
+    '        '    End If
 
-                            If Message.Trim <> "False" Then
-                                Dim IsText As String = JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "messageIsText").ToString
-                                TMsg += "<message>" + Message + "</message><isText>" + IsText + "</isText>"
-                            End If
+    '        '    If SubEntry.Count > 0 Then
 
-                            Dim EncMessage As Object = JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "encryptedMessage")
+    '        '        Select Case True
+    '        '            Case SubEntry(0).ToString = "type"
+    '        '                TempList.Add("<type>" + SubEntry(1).ToString + "</type>")
+    '        '            Case SubEntry(0).ToString = "timestamp"
+    '        '                TempList.Add("<timestamp>" + SubEntry(1).ToString + "</timestamp>")
+    '        '            Case SubEntry(0).ToString = "recipient"
+    '        '                TempList.Add("<recipient>" + SubEntry(1).ToString + "</recipient>")
+    '        '            Case SubEntry(0).ToString = "recipientRS"
+    '        '                TempList.Add("<recipientRS>" + SubEntry(1).ToString + "</recipientRS>")
+    '        '            Case SubEntry(0).ToString = "amountNQT"
+    '        '                TempList.Add("<amountNQT>" + SubEntry(1).ToString + "</amountNQT>")
+    '        '            Case SubEntry(0).ToString = "feeNQT"
+    '        '                TempList.Add("<feeNQT>" + SubEntry(1).ToString + "</feeNQT>")
+    '        '            Case SubEntry(0).ToString = "transaction"
+    '        '                TempList.Add("<transaction>" + SubEntry(1).ToString + "</transaction>")
+    '        '            Case SubEntry(0).ToString = "attachment"
 
-                            If EncMessage.GetType.Name = GetType(Boolean).Name Then
+    '        '                Dim TMsg As String = "<attachment>"
+    '        '                Dim Message As String = JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "message").ToString
 
-                            ElseIf EncMessage.GetType.Name = GetType(List(Of Object)).Name Then
+    '        '                If Message.Trim <> "False" Then
+    '        '                    Dim IsText As String = JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "messageIsText").ToString
+    '        '                    TMsg += "<message>" + Message + "</message><isText>" + IsText + "</isText>"
+    '        '                End If
 
-                                Dim Data As String = Convert.ToString(JSON.RecursiveListSearch(DirectCast(EncMessage, List(Of Object)), "data"))
-                                Dim Nonce As String = Convert.ToString(JSON.RecursiveListSearch(DirectCast(EncMessage, List(Of Object)), "nonce"))
-                                Dim IsText As String = Convert.ToString(JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "isText"))
+    '        '                Dim EncMessage As Object = JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "encryptedMessage")
 
-                                If Not Data.Trim = "False" And Not Nonce.Trim = "False" Then
-                                    TMsg += "<data>" + Data + "</data><nonce>" + Nonce + "</nonce><isText>" + IsText + "</isText>"
-                                End If
+    '        '                If EncMessage.GetType.Name = GetType(Boolean).Name Then
 
-                            End If
+    '        '                ElseIf EncMessage.GetType.Name = GetType(List(Of Object)).Name Then
 
-                            TMsg += "</attachment>"
-                            TempList.Add(TMsg)
+    '        '                    Dim Data As String = Convert.ToString(JSON.RecursiveListSearch(DirectCast(EncMessage, List(Of Object)), "data"))
+    '        '                    Dim Nonce As String = Convert.ToString(JSON.RecursiveListSearch(DirectCast(EncMessage, List(Of Object)), "nonce"))
+    '        '                    Dim IsText As String = Convert.ToString(JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "isText"))
 
-                        Case SubEntry(0).ToString = "sender"
-                            TempList.Add("<sender>" + SubEntry(1).ToString + "</sender>")
-                        Case SubEntry(0).ToString = "senderRS"
-                            TempList.Add("<senderRS>" + SubEntry(1).ToString + "</senderRS>")
-                        Case SubEntry(0).ToString = "confirmations"
-                            TempList.Add("<confirmations>" + SubEntry(1).ToString + "</confirmations>")
-                    End Select
+    '        '                    If Not Data.Trim = "False" And Not Nonce.Trim = "False" Then
+    '        '                        TMsg += "<data>" + Data + "</data><nonce>" + Nonce + "</nonce><isText>" + IsText + "</isText>"
+    '        '                    End If
 
-                End If
+    '        '                End If
 
-            Next
+    '        '                TMsg += "</attachment>"
+    '        '                TempList.Add(TMsg)
 
-            XMLList.Add(TempList)
+    '        '            Case SubEntry(0).ToString = "sender"
+    '        '                TempList.Add("<sender>" + SubEntry(1).ToString + "</sender>")
+    '        '            Case SubEntry(0).ToString = "senderRS"
+    '        '                TempList.Add("<senderRS>" + SubEntry(1).ToString + "</senderRS>")
+    '        '            Case SubEntry(0).ToString = "confirmations"
+    '        '                TempList.Add("<confirmations>" + SubEntry(1).ToString + "</confirmations>")
+    '        '        End Select
 
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
-            'TX not OK
-            'If GetINISetting(E_Setting.InfoOut, False) Then
-            '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-            '    Out.ErrorLog2File(Application.ProductName + "-error in LoadUpTransactions() -> ConvertThread(): " + JSONStr)
-            'End If
+    '        '    End If
 
-        End If
+    '        'Next
 
-    End Sub
+    '        XMLList.Add(TempList)
+
+    '    ElseIf Error0.GetType.Name = GetType(String).Name Then
+    '        'TX not OK
+    '        'If GetINISetting(E_Setting.InfoOut, False) Then
+    '        '    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+    '        '    Out.ErrorLog2File(Application.ProductName + "-error in LoadUpTransactions() -> ConvertThread(): " + JSONStr)
+    '        'End If
+
+    '    End If
+
+    'End Sub
+
+#End Region
 
     ''' <summary>
     ''' Loads HistoryTransactions
@@ -1942,7 +1950,6 @@ Public Class ClsDEXContract
 
     End Sub
 
-
     Function GetLastDecryptedMessageFromChat(ByVal RecipientAddress As String, Optional ByVal Shorten As Boolean = False) As String
 
         Dim Chats As List(Of S_Chat) = New List(Of S_Chat)(C_CurrentChat)
@@ -1995,8 +2002,6 @@ Public Class ClsDEXContract
         Return ""
 
     End Function
-
-
 
     Private Sub SetPendings(ByVal PendingAmount As Double, ByVal ReferenceMessageULongList As List(Of ULong))
 
@@ -2135,12 +2140,14 @@ Public Class ClsDEXContract
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in DeActivateDeniability(2): ->" + vbCrLf + Response
         End If
@@ -2186,12 +2193,14 @@ Public Class ClsDEXContract
 
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, SellAmount + ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") '  JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in CreateOrderWithResponder(2): ->" + vbCrLf + Response
         End If
@@ -2240,12 +2249,14 @@ Public Class ClsDEXContract
 
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, WantToSellAmount + Collateral + ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in CreateSellOrder(2): ->" + vbCrLf + Response
         End If
@@ -2295,12 +2306,14 @@ Public Class ClsDEXContract
 
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, Collateral + ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in CreateBuyOrder(2): ->" + vbCrLf + Response
         End If
@@ -2350,12 +2363,14 @@ Public Class ClsDEXContract
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, Collateral + (ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)), Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in AcceptOrder(2): ->" + vbCrLf + Response
         End If
@@ -2389,11 +2404,13 @@ Public Class ClsDEXContract
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Dim Response As String = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), , MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
+
+        'Dim JSON As ClsJSON = New ClsJSON
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in RejectResponder(): ->" + vbCrLf + Response
         End If
@@ -2444,12 +2461,14 @@ Public Class ClsDEXContract
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, SellAmount + Collateral + (ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)), Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in AcceptOrder(2): ->" + vbCrLf + Response
         End If
@@ -2502,12 +2521,14 @@ Public Class ClsDEXContract
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in InjectResponder(2): ->" + vbCrLf + Response
         End If
@@ -2551,12 +2572,14 @@ Public Class ClsDEXContract
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in OpenDispute(2): ->" + vbCrLf + Response
         End If
@@ -2624,12 +2647,14 @@ Public Class ClsDEXContract
 
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT) + SumCollateral + C_MediatorsDeposit, Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in MediateDispute(2): ->" + vbCrLf + Response
         End If
@@ -2672,12 +2697,14 @@ Public Class ClsDEXContract
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in Appeal(2): ->" + vbCrLf + Response
         End If
@@ -2720,12 +2747,14 @@ Public Class ClsDEXContract
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in CheckCloseDispute(2): ->" + vbCrLf + Response
         End If
@@ -2770,12 +2799,14 @@ Public Class ClsDEXContract
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT) * 3, Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in FinishOrder(2): ->" + vbCrLf + Response
         End If
@@ -2803,9 +2834,6 @@ Public Class ClsDEXContract
 
     End Function
 
-
-
-
     Function ChangeULongEndians(ByVal ULongList As List(Of ULong)) As List(Of ULong)
 
         Dim T_ULongList As List(Of ULong) = New List(Of ULong)
@@ -2828,8 +2856,6 @@ Public Class ClsDEXContract
         Return T_UL
 
     End Function
-
-
 
     Public Function InjectChainSwapKeyToHash(ByVal SenderPublicKey As String, ByVal ChainSwapKey As String, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
         Dim SecretKeyList As String = GetSHA256HashString(ChainSwapKey)
@@ -2863,12 +2889,14 @@ Public Class ClsDEXContract
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in InjectChainSwapHash(2): ->" + vbCrLf + Response
         End If
@@ -2929,12 +2957,15 @@ Public Class ClsDEXContract
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceFinishOrderWithChainSwapKey, ChainSwapKeyLong1, ChainSwapKeyLong2, ChainSwapKeyLong3, ChainSwapKeyLong4})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
         Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT) * 3, Fee, MsgStr.Trim, False)
-        Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
+
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in FinishOrderWithChainSwapKey(2): ->" + vbCrLf + Response
         End If
@@ -2974,12 +3005,15 @@ Public Class ClsDEXContract
         Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULongMsgList)
         Response = SignumAPI.SendMoney(SenderPublicKeyHEX, C_ID, Collateral + ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
-        Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
+
+        'Dim JSON As ClsJSON = New ClsJSON
+
+        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+        If Error0.GetType = GetType(Boolean) Then
             'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        ElseIf Error0.GetType = GetType(String) Then
             'TX not OK
             Return Application.ProductName + "-error in SendMessageToDEXContract(2): ->" + vbCrLf + Response
         End If

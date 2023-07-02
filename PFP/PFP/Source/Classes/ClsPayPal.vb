@@ -5,8 +5,8 @@
 
 Imports System.IO
 Imports System.Net
-Imports System.Text
 Imports System.Security.Cryptography
+Imports System.Text
 
 Public Class ClsPayPal
 
@@ -163,18 +163,20 @@ Public Class ClsPayPal
             Return New List(Of String)
         End If
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(ResponseStr, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim XML As String = JSON.JSONToXML(ResponseStr)
+        'Dim JSON As ClsJSON = New ClsJSON
+        'Dim XML As String = JSON.JSONToXML(ResponseStr)
+
         Dim NuList As List(Of String) = New List(Of String)
 
-        Dim Erro As String = JSON.RecursiveXMLSearch(XML, "error")
-        Dim Scope As String = JSON.RecursiveXMLSearch(XML, "scope")
-        Dim Access_Token As String = JSON.RecursiveXMLSearch(XML, "access_token")
-        Dim Token_Type As String = JSON.RecursiveXMLSearch(XML, "token_type")
-        Dim App_ID As String = JSON.RecursiveXMLSearch(XML, "app_id")
-        Dim Expires_In As String = JSON.RecursiveXMLSearch(XML, "expires_in")
-        Dim Nonce As String = JSON.RecursiveXMLSearch(XML, "nonce")
+        Dim Erro As String = Converter.FirstValue("error").ToString() ' JSON.RecursiveXMLSearch(XML, "error")
+        Dim Scope As String = Converter.FirstValue("scope").ToString() ' JSON.RecursiveXMLSearch(XML, "scope")
+        Dim Access_Token As String = Converter.FirstValue("access_token").ToString() ' JSON.RecursiveXMLSearch(XML, "access_token")
+        Dim Token_Type As String = Converter.FirstValue("token_type").ToString() 'JSON.RecursiveXMLSearch(XML, "token_type")
+        Dim App_ID As String = Converter.FirstValue("app_id").ToString() ' JSON.RecursiveXMLSearch(XML, "app_id")
+        Dim Expires_In As String = Converter.FirstValue("expires_in").ToString() 'JSON.RecursiveXMLSearch(XML, "expires_in")
+        Dim Nonce As String = Converter.FirstValue("nonce").ToString() ' JSON.RecursiveXMLSearch(XML, "nonce")
 
         If Erro = "False" Or Erro = "" Then
             NuList.Add("<scope>" + Scope + "</scope>")
@@ -217,23 +219,23 @@ Public Class ClsPayPal
             Return New List(Of String)
         End If
 
-        Dim JSON As ClsJSON = New ClsJSON
-        Dim ReturnList As List(Of Object) = JSON.JSONRecursive(ResponseStr)
+        'Dim JSON As ClsJSON = New ClsJSON
+        'Dim ReturnList As List(Of Object) = JSON.JSONRecursive(ResponseStr)
 
-        Dim XML As String = JSON.JSONListToXMLRecursive(ReturnList)
+        'Dim XML As String = JSON.JSONListToXMLRecursive(ReturnList)
 
-
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(ResponseStr, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
         Dim NuList As List(Of String) = New List(Of String)
 
-        Dim ID As String = JSON.RecursiveListSearch(ReturnList, "id")
-        Dim Status As String = JSON.RecursiveListSearch(ReturnList, "status")
+        Dim ID As String = Converter.FirstValue("id").ToString() ' JSON.RecursiveListSearch(ReturnList, "id")
+        Dim Status As String = Converter.FirstValue("status").ToString() ' JSON.RecursiveListSearch(ReturnList, "status")
 
         NuList.Add("<id>" + ID + "</id>")
         NuList.Add("<status>" + Status + "</status>")
 
-        Dim URLList = JSON.RecursiveListSearch(ReturnList, "links")
-        If URLList.GetType.Name = GetType(Boolean).Name Then
+        Dim URLList = Converter.FirstValue("links") ' JSON.RecursiveListSearch(ReturnList, "links")
+        If URLList.GetType = GetType(Boolean) Then
 
         Else
 
@@ -310,19 +312,22 @@ Public Class ClsPayPal
         If ResponseStr.Trim = "" Then
             Return New List(Of String)
         End If
-        Dim JSON As ClsJSON = New ClsJSON
-        Dim ResponseList As List(Of Object) = JSON.JSONRecursive(ResponseStr)
+
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(ResponseStr, ClsJSONAndXMLConverter.E_ParseType.JSON)
+
+        'Dim JSON As ClsJSON = New ClsJSON
+        'Dim ResponseList As List(Of Object) = JSON.JSONRecursive(ResponseStr)
 
         Dim ReturnList As List(Of String) = New List(Of String)
 
-        Dim ID As String = JSON.RecursiveListSearch(ResponseList, "id")
-        Dim Status As String = JSON.RecursiveListSearch(ResponseList, "status")
+        Dim ID As String = Converter.FirstValue("id").ToString() ' JSON.RecursiveListSearch(ResponseList, "id")
+        Dim Status As String = Converter.FirstValue("status").ToString() ' JSON.RecursiveListSearch(ResponseList, "status")
 
         ReturnList.Add("<id>" + ID + "</id>")
         ReturnList.Add("<status>" + Status + "</status>")
 
-        Dim URLList = JSON.RecursiveListSearch(ResponseList, "links")
-        If URLList.GetType.Name = GetType(Boolean).Name Then
+        Dim URLList = Converter.FirstValue("links") ' JSON.RecursiveListSearch(ResponseList, "links")
+        If URLList.GetType = GetType(Boolean) Then
 
         Else
 
@@ -473,20 +478,22 @@ Public Class ClsPayPal
             Return New List(Of String)
         End If
 
-        Dim JSON As ClsJSON = New ClsJSON
-        Dim ReturnList As List(Of Object) = JSON.JSONRecursive(ResponseStr)
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(ResponseStr, ClsJSONAndXMLConverter.E_ParseType.JSON)
+
+        'Dim JSON As ClsJSON = New ClsJSON
+        'Dim ReturnList As List(Of Object) = JSON.JSONRecursive(ResponseStr)
 
         Dim NuList As List(Of String) = New List(Of String)
 
-        Dim ID As String = JSON.RecursiveListSearch(ReturnList, "id")
-        Dim Intent As String = JSON.RecursiveListSearch(ReturnList, "intent")
-        Dim Status As String = JSON.RecursiveListSearch(ReturnList, "status")
+        Dim ID As String = Converter.FirstValue("id").ToString() ' JSON.RecursiveListSearch(ReturnList, "id")
+        Dim Intent As String = Converter.FirstValue("intent").ToString() ' JSON.RecursiveListSearch(ReturnList, "intent")
+        Dim Status As String = Converter.FirstValue("status").ToString() ' JSON.RecursiveListSearch(ReturnList, "status")
 
         NuList.Add("<id>" + ID + "</id>")
         NuList.Add("<intent>" + Intent + "</intent>")
         NuList.Add("<status>" + Status + "</status>")
 
-        Dim URLList = JSON.RecursiveListSearch(ReturnList, "links")
+        Dim URLList = Converter.FirstValue("links") ' JSON.RecursiveListSearch(ReturnList, "links")
         If URLList.GetType.Name = GetType(Boolean).Name Then
 
         Else
@@ -626,10 +633,14 @@ Public Class ClsPayPal
         ' payments/payment =  ?count=10&start_index=0&sort_by=create_time&sort_order=desc
         ' reporting/transactions = ?start_date=2021-01-01T01:01:01-0100&end_date=2021-01-31T23:59:59-0100&fields=all&page_size=100&page=1
 
-        Dim StartDatUS As String = Now.AddDays(-29).ToString("yyyy-MM-dTHH:mm:ss-0500")
-        Dim EndDatUS As String = Now.AddDays(1).ToString("yyyy-MM-dTHH:mm:ss-0500")
+        Dim StartDatUS As String = Now.AddDays(-29).ToString("yyyy-MM-ddThh:mm:ss-0000")
+        Dim EndDatUS As String = Now.AddDays(1).ToString("yyyy-MM-ddThh:mm:ss-0000")
 
-        SetSubURL(E_SubURL._v1_reporting_transactions_PARAMS,, "?start_date=" + StartDatUS + "&end_date=" + EndDatUS + "&fields=all&page_size=100&page=1")
+        'EMPTY: {"transaction_details":[],"account_number":"UHEAKMGTBY6D6","start_date":"2023-06-02T20:24:25+0000","end_date":"2023-07-01T04:59:59+0000","last_refreshed_datetime":"2023-07-01T04:59:59+0000","page":1,"total_items":0,"total_pages":0,"links":[{"href":"https://api.sandbox.paypal.com/v1/reporting/transactions?fields=all&end_date=2023-07-02T10%3A24%3A25-1000&start_date=2023-06-02T10%3A24%3A25-1000&page_size=100&page=1","rel":"self","method":"GET"}]}
+
+        '{"transaction_details":[{"transaction_info":{"paypal_account_id":"TC74MMEUFXEW2","transaction_id":"54D268398A925791C","transaction_event_code":"T0000","transaction_initiation_date":"2023-07-01T07:21:35+0000","transaction_updated_date":"2023-07-01T07:21:35+0000","transaction_amount":{"currency_code":"USD","value":"10.00"},"fee_amount":{"currency_code":"USD","value":"-0.84"},"transaction_status":"S","transaction_note":"JIMAP-SALIM-LALAP-LAMIK","ending_balance":{"currency_code":"USD","value":"5094.58"},"available_balance":{"currency_code":"USD","value":"5094.58"},"protection_eligibility":"01"},"payer_info":{"account_id":"TC74MMEUFXEW2","email_address":"buyer@signum.zone","address_status":"N","payer_status":"Y","payer_name":{"alternate_full_name":"Test Store"},"country_code":"US"},"shipping_info":{"name":"Buyer, Dev","address":{"line1":"1 Main St","city":"San Jose","state":"CA","country_code":"US","postal_code":"95131"}},"cart_info":{},"store_info":{},"auction_info":{},"incentive_info":{}}],"account_number":"UHEAKMGTBY6D6","start_date":"2023-06-02T05:27:43+0000","end_date":"2023-07-01T08:59:59+0000","last_refreshed_datetime":"2023-07-01T08:59:59+0000","page":1,"total_items":1,"total_pages":1,"links":[{"href":"https://api.sandbox.paypal.com/v1/reporting/transactions?start_date=2023-06-02T05%3A27%3A43-0000&end_date=2023-07-02T05%3A27%3A43-0000&fields=all&page_size=100&page=1","rel":"self","method":"GET"}]}
+
+        SetSubURL(E_SubURL._v1_reporting_transactions_PARAMS,, "?start_date=" + StartDatUS + "&end_date=" + EndDatUS + "&fields=all&page_size=100&page=1") '
 
         Dim ResponseStr As String = PayPalRequest("", "GET", New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
@@ -637,77 +648,109 @@ Public Class ClsPayPal
             Return New List(Of List(Of String))
         End If
 
-        Dim JSON As ClsJSON = New ClsJSON
-        Dim JSONList As List(Of Object) = JSON.JSONRecursive(ResponseStr)
-        Dim XML As String = JSON.JSONListToXMLRecursive(JSONList)
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(ResponseStr, ClsJSONAndXMLConverter.E_ParseType.JSON)
+        Dim TransactionDetails As List(Of KeyValuePair(Of String, Object)) = Converter.Search(Of List(Of KeyValuePair(Of String, Object)))("transaction_details")
+        Dim TransactionInfo As KeyValuePair(Of String, Object) = TransactionDetails.Where(Function(c) c.Key = "transaction_info").ToList().FirstOrDefault()
 
-        Dim ReturnList As List(Of List(Of String)) = New List(Of List(Of String))
-        Dim TXList = JSON.RecursiveListSearch(JSONList, "transaction_details")
+        If Not IsNothing(TransactionInfo.Key) Then
 
-        If TXList.GetType.Name = GetType(Boolean).Name Then
+            Dim TXNote As String = New ClsJSONAndXMLConverter(TransactionInfo).Search("transaction_note", ClsJSONAndXMLConverter.E_ParseType.XML)
 
-        Else
-
-            For Each TX In TXList
-
-                Dim TXInfoList = JSON.RecursiveListSearch(TX, "transaction_info")
-
-                If TXInfoList.GetType.Name = GetType(Boolean).Name Then
-
-                Else
-
-                    Dim TXNote = JSON.RecursiveListSearch(TXInfoList, "transaction_note")
-                    Dim TXAmountList = JSON.RecursiveListSearch(TXInfoList, "transaction_amount")
-                    Dim TXStatus As String = JSON.RecursiveListSearch(TXInfoList, "transaction_status")
+            Dim TXAmountList As String = New ClsJSONAndXMLConverter(TransactionInfo).Search("transaction_amount", ClsJSONAndXMLConverter.E_ParseType.XML)
+            Dim TXStatus As String = New ClsJSONAndXMLConverter(TransactionInfo).Search("transaction_status", ClsJSONAndXMLConverter.E_ParseType.XML)
 
 
-                    Dim TXAmount As String = "0.0"
-                    If TXAmountList.GetType.Name = GetType(Boolean).Name Then
-                    Else
-                        TXAmount = JSON.RecursiveListSearch(TXAmountList, "value")
-                    End If
+            If Not TXNote.Trim() = "" And Not TXAmountList.Trim() = "" And Not TXStatus.Trim() = "" Then
 
+                If Not SearchNote.Trim = "" Then
+                    If TXNote.Trim().Contains(SearchNote.Trim()) Then
 
-                    If TXNote.GetType.Name = GetType(Boolean).Name Then
-                    Else
+                        Dim NuList As List(Of String) = New List(Of String)
 
-                        If Not SearchNote.Trim = "" Then
+                        NuList.Add("<transaction_note>" + SearchNote.ToString + "</transaction_note>")
+                        NuList.Add("<transaction_currency_code>" + GetStringBetween(TXAmountList, "<currency_code>", "</currency_code>") + "</transaction_currency_code>")
+                        NuList.Add("<transaction_amount>" + GetDoubleBetween(TXAmountList, "<value>", "</value>").ToString() + "</transaction_amount>")
+                        NuList.Add(TXStatus)
 
-                            If TXNote.ToString.Trim.Contains(SearchNote.Trim) Then
-
-                                Dim NuList As List(Of String) = New List(Of String)
-
-                                NuList.Add("<transaction_note>" + SearchNote.ToString + "</transaction_note>")
-                                NuList.Add("<transaction_amount>" + TXAmount.Replace(".", ",") + "</transaction_amount>")
-                                NuList.Add("<transaction_status>" + TXStatus + "</transaction_status>")
-
-                                ReturnList.Add(NuList)
-
-                                Return ReturnList
-
-                            End If
-
-                        Else
-
-                            Dim NuList As List(Of String) = New List(Of String)
-
-                            NuList.Add("<transaction_note>" + TXNote.ToString.Trim + "</transaction_note>")
-                            NuList.Add("<transaction_amount>" + TXAmount.Replace(".", ",") + "</transaction_amount>")
-                            NuList.Add("<transaction_status>" + TXStatus + "</transaction_status>")
-
-                            ReturnList.Add(NuList)
-
-                        End If
+                        Return New List(Of List(Of String))({NuList})
 
                     End If
-
                 End If
 
-            Next
+            End If
 
         End If
 
-        Return ReturnList
+        Return New List(Of List(Of String))
+
+#Region "deprecaded"
+        'If TXList.GetType = GetType(Boolean) Then
+
+        'Else
+
+        '    For Each TX In TXList
+
+        '        Dim TXInfoList = Converter.FirstValue("transaction_details/transaction_info") ' JSON.RecursiveListSearch(TX, "transaction_info")
+
+        '        If TXInfoList.GetType = GetType(Boolean) Then
+
+        '        Else
+
+        '            Dim TXNote = Converter.FirstValue("transaction_details/transaction_note") ' JSON.RecursiveListSearch(TXInfoList, "transaction_note")
+        '            Dim TXAmountList = Converter.FirstValue("transaction_details/transaction_amount") ' JSON.RecursiveListSearch(TXInfoList, "transaction_amount")
+        '            Dim TXStatus As String = Converter.FirstValue("transaction_details/transaction_status") ' JSON.RecursiveListSearch(TXInfoList, "transaction_status")
+
+
+        '            Dim TXAmount As String = "0.0"
+        '            If TXAmountList.GetType.Name = GetType(Boolean).Name Then
+        '            Else
+        '                TXAmount = Converter.FirstValue("transaction_details/value") ' JSON.RecursiveListSearch(TXAmountList, "value")
+        '            End If
+
+
+        '            If TXNote.GetType.Name = GetType(Boolean).Name Then
+        '            Else
+
+        '                If Not SearchNote.Trim = "" Then
+
+        '                    If TXNote.ToString.Trim.Contains(SearchNote.Trim) Then
+
+        '                        Dim NuList As List(Of String) = New List(Of String)
+
+        '                        NuList.Add("<transaction_note>" + SearchNote.ToString + "</transaction_note>")
+        '                        NuList.Add("<transaction_amount>" + TXAmount.Replace(".", ",") + "</transaction_amount>")
+        '                        NuList.Add("<transaction_status>" + TXStatus + "</transaction_status>")
+
+        '                        ReturnList.Add(NuList)
+
+        '                        Return ReturnList
+
+        '                    End If
+
+        '                Else
+
+        '                    Dim NuList As List(Of String) = New List(Of String)
+
+        '                    NuList.Add("<transaction_note>" + TXNote.ToString.Trim + "</transaction_note>")
+        '                    NuList.Add("<transaction_amount>" + TXAmount.Replace(".", ",") + "</transaction_amount>")
+        '                    NuList.Add("<transaction_status>" + TXStatus + "</transaction_status>")
+
+        '
+        '                   ReturnList.Add(NuList)
+
+        '                End If
+
+        '            End If
+
+        '        End If
+
+        '    Next
+
+        'End If
+
+        'Return ReturnList
+#End Region
+
 
 #Region "normal Payments"
 
@@ -1492,15 +1535,12 @@ Public Class ClsPayPal
         SetSubURL(ClsPayPal.E_SubURL._v1_payments_payouts)
         Dim ResponseStr As String = PayPalRequest(Request, , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
-        Dim JSON As ClsJSON = New ClsJSON
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(ResponseStr, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim ReturnList As List(Of Object) = JSON.JSONRecursive(ResponseStr)
-
-        Dim XML As String = JSON.JSONListToXMLRecursive(ReturnList)
-
-
-
-        Dim x = JSON.RecursiveListSearch(ReturnList, "payout_batch_id")
+        'Dim JSON As ClsJSON = New ClsJSON
+        'Dim ReturnList As List(Of Object) = JSON.JSONRecursive(ResponseStr)
+        'Dim XML As String = JSON.JSONListToXMLRecursive(ReturnList)
+        Dim x = Converter.FirstValue("payout_batch_id") ' JSON.RecursiveListSearch(ReturnList, "payout_batch_id")
 
         Return x
 
@@ -1609,7 +1649,7 @@ Public Class ClsPayPal
     '    Return strTemp.ToString()
     'End Function
 #End Region
-    
+
 #End Region
 
 End Class

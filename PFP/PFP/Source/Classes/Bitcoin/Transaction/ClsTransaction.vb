@@ -1,10 +1,7 @@
 ﻿
 Option Explicit On
 Option Strict On
-
-Imports System.Net
 Imports System.Security.Cryptography
-Imports System.Threading
 
 Public Class ClsTransaction
 
