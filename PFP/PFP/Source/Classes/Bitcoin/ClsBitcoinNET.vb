@@ -359,7 +359,14 @@ Public Class ClsBitcoinNET
     End Function
 
     Public Function GetMiningInfo() As String
-        Return New ClsJSONAndXMLConverter(BTC_API.GetMiningInfo(), ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        Dim MiningInfo As String = BTC_API.GetMiningInfo()
+
+        If Not IsErrorOrWarning(MiningInfo, "", False, False) Then
+            Return New ClsJSONAndXMLConverter(MiningInfo, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        Else
+            Return MiningInfo
+        End If
+
     End Function
 
     Public Function GetWalletInfo() As String

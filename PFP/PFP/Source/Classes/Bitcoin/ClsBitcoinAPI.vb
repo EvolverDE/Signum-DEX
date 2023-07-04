@@ -665,9 +665,11 @@ Public Class ClsBitcoinAPI
 
         Dim Result As List(Of KeyValuePair(Of String, Object)) = Converter.Search(Of List(Of KeyValuePair(Of String, Object)))("result")
 
-        If Result(0).Value.GetType = GetType(List(Of KeyValuePair(Of String, Object))) Then
-            Dim KeyVals As List(Of KeyValuePair(Of String, Object)) = DirectCast(Result(0).Value, List(Of KeyValuePair(Of String, Object)))
-            Return KeyVals
+        If Result.Count > 0 Then
+            If Result(0).Value.GetType = GetType(List(Of KeyValuePair(Of String, Object))) Then
+                Dim KeyVals As List(Of KeyValuePair(Of String, Object)) = DirectCast(Result(0).Value, List(Of KeyValuePair(Of String, Object)))
+                Return KeyVals
+            End If
         End If
 
         Return New List(Of KeyValuePair(Of String, Object))
@@ -719,17 +721,17 @@ Public Class ClsBitcoinAPI
 
         Catch ex As WebException
 
-            Try
+            If Not IsNothing(ex.Response) Then
                 Dim x = New StreamReader(ex.Response.GetResponseStream())
                 Dim xstr As String = x.ReadToEnd()
                 Return xstr
+            End If
 
-                Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                out.ErrorLog2File(ex.Message)
+            Dim out As ClsOut = New ClsOut(Application.StartupPath)
+            out.ErrorLog2File(Application.ProductName + "-error in RequestFromBitcoinNode(" + URL + ", " + ByteArrayToHEXString(ByteArray) + ", " + TimeOut.ToString() + ") -> ConvertThread(): " + ex.Message)
 
-            Catch exep As Exception
-                Return Application.ProductName + "-error in RequestFromBitcoinNode(" + URL + ", " + ByteArrayToHEXString(ByteArray) + ", " + TimeOut.ToString() + ") -> ConvertThread(): " + exep.Message
-            End Try
+            Return Application.ProductName + "-error in RequestFromBitcoinNode(" + URL + ", " + ByteArrayToHEXString(ByteArray) + ", " + TimeOut.ToString() + ") -> ConvertThread(): " + ex.Message
+
 
         End Try
 

@@ -56,7 +56,7 @@ Public Class ClsINITool
 
     Sub New(Optional ByVal File As String = "Settings.ini", Optional ByVal Path As String = "")
 
-        C_Timer = New Timer With {.Enabled = True, .Interval = 50}
+        C_Timer = New Timer With {.Enabled = True, .Interval = 10}
         C_Timer.Start()
 
         AddHandler C_Timer.Tick, AddressOf SerialWriter
@@ -161,7 +161,7 @@ Public Class ClsINITool
             Exit Sub
         End If
 
-        If RefreshTimerTicks >= 50 Then
+        If RefreshTimerTicks >= 20 Then
 
             RefreshTimerTicks = 0
 
@@ -251,7 +251,7 @@ Public Class ClsINITool
 
         Dim FoundSection As Boolean = False
 
-        Dim T_Entrys As List(Of S_Section) = New List(Of S_Section)(_INIEntrys.ToArray)
+        Dim T_Entrys As List(Of S_Section) = New List(Of S_Section)(_INIEntrys.ToArray())
 
         For i As Integer = 0 To T_Entrys.Count - 1
 
@@ -269,9 +269,9 @@ Public Class ClsINITool
 
                     If T_Key.Key_Name = Key Then
                         T_Key.Value = Value
-
                         T_Section.Keys(j) = T_Key
                         FoundKey = True
+                        Exit For
                     End If
                 Next
 
@@ -310,7 +310,8 @@ Public Class ClsINITool
             T_Section.Keys.Add(T_Key)
 
             _INIEntrys.Add(T_Section)
-
+        Else
+            _INIEntrys = New Concurrent.ConcurrentBag(Of S_Section)(T_Entrys.ToArray())
         End If
 
         Return WriteINI()

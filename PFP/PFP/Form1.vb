@@ -6336,42 +6336,47 @@ Public Class PFPForm
                                 'If MyClosedOrderLVIList.Count < 100 Then
 
                                 Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(HistoryOrder.XItem)
-                                Dim T_XItemTransaction As String = XItem2.GetXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction)
 
-                                If Not T_XItemTransaction.Trim = "" Then
-                                    Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_XItemTransaction)
+                                If Not IsNothing(XItem2) Then
 
-                                    If Not IsErrorOrWarning(XItem2.GetBackXItemTransaction(T_XItemTransaction, ChainSwapHash)) Then
-                                        XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_XItemTransaction, ChainSwapHash)
-                                    End If
+                                    Dim T_XItemTransaction As String = XItem2.GetXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction)
+
+                                    If Not T_XItemTransaction.Trim = "" Then
+                                        Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_XItemTransaction)
+
+                                        If Not IsErrorOrWarning(XItem2.GetBackXItemTransaction(T_XItemTransaction, ChainSwapHash)) Then
+                                            XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_XItemTransaction, ChainSwapHash)
+                                        End If
 
 #Region "deprecaded"
-                                    'Dim T_BitcoinTransaction As ClsTransaction = New ClsTransaction(T_BTCTX, New List(Of String), RedeemScript)
+                                        'Dim T_BitcoinTransaction As ClsTransaction = New ClsTransaction(T_BTCTX, New List(Of String), RedeemScript)
 
-                                    'If T_BitcoinTransaction.IsTimeOut() Then
+                                        'If T_BitcoinTransaction.IsTimeOut() Then
 
-                                    '    Dim BitcoinPrivateKey As String = GetBitcoinMainPrivateKey().ToLower()
+                                        '    Dim BitcoinPrivateKey As String = GetBitcoinMainPrivateKey().ToLower()
 
-                                    '    If Not BitcoinPrivateKey = "" Then
+                                        '    If Not BitcoinPrivateKey = "" Then
 
-                                    '        T_BitcoinTransaction.C_FeesNQTPerByte = 5
+                                        '        T_BitcoinTransaction.C_FeesNQTPerByte = 5
 
-                                    '        Dim T_BitcoinRAWTX As String = XItem2.SignBitcoinTransactionWithRedeemScript(T_BitcoinTransaction, BitcoinPrivateKey)
+                                        '        Dim T_BitcoinRAWTX As String = XItem2.SignBitcoinTransactionWithRedeemScript(T_BitcoinTransaction, BitcoinPrivateKey)
 
-                                    '        Dim T_BitcoinTXID As String = ""
-                                    '        If Not T_BitcoinRAWTX.Trim = "" Then
-                                    '            T_BitcoinTXID = XItem2.SendRawBitcoinTransaction(T_BitcoinRAWTX)
-                                    '        End If
+                                        '        Dim T_BitcoinTXID As String = ""
+                                        '        If Not T_BitcoinRAWTX.Trim = "" Then
+                                        '            T_BitcoinTXID = XItem2.SendRawBitcoinTransaction(T_BitcoinRAWTX)
+                                        '        End If
 
-                                    '        If Not IsErrorOrWarning(T_BitcoinTXID) Then
-                                    '            Dim T_INIScript As String = XItem2.GetXItemRedeemScriptFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_BTCTX)
-                                    '            XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_BTCTX, T_INIScript)
-                                    '        End If
+                                        '        If Not IsErrorOrWarning(T_BitcoinTXID) Then
+                                        '            Dim T_INIScript As String = XItem2.GetXItemRedeemScriptFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_BTCTX)
+                                        '            XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_BTCTX, T_INIScript)
+                                        '        End If
 
-                                    '    End If
+                                        '    End If
 
-                                    'End If
+                                        'End If
 #End Region
+
+                                    End If
 
                                 End If
 

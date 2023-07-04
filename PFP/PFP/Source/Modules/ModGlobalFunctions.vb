@@ -460,12 +460,12 @@ Module ModGlobalFunctions
 
 
 #Region "error and warning handling"
-    Function IsErrorOrWarning(ByVal Message As String, Optional ByVal Addition As String = "", Optional ByVal AdditionBefore As Boolean = False) As Boolean
+    Function IsErrorOrWarning(ByVal Message As String, Optional ByVal Addition As String = "", Optional ByVal AdditionBefore As Boolean = False, Optional ByVal LogIt As Boolean = True) As Boolean
 
         Dim out As ClsOut = New ClsOut(Application.StartupPath)
 
         If Message.Contains(Application.ProductName + "-error") Then
-            If GetINISetting(E_Setting.InfoOut, False) Then
+            If GetINISetting(E_Setting.InfoOut, False) And LogIt Then
 
                 If AdditionBefore Then
                     out.ErrorLog2File(Addition + Message)
@@ -476,7 +476,7 @@ Module ModGlobalFunctions
             End If
             Return True
         ElseIf Message.Contains(Application.ProductName + "-warning") Then
-            If GetINISetting(E_Setting.InfoOut, False) Then
+            If GetINISetting(E_Setting.InfoOut, False) And LogIt Then
                 If AdditionBefore Then
                     out.WarningLog2File(Addition + Message)
                 Else
@@ -488,7 +488,7 @@ Module ModGlobalFunctions
         ElseIf Message.Contains("<error>") And Message.Contains("</error>") Then
             Dim Erro As String = GetStringBetween(Message, "<error>", "</error>")
             If Erro.Trim <> "" And Erro.Trim <> "null" Then
-                If GetINISetting(E_Setting.InfoOut, False) Then
+                If GetINISetting(E_Setting.InfoOut, False) And LogIt Then
                     If AdditionBefore Then
                         out.ErrorLog2File(Addition + Erro)
                     Else
@@ -501,7 +501,7 @@ Module ModGlobalFunctions
         ElseIf Message.Contains("<warning>") And Message.Contains("</warning>") Then
             Dim Warn As String = GetStringBetween(Message, "<warning>", "</warning>")
             If Warn.Trim <> "" Then
-                If GetINISetting(E_Setting.InfoOut, False) Then
+                If GetINISetting(E_Setting.InfoOut, False) And LogIt Then
                     If AdditionBefore Then
                         out.WarningLog2File(Addition + Warn)
                     Else

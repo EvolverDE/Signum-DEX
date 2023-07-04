@@ -332,7 +332,8 @@
 
     Public Overrides Function GetXItemInfo() As String
         Dim BitNET As ClsBitcoinNET = New ClsBitcoinNET()
-        Return BitNET.GetMiningInfo()
+        Dim MiningInfo As String = BitNET.GetMiningInfo()
+        Return MiningInfo
     End Function
 
 #Region "Bitcoin Account Form"
