@@ -9,14 +9,14 @@ Imports System.Text
 Public Class ClsBitcoinAPI
 
     Property C_API_URL As String = ""
-    Property API_URL() As String
-        Get
-            Return C_API_URL
-        End Get
-        Set(value As String)
-            C_API_URL = value
-        End Set
-    End Property
+    'Property API_URL() As String
+    '    Get
+    '        Return C_API_URL
+    '    End Get
+    '    Set(value As String)
+    '        C_API_URL = value
+    '    End Set
+    'End Property
 
     Private C_API_Wallet As String = ""
     Property API_Wallet() As String
@@ -412,7 +412,6 @@ Public Class ClsBitcoinAPI
         Return ByteArray
     End Function
 
-
     'Public Function SendToAddress(ByVal Address As String, ByVal Amount As Double, Optional ByVal Fee As Double = 0.00000001) As String
 
     '    Dim k = RequestFromBitcoinWallet(API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.getmininginfo, "")))
@@ -435,20 +434,20 @@ Public Class ClsBitcoinAPI
     'End Function
 
 
-    Public Function GetTXOutSetInfo() As String
-        Dim TXOUT As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.gettxoutsetinfo, "")))
-        Return TXOUT
-    End Function
+    'Public Function GetTXOutSetInfo() As String
+    '    Dim TXOUT As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.gettxoutsetinfo, "")))
+    '    Return TXOUT
+    'End Function
 
-    Public Function ListTransactions(ByVal Account As String, Optional ByVal Count As Integer = 10, Optional ByVal From As Integer = 0) As String
-        Dim TXs As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.listtransactions, """" + Account + """, " + Count.ToString + ", " + From.ToString + "")))
-        Return TXs
-    End Function
+    'Public Function ListTransactions(ByVal Account As String, Optional ByVal Count As Integer = 10, Optional ByVal From As Integer = 0) As String
+    '    Dim TXs As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.listtransactions, """" + Account + """, " + Count.ToString + ", " + From.ToString + "")))
+    '    Return TXs
+    'End Function
 
-    Public Function GetRawMempool() As String
-        Dim Mempool As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.getrawmempool, "")))
-        Return Mempool
-    End Function
+    'Public Function GetRawMempool() As String
+    '    Dim Mempool As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.getrawmempool, "")))
+    '    Return Mempool
+    'End Function
 
     ''' <summary>
     ''' Gets the unconfirmed transaction output
@@ -520,10 +519,10 @@ Public Class ClsBitcoinAPI
 
     'End Function
 
-    Public Function VerifyMessage(ByVal Address As String, ByVal Signature As String, ByVal Message As String) As String
-        Dim VerifyResponse As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.verifymessage, """" + Address + """, """ + Signature + """, """ + Message + """")))
-        Return VerifyResponse
-    End Function
+    'Public Function VerifyMessage(ByVal Address As String, ByVal Signature As String, ByVal Message As String) As String
+    '    Dim VerifyResponse As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.verifymessage, """" + Address + """, """ + Signature + """, """ + Message + """")))
+    '    Return VerifyResponse
+    'End Function
 
     Public Function CreateWallet(ByVal Name As String, Optional ByVal Description As String = "", Optional ByVal Rescan As Boolean = True) As String
         Dim CreateWalletResponse As String = "{""result"":{""name"":""" + Name.Trim + """,""warning"":""""},""Error"":null,""id"":1}"
@@ -591,23 +590,21 @@ Public Class ClsBitcoinAPI
         Return DecRawTx
     End Function
 
-    Public Function DecodeScript(ByVal Script As String) As String
-        Dim DecScript As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.decodescript, """" + Script + """")))
-        Return DecScript
-    End Function
+    'Public Function DecodeScript(ByVal Script As String) As String
+    '    Dim DecScript As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.decodescript, """" + Script + """")))
+    '    Return DecScript
+    'End Function
 
-    Public Function GetTransaction(ByVal TX As String) As String
-        LoadWallet()
-        Dim GetTX As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.gettransaction, """" + TX + """")))
-        Return GetTX
-    End Function
-
+    'Public Function GetTransaction(ByVal TX As String) As String
+    '    LoadWallet()
+    '    Dim GetTX As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.gettransaction, """" + TX + """")))
+    '    Return GetTX
+    'End Function
 
     Private Function LoadWallet()
         Dim T_LoadWallet As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.loadwallet, """" + API_Wallet + """")))
         Return T_LoadWallet
     End Function
-
 
     'Public Function GetTransactionInfo(ByVal TX As String) As String
     '    Dim TxInfo As String = RequestFromBitcoinWallet(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.gettransaction, """" + TX + """")))
@@ -619,7 +616,6 @@ Public Class ClsBitcoinAPI
 
     '    Return TxInfo
     'End Function
-
 
     Public Function GetMiningInfo() As String
         Dim MiningInfo As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.getmininginfo, "")), 1000)
@@ -660,9 +656,6 @@ Public Class ClsBitcoinAPI
         Dim Unspends As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.listunspent, Address)))
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Unspends, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        'Dim JSON As ClsJSON = New ClsJSON
-        'Dim XML_Vouts As String = Converter.FirstValue("unspent").ToString() ' JSON.GetFromJSON(Unspends, "result/")
-
         Dim Result As List(Of KeyValuePair(Of String, Object)) = Converter.Search(Of List(Of KeyValuePair(Of String, Object)))("result")
 
         If Result.Count > 0 Then
@@ -680,18 +673,16 @@ Public Class ClsBitcoinAPI
 
     End Function
 
+    'Public Function ListAddressGroupings()
+    '    Dim AddresseGrps As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.listaddressgroupings, "")))
+    '    Return AddresseGrps
+    'End Function
 
-    Public Function ListAddressGroupings()
-        Dim AddresseGrps As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.listaddressgroupings, "")))
-        Return AddresseGrps
-    End Function
 
-
-    Public Function DumpPrivKey(ByVal Address As String) As String
-        Dim PrivKey As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.dumpprivkey, """" + Address + """")))
-        Return PrivKey
-    End Function
-
+    'Public Function DumpPrivKey(ByVal Address As String) As String
+    '    Dim PrivKey As String = RequestFromBitcoinNode(Full_API_URL, ReqStrToByte(BuildRequestString(BTC_API_CALLS.dumpprivkey, """" + Address + """")))
+    '    Return PrivKey
+    'End Function
 
     Function RequestFromBitcoinNode(ByVal URL As String, ByVal ByteArray As Byte(), Optional ByVal TimeOut As Integer = 60000) As String
 

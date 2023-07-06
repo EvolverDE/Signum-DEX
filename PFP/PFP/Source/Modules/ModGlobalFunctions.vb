@@ -24,12 +24,12 @@ Module ModGlobalFunctions
         PubKeyAry = SHA256.ComputeHash(PubKeyAry)
         Return BitConverter.ToUInt64(PubKeyAry, 0) '{PubKeyAry(0), PubKeyAry(1), PubKeyAry(2), PubKeyAry(3), PubKeyAry(4), PubKeyAry(5), PubKeyAry(6), PubKeyAry(7)}, 0)
     End Function
-    Function GetAccountRS(ByVal PublicKeyHEX As String) As String
-        Return ClsReedSolomon.Encode(GetAccountID(PublicKeyHEX))
-    End Function
-    Function GetAccountRSFromID(ByVal AccountID As ULong) As String
-        Return ClsReedSolomon.Encode(AccountID)
-    End Function
+    'Function GetAccountRS(ByVal PublicKeyHEX As String) As String
+    '    Return ClsReedSolomon.Encode(GetAccountID(PublicKeyHEX))
+    'End Function
+    'Function GetAccountRSFromID(ByVal AccountID As ULong) As String
+    '    Return ClsReedSolomon.Encode(AccountID)
+    'End Function
     Function GetAccountIDFromRS(ByVal AccountRS As String) As ULong
         Return ClsReedSolomon.Decode(AccountRS)
     End Function
@@ -152,7 +152,6 @@ Module ModGlobalFunctions
         End If
 
     End Function
-
 
     Function CheckPIN() As Boolean
 
@@ -319,7 +318,6 @@ Module ModGlobalFunctions
 
     End Function
 
-
     Function IsReedSolomon(ByVal RSString As String) As Boolean
 
         If Not RSString.Length = 20 Then
@@ -354,22 +352,22 @@ Module ModGlobalFunctions
         Return Cnter
 
     End Function
-    Function IsNumber(ByVal Input As String) As Boolean
+    'Function IsNumber(ByVal Input As String) As Boolean
 
-        Dim CharAry() As Char = Input.ToUpper.ToCharArray
+    '    Dim CharAry() As Char = Input.ToUpper.ToCharArray
 
-        For Each Chr As Char In CharAry
-            Select Case Chr
-                Case "0"c, "1"c, "2"c, "3"c, "4"c, "5"c, "6"c, "7"c, "8"c, "9"c
-                Case Else
-                    Return False
-            End Select
+    '    For Each Chr As Char In CharAry
+    '        Select Case Chr
+    '            Case "0"c, "1"c, "2"c, "3"c, "4"c, "5"c, "6"c, "7"c, "8"c, "9"c
+    '            Case Else
+    '                Return False
+    '        End Select
 
-        Next
+    '    Next
 
-        Return True
+    '    Return True
 
-    End Function
+    'End Function
 
 #Region "PayPal Interactions"
     Function CheckPayPalAPI() As String

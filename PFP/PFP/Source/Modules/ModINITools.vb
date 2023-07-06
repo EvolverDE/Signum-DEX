@@ -78,7 +78,6 @@ Module ModINITools
         Bitcoin = 6
     End Enum
 
-
     Function ReloadINI() As Boolean
         INISettings.ReadINI()
         Return True
@@ -287,7 +286,6 @@ Module ModINITools
 
     End Function
 
-
     Function GetINISection(ByVal Setting As E_Setting) As E_SettingSection
 
         Dim Section As E_SettingSection
@@ -358,7 +356,6 @@ Module ModINITools
         Return T
 
     End Function
-
 
     Function GetINISetting(ByVal Setting As E_Setting, Optional ByVal DefaultValue As String = "", Optional ByVal File As String = "/" + "Settings.ini") As String
         Dim Section As E_SettingSection = GetINISection(Setting)

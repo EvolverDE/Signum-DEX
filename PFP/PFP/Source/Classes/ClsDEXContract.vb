@@ -2496,15 +2496,15 @@ Public Class ClsDEXContract
 
     End Function
 
-    Public Function InjectResponder(ByVal SenderPublicKey As String, ByVal ResponderAddress As String, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
-        Dim T_ResponderID As ULong = ClsReedSolomon.Decode(ResponderAddress)
+    'Public Function InjectResponder(ByVal SenderPublicKey As String, ByVal ResponderAddress As String, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
+    '    Dim T_ResponderID As ULong = ClsReedSolomon.Decode(ResponderAddress)
 
-        If T_ResponderID = 0L Then
-            Return Application.ProductName + "-error in InjectResponder(ol1): ->" + vbCrLf + T_ResponderID.ToString
-        End If
+    '    If T_ResponderID = 0L Then
+    '        Return Application.ProductName + "-error in InjectResponder(ol1): ->" + vbCrLf + T_ResponderID.ToString
+    '    End If
 
-        Return InjectResponder(SenderPublicKey, T_ResponderID, Fee, SignKeyHEX)
-    End Function
+    '    Return InjectResponder(SenderPublicKey, T_ResponderID, Fee, SignKeyHEX)
+    'End Function
     Public Function InjectResponder(ByVal SenderPublicKey As String, ByVal ResponderID As ULong, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
 
         Dim Response As String = ""
@@ -2606,19 +2606,19 @@ Public Class ClsDEXContract
         Return Response
 
     End Function
-    Public Function MediateDispute(ByVal SenderPublicKey As String, ByVal Amount As Double, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
+    'Public Function MediateDispute(ByVal SenderPublicKey As String, ByVal Amount As Double, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
 
-        Dim Percentage As ULong = 0L
+    '    Dim Percentage As ULong = 0L
 
-        If Amount > C_CurrentBuySellAmount Then
-            Percentage = 10000L
-        Else
-            Percentage = Convert.ToUInt64(Math.Floor(Amount / C_CurrentBuySellAmount * 10000))
-        End If
+    '    If Amount > C_CurrentBuySellAmount Then
+    '        Percentage = 10000L
+    '    Else
+    '        Percentage = Convert.ToUInt64(Math.Floor(Amount / C_CurrentBuySellAmount * 10000))
+    '    End If
 
-        Return MediateDispute(SenderPublicKey, Percentage, Fee, SignKeyHEX)
+    '    Return MediateDispute(SenderPublicKey, Percentage, Fee, SignKeyHEX)
 
-    End Function
+    'End Function
 
     Public Function MediateDispute(ByVal SenderPublicKey As String, ByVal Percentage As Decimal, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
         Dim T_Percent As ULong = Convert.ToUInt64(Percentage * 100)
@@ -2857,10 +2857,10 @@ Public Class ClsDEXContract
 
     End Function
 
-    Public Function InjectChainSwapKeyToHash(ByVal SenderPublicKey As String, ByVal ChainSwapKey As String, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
-        Dim SecretKeyList As String = GetSHA256HashString(ChainSwapKey)
-        Return InjectChainSwapHash(SenderPublicKey, SecretKeyList, Fee, SignKeyHEX)
-    End Function
+    'Public Function InjectChainSwapKeyToHash(ByVal SenderPublicKey As String, ByVal ChainSwapKey As String, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
+    '    Dim SecretKeyList As String = GetSHA256HashString(ChainSwapKey)
+    '    Return InjectChainSwapHash(SenderPublicKey, SecretKeyList, Fee, SignKeyHEX)
+    'End Function
 
     Public Function InjectChainSwapHash(ByVal SenderPublicKey As String, ByVal ChainSwapHash As String, Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
 
@@ -2993,54 +2993,54 @@ Public Class ClsDEXContract
 
     End Function
 
-    Public Function SendMessageToDEXContract(ByVal SenderPublicKeyHEX As String, ByVal Collateral As Double, ByVal ULongMsgList As List(Of ULong), Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
+    'Public Function SendMessageToDEXContract(ByVal SenderPublicKeyHEX As String, ByVal Collateral As Double, ByVal ULongMsgList As List(Of ULong), Optional ByVal Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
 
-        Dim Response As String = Application.ProductName + "-error in SendMessageToDEXContract(#init# " + SenderPublicKeyHEX + ", " + Collateral.ToString + ", " + ULongMsgList.ToString + ", " + Fee.ToString + ", " + SignKeyHEX + ")"
+    '    Dim Response As String = Application.ProductName + "-error in SendMessageToDEXContract(#init# " + SenderPublicKeyHEX + ", " + Collateral.ToString + ", " + ULongMsgList.ToString + ", " + Fee.ToString + ", " + SignKeyHEX + ")"
 
-        If CheckForUTX() Or CheckForTX() Or Not C_Status = E_Status.OPEN Then
-            Return Application.ProductName + "-error in SendMessageToDEXContract(1): ->" + vbCrLf + "Contract not OPEN"
-        End If
-
-
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
-        Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULongMsgList)
-        Response = SignumAPI.SendMoney(SenderPublicKeyHEX, C_ID, Collateral + ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
-
-        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
-
-        'Dim JSON As ClsJSON = New ClsJSON
-
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
-            'TX not OK
-            Return Application.ProductName + "-error in SendMessageToDEXContract(2): ->" + vbCrLf + Response
-        End If
-
-        If Response.Contains(Application.ProductName + "-error") Then
-            Return Response
-        Else
-            Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
-            Response = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
-        End If
+    '    If CheckForUTX() Or CheckForTX() Or Not C_Status = E_Status.OPEN Then
+    '        Return Application.ProductName + "-error in SendMessageToDEXContract(1): ->" + vbCrLf + "Contract not OPEN"
+    '    End If
 
 
-        If Not SignKeyHEX.Trim = "" Then
+    '    Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
+    '    Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULongMsgList)
+    '    Response = SignumAPI.SendMoney(SenderPublicKeyHEX, C_ID, Collateral + ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
 
-            Dim SignumNET As ClsSignumNET = New ClsSignumNET
-            Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(Response, SignKeyHEX)
-            Response = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+    '    Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-            If Response.Contains(Application.ProductName + "-error") Then
-                Return Response
-            End If
+    '    'Dim JSON As ClsJSON = New ClsJSON
 
-        End If
+    '    Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+    '    If Error0.GetType = GetType(Boolean) Then
+    '        'TX OK
+    '    ElseIf Error0.GetType = GetType(String) Then
+    '        'TX not OK
+    '        Return Application.ProductName + "-error in SendMessageToDEXContract(2): ->" + vbCrLf + Response
+    '    End If
 
-        Return Response
+    '    If Response.Contains(Application.ProductName + "-error") Then
+    '        Return Response
+    '    Else
+    '        Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
+    '        Response = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
+    '    End If
 
-    End Function
+
+    '    If Not SignKeyHEX.Trim = "" Then
+
+    '        Dim SignumNET As ClsSignumNET = New ClsSignumNET
+    '        Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(Response, SignKeyHEX)
+    '        Response = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+    '        If Response.Contains(Application.ProductName + "-error") Then
+    '            Return Response
+    '        End If
+
+    '    End If
+
+    '    Return Response
+
+    'End Function
 
 #End Region
 

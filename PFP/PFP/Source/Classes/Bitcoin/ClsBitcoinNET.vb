@@ -9,7 +9,7 @@ Imports Microsoft.VisualBasic.Devices
 Public Class ClsBitcoinNET
     Private Property BTC_API As ClsBitcoinAPI
 
-    Private Property C_Transaction As ClsTransaction
+    'Private Property C_Transaction As ClsTransaction
 
     Public Structure S_UnspentTransactionOutput
         Dim TransactionID As String
@@ -39,9 +39,9 @@ Public Class ClsBitcoinNET
         Return INIGetValue(BitcoinConfigFile, BitcoinConfigFileSection, ConfigEntry.ToString, DefaultValue)
     End Function
 
-    Private Sub SetBitcoinConfig(ByVal ConfigEntry As E_BitcoinConfigEntry, ByVal Value As String)
-        INISetValue(BitcoinConfigFile, BitcoinConfigFileSection, ConfigEntry.ToString, Value)
-    End Sub
+    'Private Sub SetBitcoinConfig(ByVal ConfigEntry As E_BitcoinConfigEntry, ByVal Value As String)
+    '    INISetValue(BitcoinConfigFile, BitcoinConfigFileSection, ConfigEntry.ToString, Value)
+    'End Sub
 
     Sub New()
 
@@ -166,7 +166,6 @@ Public Class ClsBitcoinNET
 
     End Function
 
-
 #End Region
 
 #Region "Get"
@@ -259,21 +258,21 @@ Public Class ClsBitcoinNET
 
     End Function
 
-    Public Function GetTransaction(ByVal TX As String) As String
+    'Public Function GetTransaction(ByVal TX As String) As String
 
-        If TX.Trim = "" Or Not MessageIsHEXString(TX) Then
-            Return ""
-        End If
+    '    If TX.Trim = "" Or Not MessageIsHEXString(TX) Then
+    '        Return ""
+    '    End If
 
-        Dim Transaction As String = BTC_API.GetTransaction(TX)
+    '    Dim Transaction As String = BTC_API.GetTransaction(TX)
 
-        If Not IsErrorOrWarning(Transaction, "", False, False) Then
-            Return New ClsJSONAndXMLConverter(Transaction, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
-        Else
-            Return Transaction
-        End If
+    '    If Not IsErrorOrWarning(Transaction, "", False, False) Then
+    '        Return New ClsJSONAndXMLConverter(Transaction, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+    '    Else
+    '        Return Transaction
+    '    End If
 
-    End Function
+    'End Function
 
     Public Function GetTXOut(ByVal TX As String, ByVal VOut As Integer) As String
 
@@ -368,25 +367,25 @@ Public Class ClsBitcoinNET
 
     End Function
 
-    Function GetRIPE160FromScript(ByVal Script As String) As List(Of String)
+    'Function GetRIPE160FromScript(ByVal Script As String) As List(Of String)
 
-        Dim T_RIPE160List As List(Of String) = New List(Of String)
+    '    Dim T_RIPE160List As List(Of String) = New List(Of String)
 
-        Dim RIPE160 As String = GetXFromScript(Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient)
+    '    Dim RIPE160 As String = GetXFromScript(Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient)
 
-        If Not RIPE160.Trim = "" Then
-            T_RIPE160List.Add(RIPE160)
-        End If
+    '    If Not RIPE160.Trim = "" Then
+    '        T_RIPE160List.Add(RIPE160)
+    '    End If
 
-        RIPE160 = GetXFromScript(Script, ClsScriptEntry.E_OP_Code.RIPE160Sender)
+    '    RIPE160 = GetXFromScript(Script, ClsScriptEntry.E_OP_Code.RIPE160Sender)
 
-        If Not RIPE160.Trim = "" Then
-            T_RIPE160List.Add(RIPE160)
-        End If
+    '    If Not RIPE160.Trim = "" Then
+    '        T_RIPE160List.Add(RIPE160)
+    '    End If
 
-        Return T_RIPE160List
+    '    Return T_RIPE160List
 
-    End Function
+    'End Function
 
     Function GetRIPE160FromScript(ByVal ScriptList As List(Of ClsScriptEntry)) As List(Of String)
 
@@ -461,12 +460,12 @@ Public Class ClsBitcoinNET
 
 #Region "Convert/Encode/Decode"
 
-    Public Function DecodeRawTX(ByVal RawTX As String) As String
-        Return BTC_API.DecodeRawTransaction(RawTX)
-    End Function
-    Public Function DecodeScript(ByVal Script As String) As String
-        Return BTC_API.DecodeScript(Script)
-    End Function
+    'Public Function DecodeRawTX(ByVal RawTX As String) As String
+    '    Return BTC_API.DecodeRawTransaction(RawTX)
+    'End Function
+    'Public Function DecodeScript(ByVal Script As String) As String
+    '    Return BTC_API.DecodeScript(Script)
+    'End Function
 
     'Private Function ConvertJSONToXML(ByVal Input As String, Optional ByVal SearchString As String = "result") As String
 

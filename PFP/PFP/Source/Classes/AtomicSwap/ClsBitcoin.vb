@@ -153,38 +153,38 @@
 
     End Function
 
-    Private Function GetBitcoinRedeemScriptFromINI(DEXContractID As ULong, OrderID As ULong, ByVal BitcoinTransactionID As String, ByVal ChainSwapHash As String) As String
+    'Private Function GetBitcoinRedeemScriptFromINI(DEXContractID As ULong, OrderID As ULong, ByVal BitcoinTransactionID As String, ByVal ChainSwapHash As String) As String
 
-        Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
-        Dim BitcoinTransactionsList As List(Of String) = New List(Of String)
+    '    Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
+    '    Dim BitcoinTransactionsList As List(Of String) = New List(Of String)
 
-        If BitcoinTransactions.Contains(";") Then
-            Dim TempList As List(Of String) = New List(Of String)(BitcoinTransactions.Split(";"c))
-            For Each TempTX As String In TempList
-                If Not TempTX.Trim = "" Then
-                    BitcoinTransactionsList.Add(TempTX)
-                End If
-            Next
-        Else
-            If Not BitcoinTransactions.Trim = "" Then
-                BitcoinTransactionsList.Add(BitcoinTransactions)
-            End If
-        End If
+    '    If BitcoinTransactions.Contains(";") Then
+    '        Dim TempList As List(Of String) = New List(Of String)(BitcoinTransactions.Split(";"c))
+    '        For Each TempTX As String In TempList
+    '            If Not TempTX.Trim = "" Then
+    '                BitcoinTransactionsList.Add(TempTX)
+    '            End If
+    '        Next
+    '    Else
+    '        If Not BitcoinTransactions.Trim = "" Then
+    '            BitcoinTransactionsList.Add(BitcoinTransactions)
+    '        End If
+    '    End If
 
-        Dim FindStr As String = "<DEXContract>" + DEXContractID.ToString() + "</DEXContract>" +
-            "<OrderID>" + OrderID.ToString() + "</OrderID>" +
-            "<BitcoinTransactionID>" + BitcoinTransactionID + "</BitcoinTransactionID>"
+    '    Dim FindStr As String = "<DEXContract>" + DEXContractID.ToString() + "</DEXContract>" +
+    '        "<OrderID>" + OrderID.ToString() + "</OrderID>" +
+    '        "<BitcoinTransactionID>" + BitcoinTransactionID + "</BitcoinTransactionID>"
 
-        For Each BitcoinTX As String In BitcoinTransactionsList
-            If BitcoinTX.Contains(FindStr) And BitcoinTX.Contains("<RedeemScript>") And BitcoinTX.Contains(ChainSwapHash) Then
-                Dim RedeemScript As String = GetStringBetween(BitcoinTX, "<RedeemScript>", "</RedeemScript>")
-                Return RedeemScript
-            End If
-        Next
+    '    For Each BitcoinTX As String In BitcoinTransactionsList
+    '        If BitcoinTX.Contains(FindStr) And BitcoinTX.Contains("<RedeemScript>") And BitcoinTX.Contains(ChainSwapHash) Then
+    '            Dim RedeemScript As String = GetStringBetween(BitcoinTX, "<RedeemScript>", "</RedeemScript>")
+    '            Return RedeemScript
+    '        End If
+    '    Next
 
-        Return ""
+    '    Return ""
 
-    End Function
+    'End Function
 
     Private Function GetBitcoinRedeemScriptFromINI(ByVal BitcoinTransactionID As String, ByVal ChainSwapHash As String) As String
 
@@ -516,7 +516,6 @@
 
     'End Function
 
-
     Public Function SignBitcoinTransaction(ByVal Transaction As ClsTransaction, ByVal PrivateKey As String) As String
         Return Transaction.SignTransaction(PrivateKey)
     End Function
@@ -533,24 +532,24 @@
     '    Return Transaction.SignTransaction(PrivateKey, "")
     'End Function
 
-    Public Function SendXItemTransaction(ByVal RecipientAddress As String, ByVal Amount As Double) As String
+    'Public Function SendXItemTransaction(ByVal RecipientAddress As String, ByVal Amount As Double) As String
 
-        Dim T_BTCTransaction As ClsTransaction = CreateBitcoinTransaction(Amount, RecipientAddress, GetBitcoinMainAddress())
-        Dim BitcoinPrivateKey As String = GetBitcoinMainPrivateKey(False).ToLower()
+    '    Dim T_BTCTransaction As ClsTransaction = CreateBitcoinTransaction(Amount, RecipientAddress, GetBitcoinMainAddress())
+    '    Dim BitcoinPrivateKey As String = GetBitcoinMainPrivateKey(False).ToLower()
 
-        If Not BitcoinPrivateKey = "" Then
-            T_BTCTransaction.C_FeesNQTPerByte = GetFeeNQT(True)
-            Dim T_BitcoinRAWTX As String = SignBitcoinTransaction(T_BTCTransaction, BitcoinPrivateKey) 'AtomicSwap: Sign BitcoinTX with PrivateKey
+    '    If Not BitcoinPrivateKey = "" Then
+    '        T_BTCTransaction.C_FeesNQTPerByte = GetFeeNQT(True)
+    '        Dim T_BitcoinRAWTX As String = SignBitcoinTransaction(T_BTCTransaction, BitcoinPrivateKey) 'AtomicSwap: Sign BitcoinTX with PrivateKey
 
-            If Not T_BitcoinRAWTX.Trim = "" Then
-                Return SendRawBitcoinTransaction(T_BitcoinRAWTX)
-            End If
+    '        If Not T_BitcoinRAWTX.Trim = "" Then
+    '            Return SendRawBitcoinTransaction(T_BitcoinRAWTX)
+    '        End If
 
-        End If
+    '    End If
 
-        Return Application.ProductName + "-error in SendXItemTransaction() -> No Keys"
+    '    Return Application.ProductName + "-error in SendXItemTransaction() -> No Keys"
 
-    End Function
+    'End Function
 
     Public Structure S_Transaction
         Dim TransactionID As String

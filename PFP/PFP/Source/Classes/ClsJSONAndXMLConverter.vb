@@ -84,13 +84,11 @@ Public Class ClsJSONAndXMLConverter
 
     End Sub
 
-
     Sub New(ByVal KeyValue As KeyValuePair(Of String, Object))
         ListOfKeyValues.Add(KeyValue)
         JSONString = ListToJSON(ListOfKeyValues)
         XMLString = ListToXML(ListOfKeyValues)
     End Sub
-
 
 #End Region
 
@@ -458,7 +456,6 @@ Public Class ClsJSONAndXMLConverter
 
     End Function
 
-
     Public Function GetFirstInteger(ByVal SearchPAttern As String) As Integer
 
         Dim Obj As Object = FirstValue(SearchPAttern)
@@ -470,7 +467,6 @@ Public Class ClsJSONAndXMLConverter
         Return 0
 
     End Function
-
 
     Public Function GetFirstULong(ByVal SearchPAttern As String) As ULong
 
@@ -484,7 +480,6 @@ Public Class ClsJSONAndXMLConverter
 
     End Function
 
-
     Public Function GetFirstLong(ByVal SearchPAttern As String) As Long
 
         Dim Obj As Object = FirstValue(SearchPAttern)
@@ -497,8 +492,6 @@ Public Class ClsJSONAndXMLConverter
 
     End Function
 
-
-
     Public Function FirstValue(ByVal SearchPattern As String) As Object
 
         Dim KeyVals = Search(Of List(Of KeyValuePair(Of String, Object)))(SearchPattern)
@@ -510,7 +503,6 @@ Public Class ClsJSONAndXMLConverter
         Return False
 
     End Function
-
 
     Public Function Search(ByVal SearchPattern As String, ByVal ParseTo As E_ParseType, Optional ByVal GetPath As Boolean = False) As String
 

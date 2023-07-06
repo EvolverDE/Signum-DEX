@@ -41,7 +41,6 @@ Public Class ClsTCPAPI
 
     End Structure
 
-
     Public Property StatusMSG As List(Of String) = New List(Of String)
     Public Property API_ShowStatusMSG As Boolean = True
 
@@ -157,7 +156,6 @@ Public Class ClsTCPAPI
         Return True
 
     End Function
-
 
     Private Sub TCPTimer_Tick(ByVal sender As Object, ByVal e As EventArgs)
         ClearList()
@@ -632,52 +630,52 @@ Public Class ClsTCPAPI
 
     End Sub
 
-    Private Function CheckLists(ByVal List1 As List(Of String), List2 As List(Of String)) As Boolean
+    'Private Function CheckLists(ByVal List1 As List(Of String), List2 As List(Of String)) As Boolean
 
-        Dim Returner As Boolean = True
+    '    Dim Returner As Boolean = True
 
-        If List1.Count <> List2.Count Then
-            Return False
-        End If
+    '    If List1.Count <> List2.Count Then
+    '        Return False
+    '    End If
 
-        If List1.Count = 0 Then
-            Return True
-        End If
+    '    If List1.Count = 0 Then
+    '        Return True
+    '    End If
 
-        Dim Result As List(Of Boolean) = New List(Of Boolean)
+    '    Dim Result As List(Of Boolean) = New List(Of Boolean)
 
-        For i As Integer = 0 To List1.Count - 1
+    '    For i As Integer = 0 To List1.Count - 1
 
-            Dim List1Entry As String = List1(i)
+    '        Dim List1Entry As String = List1(i)
 
-            Dim Founded As Boolean = False
-            For j As Integer = 0 To List2.Count - 1
+    '        Dim Founded As Boolean = False
+    '        For j As Integer = 0 To List2.Count - 1
 
-                Dim List2Entry As String = List2(j)
+    '            Dim List2Entry As String = List2(j)
 
-                If List1Entry = List2Entry Then
-                    Result.Add(True)
-                    Founded = True
-                    Exit For
-                End If
+    '            If List1Entry = List2Entry Then
+    '                Result.Add(True)
+    '                Founded = True
+    '                Exit For
+    '            End If
 
-            Next
+    '        Next
 
-            If Not Founded Then
-                Result.Add(False)
-            End If
+    '        If Not Founded Then
+    '            Result.Add(False)
+    '        End If
 
-        Next
+    '    Next
 
-        For Each Res As Boolean In Result
-            If Res = False Then
-                Return False
-            End If
-        Next
+    '    For Each Res As Boolean In Result
+    '        If Res = False Then
+    '            Return False
+    '        End If
+    '    Next
 
-        Return True
+    '    Return True
 
-    End Function
+    'End Function
 
     Private Sub SendHTMLResponse(ByVal TCPClient As TcpClient, ByVal httpRequest As String)
 

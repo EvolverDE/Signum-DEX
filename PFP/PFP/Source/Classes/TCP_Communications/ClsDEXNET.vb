@@ -476,9 +476,9 @@ Public Class ClsDEXNET
     Public Function GetPeers() As List(Of S_Peer)
         Return New List(Of S_Peer)(Peers.ToArray)
     End Function
-    Public Sub GetClients()
-        SendRequest("<" + E_XMLTags.Request.ToString + ">GetClients</" + E_XMLTags.Request.ToString + "><" + E_XMLTags.Timestamp.ToString + ">" + GetUnixTimestamp() + "</" + E_XMLTags.Timestamp.ToString + "><" + E_XMLTags.PublicKey.ToString + ">" + DEXNET_PublicKeyHEX + "</" + E_XMLTags.PublicKey.ToString + ">")
-    End Sub
+    'Public Sub GetClients()
+    '    SendRequest("<" + E_XMLTags.Request.ToString + ">GetClients</" + E_XMLTags.Request.ToString + "><" + E_XMLTags.Timestamp.ToString + ">" + GetUnixTimestamp() + "</" + E_XMLTags.Timestamp.ToString + "><" + E_XMLTags.PublicKey.ToString + ">" + DEXNET_PublicKeyHEX + "</" + E_XMLTags.PublicKey.ToString + ">")
+    'End Sub
 
     Public Sub GetPing()
 
@@ -1648,7 +1648,6 @@ Public Class ClsDEXNET
 
 
     End Function
-
 
     Function MsgIsHEXStr(ByVal Message As String) As Boolean
 

@@ -6,11 +6,11 @@ Imports System.Security.Cryptography
 Public Class ClsTransaction
 
     Private Version As Integer = 2
-    Public ReadOnly Property NumberOfInputs As Integer
-        Get
-            Return C_Inputs.Count
-        End Get
-    End Property
+    'Public ReadOnly Property NumberOfInputs As Integer
+    '    Get
+    '        Return C_Inputs.Count
+    '    End Get
+    'End Property
 
     Public ReadOnly Property TotalInputAmountNQT As ULong
         Get
@@ -47,7 +47,7 @@ Public Class ClsTransaction
         End Get
     End Property
 
-    Property C_ChangeAmountNQT As ULong
+    'Property C_ChangeAmountNQT As ULong
     Property C_FeesNQTPerByte As ULong = 1UL
 
     Private Property C_ScriptAddresses As List(Of String) = New List(Of String)
@@ -59,11 +59,11 @@ Public Class ClsTransaction
         End Get
     End Property
 
-    Public ReadOnly Property NumberOfOutputs As Integer
-        Get
-            Return C_Outputs.Count
-        End Get
-    End Property
+    'Public ReadOnly Property NumberOfOutputs As Integer
+    '    Get
+    '        Return C_Outputs.Count
+    '    End Get
+    'End Property
 
     Private Property C_Outputs As List(Of ClsOutput) = New List(Of ClsOutput)
     Public ReadOnly Property Outputs As List(Of ClsOutput)
@@ -72,14 +72,13 @@ Public Class ClsTransaction
         End Get
     End Property
 
-    Private C_TransactionType As E_TransactionType = E_TransactionType.None
+    Private Property C_TransactionType As E_TransactionType = E_TransactionType.None
 
-    Public ReadOnly Property TransactionType As E_TransactionType
-        Get
-            Return C_TransactionType
-        End Get
-    End Property
-
+    'Public ReadOnly Property TransactionType As E_TransactionType
+    '    Get
+    '        Return C_TransactionType
+    '    End Get
+    'End Property
 
     Private HashCodeType As Integer = 1
     Private Property OutputLockTime As Integer = 0
@@ -125,11 +124,11 @@ Public Class ClsTransaction
     End Enum
 
     Private Property C_signedTransaction As List(Of S_TXEntry) = New List(Of S_TXEntry)
-    Public ReadOnly Property SignedTransaction As List(Of S_TXEntry)
-        Get
-            Return C_signedTransaction
-        End Get
-    End Property
+    'Public ReadOnly Property SignedTransaction As List(Of S_TXEntry)
+    '    Get
+    '        Return C_signedTransaction
+    '    End Get
+    'End Property
 
     Private Property AddressesFiltered As Boolean = False
 
@@ -188,9 +187,9 @@ Public Class ClsTransaction
 
     End Sub
 
-    Sub New(ByVal UTXO As ClsBitcoinNET.S_UnspentTransactionOutput)
-        AddUnspentTransactionOutput(UTXO)
-    End Sub
+    'Sub New(ByVal UTXO As ClsBitcoinNET.S_UnspentTransactionOutput)
+    '    AddUnspentTransactionOutput(UTXO)
+    'End Sub
 
     Private Sub AddUnspentTransactionOutput(ByVal UTXO As ClsBitcoinNET.S_UnspentTransactionOutput)
 
@@ -412,7 +411,6 @@ Public Class ClsTransaction
         End If
 
     End Sub
-
 
     Private Sub FilterAddresses(ByVal Addresses As List(Of String))
 
@@ -1911,17 +1909,17 @@ Public Class ClsTransaction
 
     End Function
 
-    Private Function GetPushDataSequenceStringFromLength(ByVal Length As Integer) As String
-        Dim LengthSequence As List(Of ClsScriptEntry) = GetPushDataSequenceFromLength(Length)
+    'Private Function GetPushDataSequenceStringFromLength(ByVal Length As Integer) As String
+    '    Dim LengthSequence As List(Of ClsScriptEntry) = GetPushDataSequenceFromLength(Length)
 
-        Dim SequenceString As String = ""
-        For Each Len As ClsScriptEntry In LengthSequence
-            SequenceString += Len.ValueHex
-        Next
+    '    Dim SequenceString As String = ""
+    '    For Each Len As ClsScriptEntry In LengthSequence
+    '        SequenceString += Len.ValueHex
+    '    Next
 
-        Return SequenceString
+    '    Return SequenceString
 
-    End Function
+    'End Function
 
 #End Region
 

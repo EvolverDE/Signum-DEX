@@ -2283,10 +2283,7 @@ Public Class ClsSignumAPI
 
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(UnsignedTX, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        'Dim JSON As ClsJSON = New ClsJSON
-        'Dim RespList As Object = JSON.JSONRecursive(UnsignedTX)
-
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+        Dim Error0 As Object = Converter.FirstValue("errorCode")
         If Error0.GetType().Name = GetType(Boolean).Name Then
             'TX OK
         ElseIf Error0.GetType().Name = GetType(String).Name Then
@@ -2315,90 +2312,6 @@ Public Class ClsSignumAPI
 
         End If
 
-#Region "deprecaded"
-        'For Each T_Entry In DirectCast(RespList, List(Of Object))
-
-        '    Dim Entry As List(Of Object) = New List(Of Object)
-
-        '    If T_Entry.GetType().Name = GetType(List(Of Object)).Name Then
-        '        Entry = DirectCast(T_Entry, List(Of Object))
-        '    End If
-
-
-        '    Select Case Entry(0).ToString()
-        '        Case "broadcasted"
-
-        '        Case "unsignedTransactionBytes"
-
-        '            TXDetailList.Add("<unsignedTransactionBytes>" + Entry(1).ToString() + "</unsignedTransactionBytes>")
-
-        '        Case "transactionJSON"
-
-        '            Dim SubEntry As List(Of Object) = New List(Of Object)
-
-        '            If Entry(1).GetType().Name = GetType(List(Of Object)).Name Then
-        '                SubEntry = DirectCast(Entry(1), List(Of Object))
-        '            End If
-
-        '            Dim Type As String = Convert.ToString(JSON.RecursiveListSearch(SubEntry, "type"))
-        '            Dim SubType As String = Convert.ToString(JSON.RecursiveListSearch(SubEntry, "subtype"))
-        '            Dim Timestamp As String = Convert.ToString(JSON.RecursiveListSearch(SubEntry, "timestamp"))
-        '            'Dim Deadline As String = RecursiveSearch(Entry(1), "deadline")
-        '            'Dim senderPublicKey As String = RecursiveSearch(Entry(1), "senderPublicKey")
-        '            Dim AmountNQT As String = Convert.ToString(JSON.RecursiveListSearch(SubEntry, "amountNQT"))
-        '            Dim FeeNQT As String = Convert.ToString(JSON.RecursiveListSearch(SubEntry, "feeNQT"))
-        '            'Dim Signature As String = RecursiveSearch(Entry(1), "signature")
-        '            'Dim SignatureHash As String = RecursiveSearch(Entry(1), "signatureHash")
-        '            'Dim FullHash As String = RecursiveSearch(Entry(1), "fullHash")
-        '            'Dim Transaction As String = TX ' RecursiveSearch(Entry(1), "transaction")
-        '            'Dim Attachments = RecursiveSearch(Entry(1), "attachment")
-
-        '            Dim Attachments As List(Of Object) = TryCast(JSON.RecursiveListSearch(SubEntry, "attachment"), List(Of Object))
-        '            Dim AttStr As String = "<attachment>"
-        '            If Not IsNothing(Attachments) Then
-        '                For Each Attachment In Attachments
-        '                    Dim AttList As List(Of String) = TryCast(Attachment, List(Of String))
-        '                    If Not IsNothing(AttList) Then
-        '                        If AttList.Count > 1 Then
-        '                            AttStr += "<" + AttList(0) + ">" + AttList(1) + "</" + AttList(0) + ">"
-        '                        End If
-        '                    End If
-        '                Next
-        '            End If
-
-        '            AttStr += "</attachment>"
-
-        '            'Dim SenderID As String = JSON.RecursiveListSearch(Entry(1), "sender")
-        '            'Dim SenderRS As String = JSON.RecursiveListSearch(Entry(1), "senderRS")
-        '            'Dim Height As String = JSON.RecursiveListSearch(Entry(1), "height")
-        '            'Dim Version As String = JSON.RecursiveListSearch(Entry(1), "version")
-        '            'Dim ECBlockID As String = JSON.RecursiveListSearch(Entry(1), "ecBlockId")
-        '            'Dim ECBlockHeight As String = JSON.RecursiveListSearch(Entry(1), "ecBlockHeight")
-
-
-        '            TXDetailList.Add("<type>" + Type + "</type>")
-        '            TXDetailList.Add("<subtype>" + SubType + "</subtype>")
-        '            TXDetailList.Add("<timestamp>" + Timestamp + "</timestamp>")
-        '            'TXDetailList.Add("<deadline>" + Deadline + "</deadline>")
-        '            'TXDetailList.Add("<senderPublicKey>" + senderPublicKey + "</senderPublicKey>")
-        '            TXDetailList.Add("<amountNQT>" + AmountNQT + "</amountNQT>")
-        '            TXDetailList.Add("<feeNQT>" + FeeNQT + "</feeNQT>")
-        '            'TXDetailList.Add("<signature>" + Signature + "</signature>")
-        '            'TXDetailList.Add("<signatureHash>" + SignatureHash + "</signatureHash>")
-        '            'TXDetailList.Add("<fullHash>" + FullHash + "</fullHash>")
-        '            'TXDetailList.Add("<transaction>" + Transaction + "</transaction>")
-        '            TXDetailList.Add(AttStr)
-
-        '            Exit For
-
-        '        Case "requestProcessingTime"
-
-
-        '    End Select
-
-        'Next
-#End Region
-
         Return TXDetailList
 
     End Function
@@ -2418,7 +2331,6 @@ Public Class ClsSignumAPI
         Return UnixToTimex
 
     End Function
-
 
     Public Shared Function ULng2String(ByVal Lng As ULong) As String
 
@@ -2493,55 +2405,54 @@ Public Class ClsSignumAPI
 
     End Function
 
-    Public Shared Function ByteAry2HEX(ByVal BytAry() As Byte) As String
+    'Public Shared Function ByteAry2HEX(ByVal BytAry() As Byte) As String
 
-        Dim RetStr As String = ""
+    '    Dim RetStr As String = ""
 
-        Dim ParaBytes As List(Of Byte) = BytAry.ToList
+    '    Dim ParaBytes As List(Of Byte) = BytAry.ToList
 
-        For Each ParaByte As Byte In ParaBytes
-            Dim T_RetStr As String = Conversion.Hex(ParaByte)
+    '    For Each ParaByte As Byte In ParaBytes
+    '        Dim T_RetStr As String = Conversion.Hex(ParaByte)
 
-            If T_RetStr.Length < 2 Then
-                T_RetStr = "0" + T_RetStr
-            End If
+    '        If T_RetStr.Length < 2 Then
+    '            T_RetStr = "0" + T_RetStr
+    '        End If
 
-            RetStr += T_RetStr
+    '        RetStr += T_RetStr
 
-        Next
+    '    Next
 
-        Return RetStr.ToLower
+    '    Return RetStr.ToLower
 
-    End Function
+    'End Function
 
-    Public Shared Function String2HEX(ByVal input As String) As String
+    'Public Shared Function String2HEX(ByVal input As String) As String
 
-        Dim inpLng As ULong = String2ULng(input, False)
+    '    Dim inpLng As ULong = String2ULng(input, False)
 
-        Return ULng2HEX(inpLng)
+    '    Return ULng2HEX(inpLng)
 
-    End Function
-    Public Shared Function HEXStr2String(ByVal input As String) As String
+    'End Function
+    'Public Shared Function HEXStr2String(ByVal input As String) As String
 
-        Dim RetStr As String = ""
-        Dim Ungerade As Integer = input.Length Mod 2
+    '    Dim RetStr As String = ""
+    '    Dim Ungerade As Integer = input.Length Mod 2
 
-        If Ungerade = 1 Then
-            input += "0"
-        End If
+    '    If Ungerade = 1 Then
+    '        input += "0"
+    '    End If
 
-        For j As Integer = 0 To Convert.ToInt32(input.Length / 2) - 1
-            Dim HEXStr As String = input.Substring(j * 2, 2)
+    '    For j As Integer = 0 To Convert.ToInt32(input.Length / 2) - 1
+    '        Dim HEXStr As String = input.Substring(j * 2, 2)
 
-            Dim HEXByte As Byte = Convert.ToByte(HEXStr, 16)
+    '        Dim HEXByte As Byte = Convert.ToByte(HEXStr, 16)
 
-            RetStr += Chr(HEXByte)
-        Next
+    '        RetStr += Chr(HEXByte)
+    '    Next
 
-        Return RetStr.Replace(Convert.ToChar(0), "")
+    '    Return RetStr.Replace(Convert.ToChar(0), "")
 
-    End Function
-
+    'End Function
 
     Public Shared Function DataStr2ULngList(ByVal ParaStr As String) As List(Of ULong)
 
@@ -2609,7 +2520,6 @@ Public Class ClsSignumAPI
         Return RetStr.ToLower
 
     End Function
-
 
     '''' <summary>
     '''' Hashing Inputkey and converting them into List(Of ULong)(FirstULongKey, SecondULongKey, ULongHash)
@@ -2686,53 +2596,53 @@ Public Class ClsSignumAPI
 
 #Region "Toolfunctions"
 
-    Private Structure S_Sorter
-        Dim Timestamp As ULong
-        Dim TXID As ULong
-    End Structure
+    'Private Structure S_Sorter
+    '    Dim Timestamp As ULong
+    '    Dim TXID As ULong
+    'End Structure
 
-    Private Function SortTimeStamp(ByVal input As List(Of List(Of String))) As List(Of List(Of String))
+    'Private Function SortTimeStamp(ByVal input As List(Of List(Of String))) As List(Of List(Of String))
 
-        Dim TSSort As List(Of S_Sorter) = New List(Of S_Sorter)
+    '    Dim TSSort As List(Of S_Sorter) = New List(Of S_Sorter)
 
-        For i As Integer = 0 To input.Count - 1
+    '    For i As Integer = 0 To input.Count - 1
 
-            Dim Entry As List(Of String) = input(i)
+    '        Dim Entry As List(Of String) = input(i)
 
-            Dim T_Timestamp As ULong = GetULongBetweenFromList(Entry, "<timestamp>", "</timestamp>")
-            Dim T_Transaction As ULong = GetULongBetweenFromList(Entry, "<transaction>", "</transaction>")
+    '        Dim T_Timestamp As ULong = GetULongBetweenFromList(Entry, "<timestamp>", "</timestamp>")
+    '        Dim T_Transaction As ULong = GetULongBetweenFromList(Entry, "<transaction>", "</transaction>")
 
-            Dim NuSort As S_Sorter = New S_Sorter
-            NuSort.Timestamp = T_Timestamp
-            NuSort.TXID = T_Transaction
+    '        Dim NuSort As S_Sorter = New S_Sorter
+    '        NuSort.Timestamp = T_Timestamp
+    '        NuSort.TXID = T_Transaction
 
-            TSSort.Add(NuSort)
-        Next
+    '        TSSort.Add(NuSort)
+    '    Next
 
-        TSSort = TSSort.OrderBy(Function(s) s.Timestamp).ToList
+    '    TSSort = TSSort.OrderBy(Function(s) s.Timestamp).ToList
 
-        Dim SReturnList As List(Of List(Of String)) = New List(Of List(Of String))
+    '    Dim SReturnList As List(Of List(Of String)) = New List(Of List(Of String))
 
-        For Each sort In TSSort
+    '    For Each sort In TSSort
 
-            For i As Integer = 0 To input.Count - 1
-                Dim retent = input(i)
+    '        For i As Integer = 0 To input.Count - 1
+    '            Dim retent = input(i)
 
-                Dim T_Timestamp As ULong = GetULongBetweenFromList(retent, "<timestamp>", "</timestamp>")
-                Dim T_Transaction As ULong = GetULongBetweenFromList(retent, "<transaction>", "</transaction>")
+    '            Dim T_Timestamp As ULong = GetULongBetweenFromList(retent, "<timestamp>", "</timestamp>")
+    '            Dim T_Transaction As ULong = GetULongBetweenFromList(retent, "<transaction>", "</transaction>")
 
-                If T_Timestamp = sort.Timestamp And T_Transaction = sort.TXID Then
-                    SReturnList.Add(retent)
-                    Exit For
-                End If
+    '            If T_Timestamp = sort.Timestamp And T_Transaction = sort.TXID Then
+    '                SReturnList.Add(retent)
+    '                Exit For
+    '            End If
 
-            Next
+    '        Next
 
-        Next
+    '    Next
 
-        Return SReturnList
+    '    Return SReturnList
 
-    End Function
+    'End Function
 
 #End Region
 

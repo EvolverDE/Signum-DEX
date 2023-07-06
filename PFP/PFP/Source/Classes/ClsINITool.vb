@@ -38,19 +38,18 @@ Public Class ClsINITool
         End Set
     End Property
 
+    'Public ReadOnly Property Entrys As List(Of S_Section)
+    '    Get
+    '        While Blocked
+    '            Application.DoEvents()
+    '        End While
 
-    Public ReadOnly Property Entrys As List(Of S_Section)
-        Get
-            While Blocked
-                Application.DoEvents()
-            End While
+    '        Dim T_EntryList As List(Of S_Section) = New List(Of S_Section)(_INIEntrys.OrderBy(Function(_INIEntrys) _INIEntrys.Section_Name).ToArray)
 
-            Dim T_EntryList As List(Of S_Section) = New List(Of S_Section)(_INIEntrys.OrderBy(Function(_INIEntrys) _INIEntrys.Section_Name).ToArray)
+    '        Return T_EntryList
 
-            Return T_EntryList
-
-        End Get
-    End Property
+    '    End Get
+    'End Property
 
     Private Property C_Timer As Timer
 
@@ -133,12 +132,10 @@ Public Class ClsINITool
 
     End Function
 
-
     Private Function WriteINI() As Boolean
         BusyFlag = True
         Return True
     End Function
-
 
     Public Sub Closer()
         Close = True
@@ -147,7 +144,6 @@ Public Class ClsINITool
     Private Property BusyFlag As Boolean = False
     Private Property Close As Boolean = False
     Dim RefreshTimerTicks As Integer = 0
-
 
     Sub SerialWriter(ByVal Sender As Object, ByVal E As EventArgs)
 

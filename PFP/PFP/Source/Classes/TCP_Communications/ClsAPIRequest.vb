@@ -36,16 +36,16 @@ Public Class ClsAPIRequest
         HTTP_PUT = 3
         HTTP_DELETE = 4
     End Enum
-    Public Enum E_Path
-        Intface = 0
-        Version = 1
-        Command = 2
-    End Enum
-    Private Structure S_PathValues
-        Dim Path As E_Path
-        Dim Value As String
-    End Structure
-    Private Property PathValues As List(Of S_PathValues) = New List(Of S_PathValues)
+    'Public Enum E_Path
+    '    Intface = 0
+    '    Version = 1
+    '    Command = 2
+    'End Enum
+    'Private Structure S_PathValues
+    '    Dim Path As E_Path
+    '    Dim Value As String
+    'End Structure
+    'Private Property PathValues As List(Of S_PathValues) = New List(Of S_PathValues)
 
     Public Enum E_Endpoint
         NONE = 0
@@ -89,13 +89,13 @@ Public Class ClsAPIRequest
 
     End Enum
 
-    Public Enum E_BitcoinType
-        NONE = 0
-        Standard = 1
-        TimeLock = 2
-        ChainSwapHash = 3
-        TimeLockChainSwapHash = 4
-    End Enum
+    'Public Enum E_BitcoinType
+    '    NONE = 0
+    '    Standard = 1
+    '    TimeLock = 2
+    '    ChainSwapHash = 3
+    '    TimeLockChainSwapHash = 4
+    'End Enum
 
     Public Structure S_Parameter
         Dim Parameter As E_Parameter
@@ -473,9 +473,9 @@ Public Class ClsAPIRequest
 
     End Function
 
-    Private Function GetJSONFromRequest(ByVal Request As String) As Object
-        Return GetJSONFromRequest(Request.Split(Convert.ToChar(vbCr)).ToList())
-    End Function
+    'Private Function GetJSONFromRequest(ByVal Request As String) As Object
+    '    Return GetJSONFromRequest(Request.Split(Convert.ToChar(vbCr)).ToList())
+    'End Function
 
     Private Function GetJSONFromRequest(Optional ByVal Request As List(Of String) = Nothing) As Object
 
