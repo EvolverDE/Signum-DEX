@@ -247,97 +247,61 @@ Public Class ClsTransaction
 
         Dim UTXOList As List(Of String) = BitNET.GetTXDetails(TransactionID)
 
-        Dim MaxUnspentCNT As Integer = -1
-        For Each x As String In UTXOList
-
-            Dim Erro As String = GetStringBetween(x, "<error>", "</error>")
-
-            If Erro.Trim <> "" Then
-                Exit Sub
-            End If
-
-            Dim T_Cnt As Integer = GetIntegerBetween(x, "<", ">")
-
-            If T_Cnt > MaxUnspentCNT Then
-                MaxUnspentCNT = T_Cnt
-            End If
-        Next
-
-        If MaxUnspentCNT = -1 Then
+        If UTXOList.Count = 0 Then
             Exit Sub
         End If
 
-        For i As Integer = 0 To MaxUnspentCNT
+        For Each XMLEntry As String In UTXOList
 
             Dim T_PrevTX As ClsUnspentOutput = New ClsUnspentOutput
             T_PrevTX.TransactionID = TransactionID
-            Dim T_IDX As String = i.ToString
             T_PrevTX.OutputType = AbsClsOutputs.E_Type.Unknown
             T_PrevTX.Confirmations = -1
 
-            For Each x As String In UTXOList
+            T_PrevTX.AmountNQT = Convert.ToUInt64(GetStringBetween(XMLEntry, "<value>", "</value>").Replace(",", "").Replace(".", ""))
+            T_PrevTX.InputIndex = GetIntegerBetween(XMLEntry, "<n>", "</n>")
 
-                If x.Contains("<" + T_IDX + ">") Then
+            Dim T_LockingScript As String = GetStringBetween(XMLEntry, "<hex>", "</hex>")
+            T_PrevTX.ScriptHex = T_LockingScript
+            T_PrevTX.LengthOfScript = Convert.ToInt32(T_LockingScript.Length / 2)
+            T_PrevTX.Script = ConvertLockingScriptStrToList(T_LockingScript)
+            T_PrevTX.OutputType = GetScriptType(T_LockingScript)
 
-                    If x.Contains("<value>") Then
-                        T_PrevTX.AmountNQT = Convert.ToUInt64(GetStringBetween(x, "<value>", "</value>").Replace(",", "").Replace(".", ""))
-                    ElseIf x.Contains("<n>") Then
-                        T_PrevTX.InputIndex = GetIntegerBetween(x, "<n>", "</n>")
-                    ElseIf x.Contains("<asm>") Then
+            If Not RedeemScript.Trim = "" Then
 
-                    ElseIf x.Contains("<hex>") Then
+                Dim T_RedeemScriptHash As String = PubKeyToRipe160(RedeemScript)
 
-                        Dim T_LockingScript As String = GetStringBetween(x, "<hex>", "</hex>")
-                        T_PrevTX.ScriptHex = T_LockingScript
-                        T_PrevTX.LengthOfScript = Convert.ToInt32(T_LockingScript.Length / 2)
-                        T_PrevTX.Script = ConvertLockingScriptStrToList(T_LockingScript)
-                        T_PrevTX.OutputType = GetScriptType(T_LockingScript)
+                If T_LockingScript.Contains(T_RedeemScriptHash) Then
+                    If T_PrevTX.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
+                        T_PrevTX.LengthOfScript = Convert.ToInt32(RedeemScript.Length / 2)
+                        T_PrevTX.Script = ConvertLockingScriptStrToList(RedeemScript)
+                        Dim T_SenderAddress As String = ClsBitcoinNET.GetXFromScript(T_PrevTX.Script, ClsScriptEntry.E_OP_Code.RIPE160Sender)
+                        T_SenderAddress = RIPE160ToAddress(T_SenderAddress, BitcoinAddressPrefix)
+                        Dim T_RecipientAddress As String = ClsBitcoinNET.GetXFromScript(T_PrevTX.Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient)
+                        T_RecipientAddress = RIPE160ToAddress(T_RecipientAddress, BitcoinAddressPrefix)
 
-                        If Not RedeemScript.Trim = "" Then
+                        T_PrevTX.Addresses = New List(Of String)({T_RecipientAddress, T_SenderAddress})
 
-                            Dim T_RedeemScriptHash As String = PubKeyToRipe160(RedeemScript)
-
-                            If T_LockingScript.Contains(T_RedeemScriptHash) Then
-                                If T_PrevTX.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
-                                    T_PrevTX.LengthOfScript = Convert.ToInt32(RedeemScript.Length / 2)
-                                    T_PrevTX.Script = ConvertLockingScriptStrToList(RedeemScript)
-                                    Dim T_SenderAddress As String = ClsBitcoinNET.GetXFromScript(T_PrevTX.Script, ClsScriptEntry.E_OP_Code.RIPE160Sender)
-                                    T_SenderAddress = RIPE160ToAddress(T_SenderAddress, BitcoinAddressPrefix)
-                                    Dim T_RecipientAddress As String = ClsBitcoinNET.GetXFromScript(T_PrevTX.Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient)
-                                    T_RecipientAddress = RIPE160ToAddress(T_RecipientAddress, BitcoinAddressPrefix)
-
-                                    T_PrevTX.Addresses = New List(Of String)({T_RecipientAddress, T_SenderAddress})
-
-                                    T_PrevTX.ScriptHex = RedeemScript
-                                    T_PrevTX.ScriptHash = PubKeyToRipe160(RedeemScript)
-                                End If
-                            End If
-
-                        End If
-
-                    ElseIf x.Contains("<address>") Then
-
-                        If T_PrevTX.Addresses.Count = 0 Then
-                            T_PrevTX.Addresses.Add(GetStringBetween(x, "<address>", "</address>"))
-                        End If
-
-                    ElseIf x.Contains("<type>") Then
-
-                        If T_PrevTX.OutputType = AbsClsOutputs.E_Type.Unknown Then
-
-                            Dim T_Type As String = GetStringBetween(x, "<type>", "</type>") '"<0><type>pubkeyhash</type></0>"
-
-                            If T_Type = "pubkeyhash" Then
-                                T_PrevTX.OutputType = AbsClsOutputs.E_Type.Standard
-                            End If
-
-                        End If
-
+                        T_PrevTX.ScriptHex = RedeemScript
+                        T_PrevTX.ScriptHash = PubKeyToRipe160(RedeemScript)
                     End If
-
                 End If
 
-            Next
+            End If
+
+            If T_PrevTX.Addresses.Count = 0 Then
+                T_PrevTX.Addresses.Add(GetStringBetween(XMLEntry, "<address>", "</address>"))
+            End If
+
+            If T_PrevTX.OutputType = AbsClsOutputs.E_Type.Unknown Then
+
+                Dim T_Type As String = GetStringBetween(XMLEntry, "<type>", "</type>")
+
+                If T_Type = "pubkeyhash" Then
+                    T_PrevTX.OutputType = AbsClsOutputs.E_Type.Standard
+                End If
+
+            End If
 
             Dim TempUTXO As String = BitNET.GetTXOut(TransactionID, T_PrevTX.InputIndex)
 
@@ -439,9 +403,6 @@ Public Class ClsTransaction
         Next
 
         If TotalAmountDifferenceNQT > 0UL Then
-
-
-
             Dim T_OutputChange As ClsOutput = New ClsOutput(ChangeAddress, Satoshi2Dbl(TotalAmountDifferenceNQT), True)
             C_Outputs.Add(T_OutputChange)
         End If

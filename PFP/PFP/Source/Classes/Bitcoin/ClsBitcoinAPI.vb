@@ -669,6 +669,10 @@ Public Class ClsBitcoinAPI
             If Result(0).Value.GetType = GetType(List(Of KeyValuePair(Of String, Object))) Then
                 Dim KeyVals As List(Of KeyValuePair(Of String, Object)) = DirectCast(Result(0).Value, List(Of KeyValuePair(Of String, Object)))
                 Return KeyVals
+            Else
+                Dim KeyVals As List(Of KeyValuePair(Of String, Object)) = New List(Of KeyValuePair(Of String, Object))
+                KeyVals.Add(New KeyValuePair(Of String, Object)("result", Result))
+                Return KeyVals
             End If
         End If
 

@@ -526,6 +526,41 @@ Public Class ClsJSONAndXMLConverter
         Return ""
 
     End Function
+
+    Public Function GetFromPath(ByVal Path As String) As KeyValuePair(Of String, Object)
+
+        Dim ResultList As List(Of Object) = Search(Path, True)
+
+        For Each Entry As Object In ResultList
+
+            If Entry.GetType = GetType(List(Of Object)) Then
+                Dim EntryList As List(Of Object) = DirectCast(Entry, List(Of Object))
+
+                If EntryList.Count > 1 Then
+                    If EntryList(1).ToString() = Path Then
+
+                        Dim LastPath As String = Path.Substring(Path.LastIndexOf("/") + 1)
+
+                        If EntryList(0).GetType() = GetType(KeyValuePair(Of String, Object)) Then
+                            Dim EndResult As KeyValuePair(Of String, Object) = DirectCast(EntryList(0), KeyValuePair(Of String, Object))
+                            Return EndResult
+                        Else
+                            Dim EntryList1 As List(Of Object) = New List(Of Object)({New KeyValuePair(Of String, Object)("0", EntryList(0))})
+                            Dim EndResult As KeyValuePair(Of String, Object) = New KeyValuePair(Of String, Object)(LastPath, EntryList1)
+                            Return EndResult
+                        End If
+
+                    End If
+                End If
+
+            End If
+
+        Next
+
+        Return New KeyValuePair(Of String, Object)
+
+    End Function
+
     Public Function Search(Of T As List(Of KeyValuePair(Of String, Object)))(ByVal SearchPattern As String, Optional ByVal GetPath As Boolean = False) As T
 
         Dim TempResult As List(Of Object) = Search(SearchPattern, GetPath)

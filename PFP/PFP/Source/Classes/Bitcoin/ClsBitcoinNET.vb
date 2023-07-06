@@ -33,7 +33,6 @@ Public Class ClsBitcoinNET
         BITCOINAPIPASSWORD = 3
         BITCOINDEXADDRESS = 4
         BITCOINMNEMONIC = 5
-
     End Enum
 
     Private Function GetBitcoinConfig(ByVal ConfigEntry As E_BitcoinConfigEntry, Optional ByVal DefaultValue As String = "") As String
@@ -210,150 +209,6 @@ Public Class ClsBitcoinNET
 
         Next
 
-#Region "deprecaded"
-        'Dim MaxIDX As Integer = -1
-
-        'For Each Entry As KeyValuePair(Of String, Object) In XML_Vouts
-
-
-        '    If Entry.Key = "vout" Then
-
-        '        Dim IDX As Integer = GetIntegerBetween(Entry, "<", ">")
-
-        '        If IDX > MaxIDX Then
-        '            MaxIDX = IDX
-        '        End If
-
-        '    End If
-
-
-
-        'Next
-
-        'If MaxIDX <> -1 Then
-
-        '    'For i As Integer = 0 To MaxIDX
-
-        '    '    Dim T_PrevTX As S_UnspentTransactionOutput = New S_UnspentTransactionOutput("")
-
-        '    '    Dim found As Boolean = False
-        '    '    For Each T_XML As String In XML_Vouts
-
-        '    '        Dim T_IDX As Integer = GetIntegerBetween(T_XML, "<", ">")
-
-        '    '        If T_IDX = i Then
-
-        '    '            Dim T_SubXML As String = GetStringBetween(T_XML, "<" + i.ToString + ">", "</" + i.ToString + ">")
-        '    '            Dim T_Tag As String = GetStringBetween(T_SubXML, "<", ">")
-        '    '            Dim T_Val As String = GetStringBetween(T_SubXML, "<" + T_Tag + ">", "</" + T_Tag + ">")
-
-        '    '            Select Case T_Tag
-        '    '                Case "txid"
-        '    '                    found = True
-        '    '                    T_PrevTX.TransactionID = T_Val
-        '    '                Case "vout"
-        '    '                    found = True
-        '    '                    T_PrevTX.VoutIDX = Convert.ToInt32(T_Val)
-        '    '                Case "address"
-        '    '                    T_PrevTX.Addresses.Add(T_Val)
-        '    '                Case "label"
-        '    '                Case "scriptPubKey"
-        '    '                    found = True
-        '    '                    T_PrevTX.LockingScript = ClsTransaction.ConvertLockingScriptStrToList(T_Val)
-
-        '    '                    Dim T_RIPE160List As List(Of String) = GetRIPE160FromScript(T_PrevTX.LockingScript)
-
-        '    '                    If T_RIPE160List.Count > 0 Then
-        '    '                        For Each Ripe160 As String In T_RIPE160List
-        '    '                            Dim T_Address As String = RIPE160ToAddress(Ripe160, BitcoinAddressPrefix)
-
-        '    '                            If Not T_PrevTX.Addresses.Contains(T_Address) Then
-        '    '                                T_PrevTX.Addresses.Add(T_Address)
-        '    '                            End If
-
-        '    '                        Next
-        '    '                    End If
-
-        '    '                    T_PrevTX.Typ = ClsTransaction.GetScriptType(T_PrevTX.LockingScript)
-        '    '                Case "amount"
-        '    '                    found = True
-        '    '                    T_PrevTX.AmountNQT = Convert.ToUInt64(T_Val.Replace(".", "").Replace(",", ""))
-        '    '                Case "confirmations"
-        '    '                    found = True
-        '    '                    T_PrevTX.Confirmations = Convert.ToInt32(T_Val.Replace(".", "").Replace(",", ""))
-        '    '                Case "spendable"
-        '    '                Case "solvable"
-        '    '                Case "safe"
-        '    '                Case Else
-
-        '    '            End Select
-
-        '    '        End If
-
-        '    '    Next
-
-        '    '    If found Then
-        '    '        T_PrevTXList.Add(T_PrevTX)
-        '    '    End If
-
-        '    'Next
-
-        'Else
-
-        '    Dim T_PrevTX As S_UnspentTransactionOutput = New S_UnspentTransactionOutput("")
-
-        '    'For Each T_XML As String In XML_Vouts
-
-        '    '    Dim T_IDX As Integer = GetIntegerBetween(T_XML, "<", ">")
-
-        '    '    Dim T_SubXML As String = GetStringBetween(T_XML, "<-1>", "</-1>")
-        '    '    Dim T_Tag As String = GetStringBetween(T_SubXML, "<", ">")
-        '    '    Dim T_Val As String = GetStringBetween(T_SubXML, "<" + T_Tag + ">", "</" + T_Tag + ">")
-
-
-        '    '    Select Case T_Tag
-        '    '        Case "txid"
-        '    '            T_PrevTX.TransactionID = T_Val
-        '    '        Case "vout"
-        '    '            T_PrevTX.VoutIDX = Convert.ToInt32(T_Val)
-        '    '        Case "address"
-        '    '            T_PrevTX.Addresses.Add(T_Val)
-        '    '        Case "label"
-        '    '        Case "scriptPubKey"
-        '    '            T_PrevTX.LockingScript = ClsTransaction.ConvertLockingScriptStrToList(T_Val)
-
-        '    '            Dim T_RIPE160List As List(Of String) = GetRIPE160FromScript(T_PrevTX.LockingScript)
-
-        '    '            If T_RIPE160List.Count > 0 Then
-        '    '                For Each Ripe160 As String In T_RIPE160List
-        '    '                    Dim T_Address As String = RIPE160ToAddress(Ripe160, BitcoinAddressPrefix)
-
-        '    '                    If Not T_PrevTX.Addresses.Contains(T_Address) Then
-        '    '                        T_PrevTX.Addresses.Add(T_Address)
-        '    '                    End If
-
-        '    '                Next
-        '    '            End If
-
-        '    '            T_PrevTX.Typ = ClsTransaction.GetScriptType(T_PrevTX.LockingScript)
-        '    '        Case "amount"
-        '    '            T_PrevTX.AmountNQT = Convert.ToUInt64(T_Val.Replace(".", "").Replace(",", ""))
-        '    '        Case "confirmations"
-        '    '            T_PrevTX.Confirmations = Convert.ToInt32(T_Val.Replace(".", "").Replace(",", ""))
-        '    '        Case "spendable"
-        '    '        Case "solvable"
-        '    '        Case "safe"
-        '    '        Case Else
-
-        '    '    End Select
-
-        '    'Next
-
-        '    T_PrevTXList.Add(T_PrevTX)
-
-        'End If
-#End Region
-
         Return T_PrevTXList
 
     End Function
@@ -370,26 +225,39 @@ Public Class ClsBitcoinNET
     End Function
 
     Public Function GetWalletInfo() As String
-        Return New ClsJSONAndXMLConverter(BTC_API.GetWalletInfo(), ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        Dim WalletInfo As String = BTC_API.GetWalletInfo()
+
+        If Not IsErrorOrWarning(WalletInfo, "", False, False) Then
+            Return New ClsJSONAndXMLConverter(WalletInfo, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        Else
+            Return WalletInfo
+        End If
+
     End Function
 
     Public Function GetFee(Optional ByVal Blocks As Integer = 1) As String
-        Return New ClsJSONAndXMLConverter(BTC_API.GetFee(Blocks), ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+
+        Dim Fee As String = BTC_API.GetFee(Blocks)
+
+        If Not IsErrorOrWarning(Fee, "", False, False) Then
+            Return New ClsJSONAndXMLConverter(Fee, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        Else
+            Return Fee
+        End If
+
     End Function
 
     Public Function AbortReScan() As String
-        Return New ClsJSONAndXMLConverter(BTC_API.AbortRescan(), ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+
+        Dim AbortReScanResult As String = BTC_API.AbortRescan()
+
+        If Not IsErrorOrWarning(AbortReScanResult) Then
+            Return New ClsJSONAndXMLConverter(AbortReScanResult, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        Else
+            Return AbortReScanResult
+        End If
+
     End Function
-
-    'Public Function GetRawTransaction(ByVal RawTX As String) As String
-
-    '    If RawTX.Trim = "" Or Not MessageIsHEXString(RawTX) Then
-    '        Return ""
-    '    End If
-
-    '    Return String.Concat(BTC_API.GetRawTransaction(RawTX, "result"))
-
-    'End Function
 
     Public Function GetTransaction(ByVal TX As String) As String
 
@@ -397,7 +265,13 @@ Public Class ClsBitcoinNET
             Return ""
         End If
 
-        Return New ClsJSONAndXMLConverter(BTC_API.GetTransaction(TX), ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        Dim Transaction As String = BTC_API.GetTransaction(TX)
+
+        If Not IsErrorOrWarning(Transaction, "", False, False) Then
+            Return New ClsJSONAndXMLConverter(Transaction, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        Else
+            Return Transaction
+        End If
 
     End Function
 
@@ -418,18 +292,38 @@ Public Class ClsBitcoinNET
         End If
 
         Dim ResultJSON As String = BTC_API.GetRawTransaction(TXID)
-        Dim ResultXMLValue As String = New ClsJSONAndXMLConverter(ResultJSON, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
 
-        If Not ResultXMLValue.Contains("<error>") Then
-            ResultJSON = BTC_API.DecodeRawTransaction(ResultXMLValue)
+        If Not IsErrorOrWarning(ResultJSON, "", False, False) Then
+            Dim RAWTransactionKeyValueList As List(Of KeyValuePair(Of String, Object)) = New ClsJSONAndXMLConverter(ResultJSON, ClsJSONAndXMLConverter.E_ParseType.JSON).ListOfKeyValues
 
-            Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(ResultJSON, ClsJSONAndXMLConverter.E_ParseType.JSON)
+            If RAWTransactionKeyValueList.Any(Function(C) C.Key = "error" And C.Value.ToString() <> "null") Then
+                'error
+                Return New List(Of String)
+            Else
+                Dim Result As KeyValuePair(Of String, Object) = RAWTransactionKeyValueList.FirstOrDefault(Function(C) C.Key = "result")
+                ResultJSON = BTC_API.DecodeRawTransaction(Result.Value.ToString())
 
-            'Dim JSON As ClsJSON = New ClsJSON()
-            Dim VOut As String = Converter.FirstValue("vout").ToString() ' JSON.GetFromJSON(ResultJSON, "result/vout")
-            Return New List(Of String)
+                Dim TransactionKeyValueList As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(ResultJSON, ClsJSONAndXMLConverter.E_ParseType.JSON)
+                Dim Vout As KeyValuePair(Of String, Object) = TransactionKeyValueList.GetFromPath("result/vout")
+                Dim Subs = New ClsJSONAndXMLConverter(Vout)
+
+                Dim cnter As Integer = 0
+                Dim XMLEntry As String = Subs.Search(cnter.ToString(), ClsJSONAndXMLConverter.E_ParseType.XML)
+                Dim XMLList As List(Of String) = New List(Of String)
+
+                While Not XMLEntry.Trim() = ""
+                    XMLList.Add(XMLEntry)
+
+                    cnter += 1
+                    XMLEntry = Subs.Search(cnter.ToString(), ClsJSONAndXMLConverter.E_ParseType.XML)
+                End While
+
+                Return XMLList
+
+            End If
+
         Else
-            Return New List(Of String)({ResultXMLValue})
+            Return New List(Of String)
         End If
 
     End Function
