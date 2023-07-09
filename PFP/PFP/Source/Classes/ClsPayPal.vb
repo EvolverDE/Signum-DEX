@@ -1,7 +1,6 @@
-﻿'TODO: Options On
-
-'Option Strict On
-'Option Explicit On
+﻿
+Option Strict On
+Option Explicit On
 
 Imports System.IO
 Imports System.Net
@@ -133,20 +132,20 @@ Public Class ClsPayPal
             dataStream.Close()
             response.Close()
 
-        Catch ex As Exception
-            Try
+        Catch ex As WebException
 
-                Dim obj As Object = ex
+            If Not IsNothing(ex.Response) Then
 
-                Dim hwr As HttpWebResponse = DirectCast(obj.Response, HttpWebResponse)
+                Dim hwr As HttpWebResponse = DirectCast(ex.Response, HttpWebResponse)
 
                 Dim ResponseStream As Stream = hwr.GetResponseStream()
                 Dim ResponseReader As New StreamReader(ResponseStream)
                 ResponseStr = ResponseReader.ReadToEnd()
 
-            Catch exep As Exception
+            End If
 
-            End Try
+        Catch ex As Exception
+
         End Try
 
         Return ResponseStr
@@ -234,47 +233,22 @@ Public Class ClsPayPal
         NuList.Add("<id>" + ID + "</id>")
         NuList.Add("<status>" + Status + "</status>")
 
-        Dim URLList = Converter.FirstValue("links") ' JSON.RecursiveListSearch(ReturnList, "links")
-        If URLList.GetType = GetType(Boolean) Then
+        Dim URLList As KeyValuePair(Of String, Object) = Converter.GetFromPath("links") '.FirstValue("links") ' JSON.RecursiveListSearch(ReturnList, "links")
+        Dim Subs = New ClsJSONAndXMLConverter(URLList)
 
-        Else
+        Dim cnter As Integer = 0
+        Dim XMLEntry As String = Subs.Search(cnter.ToString(), ClsJSONAndXMLConverter.E_ParseType.XML)
+        Dim XMLList As List(Of String) = New List(Of String)
 
-            Dim EntryList As List(Of Object) = New List(Of Object)
-            Dim TempOBJList As List(Of Object) = New List(Of Object)
+        While Not XMLEntry.Trim() = ""
 
-            For Each Entry In URLList
-                If Entry(0) = "href" Then
-                    If TempOBJList.Count > 0 Then
-                        EntryList.Add(TempOBJList)
-                    End If
+            XMLList.Add(XMLEntry)
+            cnter += 1
+            XMLEntry = Subs.Search(cnter.ToString(), ClsJSONAndXMLConverter.E_ParseType.XML)
 
-                    TempOBJList = New List(Of Object)
-                    TempOBJList.Add(Entry)
-                Else
-                    TempOBJList.Add(Entry)
-                End If
-            Next
+        End While
 
-            EntryList.Add(TempOBJList)
-
-            For Each Entry In EntryList
-                Dim T_Str As String = ""
-                For Each KeyVal In Entry
-                    Select Case KeyVal(0)
-                        Case "href"
-                            T_Str += "<href>" + KeyVal(1) + ":" + KeyVal(2) + "</href>"
-                        Case "rel"
-                            T_Str += "<rel>" + KeyVal(1) + "</rel>"
-                        Case "method"
-                            T_Str += "<method>" + KeyVal(1) + "</method>"
-                    End Select
-                Next
-                NuList.Add(T_Str)
-            Next
-
-        End If
-
-        Return NuList
+        Return XMLList
 
 #Region "CreateOrder"
 
@@ -326,47 +300,23 @@ Public Class ClsPayPal
         ReturnList.Add("<id>" + ID + "</id>")
         ReturnList.Add("<status>" + Status + "</status>")
 
-        Dim URLList = Converter.FirstValue("links") ' JSON.RecursiveListSearch(ResponseList, "links")
-        If URLList.GetType = GetType(Boolean) Then
+        Dim URLList As KeyValuePair(Of String, Object) = Converter.GetFromPath("purchase_units/payments/captures/links") ' JSON.RecursiveListSearch(ResponseList, "links")
 
-        Else
+        Dim Subs = New ClsJSONAndXMLConverter(URLList)
 
-            Dim EntryList As List(Of Object) = New List(Of Object)
-            Dim TempOBJList As List(Of Object) = New List(Of Object)
+        Dim cnter As Integer = 0
+        Dim XMLEntry As String = Subs.Search(cnter.ToString(), ClsJSONAndXMLConverter.E_ParseType.XML)
+        Dim XMLList As List(Of String) = New List(Of String)
 
-            For Each Entry In URLList
-                If Entry(0) = "href" Then
-                    If TempOBJList.Count > 0 Then
-                        EntryList.Add(TempOBJList)
-                    End If
+        While Not XMLEntry.Trim() = ""
 
-                    TempOBJList = New List(Of Object)
-                    TempOBJList.Add(Entry)
-                Else
-                    TempOBJList.Add(Entry)
-                End If
-            Next
+            XMLList.Add(XMLEntry)
+            cnter += 1
+            XMLEntry = Subs.Search(cnter.ToString(), ClsJSONAndXMLConverter.E_ParseType.XML)
 
-            EntryList.Add(TempOBJList)
+        End While
 
-            For Each Entry In EntryList
-                Dim T_Str As String = ""
-                For Each KeyVal In Entry
-                    Select Case KeyVal(0)
-                        Case "href"
-                            T_Str += "<href>" + KeyVal(1) + "</href>"
-                        Case "rel"
-                            T_Str += "<rel>" + KeyVal(1) + "</rel>"
-                        Case "method"
-                            T_Str += "<method>" + KeyVal(1) + "</method>"
-                    End Select
-                Next
-                ReturnList.Add(T_Str)
-            Next
-
-        End If
-
-        Return ReturnList
+        Return XMLList
 
 #Region "CaptureOrder"
 
@@ -468,6 +418,7 @@ Public Class ClsPayPal
 #End Region
 
     End Function
+
     Public Function GetOrderDetails(ByVal OrderID As String) As List(Of String)
 
         SetSubURL(ClsPayPal.E_SubURL._v2_checkout_orders_ID, OrderID)
@@ -493,47 +444,22 @@ Public Class ClsPayPal
         NuList.Add("<intent>" + Intent + "</intent>")
         NuList.Add("<status>" + Status + "</status>")
 
-        Dim URLList = Converter.FirstValue("links") ' JSON.RecursiveListSearch(ReturnList, "links")
-        If URLList.GetType.Name = GetType(Boolean).Name Then
+        Dim URLList As KeyValuePair(Of String, Object) = Converter.GetFromPath("links") ' JSON.RecursiveListSearch(ReturnList, "links")
+        Dim Subs = New ClsJSONAndXMLConverter(URLList)
 
-        Else
+        Dim cnter As Integer = 0
+        Dim XMLEntry As String = Subs.Search(cnter.ToString(), ClsJSONAndXMLConverter.E_ParseType.XML)
+        Dim XMLList As List(Of String) = New List(Of String)
 
-            Dim EntryList As List(Of Object) = New List(Of Object)
-            Dim TempOBJList As List(Of Object) = New List(Of Object)
+        While Not XMLEntry.Trim() = ""
 
-            For Each Entry In URLList
-                If Entry(0) = "href" Then
-                    If TempOBJList.Count > 0 Then
-                        EntryList.Add(TempOBJList)
-                    End If
+            XMLList.Add(XMLEntry)
+            cnter += 1
+            XMLEntry = Subs.Search(cnter.ToString(), ClsJSONAndXMLConverter.E_ParseType.XML)
 
-                    TempOBJList = New List(Of Object)
-                    TempOBJList.Add(Entry)
-                Else
-                    TempOBJList.Add(Entry)
-                End If
-            Next
+        End While
 
-            EntryList.Add(TempOBJList)
-
-            For Each Entry In EntryList
-                Dim T_Str As String = ""
-                For Each KeyVal In Entry
-                    Select Case KeyVal(0)
-                        Case "href"
-                            T_Str += "<href>" + KeyVal(1) + "</href>"
-                        Case "rel"
-                            T_Str += "<rel>" + KeyVal(1) + "</rel>"
-                        Case "method"
-                            T_Str += "<method>" + KeyVal(1) + "</method>"
-                    End Select
-                Next
-                NuList.Add(T_Str)
-            Next
-
-        End If
-
-        Return NuList
+        Return XMLList
 
 #Region "GetOrderDetails"
 
@@ -1489,7 +1415,7 @@ Public Class ClsPayPal
         PAYPAL_ID = 2
     End Enum
 
-    Public Function CreateBatchPayOut(ByVal Recipient As String, ByVal Amount As Double, Optional ByVal Currency As String = "USD", Optional ByVal Note As String = "thank you", Optional ByVal SendType As E_RecipientType = E_RecipientType.EMAIL)
+    Public Function CreateBatchPayOut(ByVal Recipient As String, ByVal Amount As Double, Optional ByVal Currency As String = "USD", Optional ByVal Note As String = "thank you", Optional ByVal SendType As E_RecipientType = E_RecipientType.EMAIL) As String
 
         Dim Hash As String = CreateHash(Now.ToLongDateString + " " + Now.ToLongTimeString)
 
@@ -1535,14 +1461,16 @@ Public Class ClsPayPal
         SetSubURL(ClsPayPal.E_SubURL._v1_payments_payouts)
         Dim ResponseStr As String = PayPalRequest(Request, , New List(Of String)({"Authorization: Basic " + AuthCredentials}))
 
+        If ResponseStr.Trim() = "" Then
+            Return ""
+        End If
+
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(ResponseStr, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
         'Dim JSON As ClsJSON = New ClsJSON
         'Dim ReturnList As List(Of Object) = JSON.JSONRecursive(ResponseStr)
         'Dim XML As String = JSON.JSONListToXMLRecursive(ReturnList)
-        Dim x = Converter.FirstValue("payout_batch_id") ' JSON.RecursiveListSearch(ReturnList, "payout_batch_id")
-
-        Return x
+        Return Converter.FirstValue("payout_batch_id").ToString() ' JSON.RecursiveListSearch(ReturnList, "payout_batch_id")
 
     End Function
 
@@ -1616,8 +1544,8 @@ Public Class ClsPayPal
 
 #End Region
 
-    Function CreateHash(ByVal Data As String)
-        Return ByteArrayToString(SignSHA512(StringToByteArray(Data))).ToUpper
+    Function CreateHash(ByVal Data As String) As String
+        Return ByteArrayToString(SignSHA512(StringToByteArray(Data))).ToUpper()
     End Function
 
 #Region "not used"
@@ -1627,7 +1555,7 @@ Public Class ClsPayPal
     'End Function
 #End Region
 
-    Function SignSHA512(ByVal Data As Byte())
+    Function SignSHA512(ByVal Data As Byte()) As Byte()
         Dim SHA512Hasher As SHA512 = New SHA512Managed()
         Return SHA512Hasher.ComputeHash(Data)
     End Function
@@ -1637,7 +1565,7 @@ Public Class ClsPayPal
     End Function
 
     Function ByteArrayToString(ByVal hash As Byte()) As String
-        Return BitConverter.ToString(hash).Replace("-", "").ToLower
+        Return BitConverter.ToString(hash).Replace("-", "").ToLower()
     End Function
 
 #Region "not used"

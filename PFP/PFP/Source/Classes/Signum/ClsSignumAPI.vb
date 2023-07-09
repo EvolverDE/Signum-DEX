@@ -105,14 +105,12 @@ Public Class ClsSignumAPI
 
         'Dim RespList As Object = JSON.JSONRecursive(Response)
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in BroadcastTransaction(): " + Response
         End If
-
 
         Dim UTX As Object = Converter.FirstValue("transaction") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "transaction")
 
@@ -192,10 +190,9 @@ Public Class ClsSignumAPI
 
             'Dim RespList As Object = JSON.JSONRecursive(Response)
 
-            Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
-            If Error0.GetType = GetType(Boolean) Then
-                'TX OK
-            ElseIf Error0.GetType = GetType(String) Then
+            Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+
+            If Error0 <> -1 Then
                 'TX not OK
                 'PFPForm.StatusLabel.Text = Application.ProductName + "-error in IsSmartContract(): " + Response
                 If GetINISetting(E_Setting.InfoOut, False) Then
@@ -308,7 +305,7 @@ Public Class ClsSignumAPI
 
             Dim T_LastTX As S_TX = T_TXList(T_TXList.Count - 1)
 
-            Dim T_ContractOrderHistoryList As List(Of S_Order) = New List(Of S_Order)
+            'Dim T_ContractOrderHistoryList As List(Of S_Order) = New List(Of S_Order)
 
             T_TXList = T_TXList.Where(Function(c As S_TX) c.Sender = ContractID).ToList()
 
@@ -427,14 +424,12 @@ Public Class ClsSignumAPI
 
         'Dim RespList As Object = JSON.JSONRecursive(Response)
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
-            'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in GetAccountPublicKeyFromAccountID_RS(): " + Response
         End If
-
 
         Dim PublicKey As Object = Converter.FirstValue("publicKey") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "publicKey").ToString
 
@@ -553,10 +548,9 @@ Public Class ClsSignumAPI
         'Dim RespList As Object = JSON.JSONRecursive(Response)
 
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
-            'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
 
             If GetINISetting(E_Setting.InfoOut, False) Then
@@ -565,7 +559,6 @@ Public Class ClsSignumAPI
 
             Return CoinBal
         End If
-
 
         Dim BalancePlanckStr As String = Converter.FirstValue("balanceNQT").ToString() ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "balanceNQT").ToString
         Dim Balance As Double = 0.0
@@ -619,10 +612,9 @@ Public Class ClsSignumAPI
         'Dim JSON As ClsJSON = New ClsJSON
         'Dim RespList As List(Of Object) = JSON.JSONRecursive(Response)
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(RespList, "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(RespList, "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             If GetINISetting(E_Setting.InfoOut, False) Then
                 Out.ErrorLog2File(Application.ProductName + "-error in GetTXFee(2): " + Response)
@@ -671,10 +663,9 @@ Public Class ClsSignumAPI
         'Dim JSON As ClsJSON = New ClsJSON
         'Dim RespList As Object = JSON.JSONRecursive(Response)
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             If GetINISetting(E_Setting.InfoOut, False) Then
                 Out.ErrorLog2File(Application.ProductName + "-error in GetUnconfirmedTransactions(): " + Response)
@@ -951,15 +942,9 @@ Public Class ClsSignumAPI
         'Dim JSON As ClsJSON = New ClsJSON
         'Dim RespList As Object = JSON.JSONRecursive(Response)
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
 
-        If IsNothing(Error0) Then
-            Error0 = False
-        End If
-
-        If Error0.GetType.Name = GetType(Boolean).Name Then
-            'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        If Error0 <> -1 Then
             'TX not OK
             If GetINISetting(E_Setting.InfoOut, False) Then
                 Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): " + Response)
@@ -1003,15 +988,9 @@ Public Class ClsSignumAPI
         'Dim JSON As ClsJSON = New ClsJSON
         'Dim RespList As Object = JSON.JSONRecursive(Response)
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
 
-        If IsNothing(Error0) Then
-            Error0 = False
-        End If
-
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        If Error0 <> -1 Then
             'TX not OK
             'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetTransaction(): " + Response
             If GetINISetting(E_Setting.InfoOut, False) Then
@@ -1158,6 +1137,9 @@ Public Class ClsSignumAPI
 
         Dim Response As String = SignumRequest(Request)
 
+        'requestType=getAccountTransactions&account=568413546036034892&timestamp=280156462
+        'requestType=getAccountTransactions&account=17481325922122010625&timestamp=278086925
+
         If Response.Contains(Application.ProductName + "-error") Then
             If GetINISetting(E_Setting.InfoOut, False) Then
                 Out.ErrorLog2File(Application.ProductName + "-error in GetAccountTransactions(): -> " + Response)
@@ -1171,288 +1153,73 @@ Public Class ClsSignumAPI
         'Dim JSON As ClsJSON = New ClsJSON
         Dim ReturnList As List(Of List(Of String)) = New List(Of List(Of String))
 
-        Dim Transactions As Object = Converter.FirstValue("transactions")
+        Dim Transactions As KeyValuePair(Of String, Object) = Converter.GetFromPath("result/transactions")
 
-        If Transactions.GetType = GetType(List(Of KeyValuePair(Of String, Object))) Then
-
-            Dim TXList As List(Of KeyValuePair(Of String, Object)) = DirectCast(Transactions, List(Of KeyValuePair(Of String, Object)))
-
-            For Each TXEntry As KeyValuePair(Of String, Object) In TXList
-
-                Dim SubConverter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(TXEntry)
-
-                Dim TempList As List(Of String) = New List(Of String)
-
-                TempList.Add(SubConverter.Search("type", ClsJSONAndXMLConverter.E_ParseType.XML))
-                TempList.Add(SubConverter.Search("timestamp", ClsJSONAndXMLConverter.E_ParseType.XML))
-                TempList.Add(SubConverter.Search("recipient", ClsJSONAndXMLConverter.E_ParseType.XML))
-                TempList.Add(SubConverter.Search("recipientRS", ClsJSONAndXMLConverter.E_ParseType.XML))
-                TempList.Add(SubConverter.Search("amountNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
-                TempList.Add(SubConverter.Search("feeNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
-                TempList.Add(SubConverter.Search("transaction", ClsJSONAndXMLConverter.E_ParseType.XML))
-
-                Dim Attachment As List(Of KeyValuePair(Of String, Object)) = SubConverter.Search(Of List(Of KeyValuePair(Of String, Object)))("attachment")
-                Dim MessageList As List(Of KeyValuePair(Of String, Object)) = Attachment.Where(Function(c) c.Key = "message").ToList()
-                Dim Message As KeyValuePair(Of String, Object) = MessageList.FirstOrDefault()
-                Dim AttachmentString As String = "<attachment>"
-
-                If Not IsNothing(Message.Key) Then
-                    Dim IsText As String = Attachment.Where(Function(c) c.Key = "messageIsText").ToList()(0).Value.ToString()
-                    AttachmentString += "<message>" + Message.Value.ToString() + "</message><isText>" + IsText + "</isText>"
-                End If
-
-                Dim EncMessageList As List(Of KeyValuePair(Of String, Object)) = Attachment.Where(Function(c) c.Key = "encryptedMessage").ToList()
-                Dim EncMessage As KeyValuePair(Of String, Object) = EncMessageList.FirstOrDefault()
-
-                If Not IsNothing(EncMessage.Key) Then ' EncMessage.GetType.Name = GetType(Boolean).Name Then
-
-                    Dim Data As String = New ClsJSONAndXMLConverter(EncMessage).Search("data", ClsJSONAndXMLConverter.E_ParseType.XML) ' Convert.ToString(JSON.RecursiveListSearch(DirectCast(EncMessage, List(Of Object)), "data"))
-                    Dim Nonce As String = New ClsJSONAndXMLConverter(EncMessage).Search("nonce", ClsJSONAndXMLConverter.E_ParseType.XML) ' Convert.ToString(JSON.RecursiveListSearch(DirectCast(EncMessage, List(Of Object)), "nonce"))
-                    Dim IsText As String = New ClsJSONAndXMLConverter(EncMessage).Search("isText", ClsJSONAndXMLConverter.E_ParseType.XML) ' Convert.ToString(JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "isText"))
-
-                    If Not Data.Trim() = "" And Not Nonce.Trim() = "" Then
-                        AttachmentString += Data + Nonce + IsText ' "<data>" + Data + "</data><nonce>" + Nonce + "</nonce><isText>" + IsText + "</isText>"
-                    End If
-
-                End If
-
-                AttachmentString += "</attachment>"
-
-                TempList.Add(AttachmentString)
-
-                TempList.Add(SubConverter.Search("sender", ClsJSONAndXMLConverter.E_ParseType.XML))
-                TempList.Add(SubConverter.Search("senderRS", ClsJSONAndXMLConverter.E_ParseType.XML))
-                TempList.Add(SubConverter.Search("confirmations", ClsJSONAndXMLConverter.E_ParseType.XML))
-
-                ReturnList.Add(TempList)
-
-#Region "deprecaded"
-                'Select Case True
-                '    Case SubEntry(0).ToString = "type"
-                '        TempList.Add("<type>" + SubEntry(1).ToString + "</type>")
-                '    Case SubEntry(0).ToString = "timestamp"
-                '        TempList.Add("<timestamp>" + SubEntry(1).ToString + "</timestamp>")
-                '    Case SubEntry(0).ToString = "recipient"
-                '        TempList.Add("<recipient>" + SubEntry(1).ToString + "</recipient>")
-                '    Case SubEntry(0).ToString = "recipientRS"
-                '        TempList.Add("<recipientRS>" + SubEntry(1).ToString + "</recipientRS>")
-                '    Case SubEntry(0).ToString = "amountNQT"
-                '        TempList.Add("<amountNQT>" + SubEntry(1).ToString + "</amountNQT>")
-                '    Case SubEntry(0).ToString = "feeNQT"
-                '        TempList.Add("<feeNQT>" + SubEntry(1).ToString + "</feeNQT>")
-                '    Case SubEntry(0).ToString = "transaction"
-                '        TempList.Add("<transaction>" + SubEntry(1).ToString + "</transaction>")
-                '    Case SubEntry(0).ToString = "attachment"
-
-                '        Dim TMsg As String = "<attachment>"
-                '        Dim Message As String = JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "message").ToString
-
-                '        If Message.Trim <> "False" Then
-                '            Dim IsText As String = JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "messageIsText").ToString
-                '            TMsg += "<message>" + Message + "</message><isText>" + IsText + "</isText>"
-                '        End If
-
-                '        Dim EncMessage As Object = JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "encryptedMessage")
-
-                '        If EncMessage.GetType.Name = GetType(Boolean).Name Then
-
-                '        ElseIf EncMessage.GetType.Name = GetType(List(Of Object)).Name Then
-
-                '            Dim Data As String = Convert.ToString(JSON.RecursiveListSearch(DirectCast(EncMessage, List(Of Object)), "data"))
-                '            Dim Nonce As String = Convert.ToString(JSON.RecursiveListSearch(DirectCast(EncMessage, List(Of Object)), "nonce"))
-                '            Dim IsText As String = Convert.ToString(JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "isText"))
-
-                '            If Not Data.Trim = "False" And Not Nonce.Trim = "False" Then
-                '                TMsg += "<data>" + Data + "</data><nonce>" + Nonce + "</nonce><isText>" + IsText + "</isText>"
-                '            End If
-
-                '        End If
-
-                '        TMsg += "</attachment>"
-                '        TempList.Add(TMsg)
-
-                '    Case SubEntry(0).ToString = "sender"
-                '        TempList.Add("<sender>" + SubEntry(1).ToString + "</sender>")
-                '    Case SubEntry(0).ToString = "senderRS"
-                '        TempList.Add("<senderRS>" + SubEntry(1).ToString + "</senderRS>")
-                '    Case SubEntry(0).ToString = "confirmations"
-                '        TempList.Add("<confirmations>" + SubEntry(1).ToString + "</confirmations>")
-                'End Select
-#End Region
-
-            Next
-
+        If IsNothing(Transactions.Key) Then
+            Return ReturnList
         End If
 
+        Dim TransactionList As List(Of KeyValuePair(Of String, Object)) = New List(Of KeyValuePair(Of String, Object)) ' DirectCast(Transactions.Value, List(Of KeyValuePair(Of String, Object)))
+
+        If Transactions.Value.GetType = GetType(List(Of KeyValuePair(Of String, Object))) Then
+            TransactionList = DirectCast(Transactions.Value, List(Of KeyValuePair(Of String, Object)))
+        Else
+            TransactionList.Add(New KeyValuePair(Of String, Object)("#", Transactions.Value))
+        End If
+
+
+        For Each Transaction As KeyValuePair(Of String, Object) In TransactionList
+
+            Dim SubConverter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Transaction)
+
+            Dim TempList As List(Of String) = New List(Of String)
+
+            TempList.Add(SubConverter.Search("type", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TempList.Add(SubConverter.Search("timestamp", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TempList.Add(SubConverter.Search("recipient", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TempList.Add(SubConverter.Search("recipientRS", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TempList.Add(SubConverter.Search("amountNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TempList.Add(SubConverter.Search("feeNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TempList.Add(SubConverter.Search("transaction", ClsJSONAndXMLConverter.E_ParseType.XML))
+
+            Dim Attachment As List(Of KeyValuePair(Of String, Object)) = SubConverter.Search(Of List(Of KeyValuePair(Of String, Object)))("attachment")
+            Dim MessageList As List(Of KeyValuePair(Of String, Object)) = Attachment.Where(Function(c) c.Key = "message").ToList()
+            Dim Message As KeyValuePair(Of String, Object) = MessageList.FirstOrDefault()
+            Dim AttachmentString As String = "<attachment>"
+
+            If Not IsNothing(Message.Key) Then
+                Dim IsText As String = Attachment.Where(Function(c) c.Key = "messageIsText").ToList()(0).Value.ToString()
+                AttachmentString += "<message>" + Message.Value.ToString() + "</message><isText>" + IsText + "</isText>"
+            End If
+
+            Dim EncMessageList As List(Of KeyValuePair(Of String, Object)) = Attachment.Where(Function(c) c.Key = "encryptedMessage").ToList()
+            Dim EncMessage As KeyValuePair(Of String, Object) = EncMessageList.FirstOrDefault()
+
+            If Not IsNothing(EncMessage.Key) Then ' EncMessage.GetType.Name = GetType(Boolean).Name Then
+
+                Dim Data As String = New ClsJSONAndXMLConverter(EncMessage).Search("data", ClsJSONAndXMLConverter.E_ParseType.XML) ' Convert.ToString(JSON.RecursiveListSearch(DirectCast(EncMessage, List(Of Object)), "data"))
+                Dim Nonce As String = New ClsJSONAndXMLConverter(EncMessage).Search("nonce", ClsJSONAndXMLConverter.E_ParseType.XML) ' Convert.ToString(JSON.RecursiveListSearch(DirectCast(EncMessage, List(Of Object)), "nonce"))
+                Dim IsText As String = New ClsJSONAndXMLConverter(EncMessage).Search("isText", ClsJSONAndXMLConverter.E_ParseType.XML) ' Convert.ToString(JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "isText"))
+
+                If Not Data.Trim() = "" And Not Nonce.Trim() = "" Then
+                    AttachmentString += Data + Nonce + IsText ' "<data>" + Data + "</data><nonce>" + Nonce + "</nonce><isText>" + IsText + "</isText>"
+                End If
+
+            End If
+
+            AttachmentString += "</attachment>"
+
+            TempList.Add(AttachmentString)
+
+            TempList.Add(SubConverter.Search("sender", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TempList.Add(SubConverter.Search("senderRS", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TempList.Add(SubConverter.Search("confirmations", ClsJSONAndXMLConverter.E_ParseType.XML))
+
+            ReturnList.Add(TempList)
+
+        Next
+
         Return ReturnList
-
-#Region "deprecaded"
-
-        'Response = GetStringBetween(Response, "[", "]", True)
-
-        'If Response.Trim = "" Then
-        '    Return ReturnList
-        'End If
-
-        'Dim T_List As List(Of String) = Between2List(Response, "{", "}")
-        'T_List(1) = T_List(1).Replace("{},", "")
-        'Dim JSONStringList As List(Of String) = New List(Of String)
-        'JSONStringList.Add(T_List(0))
-
-        'While T_List(1).Length > 2
-        '    T_List = Between2List(T_List(1), "{", "}")
-
-        '    If T_List.Count > 0 Then
-        '        T_List(1) = T_List(1).Replace("{},", "")
-        '        JSONStringList.Add(T_List(0))
-        '    End If
-
-        'End While
-
-        'For i As Integer = 0 To JSONStringList.Count - 1
-
-        '    Dim ResponseTX As String = JSONStringList(i)
-
-
-        '    'Dim RespList As Object = JSON.JSONRecursive(ResponseTX)
-
-        '    Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
-        '    If Error0.GetType.Name = GetType(Boolean).Name Then
-        '        'TX OK
-        '    ElseIf Error0.GetType.Name = GetType(String).Name Then
-        '        'TX not OK
-        '        If GetINISetting(E_Setting.InfoOut, False) Then
-        '            Out.ErrorLog2File(Application.ProductName + "-error in GetAccountTransactions(): " + Response)
-        '        End If
-
-        '        Return New List(Of List(Of String))
-        '    End If
-
-        '    Dim EntryList As List(Of Object) = New List(Of Object)
-
-        '    'Dim TX As Object = JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "transactions")
-
-        '    'If TX.GetType.Name = GetType(String).Name Then
-        '    '    Return New List(Of List(Of String))
-        '    'ElseIf TX.GetType.Name = GetType(Boolean).Name Then
-        '    '    Return New List(Of List(Of String))
-        '    'Else
-
-        '    'Dim TempOBJList As List(Of Object) = New List(Of Object)
-
-        '    'For Each T_Entry In DirectCast(RespList, List(Of Object))
-
-        '    '    Dim Entry As List(Of Object) = New List(Of Object)
-
-        '    '    If T_Entry.GetType.Name = GetType(List(Of Object)).Name Then
-        '    '        Entry = DirectCast(T_Entry, List(Of Object))
-        '    '    End If
-
-        '    '    If Entry.Count > 0 Then
-
-        '    '        If Entry(0).ToString = "type" Then
-        '    '            If TempOBJList.Count > 0 Then
-        '    '                EntryList.Add(TempOBJList)
-        '    '            End If
-
-        '    '            TempOBJList = New List(Of Object) From {
-        '    '                            Entry
-        '    '                        }
-        '    '        Else
-        '    '            TempOBJList.Add(Entry)
-        '    '        End If
-
-        '    '    End If
-
-        '    'Next
-
-        '    'EntryList.Add(TempOBJList)
-
-        '    'Dim XML As String = ""
-        '    'For Each T_Entry In DirectCast(RespList, List(Of Object))
-
-        '    '    Dim Entry As List(Of Object) = New List(Of Object)
-
-        '    '    If T_Entry.GetType.Name = GetType(List(Of Object)).Name Then
-        '    '        Entry = DirectCast(T_Entry, List(Of Object))
-        '    '    End If
-
-        '    'XML = JSON.JSONListToXMLRecursive(Entry)
-
-        '    Dim TempList As List(Of String) = New List(Of String)
-
-        '    'For Each T_SubEntry In DirectCast(RespList, List(Of Object))
-
-        '    '    Dim SubEntry As List(Of Object) = New List(Of Object)
-
-        '    '    If T_SubEntry.GetType.Name = GetType(List(Of Object)).Name Then
-        '    '        SubEntry = DirectCast(T_SubEntry, List(Of Object))
-        '    '    End If
-
-        '    '    If SubEntry.Count > 0 Then
-
-        '    '        Select Case True
-        '    '            Case SubEntry(0).ToString = "type"
-        '    '                TempList.Add("<type>" + SubEntry(1).ToString + "</type>")
-        '    '            Case SubEntry(0).ToString = "timestamp"
-        '    '                TempList.Add("<timestamp>" + SubEntry(1).ToString + "</timestamp>")
-        '    '            Case SubEntry(0).ToString = "recipient"
-        '    '                TempList.Add("<recipient>" + SubEntry(1).ToString + "</recipient>")
-        '    '            Case SubEntry(0).ToString = "recipientRS"
-        '    '                TempList.Add("<recipientRS>" + SubEntry(1).ToString + "</recipientRS>")
-        '    '            Case SubEntry(0).ToString = "amountNQT"
-        '    '                TempList.Add("<amountNQT>" + SubEntry(1).ToString + "</amountNQT>")
-        '    '            Case SubEntry(0).ToString = "feeNQT"
-        '    '                TempList.Add("<feeNQT>" + SubEntry(1).ToString + "</feeNQT>")
-        '    '            Case SubEntry(0).ToString = "transaction"
-        '    '                TempList.Add("<transaction>" + SubEntry(1).ToString + "</transaction>")
-        '    '            Case SubEntry(0).ToString = "attachment"
-
-        '    '                Dim TMsg As String = "<attachment>"
-        '    '                Dim Message As String = JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "message").ToString
-
-        '    '                If Message.Trim <> "False" Then
-        '    '                    Dim IsText As String = JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "messageIsText").ToString
-        '    '                    TMsg += "<message>" + Message + "</message><isText>" + IsText + "</isText>"
-        '    '                End If
-
-        '    '                Dim EncMessage As Object = JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "encryptedMessage")
-
-        '    '                If EncMessage.GetType.Name = GetType(Boolean).Name Then
-
-        '    '                ElseIf EncMessage.GetType.Name = GetType(List(Of Object)).Name Then
-
-        '    '                    Dim Data As String = Convert.ToString(JSON.RecursiveListSearch(DirectCast(EncMessage, List(Of Object)), "data"))
-        '    '                    Dim Nonce As String = Convert.ToString(JSON.RecursiveListSearch(DirectCast(EncMessage, List(Of Object)), "nonce"))
-        '    '                    Dim IsText As String = Convert.ToString(JSON.RecursiveListSearch(DirectCast(SubEntry(1), List(Of Object)), "isText"))
-
-        '    '                    If Not Data.Trim = "False" And Not Nonce.Trim = "False" Then
-        '    '                        TMsg += "<data>" + Data + "</data><nonce>" + Nonce + "</nonce><isText>" + IsText + "</isText>"
-        '    '                    End If
-
-        '    '                End If
-
-        '    '                TMsg += "</attachment>"
-        '    '                TempList.Add(TMsg)
-
-        '    '            Case SubEntry(0).ToString = "sender"
-        '    '                TempList.Add("<sender>" + SubEntry(1).ToString + "</sender>")
-        '    '            Case SubEntry(0).ToString = "senderRS"
-        '    '                TempList.Add("<senderRS>" + SubEntry(1).ToString + "</senderRS>")
-        '    '            Case SubEntry(0).ToString = "confirmations"
-        '    '                TempList.Add("<confirmations>" + SubEntry(1).ToString + "</confirmations>")
-        '    '        End Select
-
-        '    '    End If
-
-        '    'Next
-
-        '    ReturnList.Add(TempList)
-        'Next
-
-        'Return ReturnList
-
-#End Region
 
     End Function
 
@@ -1529,121 +1296,127 @@ Public Class ClsSignumAPI
 
         Dim Response As String = SignumRequest(Request)
 
+        '{"transactionIds":["7277823693073560564"],"requestProcessingTime":12}
+
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        'Dim JSON As ClsJSON = New ClsJSON
-
-        Dim RespList As Object = Nothing ' JSON.JSONRecursive(Response)
-
-        Dim TxIdsx = Converter.Search("transactionIds")
-
-        TxIdsx = TxIdsx
+        Dim TXList As List(Of String) = Converter.AllValues("transactionIds")
 
         Dim NuList As List(Of ULong) = New List(Of ULong)
 
-        'Dim ResponseList As List(Of Object) = New List(Of Object)
-        'If RespList.GetType.Name = GetType(List(Of Object)).Name Then
-        '    ResponseList = DirectCast(RespList, List(Of Object))
-        'End If
-
-        If TxIdsx.Count > 0 Then
-
-            For Each T_Entry In TxIdsx
-
-                Dim Entry As List(Of Object) = New List(Of Object)
-
-                If T_Entry.GetType.Name = GetType(List(Of Object)).Name Then
-                    Entry = DirectCast(T_Entry, List(Of Object))
-                End If
-
-                If Entry.Count > 0 Then
-
-                    Select Case Entry(0).ToString
-                        Case "transactionIds"
-
-                            Dim TXIDs As List(Of Object) = New List(Of Object) ' TryCast(Entry(1), List(Of Object))
-
-                            If Entry(1).GetType.Name = GetType(List(Of Object)).Name Then
-                                TXIDs = DirectCast(Entry(1), List(Of Object))
-                            End If
-
-                            If TXIDs.Count > 0 Then
-
-                                If Not TXIDs Is Nothing Then
-
-                                    For Each TXID In TXIDs
-
-                                        If TXID.GetType.Name = GetType(String).Name Then
-                                            NuList.Add(Convert.ToUInt64(TXID))
-                                        ElseIf TXIDs.GetType.Name = GetType(List(Of Object)).Name Then
-
-                                            Dim ObjList As List(Of Object) = TryCast(TXID, List(Of Object))
-
-                                            If ObjList Is Nothing Then
-
-                                                Dim StrList As List(Of String) = TryCast(TXID, List(Of String))
-
-                                                If StrList Is Nothing Then
-
-                                                Else
-                                                    For Each STXID In StrList
-
-                                                        If STXID.GetType.Name = GetType(String).Name Then
-                                                            NuList.Add(Convert.ToUInt64(STXID))
-                                                        ElseIf STXID.GetType.Name = GetType(List(Of Object)).Name Then
-
-                                                        End If
-
-                                                    Next
-                                                End If
-
-                                            Else
-                                                For Each STXID In ObjList
-
-                                                    If STXID.GetType.Name = GetType(String).Name Then
-                                                        NuList.Add(Convert.ToUInt64(STXID))
-                                                    ElseIf STXID.GetType.Name = GetType(List(Of Object)).Name Then
-
-                                                    End If
-
-                                                Next
-                                            End If
-
-
-
-                                        End If
-
-                                    Next
-
-                                Else
-
-                                End If
-
-                            End If
-
-                            'Try
-
-                            '    For Each x As Object In Entry(1) '(0)
-                            '        Try
-                            '            NuList.Add(ULong.Parse(x))
-                            '        Catch ex As Exception
-
-                            '        End Try
-                            '    Next
-
-                            'Catch ex As Exception
-
-                            'End Try
-
-                    End Select
-
-                End If
-
-            Next
-
-        End If
+        For Each TXId As String In TXList
+            NuList.Add(Convert.ToUInt64(TXId))
+        Next
 
         Return NuList
+
+#Region "deprecaded"
+
+        ''Dim ResponseList As List(Of Object) = New List(Of Object)
+        ''If RespList.GetType.Name = GetType(List(Of Object)).Name Then
+        ''    ResponseList = DirectCast(RespList, List(Of Object))
+        ''End If
+
+        'If TxIdsx.Count > 0 Then
+
+        '    For Each T_Entry In TxIdsx
+
+        '        Dim Entry As List(Of Object) = New List(Of Object)
+
+        '        If T_Entry.GetType.Name = GetType(List(Of Object)).Name Then
+        '            Entry = DirectCast(T_Entry, List(Of Object))
+        '        End If
+
+        '        If Entry.Count > 0 Then
+
+        '            Select Case Entry(0).ToString
+        '                Case "transactionIds"
+
+        '                    Dim TXIDs As List(Of Object) = New List(Of Object) ' TryCast(Entry(1), List(Of Object))
+
+        '                    If Entry(1).GetType.Name = GetType(List(Of Object)).Name Then
+        '                        TXIDs = DirectCast(Entry(1), List(Of Object))
+        '                    End If
+
+        '                    If TXIDs.Count > 0 Then
+
+        '                        If Not TXIDs Is Nothing Then
+
+        '                            For Each TXID In TXIDs
+
+        '                                If TXID.GetType.Name = GetType(String).Name Then
+        '                                    NuList.Add(Convert.ToUInt64(TXID))
+        '                                ElseIf TXIDs.GetType.Name = GetType(List(Of Object)).Name Then
+
+        '                                    Dim ObjList As List(Of Object) = TryCast(TXID, List(Of Object))
+
+        '                                    If ObjList Is Nothing Then
+
+        '                                        Dim StrList As List(Of String) = TryCast(TXID, List(Of String))
+
+        '                                        If StrList Is Nothing Then
+
+        '                                        Else
+        '                                            For Each STXID In StrList
+
+        '                                                If STXID.GetType.Name = GetType(String).Name Then
+        '                                                    NuList.Add(Convert.ToUInt64(STXID))
+        '                                                ElseIf STXID.GetType.Name = GetType(List(Of Object)).Name Then
+
+        '                                                End If
+
+        '                                            Next
+        '                                        End If
+
+        '                                    Else
+        '                                        For Each STXID In ObjList
+
+        '                                            If STXID.GetType.Name = GetType(String).Name Then
+        '                                                NuList.Add(Convert.ToUInt64(STXID))
+        '                                            ElseIf STXID.GetType.Name = GetType(List(Of Object)).Name Then
+
+        '                                            End If
+
+        '                                        Next
+        '                                    End If
+
+
+
+        '                                End If
+
+        '                            Next
+
+        '                        Else
+
+        '                        End If
+
+        '                    End If
+
+        '                    'Try
+
+        '                    '    For Each x As Object In Entry(1) '(0)
+        '                    '        Try
+        '                    '            NuList.Add(ULong.Parse(x))
+        '                    '        Catch ex As Exception
+
+        '                    '        End Try
+        '                    '    Next
+
+        '                    'Catch ex As Exception
+
+        '                    'End Try
+
+        '            End Select
+
+        '        End If
+
+        '    Next
+
+        'End If
+
+        'Return New List(Of ULong)
+
+#End Region
 
     End Function
 
@@ -1668,10 +1441,9 @@ Public Class ClsSignumAPI
 
         'Dim RespList As List(Of Object) = Nothing ' JSON.JSONRecursive(Response)
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(RespList, "errorCode")
-        If Error0.GetType.Name = GetType(Boolean).Name Then
-            'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(RespList, "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetSmartContractIds(): " + Response
             If GetINISetting(E_Setting.InfoOut, False) Then
@@ -1758,15 +1530,9 @@ Public Class ClsSignumAPI
 
         'Dim RespList As Object = Nothing ' JSON.JSONRecursive(Response)
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
 
-        If IsNothing(Error0) Then
-            Error0 = False
-        End If
-
-        If Error0.GetType.Name = GetType(Boolean).Name Then
-            'TX OK
-        ElseIf Error0.GetType.Name = GetType(String).Name Then
+        If Error0 <> -1 Then
             'TX not OK
             If GetINISetting(E_Setting.InfoOut, False) Then
                 Out.ErrorLog2File(Application.ProductName + "-error in GetSmartContractDetails2(" + SmartContractID.ToString + "): " + Response)
@@ -2140,14 +1906,12 @@ Public Class ClsSignumAPI
 
         'Dim RespList As Object = Nothing ' JSON.JSONRecursive(Response)
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
-        If Error0.GetType().Name = GetType(Boolean).Name Then
-            'TX OK
-        ElseIf Error0.GetType().Name = GetType(String).Name Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in ReadMessage(): " + Response
         End If
-
 
         Dim EncryptedMsg As Object = Converter.FirstValue("encryptedMessage") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "encryptedMessage")
         Dim Data As String = Convert.ToString(Converter.FirstValue("data")) 'JSON.RecursiveListSearch(DirectCast(EncryptedMsg, List(Of Object)), "data"))
@@ -2283,10 +2047,9 @@ Public Class ClsSignumAPI
 
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(UnsignedTX, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode")
-        If Error0.GetType().Name = GetType(Boolean).Name Then
-            'TX OK
-        ElseIf Error0.GetType().Name = GetType(String).Name Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             If GetINISetting(E_Setting.InfoOut, False) Then
                 out.ErrorLog2File(Application.ProductName + "-error in ConvertUnsignedTXToList(): " + UnsignedTX)

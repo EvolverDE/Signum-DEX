@@ -132,9 +132,10 @@ Public Class FrmEnterPIN
                             T_DecryptedBitcoinAccs += DecryptedBitcoinAcc(0) + ":" + DecryptedBitcoinAcc(1) + ";"
                         Next
 
-                        T_DecryptedBitcoinAccs = T_DecryptedBitcoinAccs.Remove(T_DecryptedBitcoinAccs.Length - 1)
-
-                        SetINISetting(E_Setting.BitcoinAccounts, T_DecryptedBitcoinAccs)
+                        If Not T_DecryptedBitcoinAccs.Trim() = "" Then
+                            T_DecryptedBitcoinAccs = T_DecryptedBitcoinAccs.Remove(T_DecryptedBitcoinAccs.Length - 1)
+                            SetINISetting(E_Setting.BitcoinAccounts, T_DecryptedBitcoinAccs)
+                        End If
 #End Region
 
                         SetINISetting(E_Setting.PINFingerPrint, "")
@@ -160,9 +161,15 @@ Public Class FrmEnterPIN
                         T_EncryptedBitcoinAccs += T_EncMnemonic_PublicKey + ";"
                     Next
 
-                    T_EncryptedBitcoinAccs = T_EncryptedBitcoinAccs.Remove(T_EncryptedBitcoinAccs.Length - 1)
+                    If Not T_EncryptedBitcoinAccs.Trim() = "" Then
+                        T_EncryptedBitcoinAccs = T_EncryptedBitcoinAccs.Remove(T_EncryptedBitcoinAccs.Length - 1)
+                        SetINISetting(E_Setting.BitcoinAccounts, T_EncryptedBitcoinAccs)
 
-                    SetINISetting(E_Setting.BitcoinAccounts, T_EncryptedBitcoinAccs)
+                        If ClsDEXContract.CurrencyIsCrypto(CurrentMarket) Then
+                            GlobalPIN = TBPIN.Text
+                        End If
+
+                    End If
 
 #End Region
 
@@ -216,6 +223,11 @@ Public Class FrmEnterPIN
                 If Not T_EncryptedBitcoinAccs.Trim() = "" Then
                     T_EncryptedBitcoinAccs = T_EncryptedBitcoinAccs.Remove(T_EncryptedBitcoinAccs.Length - 1)
                     SetINISetting(E_Setting.BitcoinAccounts, T_EncryptedBitcoinAccs)
+
+                    If ClsDEXContract.CurrencyIsCrypto(CurrentMarket) Then
+                        GlobalPIN = TBPIN.Text
+                    End If
+
                 End If
 
 #End Region

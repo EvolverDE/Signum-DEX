@@ -3,6 +3,13 @@ Option Strict On
 Imports PFP.ClsBitcoin
 
 Public MustInherit Class AbsClsXItem
+    Protected Property AbsC_ChainSwapHash As String = ""
+
+    Public ReadOnly Property ChainSwapHash As String
+        Get
+            Return AbsC_ChainSwapHash
+        End Get
+    End Property
 
 #Region "INISettings"
 
@@ -16,7 +23,7 @@ Public MustInherit Class AbsClsXItem
 
     Public MustOverride Function GetXItemChainSwapHashFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong, ByVal XItemTransactionID As String) As String
 
-    'Public MustOverride Function GetXItemRedeemScriptFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong, ByVal BTCTXID As String) As String
+    'Public MustOverride Function GetXItemRedeemScriptFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong, ByVal BitcoinTransactionID As String) As String
 
     Public MustOverride Function GetXItemTransactionFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong) As String
 

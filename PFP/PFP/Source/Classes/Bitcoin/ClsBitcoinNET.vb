@@ -304,7 +304,7 @@ Public Class ClsBitcoinNET
 
                 Dim TransactionKeyValueList As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(ResultJSON, ClsJSONAndXMLConverter.E_ParseType.JSON)
                 Dim Vout As KeyValuePair(Of String, Object) = TransactionKeyValueList.GetFromPath("result/vout")
-                Dim Subs = New ClsJSONAndXMLConverter(Vout)
+                Dim Subs As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Vout)
 
                 Dim cnter As Integer = 0
                 Dim XMLEntry As String = Subs.Search(cnter.ToString(), ClsJSONAndXMLConverter.E_ParseType.XML)
@@ -334,7 +334,7 @@ Public Class ClsBitcoinNET
 
         Dim FilteredTXOs As List(Of S_UnspentTransactionOutput) = New List(Of S_UnspentTransactionOutput)
 
-        Dim UTOs As List(Of S_UnspentTransactionOutput) = GetUnspent()
+        Dim UTOs As List(Of S_UnspentTransactionOutput) = GetUnspent(Address)
 
         If UTOs.Count > 0 Then
             UTOs = UTOs.OrderBy(Function(x) x.AmountNQT).ToList

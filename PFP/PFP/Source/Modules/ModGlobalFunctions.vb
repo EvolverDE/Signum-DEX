@@ -4,6 +4,8 @@ Module ModGlobalFunctions
     Property GlobalAccountID() As ULong = 0UL
     Property GlobalAddress() As String = ""
 
+    Property CurrentMarket As String = ""
+
     Property GlobalPIN As String = ""
 
     Function GetID() As String

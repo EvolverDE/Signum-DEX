@@ -148,7 +148,11 @@ Module ModJSON
                     input = input.Remove(input.IndexOf(endchar))
                 End If
 
-                Return Convert.ToInt32(input)
+                If IsNumeric(input) Then
+                    Return Convert.ToInt32(input)
+                Else
+                    Return 0
+                End If
 
             End If
         End If
@@ -313,6 +317,9 @@ Module ModJSON
 
                     If SplitIdx <> -1 Then
                         Temp1 = Input.Remove(SplitIdx)
+                    Else
+                        Temp1 = Input.Substring(1)
+                        Temp1 = Temp1.Remove(Temp1.Length)
                     End If
 
                     'abc[x
@@ -324,7 +331,16 @@ Module ModJSON
                     'x[x]x
 
                     Try
-                        Temp2 = Input.Replace(Temp1, "")
+
+                        Dim FirstIDX As Integer = Input.IndexOf(Temp1)
+                        Dim LastIDX As Integer = Input.LastIndexOf(Temp1)
+
+                        If FirstIDX <> LastIDX Then
+                            Temp2 = Input.Remove(FirstIDX, Temp1.Length)
+                        Else
+                            Temp2 = Input.Replace(Temp1, "")
+                        End If
+
                     Catch ex As Exception
 
                     End Try
@@ -333,17 +349,20 @@ Module ModJSON
                     Dim Rest As String = Temp2
 
                     Try
-                        Rest = Input.Replace(Output, "")
+                        Dim FirstIDX As Integer = Input.IndexOf(Output)
+                        Dim LastIDX As Integer = Input.LastIndexOf(Output)
+
+                        If FirstIDX <> LastIDX Then
+                            Rest = Input.Remove(FirstIDX, Output.Length)
+                        Else
+                            Rest = Input.Replace(Output, "")
+                        End If
+
                     Catch ex As Exception
 
                     End Try
 
-
-                    'If Output.Trim() = "" Then
                     Return New List(Of String)({Output, Rest})
-                    'Else
-                    '    Return New List(Of String)({Output, Rest})
-                    'End If
 
                 End If
             End If

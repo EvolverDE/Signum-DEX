@@ -461,16 +461,15 @@ Public Class ClsBitcoinAPI
 
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(TXOUT, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        Dim Confirmations As String = Converter.FirstValue("confirmations").ToString()
-        Dim Value As String = Converter.FirstValue("value").ToString()
+        Dim Confirmations As Integer = Converter.GetFirstInteger("confirmations")
+        Dim Value As Double = Converter.GetFirstDouble("value")
         Dim HEX As String = Converter.FirstValue("hex").ToString()
 
-        If Not Confirmations.Trim = "" Or Not Value.Trim = "" Or Not HEX.Trim = "" Then
-            Return "<vout>" + VOut.ToString + "</vout><confirmations>" + Confirmations + "</confirmations><value>" + Value + "</value><hex>" + HEX + "</hex>"
+        If Confirmations <> -1 And Value <> 0.0 And (HEX.Trim() <> "" And HEX.Trim() <> "False") Then
+            Return "<vout>" + VOut.ToString() + "</vout><confirmations>" + Confirmations.ToString() + "</confirmations><value>" + String.Format("{0:#0.00000000}", Value) + "</value><hex>" + HEX + "</hex>"
         Else
             Return ""
         End If
-
 
         '{
         '	"result":
@@ -723,10 +722,13 @@ Public Class ClsBitcoinAPI
             End If
 
             Dim out As ClsOut = New ClsOut(Application.StartupPath)
-            out.ErrorLog2File(Application.ProductName + "-error in RequestFromBitcoinNode(" + URL + ", " + ByteArrayToHEXString(ByteArray) + ", " + TimeOut.ToString() + ") -> ConvertThread(): " + ex.Message)
+            out.ErrorLog2File(Application.ProductName + "-error in RequestFromBitcoinNode(" + URL + ", " + ByteArrayToHEXString(ByteArray) + ", " + TimeOut.ToString() + ") -> ConvertThread(WebException): " + ex.Message)
 
-            Return Application.ProductName + "-error in RequestFromBitcoinNode(" + URL + ", " + ByteArrayToHEXString(ByteArray) + ", " + TimeOut.ToString() + ") -> ConvertThread(): " + ex.Message
+            Return Application.ProductName + "-error in RequestFromBitcoinNode(" + URL + ", " + ByteArrayToHEXString(ByteArray) + ", " + TimeOut.ToString() + ") -> ConvertThread(WebException): " + ex.Message
 
+        Catch ex As Exception
+
+            Return Application.ProductName + "-error in RequestFromBitcoinNode(" + URL + ", " + ByteArrayToHEXString(ByteArray) + ", " + TimeOut.ToString() + ") -> ConvertThread(Exception): " + ex.Message
 
         End Try
 

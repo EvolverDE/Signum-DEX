@@ -185,54 +185,54 @@ Module ModFunctions
 
     End Function
 
-    Public Function ZeroLAG_MACD(ByVal EMA1 As List(Of Object), ByVal EMA2 As List(Of Object), Optional EMA1V As Integer = 12, Optional ByVal EMA2V As Integer = 26)
-        'ZeroLAG MACD(i) = (2*EMA(Close, FP, i) - EMA(EMA(Close, FP, i), FP, i)) - (2*EMA(Close, SP, i) - EMA(EMA(Close, SP, i), SP, i));
+    'Public Function ZeroLAG_MACD(ByVal EMA1 As List(Of Object), ByVal EMA2 As List(Of Object), Optional EMA1V As Integer = 12, Optional ByVal EMA2V As Integer = 26)
+    '    'ZeroLAG MACD(i) = (2*EMA(Close, FP, i) - EMA(EMA(Close, FP, i), FP, i)) - (2*EMA(Close, SP, i) - EMA(EMA(Close, SP, i), SP, i));
 
-        'ZeroLAG MACD Signal(i) = 2*EMA( ZeroLAG MACD(i), SigP, i) - EMA(EMA( ZeroLAG MACD(i), SigP, i), SigP, i);
+    '    'ZeroLAG MACD Signal(i) = 2*EMA( ZeroLAG MACD(i), SigP, i) - EMA(EMA( ZeroLAG MACD(i), SigP, i), SigP, i);
 
-        'EMA -Exponential Moving Average
-        'Close -Schlusskurs des Balkens
-        'FP -Periode für den schnellen EMA
-        'SP -Periode für den langsamen EMA
-        'SigP -Periode für den Signal-MA.
+    '    'EMA -Exponential Moving Average
+    '    'Close -Schlusskurs des Balkens
+    '    'FP -Periode für den schnellen EMA
+    '    'SP -Periode für den langsamen EMA
+    '    'SigP -Periode für den Signal-MA.
 
-        Dim ZeroLAGMACD As List(Of Object) = New List(Of Object)
+    '    Dim ZeroLAGMACD As List(Of Object) = New List(Of Object)
 
-        Dim ForCnt As Integer = EMA1.Count - 1
+    '    Dim ForCnt As Integer = EMA1.Count - 1
 
-        If EMA1.Count < EMA2.Count Then
+    '    If EMA1.Count < EMA2.Count Then
 
-        Else
-            ForCnt = EMA2.Count - 1
-        End If
+    '    Else
+    '        ForCnt = EMA2.Count - 1
+    '    End If
 
-        For i As Integer = 0 To ForCnt
+    '    For i As Integer = 0 To ForCnt
 
-            Dim Dat As Date = EMA1(i)(0)
+    '        Dim Dat As Date = EMA1(i)(0)
 
-            Dim EMAf As Double = EMA1(i)(1)
-            Dim EMAfOld As Double = EMAf
+    '        Dim EMAf As Double = EMA1(i)(1)
+    '        Dim EMAfOld As Double = EMAf
 
-            If i > 0 Then
-                EMAfOld = EMA1(i - 1)(1)
-            End If
+    '        If i > 0 Then
+    '            EMAfOld = EMA1(i - 1)(1)
+    '        End If
 
-            Dim EMAs As Double = EMA2(i)(1)
-            Dim EMAsOld As Double = EMAs
+    '        Dim EMAs As Double = EMA2(i)(1)
+    '        Dim EMAsOld As Double = EMAs
 
-            If i > 0 Then
-                EMAsOld = EMA2(i - 1)(1)
-            End If
+    '        If i > 0 Then
+    '            EMAsOld = EMA2(i - 1)(1)
+    '        End If
 
 
 
-            ZeroLAGMACD.Add(New List(Of Object)({Dat, ((2 * EMAf) - EMAx(EMAf, EMA1V, EMAfOld)) - ((2 * EMAs) - EMAx(EMAs, EMA2V, EMAsOld))}))
+    '        ZeroLAGMACD.Add(New List(Of Object)({Dat, ((2 * EMAf) - EMAx(EMAf, EMA1V, EMAfOld)) - ((2 * EMAs) - EMAx(EMAs, EMA2V, EMAsOld))}))
 
-        Next
+    '    Next
 
-        Return ZeroLAGMACD
+    '    Return ZeroLAGMACD
 
-    End Function
+    'End Function
 
 
     Public Function RSIx(ByVal DateValueList As List(Of Graph.S_PieceGraph), ByVal RSIPeriode As Integer) As List(Of Object)

@@ -16,6 +16,11 @@ Public Class ClsTransaction
         Get
             Dim T_Amount As ULong = 0UL
             For Each T_Input As ClsUnspentOutput In C_Inputs
+
+                'If Not T_Input.Spendable Then
+                '    Continue For
+                'End If
+
                 T_Amount += T_Input.AmountNQT
             Next
             Return T_Amount
@@ -52,7 +57,7 @@ Public Class ClsTransaction
 
     Private Property C_ScriptAddresses As List(Of String) = New List(Of String)
 
-    Private C_Inputs As List(Of ClsUnspentOutput) = New List(Of ClsUnspentOutput)
+    Private Property C_Inputs As List(Of ClsUnspentOutput) = New List(Of ClsUnspentOutput)
     Public ReadOnly Property Inputs As List(Of ClsUnspentOutput)
         Get
             Return C_Inputs
@@ -221,7 +226,7 @@ Public Class ClsTransaction
             .Addresses = UTXO.Addresses,
             .AmountNQT = UTXO.AmountNQT,
             .LengthOfScript = Output.LengthOfScript
-        }
+        } '.Spendable = Output.Spendable
 
         If UTXO.Typ = AbsClsOutputs.E_Type.ChainSwapHashWithLockTime Or UTXO.Typ = AbsClsOutputs.E_Type.LockTime Then
             Dim SequenceStr As String = ClsBitcoinNET.GetXFromScript(UTXO.LockingScript, ClsScriptEntry.E_OP_Code.LockTime)
@@ -307,12 +312,11 @@ Public Class ClsTransaction
             If Not TempUTXO.Trim = "" Then
                 T_PrevTX.Spendable = True
                 T_PrevTX.Confirmations = GetIntegerBetween(TempUTXO, "<confirmations>", "</confirmations>")
-            Else
-                T_PrevTX.Spendable = False
-                T_PrevTX.Confirmations = -1
+                C_Inputs.Add(T_PrevTX)
+                'Else
+                '    T_PrevTX.Spendable = False
+                '    T_PrevTX.Confirmations = -1
             End If
-
-            C_Inputs.Add(T_PrevTX)
 
         Next
 
@@ -468,6 +472,10 @@ Public Class ClsTransaction
 
         For i As Integer = 0 To C_Inputs.Count - 1
             Dim T_Input As ClsUnspentOutput = C_Inputs(i)
+
+            'If Not T_Input.Spendable Then
+            '    Continue For
+            'End If
 
             Dim T_UTX As List(Of ClsUnspentOutput.S_UTXEntry) = New List(Of ClsUnspentOutput.S_UTXEntry)
 
@@ -760,6 +768,11 @@ Public Class ClsTransaction
 
         For i As Integer = 0 To C_Inputs.Count - 1
             Dim T_Input As ClsUnspentOutput = C_Inputs(i)
+
+            'If Not T_Input.Spendable Then
+            '    Continue For
+            'End If
+
             For j As Integer = 0 To T_Addresses.Count - 1
                 Dim T_Addr As String = T_Addresses(j)
 
@@ -825,6 +838,11 @@ Public Class ClsTransaction
 
         For i As Integer = 0 To C_Inputs.Count - 1
             Dim T_Input As ClsUnspentOutput = C_Inputs(i)
+
+            'If Not T_Input.Spendable Then
+            '    Continue For
+            'End If
+
             For j As Integer = 0 To T_Addresses.Count - 1
                 Dim T_Addr As String = T_Addresses(j)
 
@@ -1000,6 +1018,7 @@ Public Class ClsTransaction
 
         Dim T_numberOfInputs As S_TXEntry = New S_TXEntry
         T_numberOfInputs.Key = E_TXEntry.numberOfInputs
+
         T_numberOfInputs.Value = IntToHex(C_Inputs.Count)
         T_TX.Add(T_numberOfInputs)
 
@@ -1027,6 +1046,10 @@ Public Class ClsTransaction
 
         For j As Integer = 0 To C_Inputs.Count - 1
             Dim T_Input As ClsUnspentOutput = C_Inputs(j)
+
+            'If Not T_Input.Spendable Then
+            '    Continue For
+            'End If
 
             Dim T_transactionID As S_TXEntry = New S_TXEntry
             T_transactionID.Key = E_TXEntry.transactionID
@@ -1350,6 +1373,10 @@ Public Class ClsTransaction
         For i As Integer = 0 To C_Inputs.Count - 1
 
             Dim T_BTCTXInput As ClsUnspentOutput = C_Inputs(i)
+
+            'If Not T_BTCTXInput.Spendable Then
+            '    Continue For
+            'End If
 
             If T_BTCTXInput.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
 

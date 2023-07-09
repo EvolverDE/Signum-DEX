@@ -7,7 +7,7 @@
 
         Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
 
-        '<DEXContract></DEXContract><OrderID></OrderID><BTCTXID></BTCTXID><ChainSwapKey></ChainSwapKey><RedeemScript></RedeemScript>
+        '<DEXContract></DEXContract><OrderID></OrderID><BitcoinTransactionID></BitcoinTransactionID><ChainSwapKey></ChainSwapKey><RedeemScript></RedeemScript>
 
         Dim SetStr As String = "<DEXContract>" + DEXContract.ID.ToString() + "</DEXContract>" +
             "<OrderID>" + DEXContract.CurrentCreationTransaction.ToString() + "</OrderID>" +
@@ -34,7 +34,7 @@
 
         Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
 
-        '<DEXContract></DEXContract><OrderID></OrderID><BTCTXID></BTCTXID><ChainSwapKey></ChainSwapKey><RedeemScript></RedeemScript>
+        '<DEXContract></DEXContract><OrderID></OrderID><BitcoinTransactionID></BitcoinTransactionID><ChainSwapKey></ChainSwapKey><RedeemScript></RedeemScript>
 
         Dim SetStr As String = "<DEXContract>" + DEXContract.ID.ToString() + "</DEXContract>" +
             "<OrderID>" + DEXContract.CurrentCreationTransaction.ToString() + "</OrderID>" +
@@ -61,7 +61,7 @@
 
         Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
 
-        '<DEXContract></DEXContract><OrderID></OrderID><BTCTXID></BTCTXID><ChainSwapKey></ChainSwapKey><RedeemScript></RedeemScript>
+        '<DEXContract></DEXContract><OrderID></OrderID><BitcoinTransactionID></BitcoinTransactionID><ChainSwapKey></ChainSwapKey><RedeemScript></RedeemScript>
 
         Dim SetStr As String = "<DEXContract>" + DEXContractID.ToString() + "</DEXContract>" +
             "<OrderID>" + OrderID.ToString() + "</OrderID>" +
@@ -414,7 +414,7 @@
         Dim Response As String = BitNET.SendRawTX(SignedRawBitcoinTransaction)
 
         Dim Erro As String = GetStringBetween(Response, "<error>", "</error>")
-        If Erro.Trim <> "" Then
+        If Erro.Trim <> "" And Erro.Trim() <> "null" Then
             Return Application.ProductName + "-error in SendRawBitcoinTransaction(): -> " + vbCrLf + Erro
         Else
             Return Response
@@ -571,7 +571,14 @@
             Dim T_BitcoinRAWTX As String = SignBitcoinTransaction(T_BTCTransaction, BitcoinPrivateKey) 'AtomicSwap: Sign BitcoinTX with PrivateKey
 
             If Not T_BitcoinRAWTX.Trim = "" Then
-                T_Transaction.TransactionID = SendRawBitcoinTransaction(T_BitcoinRAWTX)
+
+                Dim Result As String = SendRawBitcoinTransaction(T_BitcoinRAWTX)
+
+                If Result.Contains("<result>") Then
+                    Result = GetStringBetween(Result, "<result>", "</result>")
+                End If
+
+                T_Transaction.TransactionID = Result
             End If
 
             For Each T_RedeemOutput As ClsOutput In T_BTCTransaction.Outputs
@@ -593,7 +600,15 @@
 
     Public Overrides Function CheckXItemTransactionConditions(ByVal XItemTransaction As String, ByVal ChainSwapHash As String) As Boolean
 
-        Dim RedeemScript As String = GetBitcoinRedeemScriptFromINI(XItemTransaction, ChainSwapHash)
+        Dim T_PureChainSwapHash As String = CheckChainSwapHash(ChainSwapHash)
+
+        AbsC_ChainSwapHash = T_PureChainSwapHash
+
+        Dim RedeemScript As String = GetBitcoinRedeemScriptFromINI(XItemTransaction, T_PureChainSwapHash)
+
+        If RedeemScript.Trim() = "" Then
+            RedeemScript = ChainSwapHash
+        End If
 
         Dim T_BTCTransaction As ClsTransaction = New ClsTransaction(XItemTransaction, New List(Of String))
 
@@ -658,7 +673,8 @@
 
         If MessageIsHEXString(ChainSwapHash) And ChainSwapHash.Length <> 64 Then
             Dim Script As List(Of ClsScriptEntry) = ClsTransaction.ConvertLockingScriptStrToList(ChainSwapHash)
-            Return ClsBitcoinNET.GetXFromScript(Script, ClsScriptEntry.E_OP_Code.ChainSwapHash)
+            Dim PureChainSwapHash As String = ClsBitcoinNET.GetXFromScript(Script, ClsScriptEntry.E_OP_Code.ChainSwapHash)
+            Return PureChainSwapHash
         End If
 
         Return ChainSwapHash

@@ -2,6 +2,7 @@
 
     Property Addresses As List(Of String) = New List(Of String)
     Property AmountNQT As ULong = 0UL
+    Property Spendable As Boolean = False
     Property LengthOfScript As Integer = 0
     Property ScriptHex As String = ""
     Property Script As List(Of ClsScriptEntry) = New List(Of ClsScriptEntry)

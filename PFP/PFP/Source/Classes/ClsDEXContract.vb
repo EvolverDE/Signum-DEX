@@ -1889,6 +1889,8 @@ Public Class ClsDEXContract
             T_TXIDList.AddRange(SignumAPI.GetTransactionIds(C_CreatorID, C_CurrentResponderID, C_CurrentTimestamp))
             T_TXIDList.AddRange(SignumAPI.GetTransactionIds(C_CurrentResponderID, C_CreatorID, C_CurrentTimestamp))
 
+            T_TXIDList = T_TXIDList.GroupBy(Function(c) c).Select(Function(a) a.First()).ToList()
+
             Dim T_TXRList As List(Of List(Of String)) = New List(Of List(Of String))
 
             For Each T_TXID As ULong In T_TXIDList
@@ -1912,6 +1914,33 @@ Public Class ClsDEXContract
                 T_TX.AmountNQT = GetULongBetweenFromList(TX, "<amountNQT>", "</amountNQT>")
                 T_TX.FeeNQT = GetULongBetweenFromList(TX, "<feeNQT>", "</feeNQT>")
                 T_TX.Attachment = GetStringBetweenFromList(TX, "<attachment>", "</attachment>")
+
+
+                If T_TX.Attachment.Trim() = "" Then
+
+                    T_TX.Attachment = GetStringBetweenFromList(TX, "<message>", "</message>")
+
+                    If T_TX.Attachment.Trim() = "" Then
+
+                        Dim EncryptedMessage As String = GetStringBetweenFromList(TX, "<encryptedMessage>", "</encryptedMessage>")
+                        'Dim Data As String = GetStringBetweenFromList(TX, "<data>", "</data>")
+                        'Dim Nonce As String = GetStringBetweenFromList(TX, "<nonce>", "</nonce>")
+
+                        'Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+                        'If MasterKeys.Count > 0 Then
+
+                        '    GetLastDecryptedMessageFromChat()
+
+
+                        'Else
+                        T_TX.Attachment = EncryptedMessage
+                        'End If
+
+                    End If
+
+
+                End If
 
                 T_TX.Recipient = GetULongBetweenFromList(TX, "<recipient>", "</recipient>")
                 T_TX.RecipientRS = GetStringBetweenFromList(TX, "<recipientRS>", "</recipientRS>")
@@ -2144,10 +2173,9 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in DeActivateDeniability(2): ->" + vbCrLf + Response
         End If
@@ -2197,14 +2225,12 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") '  JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") '  JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in CreateOrderWithResponder(2): ->" + vbCrLf + Response
         End If
-
 
         If Response.Contains(Application.ProductName + "-error") Then
             Return Response
@@ -2253,14 +2279,12 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in CreateSellOrder(2): ->" + vbCrLf + Response
         End If
-
 
         If Response.Contains(Application.ProductName + "-error") Then
             Return Response
@@ -2310,10 +2334,9 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in CreateBuyOrder(2): ->" + vbCrLf + Response
         End If
@@ -2367,10 +2390,9 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in AcceptOrder(2): ->" + vbCrLf + Response
         End If
@@ -2388,10 +2410,6 @@ Public Class ClsDEXContract
             Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(Response, SignKeyHEX)
             Response = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-            If Response.Contains(Application.ProductName + "-error") Then
-                Return Response
-            End If
-
         End If
 
         Return Response
@@ -2407,10 +2425,9 @@ Public Class ClsDEXContract
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
         'Dim JSON As ClsJSON = New ClsJSON
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in RejectResponder(): ->" + vbCrLf + Response
         End If
@@ -2465,10 +2482,9 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in AcceptOrder(2): ->" + vbCrLf + Response
         End If
@@ -2525,10 +2541,9 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in InjectResponder(2): ->" + vbCrLf + Response
         End If
@@ -2576,10 +2591,9 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in OpenDispute(2): ->" + vbCrLf + Response
         End If
@@ -2651,10 +2665,9 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in MediateDispute(2): ->" + vbCrLf + Response
         End If
@@ -2701,10 +2714,9 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in Appeal(2): ->" + vbCrLf + Response
         End If
@@ -2751,10 +2763,9 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in CheckCloseDispute(2): ->" + vbCrLf + Response
         End If
@@ -2803,10 +2814,9 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in FinishOrder(2): ->" + vbCrLf + Response
         End If
@@ -2893,10 +2903,9 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in InjectChainSwapHash(2): ->" + vbCrLf + Response
         End If
@@ -2962,10 +2971,9 @@ Public Class ClsDEXContract
 
         'Dim JSON As ClsJSON = New ClsJSON
 
-        Dim Error0 As Object = Converter.FirstValue("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
-        If Error0.GetType = GetType(Boolean) Then
-            'TX OK
-        ElseIf Error0.GetType = GetType(String) Then
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
+
+        If Error0 <> -1 Then
             'TX not OK
             Return Application.ProductName + "-error in FinishOrderWithChainSwapKey(2): ->" + vbCrLf + Response
         End If

@@ -28,13 +28,12 @@ Public Class ClsSignumInteractions
             'Dim JSON As ClsJSON = New ClsJSON
             'Dim RespList As Object = JSON.JSONRecursive(Response)
 
-            Dim Error0 As Object = Converter.FirstValue("errorCode") '  JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
-            If Error0.GetType.Name = GetType(Boolean).Name Then
-                'TX OK
-            ElseIf Error0.GetType.Name = GetType(String).Name Then
-                Return Application.ProductName + "-error in SendBillingInfos(1): -> " + vbCrLf + Response
-            End If
+            Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") '  JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
 
+            If Error0 <> -1 Then
+                Return Application.ProductName + "-error in SendBillingInfos(1): -> " + vbCrLf + Response
+                'Response = SignumAPI.SendMessage(Masterkeys(0), Masterkeys(2), RecipientID, Message,, Encrypt, 10.0, RecipientPublicKey)
+            End If
 
             If Response.Contains(Application.ProductName + "-error") Then
                 Return Application.ProductName + "-error in SendBillingInfos(2): -> " + vbCrLf + Response

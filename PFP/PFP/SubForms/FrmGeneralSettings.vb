@@ -266,7 +266,7 @@ Public Class FrmGeneralSettings
             If Result = ClsMsgs.CustomDialogResult.Yes Then
 
                 'SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
-                SetINISetting(E_Setting.LastMarketViewed, C_MainForm.CurrentMarket)
+                SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
                 SetINISetting(E_Setting.RefreshMinutes, Integer.Parse(CoBxRefresh.Text))
                 SetINISetting(E_Setting.DefaultNode, C_MainForm.PrimaryNode)
 
@@ -287,7 +287,6 @@ Public Class FrmGeneralSettings
                 SetINISetting(E_Setting.PayPalAPIUser, TBPayPalAPIUser.Text)
                 SetINISetting(E_Setting.PayPalAPISecret, TBPayPalAPISecret.Text)
 
-
             End If
 
         End If
@@ -296,7 +295,7 @@ Public Class FrmGeneralSettings
     Private Sub BtSaveSettings_Click(sender As Object, e As EventArgs) Handles BtSaveSettings.Click
 
         'SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
-        SetINISetting(E_Setting.LastMarketViewed, C_MainForm.CurrentMarket)
+        SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
         SetINISetting(E_Setting.RefreshMinutes, Integer.Parse(CoBxRefresh.Text))
         SetINISetting(E_Setting.DefaultNode, C_MainForm.PrimaryNode)
 

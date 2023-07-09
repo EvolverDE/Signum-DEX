@@ -221,8 +221,8 @@ Public Class ClsJSONAndXMLConverter
                     TempCollector2.Add(KeyVal.Value)
                 Case E_KeyVal.StartCollection
                     TempKey = KeyVal.Value
-                'Case E_KeyVal.InCollection
-                '    TempKey = KeyVal.Value
+                    'Case E_KeyVal.InCollection
+                    '    TempKey = KeyVal.Value
                 Case E_KeyVal.EndCollection
 
                     BraceCollection.Add(New KeyValuePair(Of String, Object)(i.ToString(), TempCollector.ToList()))
@@ -464,7 +464,7 @@ Public Class ClsJSONAndXMLConverter
             Return Value
         End If
 
-        Return 0
+        Return -1
 
     End Function
 
@@ -576,9 +576,9 @@ Public Class ClsJSONAndXMLConverter
                     Dim EResult As KeyValuePair(Of String, Object) = DirectCast(TempEntry, KeyValuePair(Of String, Object))
                     EndResult.Add(EResult)
 
-                'Case GetType(List(Of Object))
+                    'Case GetType(List(Of Object))
 
-                '    TempEntry = TempEntry
+                    '    TempEntry = TempEntry
 
                 Case GetType(List(Of KeyValuePair(Of String, Object)))
                     Dim EResult As List(Of KeyValuePair(Of String, Object)) = DirectCast(TempEntry, List(Of KeyValuePair(Of String, Object)))

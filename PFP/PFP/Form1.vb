@@ -18,7 +18,7 @@ Public Class PFPForm
     Property UTXList() As List(Of List(Of String))
     Property RefreshTime() As Integer = 60
 
-    Property CurrentMarket As String = ""
+
     Property MarketIsCrypto() As Boolean = False
     Property Decimals() As Integer = 8
 
@@ -990,14 +990,31 @@ Public Class PFPForm
 
             If Not IsErrorOrWarning(Info) Then
                 If (Not GlobalPIN.Trim() = "" And Not GetINISetting(E_Setting.PINFingerPrint, "").Trim() = "") Or GetINISetting(E_Setting.PINFingerPrint, "").Trim() = "" Then
-                    CurrentMarket = NuMarket
 
-                    TabPageAdder("TP_AS_" + NuMarket)
+                    'TODO: XItem adapter
+                    If Not GetINISetting(E_Setting.BitcoinAccounts, "").Trim() = "" Then
+                        CurrentMarket = NuMarket
 
-                    SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
-                    ResetLVColumns()
-                    ForceReload = True
-                    TSSCryptStatus.Enabled = False
+                        TabPageAdder("TP_AS_" + NuMarket)
+
+                        SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
+                        ResetLVColumns()
+                        ForceReload = True
+                        TSSCryptStatus.Enabled = False
+                    Else
+                        Dim Message As String = "There are no Bitcoin-Accounts in the Settings " + vbCrLf
+                        Message += "you have to add at least one Bitcoin-Account in the Settings"
+                        ClsMsgs.MBox(Message, "Error",,, ClsMsgs.Status.Erro, 3, ClsMsgs.Timer_Type.ButtonEnable)
+
+                        TabPageRemover("TP_AS_" + NuMarket)
+
+                        CoBxMarket.SelectedItem = "USD"
+
+                        SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
+                        ResetLVColumns()
+                        ForceReload = True
+                        TSSCryptStatus.Enabled = True
+                    End If
 
                 Else
 
@@ -4136,61 +4153,78 @@ Public Class PFPForm
         Next
         LVBitcoinAddresses.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
 
-        Dim BitAccs As String = GetINISetting(E_Setting.BitcoinAccounts, "")
-        Dim BitTxs As String = GetINISetting(E_Setting.BitcoinTransactions, "")
-        'BitTxs = "<DEXContract>8372890871867317775</DEXContract><OrderID>18042278600640588977</OrderID><BTCTXID>f8845dd268e8edeb939daad0716228b53296ededaa13530c39983e2f29f82d28</BTCTXID><ChainSwapKey></ChainSwapKey><RedeemScript>63a820bc29d1020e37003e8a9dc688b4ec082e7eebda2dc3198ad0d347ee829b00b2548876a9148562fc5e57b965f8a62deaafeee84a7fc457c1d6675cb27576a914f57a0b8ba144b133dd900a2f9e8bb59c8f6ebea36888ac</RedeemScript>;"
-        'BitTxs = "<BTCTXID>6eeea06efeafa34ae0552b1701944d09b143e663db3f859078f59742ffbc3941</BTCTXID><RedeemScript>63a8205682f300723e84bc877b0ebce916618415edc43663930cff67ef2381bedc36188876a9148562fc5e57b965f8a62deaafeee84a7fc457c1d6675cb27576a914f57a0b8ba144b133dd900a2f9e8bb59c8f6ebea36888ac</RedeemScript>"
+        Dim BitcoinAccounts As String = GetINISetting(E_Setting.BitcoinAccounts, "")
+        Dim BitcoinINITransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
+        'BitTxs = "<DEXContract>8372890871867317775</DEXContract><OrderID>18042278600640588977</OrderID><BitcoinTransactionID>f8845dd268e8edeb939daad0716228b53296ededaa13530c39983e2f29f82d28</BitcoinTransactionID><ChainSwapKey></ChainSwapKey><RedeemScript>63a820bc29d1020e37003e8a9dc688b4ec082e7eebda2dc3198ad0d347ee829b00b2548876a9148562fc5e57b965f8a62deaafeee84a7fc457c1d6675cb27576a914f57a0b8ba144b133dd900a2f9e8bb59c8f6ebea36888ac</RedeemScript>;"
+        'BitTxs = "<BitcoinTransactionID>6eeea06efeafa34ae0552b1701944d09b143e663db3f859078f59742ffbc3941</BitcoinTransactionID><RedeemScript>63a8205682f300723e84bc877b0ebce916618415edc43663930cff67ef2381bedc36188876a9148562fc5e57b965f8a62deaafeee84a7fc457c1d6675cb27576a914f57a0b8ba144b133dd900a2f9e8bb59c8f6ebea36888ac</RedeemScript>"
 
         Dim UTXOs As List(Of ClsBitcoinNET.S_UnspentTransactionOutput) = BitNET.GetUnspent(GetBitcoinMainAddress())
 
-        If BitTxs.Trim <> "" Then
+        If BitcoinINITransactions.Trim <> "" Then
 
-            Dim BTXTXID As String = GetStringBetween(BitTxs, "<BTCTXID>", "</BTCTXID>")
-            Dim T_RedeemScript As String = GetStringBetween(BitTxs, "<RedeemScript>", "</RedeemScript>")
+            If BitcoinINITransactions.Substring(BitcoinINITransactions.Length - 1) = ";"c Then
+                BitcoinINITransactions = BitcoinINITransactions.Remove(BitcoinINITransactions.Length - 1)
+            End If
 
-            Dim T_TX As ClsTransaction = New ClsTransaction(BTXTXID, New List(Of String), T_RedeemScript)
+            Dim BitcoinTransactions As List(Of String) = New List(Of String)
 
-            Dim VoutIDX As Integer = -1
-            Dim AmountNQT As ULong = 0UL
-            Dim Confirmations As Integer = -1
-            Dim Spendable As Boolean = False
-            Dim Script As List(Of ClsScriptEntry) = New List(Of ClsScriptEntry)
+            If BitcoinINITransactions.Contains(";") Then
+                BitcoinTransactions.AddRange(BitcoinINITransactions.Split(";"c))
+            Else
+                BitcoinTransactions.Add(BitcoinINITransactions)
+            End If
 
-            For Each j As ClsUnspentOutput In T_TX.Inputs
 
-                If j.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
-                    VoutIDX = j.InputIndex
-                    AmountNQT = j.AmountNQT
-                    Confirmations = j.Confirmations
-                    Spendable = j.Spendable
-                    Script = j.Script
+            For Each BitcoinTransaction As String In BitcoinTransactions
 
-                    Exit For
+                Dim BitcoinTransactionID As String = GetStringBetween(BitcoinTransaction, "<BitcoinTransactionID>", "</BitcoinTransactionID>")
+                Dim T_RedeemScript As String = GetStringBetween(BitcoinTransaction, "<RedeemScript>", "</RedeemScript>")
+
+                Dim T_TX As ClsTransaction = New ClsTransaction(BitcoinTransactionID, New List(Of String), T_RedeemScript)
+
+                Dim VoutIDX As Integer = -1
+                Dim AmountNQT As ULong = 0UL
+                Dim Confirmations As Integer = -1
+                Dim Spendable As Boolean = False
+                Dim Script As List(Of ClsScriptEntry) = New List(Of ClsScriptEntry)
+
+                For Each j As ClsUnspentOutput In T_TX.Inputs
+
+                    If j.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
+                        VoutIDX = j.InputIndex
+                        AmountNQT = j.AmountNQT
+                        Confirmations = j.Confirmations
+                        Spendable = j.Spendable
+                        Script = j.Script
+
+                        Exit For
+                    End If
+
+                Next
+
+                Dim T_Script As List(Of ClsScriptEntry) = ClsTransaction.ConvertLockingScriptStrToList(T_RedeemScript)
+
+                Dim RIPE160Sender As String = ClsBitcoinNET.GetXFromScript(T_Script, ClsScriptEntry.E_OP_Code.RIPE160Sender)
+                Dim RIPE160Recipient As String = ClsBitcoinNET.GetXFromScript(T_Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient)
+
+                Dim T_P2SH As ClsBitcoinNET.S_UnspentTransactionOutput = New ClsBitcoinNET.S_UnspentTransactionOutput()
+
+                T_P2SH.TransactionID = BitcoinTransactionID
+                T_P2SH.Typ = AbsClsOutputs.E_Type.Pay2ScriptHash
+
+                Dim T_Addrs As List(Of String) = New List(Of String)({RIPE160ToAddress(RIPE160Sender, BitcoinAddressPrefix), RIPE160ToAddress(RIPE160Recipient, BitcoinAddressPrefix)})
+                T_P2SH.Addresses = T_Addrs
+
+                T_P2SH.VoutIDX = VoutIDX
+                T_P2SH.AmountNQT = AmountNQT
+                T_P2SH.Confirmations = Confirmations
+                T_P2SH.LockingScript = Script
+
+                If Confirmations > 0 Then
+                    UTXOs.Add(T_P2SH)
                 End If
 
             Next
-
-            Dim T_Script As List(Of ClsScriptEntry) = ClsTransaction.ConvertLockingScriptStrToList(T_RedeemScript)
-
-            Dim RIPE160Sender As String = ClsBitcoinNET.GetXFromScript(T_Script, ClsScriptEntry.E_OP_Code.RIPE160Sender)
-            Dim RIPE160Recipient As String = ClsBitcoinNET.GetXFromScript(T_Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient)
-
-            Dim T_P2SH As ClsBitcoinNET.S_UnspentTransactionOutput = New ClsBitcoinNET.S_UnspentTransactionOutput()
-
-            T_P2SH.TransactionID = BTXTXID
-            T_P2SH.Typ = AbsClsOutputs.E_Type.Pay2ScriptHash
-
-            Dim T_Addrs As List(Of String) = New List(Of String)({RIPE160Sender, RIPE160Recipient})
-            T_P2SH.Addresses = T_Addrs
-
-            T_P2SH.VoutIDX = VoutIDX
-            T_P2SH.AmountNQT = AmountNQT
-            T_P2SH.Confirmations = Confirmations
-            T_P2SH.LockingScript = Script
-
-            If Confirmations > 0 Then
-                UTXOs.Add(T_P2SH)
-            End If
 
         End If
 
@@ -5125,7 +5159,7 @@ Public Class PFPForm
 
 #Region "XItem/Payment Method"
 
-                Dim XItem As String = T_DEXContract.CurrentXItem
+                Dim XItemTicker As String = T_DEXContract.CurrentXItem
                 Dim PayMet As String = "Unknown"
 
                 'If XItem.Contains("-") Then
@@ -5381,10 +5415,10 @@ Public Class PFPForm
                                 T_LVI.SubItems.Add(Autosendinfotext + "/" + AutocompleteSmartContract) 'autoinfo/autofinish
                                 T_LVI.SubItems.Add("Me") 'seller
                                 T_LVI.SubItems.Add(T_DEXContract.CurrentBuyerAddress)  'buyer
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItem) 'xitem/xamount
+                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItemTicker) 'xitem/xamount
                                 T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentBuySellAmount)) 'buysellamount
                                 T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral))  'collateral
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItem)  'price
+                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItemTicker)  'price
 
                                 T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString) 'deniability/dispute
                                 T_LVI.SubItems.Add("OPEN") 'status
@@ -5414,10 +5448,10 @@ Public Class PFPForm
 
                                 T_LVI.SubItems.Add(T_DEXContract.CurrentSellerAddress)  'seller
                                 T_LVI.SubItems.Add("Me") 'buyer
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItem) 'xitem/xamount
+                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItemTicker) 'xitem/xamount
                                 T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentBuySellAmount))  'buysellamount
                                 T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral))  'collateral
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItem) 'price
+                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItemTicker) 'price
 
                                 T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString) 'deniability/dispute
                                 T_LVI.SubItems.Add("OPEN") 'status
@@ -5616,7 +5650,7 @@ Public Class PFPForm
                                                 Dim Response As String = T_Interactions.RejectResponder(False)
 
                                                 If Not IsErrorOrWarning(Response) Then
-                                                    Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(XItem)
+                                                    Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(XItemTicker)
                                                     Dim T_ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID)
                                                     XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID, T_ChainSwapHash)
                                                 End If
@@ -5630,15 +5664,12 @@ Public Class PFPForm
 
                                             If T_DEXContract.BlocksLeft > 8 Then
                                                 Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(T_DEXContract.CurrentXItem)
-                                                T_ChainSwapHash = XItem2.CheckChainSwapHash(T_ChainSwapHash)
-
                                                 If XItem2.CheckXItemTransactionConditions(T_XItemTransactionID, T_ChainSwapHash) Then
 
-                                                    Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID)
+                                                    Dim ChainSwapHashINI As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID)
+                                                    If ChainSwapHashINI.Trim() = "" And T_DEXContract.CurrentChainSwapHash.Trim() = "" Then
 
-                                                    If ChainSwapHash.Trim = "" And T_DEXContract.CurrentChainSwapHash.Trim = "" Then
-
-                                                        Dim SCTX As String = T_Interactions.InjectChainSwapHash(ChainSwapHash, False)
+                                                        Dim SCTX As String = T_Interactions.InjectChainSwapHash(XItem2.ChainSwapHash, False)
 
                                                         If Not IsErrorOrWarning(SCTX) Then
 
@@ -5653,6 +5684,7 @@ Public Class PFPForm
                                                     End If
 
                                                 End If
+
                                             End If
 
                                         End If
@@ -5741,10 +5773,10 @@ Public Class PFPForm
                                 T_LVI.SubItems.Add(Autosendinfotext + "/" + AutocompleteSmartContract) 'autoinfo
                                 T_LVI.SubItems.Add("Me") 'seller
                                 T_LVI.SubItems.Add(T_DEXContract.CurrentBuyerAddress) 'buyer
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItem) 'xamount + xitem
+                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItemTicker) 'xamount + xitem
                                 T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentBuySellAmount)) 'quantity
                                 T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral)) 'collateral
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItem) 'price
+                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItemTicker) 'price
 
 #Region "Dispute"
 
@@ -6015,7 +6047,7 @@ Public Class PFPForm
 
                                         If T_DEXContract.CurrencyIsCrypto() Then
 
-                                            Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(XItem)
+                                            Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(XItemTicker)
 
                                             Dim T_BitcoinTransactionID As String = XItem2.GetXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction)
 
@@ -6128,10 +6160,10 @@ Public Class PFPForm
                             T_LVI.SubItems.Add(T_DEXContract.CurrentSellerAddress)  'seller
                             T_LVI.SubItems.Add("Me") 'buyer
 
-                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItem) 'xamount + xitem
+                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItemTicker) 'xamount + xitem
                             T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentBuySellAmount)) 'buysellamount
                             T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral)) 'collateral
-                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItem) 'price
+                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItemTicker) 'price
 
 #Region "Dispute"
 
@@ -6246,7 +6278,7 @@ Public Class PFPForm
                                 If Not HistoryOrder.ChainSwapKey.Trim = "" Then
                                     'AtomicSwap: get last msg (with ChainSwapKey) and redeem XItem
 
-                                    Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(XItem)
+                                    Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(XItemTicker)
 
                                     Dim BitcoinTX As String = XItem2.GetXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction)
                                     Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, BitcoinTX)
