@@ -181,17 +181,17 @@ void CreateOrder(void) {
     long T_BuyCollateralAmount = currentTX.message[1];
 	checkFiat();
 	
-    if ((( currentTX.amount > (GAS_FEE - getPointOneSigna()) && (T_BuyCollateralAmount > 0 || !isFiatOrder)) || (currentTX.amount <= (ONETHOUSAND * ONETHOUSAND * TENTHOUSAND) + GAS_FEE && T_BuyCollateralAmount == 0)) && Initiator == 0 && (FreeForAll || currentTX.sender == CREATOR)) {
+    if (((currentTX.amount > (GAS_FEE - getPointOneSigna()) && (T_BuyCollateralAmount > 0 || !isFiatOrder)) || (currentTX.amount <= (ONETHOUSAND * ONETHOUSAND * TENTHOUSAND) + GAS_FEE && T_BuyCollateralAmount == 0)) && Initiator == 0 && (FreeForAll || currentTX.sender == CREATOR)) {
         FreeForAll = true;
         CreateOrderTX = currentTX.txId ;
         if (currentTX.amount > T_BuyCollateralAmount) {
             SellOrder = true;
-            BuySellAmount = currentTX.amount - T_BuyCollateralAmount;//Sell: 100 = 130 - 30;
-            InitiatorsCollateral = T_BuyCollateralAmount;//Sell: 30
+            BuySellAmount = currentTX.amount - T_BuyCollateralAmount; //Sell: 100 = 130 - 30;
+            InitiatorsCollateral = T_BuyCollateralAmount; //Sell: 30
         } else {
             SellOrder = false;
-            InitiatorsCollateral = currentTX.amount;//Buy: 30;
-            BuySellAmount = T_BuyCollateralAmount;//Buy: 100
+            InitiatorsCollateral = currentTX.amount; //Buy: 30;
+            BuySellAmount = T_BuyCollateralAmount; //Buy: 100
         }
 		if ((isFiatOrder && checkOneCent(currentTX.message[2], BuySellAmount)) || !isFiatOrder) {
 			

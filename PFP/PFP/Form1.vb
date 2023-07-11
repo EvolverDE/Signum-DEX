@@ -5933,7 +5933,7 @@ Public Class PFPForm
 
                                         If T_DEXContract.CurrentChainSwapHash = "" Then
 
-                                            Dim T_ChainSwapKey As String = ByteArrayToHEXString(RandomBytes(32)) ' "aaaa1111aaaa1111" 'aaaa1111aaaa1111bbbb2222bbbb2222cccc3333cccc3333dddd4444dddd4444
+                                            Dim T_ChainSwapKey As String = ByteArrayToHEXString(RandomBytes(31)) ' "aaaa1111aaaa1111" ' 'aaaa1111aaaa1111bbbb2222bbbb2222cccc3333cccc3333dddd4444dddd4444
                                             'T_ChainSwapKey += "bbbb2222bbbb2222"
                                             'T_ChainSwapKey += "cccc3333cccc3333"
                                             'T_ChainSwapKey += "dddd4444dddd4444"
@@ -6278,7 +6278,7 @@ Public Class PFPForm
                                 If Not HistoryOrder.ChainSwapKey.Trim = "" Then
                                     'AtomicSwap: get last msg (with ChainSwapKey) and redeem XItem
 
-                                    Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(XItemTicker)
+                                    Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(HistoryOrder.XItem)
 
                                     Dim BitcoinTX As String = XItem2.GetXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction)
                                     Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, BitcoinTX)
