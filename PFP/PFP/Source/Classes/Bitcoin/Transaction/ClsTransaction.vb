@@ -55,7 +55,7 @@ Public Class ClsTransaction
     'Property C_ChangeAmountNQT As ULong
     Property C_FeesNQTPerByte As ULong = 1UL
 
-    Private Property C_ScriptAddresses As List(Of String) = New List(Of String)
+    Private Property C_ScriptAddresses As List(Of S_Address) = New List(Of S_Address)
 
     Private Property C_Inputs As List(Of ClsUnspentOutput) = New List(Of ClsUnspentOutput)
     Public ReadOnly Property Inputs As List(Of ClsUnspentOutput)
@@ -93,6 +93,16 @@ Public Class ClsTransaction
     Public Structure S_PrivateKey
         Dim PrivateKey As String
         Dim ChainSwapKey As String
+    End Structure
+
+    Public Structure S_Address
+        Dim Address As String
+        Dim ChainSwapKey As Boolean
+
+        Sub New(Optional ByVal Addr As String = "", Optional ByVal ChainSwapK As Boolean = False)
+            Address = Addr
+            ChainSwapKey = ChainSwapK
+        End Sub
     End Structure
 
     Public Enum E_TransactionType
@@ -137,14 +147,23 @@ Public Class ClsTransaction
 
     Private Property AddressesFiltered As Boolean = False
 
-    Sub New(ByVal TransactionID As String, ByVal FilterAddress As String, Optional ByVal RedeemScript As String = "")
-        Me.New(TransactionID, New List(Of String)({FilterAddress}), RedeemScript)
+    Sub New(ByVal TransactionID As String, ByVal FilterAddress As String, Optional ByVal RedeemScript As String = "", Optional ByVal ChainSwapKey As String = "")
+        Me.New(TransactionID, New List(Of S_Address)({New S_Address(FilterAddress, If(ChainSwapKey.Trim() = "", False, True))}), RedeemScript)
     End Sub
 
-    Sub New(ByVal TransactionID As String, ByVal FilterAddresses As List(Of String), Optional ByVal RedeemScript As String = "")
+    Sub New(ByVal TransactionID As String, ByVal FilterAddresses As List(Of S_Address), Optional ByVal RedeemScript As String = "")
         Me.New(New List(Of String)({TransactionID}), FilterAddresses, RedeemScript)
     End Sub
-    Sub New(ByVal TransactionIDs As List(Of String), ByVal Addresses As List(Of String), Optional ByVal RedeemScript As String = "")
+    Sub New(ByVal TransactionIDs As List(Of String), ByVal Addresses As List(Of S_Address), Optional ByVal RedeemScript As String = "")
+
+        'Dim T_Addresses As List(Of S_Address) = New List(Of S_Address)
+
+        'For Each Address In Addresses
+        '    Dim T_Address As S_Address = New S_Address
+        '    T_Address.Address = Address
+        '    T_Address.ChainSwapKey = False
+        '    T_Addresses.Add(T_Address)
+        'Next
 
         For Each T_TransactionID As String In TransactionIDs
             GetTransactionDetails(T_TransactionID, RedeemScript)
@@ -165,12 +184,15 @@ Public Class ClsTransaction
                 For Each Address As String In T_Input.Addresses
 
                     Dim AddrFound As Boolean = False
-                    If C_ScriptAddresses.Contains(Address) Then
+                    If C_ScriptAddresses.Any(Function(addr) addr.Address = Address) Then
                         AddrFound = True
                     End If
 
                     If Not AddrFound Then
-                        C_ScriptAddresses.Add(Address)
+                        Dim T_Address As S_Address = New S_Address
+                        T_Address.Address = Address
+                        T_Address.ChainSwapKey = False
+                        C_ScriptAddresses.Add(T_Address)
                     End If
 
                 Next
@@ -204,12 +226,16 @@ Public Class ClsTransaction
         For Each Address As String In UTXO.Addresses
 
             Dim AddrFound As Boolean = False
-            If C_ScriptAddresses.Contains(Address) Then
+            If C_ScriptAddresses.Any(Function(addr) addr.Address = Address) Then
                 AddrFound = True
             End If
 
             If Not AddrFound Then
-                C_ScriptAddresses.Add(Address)
+                Dim T_Address As S_Address = New S_Address
+                T_Address.Address = Address
+                T_Address.ChainSwapKey = False
+
+                C_ScriptAddresses.Add(T_Address)
             End If
 
         Next
@@ -416,7 +442,7 @@ Public Class ClsTransaction
 
     End Sub
 
-    Private Sub FilterAddresses(ByVal Addresses As List(Of String))
+    Private Sub FilterAddresses(ByVal Addresses As List(Of S_Address))
 
         'Dim UnsignedInputs As List(Of ClsUnspentOutput) = New List(Of ClsUnspentOutput)
 
@@ -430,8 +456,8 @@ Public Class ClsTransaction
                 Dim T_SenderAddress As String = RIPE160ToAddress(ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.RIPE160Sender), BitcoinAddressPrefix)
                 Dim T_RecipientAddress As String = RIPE160ToAddress(ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.RIPE160Recipient), BitcoinAddressPrefix)
 
-                Dim IsSender As Boolean = Addresses.Contains(T_SenderAddress)
-                Dim IsRecipient As Boolean = Addresses.Contains(T_RecipientAddress)
+                Dim IsSender As Boolean = Addresses.Any(Function(addr) addr.Address = T_SenderAddress)
+                Dim IsRecipient As Boolean = Addresses.Any(Function(addr) addr.Address = T_RecipientAddress)
 
                 If IsSender And Not IsRecipient Then
                     C_TransactionType = E_TransactionType.GetBack
@@ -447,9 +473,9 @@ Public Class ClsTransaction
                 Continue For
             End If
 
-            For Each FA As String In Addresses
+            For Each FA As S_Address In Addresses
 
-                If T_Input.Addresses.Contains(FA) Then
+                If T_Input.Addresses.Contains(FA.Address) Then
                     T_UnsignedInputs.Add(T_Input)
                     Exit For
                 End If
@@ -463,7 +489,7 @@ Public Class ClsTransaction
 
     End Sub
 
-    Private Sub CreateUnsignedTransaction(ByVal Addresses As List(Of String))
+    Private Sub CreateUnsignedTransaction(ByVal Addresses As List(Of S_Address))
 
         If C_Inputs.Count = 0 Or C_Outputs.Count = 0 Then
             Exit Sub
@@ -493,7 +519,6 @@ Public Class ClsTransaction
 
             T_UnsignedTXHEX += T_numberOfInputs.Value ' IntToHex(C_Inputs.Count)
 
-
             'get Locktime
 
             Dim T_Sequence As String = "ffffffff"
@@ -515,6 +540,14 @@ Public Class ClsTransaction
 
             For j As Integer = 0 To C_Inputs.Count - 1
                 Dim T_Unsignedinput As ClsUnspentOutput = C_Inputs(j)
+
+                Dim UseStandardSequence As Boolean = False
+                For Each TAddress As S_Address In Addresses
+                    If T_Unsignedinput.Addresses.Contains(TAddress.Address) Then
+                        UseStandardSequence = TAddress.ChainSwapKey
+                        Exit For
+                    End If
+                Next
 
                 Dim T_transactionID As ClsUnspentOutput.S_UTXEntry = New ClsUnspentOutput.S_UTXEntry
                 T_transactionID.Key = ClsUnspentOutput.E_UTXEntry.transactionID
@@ -568,7 +601,7 @@ Public Class ClsTransaction
                 Dim T_seq As ClsUnspentOutput.S_UTXEntry = New ClsUnspentOutput.S_UTXEntry
                 T_seq.Key = ClsUnspentOutput.E_UTXEntry.sequence
 
-                If T_Unsignedinput.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
+                If T_Unsignedinput.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash And Not UseStandardSequence Then
 
                     Dim T_timeout As String = ClsBitcoinNET.GetXFromScript(T_Unsignedinput.Script, ClsScriptEntry.E_OP_Code.LockTime)
 
@@ -664,12 +697,12 @@ Public Class ClsTransaction
             T_Input.UnsignedTransactionHex = T_UnsignedTXHEX
 
             Dim T_Address As String = ""
-            For Each FA As String In Addresses
+            For Each FA As S_Address In Addresses
                 Dim Founded As Boolean = False
                 For Each T_Addr As String In C_Inputs(i).Addresses
 
-                    If FA = T_Addr Then
-                        T_Address = FA
+                    If FA.Address = T_Addr Then
+                        T_Address = FA.Address
                         Founded = True
                         Exit For
                     End If
@@ -757,10 +790,20 @@ Public Class ClsTransaction
 
     Public Function SignTransaction(ByVal PrivateKeys As List(Of S_PrivateKey)) As String
 
-        Dim T_Addresses As List(Of String) = New List(Of String)
+        Dim T_Addresses As List(Of S_Address) = New List(Of S_Address)
 
         For Each TPK As S_PrivateKey In PrivateKeys
-            T_Addresses.Add(PubKeyToAddress(PrivKeyToPubKey(TPK.PrivateKey), BitcoinAddressPrefix))
+            Dim T_Address As S_Address = New S_Address
+            T_Address.Address = PubKeyToAddress(PrivKeyToPubKey(TPK.PrivateKey), BitcoinAddressPrefix)
+
+            If TPK.ChainSwapKey.Trim() = "" Then
+                T_Address.ChainSwapKey = False
+            Else
+                T_Address.ChainSwapKey = True
+            End If
+
+            T_Addresses.Add(T_Address)
+
         Next
 
         FilterAddresses(T_Addresses)
@@ -774,7 +817,7 @@ Public Class ClsTransaction
             'End If
 
             For j As Integer = 0 To T_Addresses.Count - 1
-                Dim T_Addr As String = T_Addresses(j)
+                Dim T_Addr As String = T_Addresses(j).Address
 
                 If T_Input.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
 
@@ -844,7 +887,7 @@ Public Class ClsTransaction
             'End If
 
             For j As Integer = 0 To T_Addresses.Count - 1
-                Dim T_Addr As String = T_Addresses(j)
+                Dim T_Addr As String = T_Addresses(j).Address
 
                 If T_Input.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash Then
 
@@ -1051,6 +1094,14 @@ Public Class ClsTransaction
             '    Continue For
             'End If
 
+            Dim UseStandardSequence As Boolean = False
+            For Each TAddress As S_Address In C_ScriptAddresses
+                If T_Input.Addresses.Contains(TAddress.Address) Then
+                    UseStandardSequence = TAddress.ChainSwapKey
+                    Exit For
+                End If
+            Next
+
             Dim T_transactionID As S_TXEntry = New S_TXEntry
             T_transactionID.Key = E_TXEntry.transactionID
             T_transactionID.Value = ChangeHEXStrEndian(T_Input.TransactionID)
@@ -1106,7 +1157,7 @@ Public Class ClsTransaction
 
             Dim result1 As Boolean = T_Input.OutputType = AbsClsOutputs.E_Type.Pay2ScriptHash And (GetScriptType(T_Input.Script) = AbsClsOutputs.E_Type.ChainSwapHashWithLockTime Or GetScriptType(T_Input.Script) = AbsClsOutputs.E_Type.LockTime)
 
-            If result1 Then
+            If result1 And Not UseStandardSequence Then
 
                 Dim T_timeout As String = ClsBitcoinNET.GetXFromScript(T_Input.Script, ClsScriptEntry.E_OP_Code.LockTime)
                 'T_timeout = ChangeHEXStrEndian(T_timeout)
@@ -1398,7 +1449,12 @@ Public Class ClsTransaction
 
                         CreateOutput(AddressSender, Satoshi2Dbl(T_BTCTXInput.AmountNQT))
                         FinalizingOutputs(AddressSender)
-                        CreateUnsignedTransaction(New List(Of String)({AddressSender}))
+
+                        Dim T_Address As S_Address = New S_Address
+                        T_Address.Address = AddressSender
+                        T_Address.ChainSwapKey = False
+
+                        CreateUnsignedTransaction(New List(Of S_Address)({T_Address}))
 
                         T_BTCTXInput.Addresses.Clear()
                         T_BTCTXInput.Addresses.AddRange({AddressRecipient, AddressSender})

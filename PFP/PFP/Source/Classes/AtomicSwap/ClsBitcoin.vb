@@ -610,7 +610,7 @@
             RedeemScript = ChainSwapHash
         End If
 
-        Dim T_BTCTransaction As ClsTransaction = New ClsTransaction(XItemTransaction, New List(Of String))
+        Dim T_BTCTransaction As ClsTransaction = New ClsTransaction(XItemTransaction, New List(Of ClsTransaction.S_Address))
 
         Dim InputConfirmations As Integer = 0
         Dim InputScript As List(Of ClsScriptEntry) = New List(Of ClsScriptEntry)
@@ -684,7 +684,7 @@
     Public Overrides Function ClaimXItemTransactionWithChainSwapKey(ByVal TransactionID As String, ByVal ChainSwapHash As String, ByVal ChainSwapKey As String) As String
 
         Dim RedeemScript As String = GetBitcoinRedeemScriptFromINI(TransactionID, ChainSwapHash)
-        Dim T_BTCTransaction As ClsTransaction = New ClsTransaction(TransactionID, GetBitcoinMainAddress(), RedeemScript)
+        Dim T_BTCTransaction As ClsTransaction = New ClsTransaction(TransactionID, GetBitcoinMainAddress(), RedeemScript, ChainSwapKey)
 
         For i As Integer = 0 To T_BTCTransaction.Inputs.Count - 1
 

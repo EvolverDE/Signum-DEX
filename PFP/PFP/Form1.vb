@@ -4180,7 +4180,7 @@ Public Class PFPForm
                 Dim BitcoinTransactionID As String = GetStringBetween(BitcoinTransaction, "<BitcoinTransactionID>", "</BitcoinTransactionID>")
                 Dim T_RedeemScript As String = GetStringBetween(BitcoinTransaction, "<RedeemScript>", "</RedeemScript>")
 
-                Dim T_TX As ClsTransaction = New ClsTransaction(BitcoinTransactionID, New List(Of String), T_RedeemScript)
+                Dim T_TX As ClsTransaction = New ClsTransaction(BitcoinTransactionID, New List(Of ClsTransaction.S_Address), T_RedeemScript)
 
                 Dim VoutIDX As Integer = -1
                 Dim AmountNQT As ULong = 0UL
@@ -6290,7 +6290,7 @@ Public Class PFPForm
                                             Dim Out As ClsOut = New ClsOut(Application.StartupPath)
                                             Out.Info2File("Redeem BTC TX:" + T_BitcoinTXID)
 
-                                            XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, BitcoinTX, GetSHA256HashString(HistoryOrder.ChainSwapKey.Trim))
+                                            XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, BitcoinTX, GetSHA256HashString(HistoryOrder.ChainSwapKey.Trim()))
 
                                         End If
 
@@ -9396,7 +9396,7 @@ Public Class PFPForm
     End Sub
 
     Private Sub Bt_BitcoinClaimGetInfo_Click(sender As Object, e As EventArgs) Handles Bt_BitcoinClaimGetInfo.Click
-        Dim Transaction As ClsTransaction = New ClsTransaction(TB_BitcoinClaimTransaction.Text, New List(Of String))
+        Dim Transaction As ClsTransaction = New ClsTransaction(TB_BitcoinClaimTransaction.Text, New List(Of ClsTransaction.S_Address))
 
         LV_BitcoinClaim.Items.Clear()
 
