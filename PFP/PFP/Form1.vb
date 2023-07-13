@@ -4819,7 +4819,7 @@ Public Class PFPForm
 
 
                 Dim ValidBuyMethods As String = LoadMethodFilterFromINI(E_Setting.BuyFilterMethods)
-                If Not ValidBuyMethods.Contains(BuyOrder.Method) Or ValidBuyMethods.Trim = "" Then
+                If (Not ValidBuyMethods.Contains(BuyOrder.Method) Or ValidBuyMethods.Trim = "") And BuyOrder.Method <> "AtomicSwap" Then
                     Continue For
                 End If
 
@@ -4885,7 +4885,7 @@ Public Class PFPForm
                 End If
 
                 Dim ValidSellMethods As String = LoadMethodFilterFromINI(E_Setting.SellFilterMethods)
-                If Not ValidSellMethods.Contains(SellOrder.Method) Or ValidSellMethods.Trim = "" Then
+                If (Not ValidSellMethods.Contains(SellOrder.Method) Or ValidSellMethods.Trim = "") And SellOrder.Method <> "AtomicSwap" Then
                     Continue For
                 End If
 
@@ -5156,7 +5156,6 @@ Public Class PFPForm
                 Dim Confirms As String = T_DEXContract.CurrentConfirmations.ToString
 #End Region
 
-
 #Region "XItem/Payment Method"
 
                 Dim XItemTicker As String = T_DEXContract.CurrentXItem
@@ -5285,12 +5284,18 @@ Public Class PFPForm
                                             End If
                                         End If
 
-
 #End Region
 
                                     End If
 
-                                    T_LVE.Method = PayMet
+                                    If T_DEXContract.CurrencyIsCrypto Then
+                                        T_LVE.Method = "AtomicSwap"
+                                        'T_LVE.AutoInfo = "Auto"
+                                        'T_LVE.AutoFinish = "Auto"
+                                    Else
+                                        T_LVE.Method = PayMet
+                                    End If
+
                                     T_LVE.AutoInfo = Autosendinfotext
                                     T_LVE.AutoFinish = AutocompleteSmartContract
                                     T_LVE.Deniability = T_DEXContract.Deniability.ToString
@@ -5377,10 +5382,17 @@ Public Class PFPForm
 
                                     End If
 
-                                    T_LVE.Method = PayMet
+                                    If T_DEXContract.CurrencyIsCrypto() Then
+                                        T_LVE.Method = "AtomicSwap"
+                                        'T_LVE.AutoInfo = "Auto"
+                                        'T_LVE.AutoFinish = "Auto"
+                                    Else
+                                        T_LVE.Method = PayMet
+                                    End If
+
                                     T_LVE.AutoInfo = Autosendinfotext
                                     T_LVE.AutoFinish = AutocompleteSmartContract
-                                    T_LVE.Deniability = T_DEXContract.Deniability.ToString
+                                    T_LVE.Deniability = T_DEXContract.Deniability.ToString()
                                     T_LVE.Seller_Buyer = T_BuyerRS
                                     T_LVE.SmartContract = T_DEXContract.Address
                                     T_LVE.Tag = T_DEXContract
@@ -5398,7 +5410,11 @@ Public Class PFPForm
                             If TBSNOAddress.Text = T_DEXContract.CurrentSellerAddress Then ' Order.SellerRS Then
 
                                 'Broadcast info over DEXNET
-                                BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
+                                If T_DEXContract.CurrencyIsCrypto Then
+                                    BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>AtomicSwap</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
+                                Else
+                                    BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
+                                End If
 
                                 T_LVI = New ListViewItem
                                 T_LVI.Text = Confirms 'confirms
@@ -5430,7 +5446,11 @@ Public Class PFPForm
                             ElseIf TBSNOAddress.Text = T_DEXContract.CurrentBuyerAddress Then ' Order.BuyerRS Then
 
                                 'Broadcast info over DEXNET
-                                BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
+                                If T_DEXContract.CurrencyIsCrypto Then
+                                    BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>AtomicSwap</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
+                                Else
+                                    BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
+                                End If
 
                                 T_LVI = New ListViewItem
                                 T_LVI.Text = Confirms 'confirms
@@ -6151,11 +6171,11 @@ Public Class PFPForm
 
                             T_LVI.SubItems.Add(PayMet) 'method
 
-                            If MarketIsCrypto Then
-                                T_LVI.SubItems.Add("auto/auto") 'autoinfo
-                            Else
-                                T_LVI.SubItems.Add(Autosendinfotext + "/" + AutocompleteSmartContract) 'autoinfo
-                            End If
+                            'If MarketIsCrypto Then
+                            '    T_LVI.SubItems.Add("Auto/Auto") 'autoinfo
+                            'Else
+                            T_LVI.SubItems.Add(Autosendinfotext + "/" + AutocompleteSmartContract) 'autoinfo
+                            'End If
 
                             T_LVI.SubItems.Add(T_DEXContract.CurrentSellerAddress)  'seller
                             T_LVI.SubItems.Add("Me") 'buyer
@@ -6221,7 +6241,6 @@ Public Class PFPForm
                 For Each HistoryOrder As ClsDEXContract.S_Order In T_DEXContract.ContractOrderHistoryList
 
                     If HistoryOrder.Status = ClsDEXContract.E_Status.CLOSED Or HistoryOrder.Status = ClsDEXContract.E_Status.CANCELED Then
-
 
 #Region "MyClosedOrders - GUI"
 
@@ -6494,7 +6513,6 @@ Public Class PFPForm
                     End If
 
                 End If
-
 
             End If
 
@@ -7603,6 +7621,7 @@ Public Class PFPForm
 #End Region
 
 #Region "Fill RelevantMsgBuffer"
+
         For i As Integer = 0 To RelMsgs.Count - 1
             Dim RelMsg As ClsDEXNET.S_RelevantMessage = RelMsgs(i)
 
@@ -7626,6 +7645,7 @@ Public Class PFPForm
             End If
 
         Next
+
 #End Region
 
         BuyOrderLVOffChainEList.Clear()
