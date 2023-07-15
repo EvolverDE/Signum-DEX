@@ -1282,6 +1282,19 @@ Public Class ClsDEXNET
                 If Not DecryptedMSG = T_Message Then
                     AddressedMessage = True
                     BCMessage = BCMessage.Replace(T_Message, DecryptedMSG)
+                Else
+
+                    Dim Masterkeys As List(Of String) = GetPassPhrase()
+                    '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+                    If Masterkeys.Count > 0 Then
+
+                        DecryptedMSG = DecryptMsg(T_Message, Masterkeys(2), T_PubKey)
+                        If Not DecryptedMSG = T_Message Then
+                            AddressedMessage = True
+                            BCMessage = BCMessage.Replace(T_Message, DecryptedMSG)
+                        End If
+                    End If
+
                 End If
 
             End If

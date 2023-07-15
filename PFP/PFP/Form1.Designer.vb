@@ -397,7 +397,6 @@ Partial Class PFPForm
         Me.LVSellorders.Location = New System.Drawing.Point(0, 0)
         Me.LVSellorders.MultiSelect = False
         Me.LVSellorders.Name = "LVSellorders"
-        Me.LVSellorders.RightToLeft = System.Windows.Forms.RightToLeft.Yes
         Me.LVSellorders.RightToLeftLayout = True
         Me.LVSellorders.Size = New System.Drawing.Size(762, 140)
         Me.LVSellorders.TabIndex = 2
@@ -662,6 +661,7 @@ Partial Class PFPForm
         Me.BtSNOSetCurFee.TabIndex = 23
         Me.BtSNOSetCurFee.Text = "set Current Slotfee"
         Me.BtSNOSetCurFee.UseVisualStyleBackColor = False
+        Me.BtSNOSetCurFee.Visible = False
         '
         'Label8
         '

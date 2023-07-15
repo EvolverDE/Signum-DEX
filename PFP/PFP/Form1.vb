@@ -1,7 +1,11 @@
 ﻿Option Strict On
 Option Explicit On
 Option Infer Off
+Imports Microsoft.SqlServer
+Imports Microsoft.VisualBasic.ApplicationServices
+Imports System.Diagnostics.Contracts
 Imports PFP.ClsOrderSettings
+Imports PFP.PFPForm
 
 Public Class PFPForm
 
@@ -617,21 +621,59 @@ Public Class PFPForm
         GetCandlesInfo = GetCandlesInfo.Remove(GetCandlesInfo.Length - 1)
         GetCandlesInfo += ""
 
-        Dim DEXAPIInfo As String = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""GetInfo"","
-        DEXAPIInfo += """requests"":{"
-        DEXAPIInfo += """GetInfo"":{""description"":""shows this info"",""queryExample"":""/API/v1.0/GetInfo""},"
-        DEXAPIInfo += """GetCandles"":[{""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1.0/GetCandles?pair=USD_SIGNA&days=3&tickmin=15""},"
-        DEXAPIInfo += GetCandlesInfo
-        DEXAPIInfo += "],"
-        DEXAPIInfo += """GetOpenOrders"":{""description"":""shows the list of open orders"",""queryExample"":""/API/v1.0/GetOpenOrders""},"
-        DEXAPIInfo += """AcceptOrder"":{""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1.0/AcceptOrder?DEXContractAddress=TS-L623-BTHG-FX7M-H7K87&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51""},"
-        DEXAPIInfo += """CreateBitcoinTransaction"":{""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1.0/CreateBitcoinTransaction?BitcoinTransaction=8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957&BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinRecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinChainSwapHash=abcdef&BitcoinAmountNQT=2120""}"
+
+
+        Dim DEXAPIInfo As String = ""
+        DEXAPIInfo += "{""openapi"":""3.0.3"","
+        DEXAPIInfo += """info"":{"
+        DEXAPIInfo += """title"":""PFPDEXAPI"","
+        DEXAPIInfo += """version"":""1.0.0"","
+        DEXAPIInfo += """contact"":{"
+        DEXAPIInfo += """email"":""development@signum.network""},"
+        DEXAPIInfo += """license"":{"
+        DEXAPIInfo += """name"":""Apache 2.0"","
+        DEXAPIInfo += """url"":""http://www.apache.org/licenses/LICENSE-2.0.html""}},"
+        DEXAPIInfo += """paths"": {"
+
+        DEXAPIInfo += """/API/v1/Info"":{"
+        DEXAPIInfo += """GET"":{"
+        DEXAPIInfo += """operationId"": ""info"","
+        DEXAPIInfo += """summary"": ""shows this info"","
+        DEXAPIInfo += """responses"":{"
+        DEXAPIInfo += """200"":{"
+        DEXAPIInfo += """description"": ""The OpenAPI V3 description of this API""}}}},"
+
+
+        DEXAPIInfo += """/API/v1/Candles"":{"
+        DEXAPIInfo += """GET"":{"
+        DEXAPIInfo += """operationId"": ""candles"","
+        DEXAPIInfo += """summary"": ""response candleentries for chart plotting"","
+        DEXAPIInfo += """responses"":{"
+        DEXAPIInfo += """200"":{"
+        DEXAPIInfo += """description"": ""abcd""}}}}"
+
+
+
         DEXAPIInfo += "}}"
+
+
+
+
+        'DEXAPIInfo += "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""Info"","
+        'DEXAPIInfo += """requests"":{"
+        'DEXAPIInfo += """Info"":{""method"":""GET"",""description"":""shows this info"",""queryExample"":""/API/v1/Info""},"
+        'DEXAPIInfo += """Candles"":[{""method"":""GET"",""description"":""response candleentries for chart plotting"",""queryExample"":""/API/v1/Candles/USD_SIGNA?days=3&tickmin=15""},"
+        'DEXAPIInfo += GetCandlesInfo
+        'DEXAPIInfo += "],"
+        'DEXAPIInfo += """Orders"":{""method"":""GET"",""description"":""shows the list of open orders"",""queryExample"":""/API/v1/Orders""},"
+        'DEXAPIInfo += """Orders"":{""method"":""POST"",""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1/Orders/TS-L623-BTHG-FX7M-H7K87&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51""},"
+        'DEXAPIInfo += """CreateBitcoinTransaction"":{""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1/CreateBitcoinTransaction?BitcoinTransaction=8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957&BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinRecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinChainSwapHash=abcdef&BitcoinAmountNQT=2120""}"
+        'DEXAPIInfo += "}}"
 
         Dim DEXAPIGetInfoResponse As ClsTCPAPI.API_Response = New ClsTCPAPI.API_Response
         DEXAPIGetInfoResponse.API_Interface = "API"
-        DEXAPIGetInfoResponse.API_Version = "v1.0"
-        DEXAPIGetInfoResponse.API_Command = "GetInfo"
+        DEXAPIGetInfoResponse.API_Version = "v1"
+        DEXAPIGetInfoResponse.API_Command = "Info"
         DEXAPIGetInfoResponse.API_Response = DEXAPIInfo
         DEXAPIGetInfoResponse.API_Parameters = New List(Of String)({""})
 
@@ -1340,10 +1382,14 @@ Public Class PFPForm
             Dim BalList As List(Of String) = SignumAPI.GetBalance(TBSNOAddress.Text)
             TBSNOBalance.Text = GetDoubleBetweenFromList(BalList, "<available>", "</available>").ToString
 
-
             Dim MinAmount As Double = Convert.ToDouble(NUDSNOAmount.Value) '100,00000000
             Dim XItemMinAmount As Double = Convert.ToDouble(NUDSNOItemAmount.Value) '1,00000000
 
+            Dim Amount As Double = Convert.ToDouble(NUDSNOAmount.Value)
+            Dim Fee As Double = Convert.ToDouble(NUDSNOTXFee.Value)
+            Dim Collateral As Double = Convert.ToDouble(NUDSNOCollateral.Value)
+            Dim Item As String = CurrentMarket
+            Dim ItemAmount As Double = Convert.ToDouble(NUDSNOItemAmount.Value)
 
             If MinAmount > 0.0 And XItemMinAmount > 0.0 Then
 
@@ -1416,12 +1462,6 @@ Public Class PFPForm
 
 
                 Dim Recipient As ULong = T_DEXContract.ID
-                Dim Amount As Double = Convert.ToDouble(NUDSNOAmount.Value)
-                Dim Fee As Double = Convert.ToDouble(NUDSNOTXFee.Value)
-                Dim Collateral As Double = Convert.ToDouble(NUDSNOCollateral.Value)
-                Dim Item As String = CurrentMarket
-                Dim ItemAmount As Double = Convert.ToDouble(NUDSNOItemAmount.Value)
-
 
                 If RBSNOSell.Checked Then
 
@@ -1638,10 +1678,37 @@ Public Class PFPForm
                 End If
 
             Else
-                ClsMsgs.MBox("All Payment Channels are in Use.", "No free Payment Channel found",,, ClsMsgs.Status.Information)
-                BtSNOSetOrder.Text = "Set Order"
-                BtSNOSetOrder.Enabled = True
-                Exit Sub
+
+                If RBSNOBuy.Checked Then
+
+                    If AccAmount = 0.0 Then
+                        Dim Result As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("it seems you have not enough balance to open an order." + vbCrLf + "do you like to create the order offchain?", "not enough balance", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList.Yes_No),, ClsMsgs.Status.Question)
+
+                        If Result = ClsMsgs.CustomDialogResult.Yes Then
+
+                            Dim Masterkeys As List(Of String) = GetPassPhrase()
+                            '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+                            If Masterkeys.Count > 0 Then
+                                Dim T_Method As String = GetINISetting(E_Setting.PaymentType, "")
+                                OffchainBuyOrder = New S_OffchainBuyOrder("0", GlobalPublicKey, "WantToBuy", Amount, ItemAmount, Item, T_Method)
+                                DEXNET.BroadcastMessage("<SCID>0</SCID><Ask>WantToBuy</Ask><Amount>" + Amount.ToString + "</Amount><XAmount>" + ItemAmount.ToString + "</XAmount><XItem>" + Item + "</XItem><Method>" + T_Method + "</Method>", Masterkeys(1), Masterkeys(2), Masterkeys(0))
+                            End If
+
+                        End If
+                    Else
+                        ClsMsgs.MBox("All Payment Channels are in Use.", "No free Payment Channel found",,, ClsMsgs.Status.Information)
+                        BtSNOSetOrder.Text = "Set Order"
+                        BtSNOSetOrder.Enabled = True
+                        Exit Sub
+                    End If
+
+                Else
+                    ClsMsgs.MBox("All Payment Channels are in Use.", "No free Payment Channel found",,, ClsMsgs.Status.Information)
+                    BtSNOSetOrder.Text = "Set Order"
+                    BtSNOSetOrder.Enabled = True
+                    Exit Sub
+
+                End If
 
             End If
 
@@ -4489,17 +4556,30 @@ Public Class PFPForm
 
     Function ResetLVColumns() As Boolean
 
+        'LVSellorders.Columns.Clear()
+        'LVSellorders.Columns.Add("Price (" + CurrentMarket + ")")
+        'LVSellorders.Columns.Add("Amount (" + CurrentMarket + ")")
+        'LVSellorders.Columns.Add("Total (Signa)")
+        'LVSellorders.Columns.Add("Collateral (Signa)")
+        'LVSellorders.Columns.Add("Method")
+        'LVSellorders.Columns.Add("Autoinfo")
+        'LVSellorders.Columns.Add("Autofinish")
+        'LVSellorders.Columns.Add("Deniability")
+        'LVSellorders.Columns.Add("Seller")
+        'LVSellorders.Columns.Add("Smart Contract")
+
+
         LVSellorders.Columns.Clear()
-        LVSellorders.Columns.Add("Price (" + CurrentMarket + ")")
-        LVSellorders.Columns.Add("Amount (" + CurrentMarket + ")")
-        LVSellorders.Columns.Add("Total (Signa)")
-        LVSellorders.Columns.Add("Collateral (Signa)")
-        LVSellorders.Columns.Add("Method")
-        LVSellorders.Columns.Add("Autoinfo")
-        LVSellorders.Columns.Add("Autofinish")
-        LVSellorders.Columns.Add("Deniability")
-        LVSellorders.Columns.Add("Seller")
         LVSellorders.Columns.Add("Smart Contract")
+        LVSellorders.Columns.Add("Seller")
+        LVSellorders.Columns.Add("Deniability")
+        LVSellorders.Columns.Add("Autofinish")
+        LVSellorders.Columns.Add("Autoinfo")
+        LVSellorders.Columns.Add("Method")
+        LVSellorders.Columns.Add("Collateral (Signa)")
+        LVSellorders.Columns.Add("Total (Signa)")
+        LVSellorders.Columns.Add("Amount (" + CurrentMarket + ")")
+        LVSellorders.Columns.Add("Price (" + CurrentMarket + ")")
 
 
         LVBuyorders.Columns.Clear()
@@ -4894,16 +4974,17 @@ Public Class PFPForm
 
             Dim T_LVI As ListViewItem = New ListViewItem
 
-            T_LVI.Text = SellOrder.Price 'price
-            T_LVI.SubItems.Add(SellOrder.Amount) 'amount
-            T_LVI.SubItems.Add(SellOrder.Total) 'total
-            T_LVI.SubItems.Add(SellOrder.Collateral) 'collateral
-            T_LVI.SubItems.Add(SellOrder.Method) 'payment method
-            T_LVI.SubItems.Add(SellOrder.AutoInfo) 'autosend infotext
-            T_LVI.SubItems.Add(SellOrder.AutoFinish) 'autocomplete at
-            T_LVI.SubItems.Add(SellOrder.Deniability) 'deniability
+            T_LVI.Text = SellOrder.SmartContract  'at
+            'T_LVI.SubItems.Add(SellOrder.SmartContract) 'at
             T_LVI.SubItems.Add(SellOrder.Seller_Buyer) 'buyer
-            T_LVI.SubItems.Add(SellOrder.SmartContract) 'at
+            T_LVI.SubItems.Add(SellOrder.Deniability) 'deniability
+            T_LVI.SubItems.Add(SellOrder.AutoFinish) 'autocomplete at
+            T_LVI.SubItems.Add(SellOrder.AutoInfo) 'autosend infotext
+            T_LVI.SubItems.Add(SellOrder.Method) 'payment method
+            T_LVI.SubItems.Add(SellOrder.Collateral) 'collateral
+            T_LVI.SubItems.Add(SellOrder.Total) 'total
+            T_LVI.SubItems.Add(SellOrder.Amount) 'amount
+            T_LVI.SubItems.Add(SellOrder.Price) 'price
 
             T_LVI.BackColor = SellOrder.Backcolor
             T_LVI.Tag = SellOrder.Tag
@@ -7159,7 +7240,7 @@ Public Class PFPForm
 
         Try
 
-            Dim OpenOrdersJSON As String = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""GetOpenOrders"",""data"":[ "
+            Dim OpenOrdersJSON As String = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1"",""contentType"":""application/json"",""response"":""Orders"",""data"":[ "
 
             For Each T_Order As ClsDEXContract In OpenDEXContracts
 
@@ -7175,29 +7256,84 @@ Public Class PFPForm
                 Dim Seller As String = T_Order.CurrentSellerAddress
                 Dim Buyer As String = T_Order.CurrentBuyerAddress
 
-                Dim Collateral As String = T_Order.CurrentInitiatorsCollateral.ToString.Replace(",", ".")
-                Dim SignaAmount As String = T_Order.CurrentBuySellAmount.ToString.Replace(",", ".")
-                Dim Price As String = T_Order.CurrentPrice.ToString.Replace(",", ".")
+                Dim Collateral As String = String.Format("{0:#0.00000000}", T_Order.CurrentInitiatorsCollateral).Replace(",", ".")
+                Dim SignaAmount As String = String.Format("{0:#0.00000000}", T_Order.CurrentBuySellAmount).Replace(",", ".")
+                Dim Price As String = String.Format("{0:#0.00000000}", T_Order.CurrentPrice).Replace(",", ".")
                 Dim XItem As String = T_Order.CurrentXItem + "_SIGNA"
-                Dim XAmount As String = T_Order.CurrentXAmount.ToString.Replace(",", ".")
+                Dim XAmount As String = String.Format("{0:#0.00000000}", T_Order.CurrentXAmount).Replace(",", ".")
 
                 OpenOrdersJSON += "{""at"":""" + Contract + ""","
                 OpenOrdersJSON += """type"":""" + Type + ""","
                 OpenOrdersJSON += """seller"":""" + Seller + ""","
                 OpenOrdersJSON += """buyer"":""" + Buyer + ""","
-                OpenOrdersJSON += """signaCollateral"":""" + Collateral + ""","
-                OpenOrdersJSON += """signa"":""" + SignaAmount + ""","
+                OpenOrdersJSON += """signaCollateral"": " + Collateral + ","
+                OpenOrdersJSON += """signa"": " + SignaAmount + ","
                 OpenOrdersJSON += """xItem"":""" + XItem + ""","
-                OpenOrdersJSON += """xAmount"":""" + XAmount + ""","
-                OpenOrdersJSON += """price"":""" + Price + """},"
+                OpenOrdersJSON += """xAmount"": " + XAmount + ","
+                OpenOrdersJSON += """price"": " + Price + "},"
 
             Next
+
+
+            For Each OffchainBuyOrder As S_PublicOrdersListViewEntry In BuyOrderLVOffChainEList
+
+                Dim T_OffChainBuyOrder As S_OffchainBuyOrder = DirectCast(OffchainBuyOrder.Tag, S_OffchainBuyOrder)
+
+                Dim Type As String = ""
+                If T_OffChainBuyOrder.Ask = "WantToBuy" Then
+                    Type = "BuyOrder"
+                Else
+                    Type = "SellOrder"
+                End If
+
+                Dim Seller As String = ""
+                Dim AccRS As String = ClsReedSolomon.Encode(GetAccountID(T_OffChainBuyOrder.PubKey))
+                Dim Buyer As String = ClsSignumAPI._AddressPreFix + AccRS + "-" + ClsBase36.EncodeHexToBase36(T_OffChainBuyOrder.PubKey)
+
+                Dim SignaAmount As String = String.Format("{0:#0.00000000}", T_OffChainBuyOrder.Amount).Replace(",", ".")
+                Dim XItem As String = T_OffChainBuyOrder.XItem + "_SIGNA"
+                Dim XAmount As String = String.Format("{0:#0.00000000}", T_OffChainBuyOrder.XAmount).Replace(",", ".")
+                Dim Price As String = String.Format("{0:#0.00000000}", T_OffChainBuyOrder.XAmount / T_OffChainBuyOrder.Amount).Replace(",", ".")
+
+                OpenOrdersJSON += "{""at"":""OffChainOrder"","
+                OpenOrdersJSON += """type"":""" + Type + ""","
+                OpenOrdersJSON += """seller"":""" + Seller + ""","
+                OpenOrdersJSON += """buyer"":""" + Buyer + ""","
+                OpenOrdersJSON += """signaCollateral"": 0.0,"
+                OpenOrdersJSON += """signa"": " + SignaAmount + ","
+                OpenOrdersJSON += """xItem"":""" + XItem + ""","
+                OpenOrdersJSON += """xAmount"": " + XAmount + ","
+                OpenOrdersJSON += """price"": " + Price + "},"
+
+            Next
+
+            If OffchainBuyOrder.Ask.Trim() <> "" Then
+
+                Dim AccRS As String = ClsReedSolomon.Encode(GetAccountID(OffchainBuyOrder.PubKey))
+                Dim Buyer As String = ClsSignumAPI._AddressPreFix + AccRS + "-" + ClsBase36.EncodeHexToBase36(OffchainBuyOrder.PubKey)
+
+                Dim SignaAmount As String = String.Format("{0:#0.00000000}", OffchainBuyOrder.Amount).Replace(",", ".")
+                Dim XItem As String = OffchainBuyOrder.XItem
+                Dim XAmount As String = String.Format("{0:#0.00000000}", OffchainBuyOrder.XAmount).Replace(",", ".")
+                Dim Price As String = String.Format("{0:#0.00000000}", OffchainBuyOrder.XAmount / OffchainBuyOrder.Amount).Replace(",", ".")
+
+                OpenOrdersJSON += "{""at"":""OffChainOrder"","
+                OpenOrdersJSON += """type"":""BuyOrder"","
+                OpenOrdersJSON += """seller"":"""","
+                OpenOrdersJSON += """buyer"":""" + Buyer + ""","
+                OpenOrdersJSON += """signaCollateral"": 0.0,"
+                OpenOrdersJSON += """signa"": " + SignaAmount + ","
+                OpenOrdersJSON += """xItem"":""" + XItem + ""","
+                OpenOrdersJSON += """xAmount"": " + XAmount + ","
+                OpenOrdersJSON += """price"": " + Price + "},"
+
+            End If
 
             OpenOrdersJSON = OpenOrdersJSON.Remove(OpenOrdersJSON.Length - 1)
             OpenOrdersJSON += "]}"
 
             Dim Parameters As List(Of String) = New List(Of String) '({"type=" + Type, "pair=" + XItem})
-            RefreshTCPAPIResponse("GetOpenOrders", Parameters, OpenOrdersJSON)
+            RefreshTCPAPIResponse("Orders", Parameters, OpenOrdersJSON)
 
         Catch ex As Exception
             IsErrorOrWarning(Application.ProductName + "-error in LoadTCPAPIOpenOrders(): -> " + ex.Message)
@@ -7397,7 +7533,7 @@ Public Class PFPForm
 
 
             Dim Parameters As List(Of String) = New List(Of String)({"pair=" + XItem, "days=" + Days, "tickmin=" + Tick})
-            RefreshTCPAPIResponse("GetCandles", Parameters, TradeHistoryJSON)
+            RefreshTCPAPIResponse("Candles", Parameters, TradeHistoryJSON)
 
         Catch ex As Exception
             IsErrorOrWarning(Application.ProductName + "-error in LoadTCPAPIHistory(): -> " + ex.Message)
@@ -7437,7 +7573,7 @@ Public Class PFPForm
 
                 Dim Response As ClsTCPAPI.API_Response = New ClsTCPAPI.API_Response
                 Response.API_Interface = "API"
-                Response.API_Version = "v1.0"
+                Response.API_Version = "v1"
                 Response.API_Command = Command
                 Response.API_Response = ResponseMSG
                 Response.API_Parameters = New List(Of String)(Parameters.ToArray)
@@ -7790,7 +7926,7 @@ Public Class PFPForm
                 Dim RM_AccountID As ULong = GetULongBetweenFromList(RM_AccountPublicKeyList, "<account>", "</account>")
                 Dim RM_Address As String = GetStringBetweenFromList(RM_AccountPublicKeyList, "<accountRS>", "</accountRS>")
 
-                'TODO: Processing UnexpectedMsgs from DEXNET
+                'Processing UnexpectedMsgs from DEXNET
 
                 Dim RM_Ask As String = GetStringBetween(RelMsg.RelevantMessage, "<Ask>", "</Ask>")
 

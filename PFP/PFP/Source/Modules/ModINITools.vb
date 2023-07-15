@@ -165,7 +165,7 @@ Module ModINITools
 
 #Region "Develope"
 
-            Temp = SetINISetting(E_Setting.DEXNETEnable, False)
+            Temp = SetINISetting(E_Setting.DEXNETEnable, True)
             Temp = SetINISetting(E_Setting.DEXNETShowStatus, False)
 
 #End Region
@@ -263,7 +263,7 @@ Module ModINITools
 
 #Region "Develope"
 
-        Temp = GetINISetting(E_Setting.DEXNETEnable, False).ToString
+        Temp = GetINISetting(E_Setting.DEXNETEnable, True).ToString
         Temp = GetINISetting(E_Setting.DEXNETShowStatus, False).ToString
 
 #End Region

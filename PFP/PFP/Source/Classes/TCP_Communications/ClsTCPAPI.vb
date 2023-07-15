@@ -223,14 +223,14 @@ Public Class ClsTCPAPI
 
             Dim TCPClient As TcpClient = ConnectionList(ConnectionIDX).TCPClient
 
-            TCPClient.SendTimeout = 1000
-            TCPClient.ReceiveTimeout = 1000
-
-            Dim recvBytes(CInt(Integer.MaxValue * 0.5)) As Byte
-            Dim htmlReq As String = Nothing
-            Dim bytes As Integer = 0
-
             Try
+
+                TCPClient.SendTimeout = 1000
+                TCPClient.ReceiveTimeout = 1000
+
+                Dim recvBytes(CInt(Integer.MaxValue * 0.5)) As Byte
+                Dim htmlReq As String = Nothing
+                Dim bytes As Integer = 0
 
                 bytes = TCPClient.Client.Receive(recvBytes, 0, TCPClient.Client.Available, SocketFlags.None)
                 htmlReq = Encoding.ASCII.GetString(recvBytes, 0, bytes)
@@ -272,7 +272,7 @@ Public Class ClsTCPAPI
 
                                 For Each para In APIRequest.Parameters
 
-                                    Dim paraStr = para.Parameter.ToString() + "=" + para.Value.ToString()
+                                    Dim paraStr = para.Parameter.ToString().ToLower() + "=" + para.Value.ToString()
 
                                     If Not Response.API_Parameters.Contains(paraStr) Then
                                         FoundStaticResponse = False
@@ -324,31 +324,42 @@ Public Class ClsTCPAPI
                         If APIRequest.Endpoint = ClsAPIRequest.E_Endpoint.Orders Then
 
                             Dim PublicKey As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.SenderPublicKey).Value
+
+                            If IsNothing(PublicKey) Then PublicKey = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PublicKey).Value
+
                             Dim OrderID As String = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.OrderID).Value
 
-                            If Not OrderID Is Nothing And MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
-                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
-                                    If T_DEXContract.ID.ToString() = OrderID Then
-                                        'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
-                                        'publickey = 6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
-                                        'http://127.0.0.1:8130/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
+                            If Not IsNumeric(OrderID) Then
+                                OrderID = ClsReedSolomon.Decode(OrderID).ToString()
+                            End If
 
-                                        If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
-                                            Dim T_UnsignedTransactionBytes As String = T_DEXContract.AcceptSellOrder(PublicKey)
+                            If Not IsNothing(PublicKey) And Not IsNothing(OrderID) Then
 
-                                            If T_UnsignedTransactionBytes.Contains("errorCode") Then
-                                                ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
-                                            ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
+                                If Not OrderID Is Nothing And MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
+                                    For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                        If T_DEXContract.ID.ToString() = OrderID Then
+                                            'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
+                                            'publickey = 6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
+                                            'http://127.0.0.1:8130/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
 
-                                            Else
-                                                '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                            If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
+                                                Dim T_UnsignedTransactionBytes As String = T_DEXContract.AcceptSellOrder(PublicKey)
+
+                                                If T_UnsignedTransactionBytes.Contains("errorCode") Then
+                                                    ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
+                                                ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
+
+                                                Else
+                                                    '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                    ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                End If
+
                                             End If
 
                                         End If
+                                    Next
 
-                                    End If
-                                Next
+                                End If
 
                             End If
 

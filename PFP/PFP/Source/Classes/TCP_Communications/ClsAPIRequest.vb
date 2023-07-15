@@ -84,8 +84,10 @@ Public Class ClsAPIRequest
         ChangeAddress = 14
         RecipientAddress = 15
 
-        ChainSwapKey = 16
-        ChainSwapHash = 17
+        PublicKey = 16
+
+        ChainSwapKey = 17
+        ChainSwapHash = 18
 
     End Enum
 
@@ -448,8 +450,8 @@ Public Class ClsAPIRequest
                 If Para.Contains("="c) Then
 
                     Dim Parameter As S_Parameter = New S_Parameter
-                    Parameter.Parameter = Parameters.FirstOrDefault(Function(param) ParametersString.ToLower().Contains(param.ToString().ToLower()))
-                    Parameter.Value = ParametersString.Substring(ParametersString.IndexOf("="c) + 1)
+                    Parameter.Parameter = Parameters.FirstOrDefault(Function(param) Para.ToLower().Contains(param.ToString().ToLower()))
+                    Parameter.Value = Para.Substring(Para.IndexOf("="c) + 1)
 
                     T_Parameters.Add(Parameter)
 
