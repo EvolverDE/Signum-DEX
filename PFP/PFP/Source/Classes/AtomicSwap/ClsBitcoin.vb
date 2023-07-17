@@ -282,7 +282,7 @@
 
     End Function
 
-    Public Overrides Function DelXItemTransactionFromINI(DEXContractID As ULong, OrderID As ULong, XItemTransactionID As String, ChainSwapHash As String) As Boolean
+    Public Overrides Function DelXItemTransactionFromINI(DEXContractID As ULong, OrderID As ULong, XItemTransactionID As String, ChainSwapHash As String, ByVal Reason As String) As Boolean
 
         Dim BitcoinTransactions As String = GetINISetting(E_Setting.BitcoinTransactions, "")
         Dim BitcoinTransactionsList As List(Of String) = New List(Of String)
@@ -314,6 +314,10 @@
 
                 If T_ChainSwapHash.Contains(ChainSwapHash.ToLower()) Then
                     Returner = True
+                    Dim Out As ClsOut = New ClsOut()
+
+                    Out.ToFile(Reason + "->" + vbCrLf + BitcoinTX, "bitcoin.log", IO.FileMode.Append)
+
                 Else
                     BitcoinTransactions += BitcoinTX + ";"
                 End If

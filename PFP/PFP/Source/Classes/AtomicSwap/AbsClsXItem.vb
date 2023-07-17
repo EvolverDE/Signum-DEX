@@ -29,7 +29,7 @@ Public MustInherit Class AbsClsXItem
 
     Public MustOverride Function GetXItemTransactionFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong, ByVal ChainSwapHash As String) As String
 
-    Public MustOverride Function DelXItemTransactionFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong, ByVal XItemTransactionID As String, ByVal ChainSwapHash As String) As Boolean
+    Public MustOverride Function DelXItemTransactionFromINI(ByVal DEXContractID As ULong, ByVal OrderID As ULong, ByVal XItemTransactionID As String, ByVal ChainSwapHash As String, ByVal Reason As String) As Boolean
 
 #End Region
 

@@ -4,36 +4,6 @@ Public Class ClsUnspentOutput
 
     Property TransactionID As String = ""
     'Property Addresses As List(Of String) = New List(Of String)
-    ReadOnly Property GetAddressesString As String
-        Get
-            Dim T_Addresses As String = ""
-            For Each T_Address In Addresses
-                T_Addresses += T_Address + ";"
-            Next
-            T_Addresses = T_Addresses.Remove(T_Addresses.Length - 1)
-
-            Return T_Addresses
-
-        End Get
-    End Property
-
-    ReadOnly Property GetScriptString As String
-        Get
-            Dim T_LS As String = ""
-            For Each s As ClsScriptEntry In Script
-                T_LS += s.Key.ToString
-                If s.ValueHex.Length > 2 Then
-                    T_LS += "=" + s.ValueHex + " "
-                Else
-                    T_LS += " "
-                End If
-            Next
-
-            Return T_LS
-
-        End Get
-    End Property
-
 
     Property InputIndex As Integer = 0
     Property Confirmations As Integer = 0

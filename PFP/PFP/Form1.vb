@@ -624,51 +624,45 @@ Public Class PFPForm
 
 
         Dim DEXAPIInfo As String = ""
-        DEXAPIInfo += "{""openapi"":""3.0.3"","
-        DEXAPIInfo += """info"":{"
-        DEXAPIInfo += """title"":""PFPDEXAPI"","
-        DEXAPIInfo += """version"":""1.0.0"","
-        DEXAPIInfo += """contact"":{"
-        DEXAPIInfo += """email"":""development@signum.network""},"
-        DEXAPIInfo += """license"":{"
-        DEXAPIInfo += """name"":""Apache 2.0"","
-        DEXAPIInfo += """url"":""http://www.apache.org/licenses/LICENSE-2.0.html""}},"
-        DEXAPIInfo += """paths"": {"
+        'DEXAPIInfo += "{""openapi"":""3.0.3"","
+        'DEXAPIInfo += """info"":{"
+        'DEXAPIInfo += """title"":""PFPDEXAPI"","
+        'DEXAPIInfo += """version"":""1.0.0"","
+        'DEXAPIInfo += """contact"":{"
+        'DEXAPIInfo += """email"":""development@signum.network""},"
+        'DEXAPIInfo += """license"":{"
+        'DEXAPIInfo += """name"":""Apache 2.0"","
+        'DEXAPIInfo += """url"":""http://www.apache.org/licenses/LICENSE-2.0.html""}},"
+        'DEXAPIInfo += """paths"": {"
 
-        DEXAPIInfo += """/API/v1/Info"":{"
-        DEXAPIInfo += """GET"":{"
-        DEXAPIInfo += """operationId"": ""info"","
-        DEXAPIInfo += """summary"": ""shows this info"","
-        DEXAPIInfo += """responses"":{"
-        DEXAPIInfo += """200"":{"
-        DEXAPIInfo += """description"": ""The OpenAPI V3 description of this API""}}}},"
+        'DEXAPIInfo += """/API/v1/Info"":{"
+        'DEXAPIInfo += """GET"":{"
+        'DEXAPIInfo += """operationId"": ""info"","
+        'DEXAPIInfo += """summary"": ""shows this info"","
+        'DEXAPIInfo += """responses"":{"
+        'DEXAPIInfo += """200"":{"
+        'DEXAPIInfo += """description"": ""The OpenAPI V3 description of this API""}}}},"
 
+        'DEXAPIInfo += """/API/v1/Candles"":{"
+        'DEXAPIInfo += """GET"":{"
+        'DEXAPIInfo += """operationId"": ""candles"","
+        'DEXAPIInfo += """summary"": ""response candleentries for chart plotting"","
+        'DEXAPIInfo += """responses"":{"
+        'DEXAPIInfo += """200"":{"
+        'DEXAPIInfo += """description"": ""abcd""}}}}"
 
-        DEXAPIInfo += """/API/v1/Candles"":{"
-        DEXAPIInfo += """GET"":{"
-        DEXAPIInfo += """operationId"": ""candles"","
-        DEXAPIInfo += """summary"": ""response candleentries for chart plotting"","
-        DEXAPIInfo += """responses"":{"
-        DEXAPIInfo += """200"":{"
-        DEXAPIInfo += """description"": ""abcd""}}}}"
-
-
-
-        DEXAPIInfo += "}}"
-
-
-
-
-        'DEXAPIInfo += "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""Info"","
-        'DEXAPIInfo += """requests"":{"
-        'DEXAPIInfo += """Info"":{""method"":""GET"",""description"":""shows this info"",""queryExample"":""/API/v1/Info""},"
-        'DEXAPIInfo += """Candles"":[{""method"":""GET"",""description"":""response candleentries for chart plotting"",""queryExample"":""/API/v1/Candles/USD_SIGNA?days=3&tickmin=15""},"
-        'DEXAPIInfo += GetCandlesInfo
-        'DEXAPIInfo += "],"
-        'DEXAPIInfo += """Orders"":{""method"":""GET"",""description"":""shows the list of open orders"",""queryExample"":""/API/v1/Orders""},"
-        'DEXAPIInfo += """Orders"":{""method"":""POST"",""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1/Orders/TS-L623-BTHG-FX7M-H7K87&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51""},"
-        'DEXAPIInfo += """CreateBitcoinTransaction"":{""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1/CreateBitcoinTransaction?BitcoinTransaction=8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957&BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinRecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinChainSwapHash=abcdef&BitcoinAmountNQT=2120""}"
         'DEXAPIInfo += "}}"
+
+        DEXAPIInfo += "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""Info"","
+        DEXAPIInfo += """requests"":{"
+        DEXAPIInfo += """Info"":{""method"":""GET"",""description"":""shows this info"",""queryExample"":""/API/v1/Info""},"
+        DEXAPIInfo += """Candles"":[{""method"":""GET"",""description"":""response candleentries for chart plotting"",""queryExample"":""/API/v1/Candles/USD_SIGNA?days=3&tickmin=15""},"
+        DEXAPIInfo += GetCandlesInfo
+        DEXAPIInfo += "],"
+        DEXAPIInfo += """Orders"":{""method"":""GET"",""description"":""shows the list of open orders"",""queryExample"":""/API/v1/Orders""},"
+        DEXAPIInfo += """Orders"":{""method"":""POST"",""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1/Orders/TS-L623-BTHG-FX7M-H7K87&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51""},"
+        DEXAPIInfo += """CreateBitcoinTransaction"":{""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1/CreateBitcoinTransaction?BitcoinTransaction=8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957&BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinRecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinChainSwapHash=abcdef&BitcoinAmountNQT=2120""}"
+        DEXAPIInfo += "}}"
 
         Dim DEXAPIGetInfoResponse As ClsTCPAPI.API_Response = New ClsTCPAPI.API_Response
         DEXAPIGetInfoResponse.API_Interface = "API"
@@ -5746,6 +5740,8 @@ Public Class PFPForm
 
                                         If T_DEXContract.BlocksLeft <= 2 And T_DEXContract.Status = ClsDEXContract.E_Status.RESERVED Then
 
+                                            'AtomicSwap: RejectResponder / cancel broken swap
+
                                             If Not T_DEXContract.CheckForUTX() And Not T_DEXContract.CheckForTX() Then
 
                                                 Dim Response As String = T_Interactions.RejectResponder(False)
@@ -5753,7 +5749,7 @@ Public Class PFPForm
                                                 If Not IsErrorOrWarning(Response) Then
                                                     Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(XItemTicker)
                                                     Dim T_ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID)
-                                                    XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID, T_ChainSwapHash)
+                                                    XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID, T_ChainSwapHash, "RejectResponder: " + Response)
                                                 End If
 
                                             End If
@@ -5792,6 +5788,8 @@ Public Class PFPForm
 
                                     Else
                                         'TODO: handle Errors and warnings
+                                        Message = T_DEXContract.GetLastDecryptedMessageFromChat(T_DEXContract.CurrentBuyerAddress, True)
+                                        Message = Message
 
                                     End If
 
@@ -6081,7 +6079,7 @@ Public Class PFPForm
                                                     If Not IsErrorOrWarning(XItem2.GetBackXItemTransaction(T_XItemTX, ChainSwapHash)) Then
                                                         'AtomicSwap: cancel sellers Contract ?
 
-                                                        XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTX, ChainSwapHash)
+                                                        XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTX, ChainSwapHash, "GetBackXItem")
 
                                                     End If
 
@@ -6107,7 +6105,7 @@ Public Class PFPForm
                                                         Dim Response As String = T_Interactions.FinishWithChainSwapKey(T_ChainSwapKey, False)
 
                                                         If Not IsErrorOrWarning(Response, Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->FinishOrderWithChainSwapKey) -> " + vbCrLf, True) Then
-                                                            XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID, T_DEXContract.CurrentChainSwapHash)
+                                                            XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID, T_DEXContract.CurrentChainSwapHash, "FinishWithChainSwapKey: " + Response)
                                                         End If
 
                                                     End If
@@ -6168,7 +6166,7 @@ Public Class PFPForm
                                                     'End If
 
                                                     If Not IsErrorOrWarning(XItem2.GetBackXItemTransaction(T_BitcoinTransactionID, ChainSwapHash)) Then
-                                                        XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID, T_DEXContract.CurrentChainSwapHash)
+                                                        XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID, T_DEXContract.CurrentChainSwapHash, "GetBackXItemTransaction: noChainSwapHash")
                                                     End If
 
                                                 End If
@@ -6383,16 +6381,15 @@ Public Class PFPForm
                                     Dim BitcoinTX As String = XItem2.GetXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction)
                                     Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, BitcoinTX)
 
-                                    If Not BitcoinTX.Trim = "" Then
+                                    If Not BitcoinTX.Trim() = "" Then
 
                                         Dim T_BitcoinTXID As String = XItem2.ClaimXItemTransactionWithChainSwapKey(BitcoinTX, ChainSwapHash, HistoryOrder.ChainSwapKey)
-                                        If Not T_BitcoinTXID.Trim() = "" And Not IsErrorOrWarning(T_BitcoinTXID, "Redeem BTC TX:", True) Then  ' .GetBackXItemTransaction(GetBitcoinMainAddress(), RedeemScript)
-                                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                            Out.Info2File("Redeem BTC TX:" + T_BitcoinTXID)
-
-                                            XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, BitcoinTX, GetSHA256HashString(HistoryOrder.ChainSwapKey.Trim()))
-
+                                        If Not T_BitcoinTXID.Trim() = "" And Not IsErrorOrWarning(T_BitcoinTXID, "Redeem BTC TX:", True) Then  '.GetBackXItemTransaction(GetBitcoinMainAddress(), RedeemScript)
+                                            'Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                            'Out.Info2File("Redeem BTC TX:" + T_BitcoinTXID)
                                         End If
+
+                                        XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, BitcoinTX, GetSHA256HashString(HistoryOrder.ChainSwapKey.Trim()), "ClaimXItemTransactionWithChainSwapKey: " + HistoryOrder.ChainSwapKey)
 
 #Region "old"
                                         'Dim T_BTCTX As ClsTransaction = XItem2.RedeemBitcoinTransaction(BitcoinTX, GetBitcoinMainAddress(), RedeemScript)
@@ -6477,8 +6474,10 @@ Public Class PFPForm
                                         Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_XItemTransaction)
 
                                         If Not IsErrorOrWarning(XItem2.GetBackXItemTransaction(T_XItemTransaction, ChainSwapHash)) Then
-                                            XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_XItemTransaction, ChainSwapHash)
+
                                         End If
+
+                                        XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, HistoryOrder.CreationTransaction, T_XItemTransaction, ChainSwapHash, "HistoryOrder-ChainSwapHash: " + XItem2.ChainSwapHash)
 
 #Region "deprecaded"
                                         'Dim T_BitcoinTransaction As ClsTransaction = New ClsTransaction(T_BTCTX, New List(Of String), RedeemScript)

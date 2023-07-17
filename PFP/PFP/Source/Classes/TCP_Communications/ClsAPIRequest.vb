@@ -56,6 +56,8 @@ Public Class ClsAPIRequest
 
         Transaction = 5
 
+        Bitcoin = 6
+
     End Enum
 
     Public Enum E_Parameter
@@ -89,7 +91,11 @@ Public Class ClsAPIRequest
         ChainSwapKey = 17
         ChainSwapHash = 18
 
+        AmountNQT = 19
+
     End Enum
+
+    'http://localhost:8130/API/v1/Bitcoin/Transaction/8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957?Type=TimeLockChainSwapHash&SenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&RecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&ChainSwapHash=abcdef&AmountNQT=2120
 
     'Public Enum E_BitcoinType
     '    NONE = 0
@@ -191,6 +197,26 @@ Public Class ClsAPIRequest
                                             C_Parameters.Add(CreateParameter(E_Parameter.Tickmin, "15"))
                                         End If
 
+                                    Case E_Endpoint.Bitcoin
+                                        'GET/API/v1/Bitcoin/Transaction/{inputTransactions}?BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddresses={addresses}&BitcoinRecipientAddresses={addresses}&BitcoinChainSwapHash={chainSwapHash}&BitcoinAmountNQT=2120
+
+                                        If Path.Count > 5 Then
+
+                                            If Path(5).Contains("?") Then
+
+                                                C_Parameters.Add(CreateParameter(E_Parameter.Inputs, Path(5).Remove(Path(5).IndexOf("?"c))))
+
+                                                Dim ParaString As String = Path(5).Substring(Path(5).IndexOf("?"c) + 1)
+                                                C_Parameters.AddRange(ParseParameters(ParaString))
+
+                                            Else
+
+
+                                            End If
+
+                                        End If
+
+
                                     Case Else
 
                                         C_Method = E_Method.NONE
@@ -288,6 +314,10 @@ Public Class ClsAPIRequest
                                         Dim JSONString As String = GetJSONFromRequest()
 
                                         Dim k = GetParametersFromJSON(JSONString)
+
+                                    Case E_Endpoint.Bitcoin
+
+
 
                                     Case Else
 

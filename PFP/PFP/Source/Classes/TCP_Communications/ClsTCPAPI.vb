@@ -8,6 +8,7 @@ Imports System.Net
 Imports System.Net.Sockets
 Imports System.Text
 Imports System.Threading
+Imports System.Windows
 
 Public Class ClsTCPAPI
 
@@ -289,6 +290,103 @@ Public Class ClsTCPAPI
                         Next
 
                         If Not FoundStaticResponse Then
+
+                            Select Case APIRequest.Endpoint
+                                Case ClsAPIRequest.E_Endpoint.Bitcoin
+
+                                    Dim Inputs As List(Of String) = New List(Of String)
+                                    Dim SenderAddresses As List(Of ClsTransaction.S_Address) = New List(Of ClsTransaction.S_Address)
+                                    Dim RecipientAddress As String = ""
+                                    Dim ChainSwapHash As String = ""
+                                    Dim Amount As Double = 0.0
+
+                                    For Each Parameter As ClsAPIRequest.S_Parameter In APIRequest.Parameters
+
+                                        Select Case Parameter.Parameter
+                                            Case ClsAPIRequest.E_Parameter.Inputs
+
+                                                If Parameter.Value.Contains(",") Then
+                                                    Inputs.AddRange(Parameter.Value.Split(","c))
+                                                Else
+                                                    Inputs.Add(Parameter.Value)
+                                                End If
+
+                                            Case ClsAPIRequest.E_Parameter.SenderAddress
+
+                                                If Parameter.Value.Contains(",") Then
+
+                                                    Dim T_Addresses As List(Of String) = New List(Of String)(Parameter.Value.Split(","c))
+
+                                                    For Each T_Address As String In T_Addresses
+                                                        SenderAddresses.Add(New ClsTransaction.S_Address(T_Address))
+                                                    Next
+
+                                                Else
+                                                    SenderAddresses.Add(New ClsTransaction.S_Address(Parameter.Value))
+                                                End If
+
+                                            Case ClsAPIRequest.E_Parameter.RecipientAddress
+                                                RecipientAddress = Parameter.Value
+
+                                            Case ClsAPIRequest.E_Parameter.ChainSwapHash
+                                                ChainSwapHash = Parameter.Value
+
+                                            Case ClsAPIRequest.E_Parameter.AmountNQT
+
+                                                If IsNumeric(Parameter.Value) Then
+                                                    Amount = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(Parameter.Value))
+                                                End If
+
+                                        End Select
+
+                                    Next
+
+                                    Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(Inputs, SenderAddresses)
+                                    BitcoinTransaction.CreateOutput(RecipientAddress, ChainSwapHash, SenderAddresses(0).Address, Amount)
+                                    BitcoinTransaction.FinalizingOutputs()
+
+                                    Dim JSONExport As String = "{""inputs"":["
+
+                                    For Each Inpu As ClsUnspentOutput In BitcoinTransaction.Inputs
+                                        JSONExport += "{"
+                                        JSONExport += """transactionId"":""" + Inpu.TransactionID + ""","
+                                        JSONExport += """index"":" + Inpu.InputIndex.ToString() + ","
+                                        JSONExport += """addresses"":""" + Inpu.GetAddressesString + ""","
+                                        JSONExport += """type"":""" + Inpu.OutputType.ToString() + ""","
+                                        JSONExport += """script"":""" + Inpu.GetScriptString + ""","
+                                        JSONExport += """scriptHex"":""" + Inpu.ScriptHex + ""","
+                                        JSONExport += """scriptHash"":""" + Inpu.ScriptHash + ""","
+                                        JSONExport += """amount"":" + String.Format("{0:#0.00000000}", ClsSignumAPI.Planck2Dbl(Inpu.AmountNQT)).Replace(",", ".") + ","
+                                        JSONExport += """spendable"":" + Inpu.Spendable.ToString().ToLower() + ","
+                                        JSONExport += """unsignedInput"":""" + Inpu.UnsignedTransactionHex + """"
+                                        JSONExport += "},"
+                                    Next
+
+                                    JSONExport = JSONExport.Remove(JSONExport.Length - 1)
+                                    JSONExport += "],""outputs"":["
+
+                                    For i As Integer = 0 To BitcoinTransaction.Outputs.Count - 1
+
+                                        Dim Outpu As ClsOutput = BitcoinTransaction.Outputs(i)
+                                        JSONExport += "{"
+                                        JSONExport += """index"":" + i.ToString() + ","
+                                        JSONExport += """addresses"":""" + Outpu.GetAddressesString + ""","
+                                        JSONExport += """type"":""" + Outpu.OutputType.ToString() + ""","
+                                        JSONExport += """script"":""" + Outpu.GetScriptString + ""","
+                                        JSONExport += """scriptHex"":""" + Outpu.ScriptHex + ""","
+                                        JSONExport += """scriptHash"":""" + Outpu.ScriptHash + ""","
+                                        JSONExport += """amount"":" + String.Format("{0:#0.00000000}", ClsSignumAPI.Planck2Dbl(Outpu.AmountNQT)).Replace(",", ".") + ","
+                                        JSONExport += "},"
+                                    Next
+
+                                    JSONExport = JSONExport.Remove(JSONExport.Length - 1)
+                                    JSONExport += "]}"
+
+                                    ResponseHTML = JSONExport
+
+                                Case ClsAPIRequest.E_Endpoint.Transaction
+
+                            End Select
 
                         End If
 
