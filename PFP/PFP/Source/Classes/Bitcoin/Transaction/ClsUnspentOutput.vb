@@ -4,7 +4,6 @@ Public Class ClsUnspentOutput
 
     Property TransactionID As String = ""
     'Property Addresses As List(Of String) = New List(Of String)
-
     Property InputIndex As Integer = 0
     Property Confirmations As Integer = 0
 

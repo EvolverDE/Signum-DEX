@@ -93,6 +93,12 @@ Public Class ClsTransaction
     Public Structure S_PrivateKey
         Dim PrivateKey As String
         Dim ChainSwapKey As String
+
+        Sub New(Optional ByVal PrivKey As String = "", Optional ByVal ChainSwapK As String = "")
+            PrivateKey = PrivKey
+            ChainSwapKey = ChainSwapK
+        End Sub
+
     End Structure
 
     Public Structure S_Address
@@ -145,7 +151,7 @@ Public Class ClsTransaction
     '    End Get
     'End Property
 
-    Private Property AddressesFiltered As Boolean = False
+    'Private Property AddressesFiltered As Boolean = False
 
     Sub New(ByVal TransactionID As String, ByVal FilterAddress As String, Optional ByVal RedeemScript As String = "", Optional ByVal ChainSwapKey As String = "")
         Me.New(TransactionID, New List(Of S_Address)({New S_Address(FilterAddress, If(ChainSwapKey.Trim() = "", False, True))}), RedeemScript)
@@ -154,19 +160,30 @@ Public Class ClsTransaction
     Sub New(ByVal TransactionID As String, ByVal FilterAddresses As List(Of S_Address), Optional ByVal RedeemScript As String = "")
         Me.New(New List(Of String)({TransactionID}), FilterAddresses, RedeemScript)
     End Sub
-    Sub New(ByVal TransactionIDs As List(Of String), ByVal Addresses As List(Of S_Address), Optional ByVal RedeemScript As String = "")
 
-        'Dim T_Addresses As List(Of S_Address) = New List(Of S_Address)
+    Sub New(ByVal TransactionIDs As List(Of String), ByVal Addresses As List(Of S_Address), ByVal RedeemScripts As String)
+        Me.New(TransactionIDs, Addresses, New List(Of String)({RedeemScripts}))
+    End Sub
 
-        'For Each Address In Addresses
-        '    Dim T_Address As S_Address = New S_Address
-        '    T_Address.Address = Address
-        '    T_Address.ChainSwapKey = False
-        '    T_Addresses.Add(T_Address)
-        'Next
+    Sub New(ByVal TransactionIDs As List(Of String), ByVal Addresses As List(Of S_Address), Optional ByVal RedeemScript As List(Of String) = Nothing)
 
-        For Each T_TransactionID As String In TransactionIDs
-            GetTransactionDetails(T_TransactionID, RedeemScript)
+        If IsNothing(RedeemScript) Then
+            RedeemScript = New List(Of String)
+            For i As Integer = 0 To TransactionIDs.Count - 1
+                RedeemScript.Add("")
+            Next
+        Else
+            If RedeemScript.Count < TransactionIDs.Count Then
+                For i As Integer = RedeemScript.Count To TransactionIDs.Count - 1
+                    RedeemScript.Add("")
+                Next
+            End If
+        End If
+
+        For i As Integer = 0 To TransactionIDs.Count - 1
+            Dim T_TransactionID As String = TransactionIDs(i)
+            Dim T_RedeemScript As String = RedeemScript(i)
+            GetTransactionDetails(T_TransactionID, T_RedeemScript)
         Next
 
         If Addresses.Count > 0 Then
@@ -397,7 +414,7 @@ Public Class ClsTransaction
 
     End Sub
 
-    Private Function CreateOutput(ByVal Output As ClsOutput) As Boolean
+    Public Function CreateOutput(ByVal Output As ClsOutput) As Boolean
 
         If TotalAmountDifferenceNQT = 0UL Or TotalAmountDifferenceNQT < Output.AmountNQT Then
             Return False
@@ -485,7 +502,7 @@ Public Class ClsTransaction
 
         C_Inputs = T_UnsignedInputs
 
-        AddressesFiltered = True
+        'AddressesFiltered = True
 
     End Sub
 
@@ -953,7 +970,7 @@ Public Class ClsTransaction
         'If (T_ScriptType = AbsClsOutputs.E_Type.ChainSwapHash Or T_ScriptType = AbsClsOutputs.E_Type.ChainSwapHashWithLockTime) And (ChainSwapKey.Trim = "" Or Not MessageIsHEXString(ChainSwapKey)) Then
         '    Exit Sub
         'End If
-        Dim Ripe160 As String = PubKeyToRipe160(T_PublicKey)
+        'Dim Ripe160 As String = PubKeyToRipe160(T_PublicKey)
         Dim T_Adress As String = PubKeyToAddress(T_PublicKey, BitcoinAddressPrefix)
 
         If Not Inputs(PartIndex).Addresses.Contains(T_Adress) Then
@@ -1120,20 +1137,20 @@ Public Class ClsTransaction
 
             Dim T_Signature As String = ""
 
-            For Each x As ClsScriptEntry In T_Input.SignatureScript
+            For Each ScriptEntry As ClsScriptEntry In T_Input.SignatureScript
 
-                If x.Key = ClsScriptEntry.E_OP_Code.PublicKey Or x.Key = ClsScriptEntry.E_OP_Code.ChainSwapKey Or x.Key = ClsScriptEntry.E_OP_Code.ChainSwapHash Or x.Key = ClsScriptEntry.E_OP_Code.RIPE160Sender Or x.Key = ClsScriptEntry.E_OP_Code.RIPE160Recipient Then
-                    T_Signature += IntToHex(Convert.ToInt32(x.ValueHex.Length / 2), 1, False)
-                ElseIf x.Key = ClsScriptEntry.E_OP_Code.LockTime Then
+                If ScriptEntry.Key = ClsScriptEntry.E_OP_Code.PublicKey Or ScriptEntry.Key = ClsScriptEntry.E_OP_Code.ChainSwapKey Or ScriptEntry.Key = ClsScriptEntry.E_OP_Code.ChainSwapHash Or ScriptEntry.Key = ClsScriptEntry.E_OP_Code.RIPE160Sender Or ScriptEntry.Key = ClsScriptEntry.E_OP_Code.RIPE160Recipient Then
+                    T_Signature += IntToHex(Convert.ToInt32(ScriptEntry.ValueHex.Length / 2), 1, False)
+                ElseIf ScriptEntry.Key = ClsScriptEntry.E_OP_Code.LockTime Then
 
-                    x.ValueHex = x.ValueHex
+                    ScriptEntry.ValueHex = ScriptEntry.ValueHex
 
                     'If x.ValueHex.Length / 2 > 1 Then
-                    T_Signature += IntToHex(Convert.ToInt32(x.ValueHex.Length / 2), 1, False)
+                    T_Signature += IntToHex(Convert.ToInt32(ScriptEntry.ValueHex.Length / 2), 1, False)
                     'End If
                 End If
 
-                T_Signature += x.ValueHex
+                T_Signature += ScriptEntry.ValueHex
 
             Next
 

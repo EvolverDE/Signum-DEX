@@ -28,6 +28,13 @@ Public Class ClsAPIRequest
         End Get
     End Property
 
+    Private Property C_Body As List(Of KeyValuePair(Of String, Object)) = New List(Of KeyValuePair(Of String, Object))
+
+    Public ReadOnly Property Body As List(Of KeyValuePair(Of String, Object))
+        Get
+            Return C_Body
+        End Get
+    End Property
 
     Public Enum E_Method
         NONE = 0
@@ -80,18 +87,19 @@ Public Class ClsAPIRequest
 
         Transaction = 10
         Type = 11
-        UnlockingScript = 12
+        Script = 12
 
-        SenderAddress = 13
-        ChangeAddress = 14
-        RecipientAddress = 15
+        Sender = 13
+        Change = 14
+        Recipient = 15
 
-        PublicKey = 16
+        PrivateKey = 16
+        PublicKey = 17
 
-        ChainSwapKey = 17
-        ChainSwapHash = 18
+        ChainSwapKey = 18
+        ChainSwapHash = 19
 
-        AmountNQT = 19
+        AmountNQT = 20
 
     End Enum
 
@@ -312,12 +320,12 @@ Public Class ClsAPIRequest
                                         '}
 
                                         Dim JSONString As String = GetJSONFromRequest()
-
-                                        Dim k = GetParametersFromJSON(JSONString)
+                                        C_Body = GetParametersFromJSON(JSONString)
 
                                     Case E_Endpoint.Bitcoin
 
-
+                                        Dim JSONString As String = GetJSONFromRequest()
+                                        C_Body = GetParametersFromJSON(JSONString)
 
                                     Case Else
 
@@ -405,7 +413,7 @@ Public Class ClsAPIRequest
 
     End Sub
 
-    Private Function GetParametersFromJSON(ByVal JSONString As String) As List(Of S_Parameter)
+    Private Function GetParametersFromJSON(ByVal JSONString As String) As List(Of KeyValuePair(Of String, Object))
 
         '{
         '    "token": "BTC",
@@ -444,21 +452,20 @@ Public Class ClsAPIRequest
 
         Dim XML As String = Converter.XMLString  ' JSON.JSONToXML(JSONString)
 
-        Dim Inputs As List(Of KeyValuePair(Of String, Object)) = Converter.Search(Of List(Of KeyValuePair(Of String, Object)))("inputs")
-        Dim Outputs As List(Of KeyValuePair(Of String, Object)) = Converter.Search(Of List(Of KeyValuePair(Of String, Object)))("outputs")
+        Dim Inputs As KeyValuePair(Of String, Object) = Converter.GetFromPath("result/inputs") '.Search(Of List(Of KeyValuePair(Of String, Object)))("inputs")
+        Dim Outputs As KeyValuePair(Of String, Object) = Converter.GetFromPath("result/outputs") '.Search(Of List(Of KeyValuePair(Of String, Object)))("outputs")
 
+        'Dim FirstInput As KeyValuePair(Of String, Object) = Inputs.FirstOrDefault()
+        'If FirstInput.Key <> "inputs" Then
+        '    FirstInput = New KeyValuePair(Of String, Object)("inputs", New List(Of KeyValuePair(Of String, Object))({New KeyValuePair(Of String, Object)("0", Outputs)}))
+        'End If
 
-        Dim FirstInput As KeyValuePair(Of String, Object) = Inputs.FirstOrDefault()
-        If FirstInput.Key <> "inputs" Then
-            FirstInput = New KeyValuePair(Of String, Object)("inputs", New List(Of KeyValuePair(Of String, Object))({New KeyValuePair(Of String, Object)("0", Outputs)}))
-        End If
+        'Dim FirstOutput As KeyValuePair(Of String, Object) = Outputs.FirstOrDefault()
+        'If FirstOutput.Key <> "outputs" Then
+        '    FirstOutput = New KeyValuePair(Of String, Object)("outputs", New List(Of KeyValuePair(Of String, Object))({New KeyValuePair(Of String, Object)("0", Outputs)}))
+        'End If
 
-        Dim FirstOutput As KeyValuePair(Of String, Object) = Outputs.FirstOrDefault()
-        If FirstOutput.Key <> "outputs" Then
-            FirstOutput = New KeyValuePair(Of String, Object)("outputs", New List(Of KeyValuePair(Of String, Object))({New KeyValuePair(Of String, Object)("0", Outputs)}))
-        End If
-
-        Return Parameters
+        Return New List(Of KeyValuePair(Of String, Object))({Inputs, Outputs})
 
     End Function
 

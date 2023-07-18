@@ -311,7 +311,7 @@ Public Class ClsTCPAPI
                                                     Inputs.Add(Parameter.Value)
                                                 End If
 
-                                            Case ClsAPIRequest.E_Parameter.SenderAddress
+                                            Case ClsAPIRequest.E_Parameter.Sender
 
                                                 If Parameter.Value.Contains(",") Then
 
@@ -325,7 +325,7 @@ Public Class ClsTCPAPI
                                                     SenderAddresses.Add(New ClsTransaction.S_Address(Parameter.Value))
                                                 End If
 
-                                            Case ClsAPIRequest.E_Parameter.RecipientAddress
+                                            Case ClsAPIRequest.E_Parameter.Recipient
                                                 RecipientAddress = Parameter.Value
 
                                             Case ClsAPIRequest.E_Parameter.ChainSwapHash
@@ -341,7 +341,7 @@ Public Class ClsTCPAPI
 
                                     Next
 
-                                    Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(Inputs, SenderAddresses)
+                                    Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(Inputs, SenderAddresses, "")
                                     BitcoinTransaction.CreateOutput(RecipientAddress, ChainSwapHash, SenderAddresses(0).Address, Amount)
                                     BitcoinTransaction.FinalizingOutputs()
 
@@ -419,101 +419,369 @@ Public Class ClsTCPAPI
 
 #End Region
 
-                        If APIRequest.Endpoint = ClsAPIRequest.E_Endpoint.Orders Then
+                        Select Case APIRequest.Endpoint
 
-                            Dim PublicKey As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.SenderPublicKey).Value
+                            Case ClsAPIRequest.E_Endpoint.Orders
 
-                            If IsNothing(PublicKey) Then PublicKey = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PublicKey).Value
+                                If APIRequest.Parameters.Count > 0 Then
+                                    'use Parameters
 
-                            Dim OrderID As String = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.OrderID).Value
+                                    Dim PublicKey As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.SenderPublicKey).Value
 
-                            If Not IsNumeric(OrderID) Then
-                                OrderID = ClsReedSolomon.Decode(OrderID).ToString()
-                            End If
+                                    If IsNothing(PublicKey) Then PublicKey = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PublicKey).Value
 
-                            If Not IsNothing(PublicKey) And Not IsNothing(OrderID) Then
+                                    Dim OrderID As String = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.OrderID).Value
 
-                                If Not OrderID Is Nothing And MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
-                                    For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
-                                        If T_DEXContract.ID.ToString() = OrderID Then
-                                            'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
-                                            'publickey = 6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
-                                            'http://127.0.0.1:8130/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
+                                    If Not IsNumeric(OrderID) Then
+                                        OrderID = ClsReedSolomon.Decode(OrderID).ToString()
+                                    End If
 
-                                            If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
-                                                Dim T_UnsignedTransactionBytes As String = T_DEXContract.AcceptSellOrder(PublicKey)
+                                    If Not IsNothing(PublicKey) And Not IsNothing(OrderID) Then
 
-                                                If T_UnsignedTransactionBytes.Contains("errorCode") Then
-                                                    ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
-                                                ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
+                                        If Not OrderID Is Nothing And MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                If T_DEXContract.ID.ToString() = OrderID Then
+                                                    'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
+                                                    'publickey = 6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
+                                                    'http://127.0.0.1:8130/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
 
-                                                Else
-                                                    '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                    ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                    If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
+                                                        Dim T_UnsignedTransactionBytes As String = T_DEXContract.AcceptSellOrder(PublicKey)
+
+                                                        If T_UnsignedTransactionBytes.Contains("errorCode") Then
+                                                            ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
+                                                        ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
+
+                                                        Else
+                                                            '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                        End If
+
+                                                    End If
+
                                                 End If
-
-                                            End If
+                                            Next
 
                                         End If
-                                    Next
+
+                                    End If
+
+                                Else
+                                    'check Body
+
+
 
                                 End If
 
-                            End If
+                            Case ClsAPIRequest.E_Endpoint.Bitcoin
 
-                        ElseIf APIRequest.Endpoint = ClsAPIRequest.E_Endpoint.Transaction Then
+                                If APIRequest.Parameters.Count > 0 Then
+                                    'use Parameters
 
-                            ''http://127.0.0.1:8130/API/v1.0/CreateBitcoinTransaction?BitcoinTransaction=8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957&BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinRecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinChainSwapHash=abcdef&BitcoinAmountNQT=2120
+                                Else
+                                    'check Body
 
-                            'Dim BTCInputTX As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinTransaction).Value
-                            'Dim BTCSender As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinSenderAddress).Value
-                            'Dim BTCRecipient As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinRecipientAddress).Value
-                            'Dim BTCAmountNQT As ULong = Convert.ToUInt64(APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinAmountNQT).Value)
-                            'Dim BTCTimeOut As Integer = Convert.ToInt32(APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinTimeOut).Value)
-                            'Dim BTCChainSwapHash As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinChainSwapHash).Value
+                                    If APIRequest.Body.Count > 0 Then
 
-                            'Dim BTCTX As ClsTransaction = New ClsTransaction(BTCInputTX, BTCSender)
-                            'BTCTX.CreateOutput(BTCRecipient, BTCChainSwapHash, "", ClsSignumAPI.Planck2Dbl(BTCAmountNQT))
+                                        Dim InputIDs As List(Of String) = New List(Of String)
+                                        Dim PrivateKeys As List(Of ClsTransaction.S_PrivateKey) = New List(Of ClsTransaction.S_PrivateKey)
+                                        Dim SenderAddresses As List(Of ClsTransaction.S_Address) = New List(Of ClsTransaction.S_Address)
+                                        Dim Scripts As List(Of String) = New List(Of String)
 
-                            'BTCTX.FinalizingOutputs()
+                                        Dim OutputIDs As List(Of ClsOutput) = New List(Of ClsOutput)
 
-                            'Dim ResponseData As String = ""
+                                        For Each BodyEntry As KeyValuePair(Of String, Object) In APIRequest.Body
 
-                            'ResponseData += """inputs"":["
+                                            Select Case BodyEntry.Key
 
-                            'For Each x As ClsUnspentOutput In BTCTX.Inputs
-                            '    ResponseData += "{"
-                            '    ResponseData += """TransactionID"":""" + x.TransactionID + ""","
-                            '    ResponseData += """OutputType"":""" + x.OutputType.ToString() + ""","
-                            '    ResponseData += """ScriptHex"":""" + x.ScriptHex + ""","
-                            '    ResponseData += """ScriptHash"":""" + x.ScriptHash + ""","
-                            '    ResponseData += """UnsignedTransactionHex"":""" + x.UnsignedTransactionHex + """"
-                            '    ResponseData += "},"
-                            'Next
+                                                Case "inputs"
 
-                            'ResponseData = ResponseData.Remove(ResponseData.Count - 1)
-                            'ResponseData += "],"
+                                                    Dim Inputs As List(Of KeyValuePair(Of String, Object)) = New List(Of KeyValuePair(Of String, Object))
 
-                            'ResponseData += """outputs"":["
+                                                    If BodyEntry.Value.GetType = GetType(List(Of KeyValuePair(Of String, Object))) Then
+                                                        Inputs = DirectCast(BodyEntry.Value, List(Of KeyValuePair(Of String, Object)))
+                                                    Else
+                                                        Dim InputObjects As List(Of Object) = DirectCast(BodyEntry.Value, List(Of Object))
+                                                        Dim InputKeyValue As KeyValuePair(Of String, Object) = DirectCast(InputObjects(0), KeyValuePair(Of String, Object))
+                                                        Inputs = New List(Of KeyValuePair(Of String, Object))({InputKeyValue})
+                                                    End If
 
-                            'For Each x As ClsOutput In BTCTX.Outputs
+                                                    For Each InputEntry As KeyValuePair(Of String, Object) In Inputs
 
-                            '    ResponseData += "{"
-                            '    ResponseData += """AmountNQT"":" + x.AmountNQT.ToString() + ","
-                            '    ResponseData += """OutputType"":""" + x.OutputType.ToString() + "(" + AbsClsOutputs.E_Type.ChainSwapHashWithLockTime.ToString() + ")"","
-                            '    ResponseData += """ScriptHex"":""" + x.ScriptHex + ""","
-                            '    ResponseData += """ScriptHash"":""" + x.ScriptHash + """"
-                            '    ResponseData += "},"
-                            'Next
+                                                        Dim Parameters As List(Of KeyValuePair(Of String, Object)) = DirectCast(InputEntry.Value, List(Of KeyValuePair(Of String, Object)))
+                                                        Dim T_PKCSK As ClsTransaction.S_PrivateKey = New ClsTransaction.S_PrivateKey(,)
+                                                        Dim T_Address As ClsTransaction.S_Address = New ClsTransaction.S_Address(,)
+                                                        Dim T_InputID As String = ""
+                                                        Dim T_Script As String = ""
 
-                            'ResponseData = ResponseData.Remove(ResponseData.Count - 1)
+                                                        For i As Integer = 0 To Parameters.Count - 1
 
-                            'ResponseData += "]"
+                                                            Dim Parameter As KeyValuePair(Of String, Object) = Parameters(i)
 
-                            'ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateBitcoinTransaction"",""data"":{" + ResponseData + "}}"
+                                                            'Dim T_Parameter As KeyValuePair(Of String, Object) = DirectCast(Parameter, KeyValuePair(Of String, Object))
 
-                        End If
+                                                            Select Case Parameter.Key
+                                                                Case "transaction"
+                                                                    T_InputID = Parameter.Value.ToString()
+                                                                Case "index"
+                                                                    i = i
+                                                                Case "script"
+                                                                    T_Script = Parameter.Value.ToString()
+                                                                Case "privateKey"
+                                                                    T_PKCSK.PrivateKey = Parameter.Value.ToString()
+                                                                Case "address"
+                                                                    T_Address.Address = Parameter.Value.ToString()
+                                                                Case "chainSwapKey"
+                                                                    T_PKCSK.ChainSwapKey = Parameter.Value.ToString()
+                                                                    T_Address.ChainSwapKey = True
+                                                            End Select
 
+                                                        Next
+
+                                                        InputIDs.Add(T_InputID)
+                                                        If T_PKCSK.PrivateKey.Trim() <> "" Then PrivateKeys.Add(T_PKCSK)
+                                                        If T_Address.Address.Trim() <> "" Then SenderAddresses.Add(T_Address)
+                                                        Scripts.Add(T_Script)
+
+                                                    Next
+
+                                                Case "outputs"
+
+                                                    Dim Outputs As List(Of KeyValuePair(Of String, Object)) = New List(Of KeyValuePair(Of String, Object))
+
+                                                    If BodyEntry.Value.GetType = GetType(List(Of KeyValuePair(Of String, Object))) Then
+                                                        Outputs = DirectCast(BodyEntry.Value, List(Of KeyValuePair(Of String, Object)))
+                                                    Else
+                                                        Dim OutputObjects As List(Of Object) = DirectCast(BodyEntry.Value, List(Of Object))
+                                                        Dim OutputKeyValue As KeyValuePair(Of String, Object) = DirectCast(OutputObjects(0), KeyValuePair(Of String, Object))
+                                                        Outputs = New List(Of KeyValuePair(Of String, Object))({OutputKeyValue})
+                                                    End If
+
+                                                    For Each OutputEntry As KeyValuePair(Of String, Object) In Outputs
+
+                                                        Dim Parameters As List(Of KeyValuePair(Of String, Object)) = DirectCast(OutputEntry.Value, List(Of KeyValuePair(Of String, Object)))
+
+                                                        Dim Type As String = ""
+                                                        Dim Recipient As String = ""
+                                                        Dim Change As String = ""
+                                                        Dim chainSwapHash As String = ""
+                                                        Dim Amount As Double = 0.0
+
+                                                        For i As Integer = 0 To Parameters.Count - 1
+
+                                                            Dim Parameter As KeyValuePair(Of String, Object) = Parameters(i)
+
+                                                            Select Case Parameter.Key
+                                                                Case "type"
+                                                                    Type = Parameter.Value.ToString()
+                                                                Case "recipient"
+                                                                    Recipient = Parameter.Value.ToString()
+                                                                Case "change"
+                                                                    Change = Parameter.Value.ToString()
+                                                                Case "chainSwapHash"
+                                                                    chainSwapHash = Parameter.Value.ToString()
+                                                                Case "amount"
+                                                                    Amount = Convert.ToDouble(Parameter.Value)
+                                                            End Select
+
+                                                        Next
+
+                                                        OutputIDs.Add(New ClsOutput(Recipient, chainSwapHash, Change, Amount))
+
+                                                    Next
+
+                                            End Select
+                                        Next
+
+                                        If SenderAddresses.Count = 0 And PrivateKeys.Count > 0 Then
+                                            For Each T_PrivateKey As ClsTransaction.S_PrivateKey In PrivateKeys
+                                                Dim T_Address As ClsTransaction.S_Address = New ClsTransaction.S_Address()
+                                                T_Address.Address = (PrivKeyToPubKey(T_PrivateKey.PrivateKey))
+                                                T_Address.ChainSwapKey = If(T_PrivateKey.ChainSwapKey.Trim() = "", False, True)
+                                                SenderAddresses.Add(T_Address)
+                                            Next
+                                        End If
+
+                                        If SenderAddresses.Count > 0 And PrivateKeys.Count = 0 Then
+
+                                            Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(InputIDs, SenderAddresses, Scripts)
+
+                                            For Each OP As ClsOutput In OutputIDs
+                                                BitcoinTransaction.CreateOutput(OP)
+                                            Next
+
+                                            BitcoinTransaction.FinalizingOutputs()
+
+                                            Dim JSONExport As String = "{""inputs"":["
+
+                                            For Each Inpu As ClsUnspentOutput In BitcoinTransaction.Inputs
+                                                JSONExport += "{"
+                                                JSONExport += """transactionId"":""" + Inpu.TransactionID + ""","
+                                                JSONExport += """index"":" + Inpu.InputIndex.ToString() + ","
+                                                JSONExport += """addresses"":""" + Inpu.GetAddressesString + ""","
+                                                JSONExport += """type"":""" + Inpu.OutputType.ToString() + ""","
+                                                JSONExport += """script"":""" + Inpu.GetScriptString + ""","
+                                                JSONExport += """scriptHex"":""" + Inpu.ScriptHex + ""","
+                                                JSONExport += """scriptHash"":""" + Inpu.ScriptHash + ""","
+                                                JSONExport += """amount"":" + String.Format("{0:#0.00000000}", ClsSignumAPI.Planck2Dbl(Inpu.AmountNQT)).Replace(",", ".") + ","
+                                                JSONExport += """spendable"":" + Inpu.Spendable.ToString().ToLower() + ","
+                                                JSONExport += """unsignedInput"":""" + Inpu.UnsignedTransactionHex + """"
+                                                JSONExport += "},"
+                                            Next
+
+                                            JSONExport = JSONExport.Remove(JSONExport.Length - 1)
+                                            JSONExport += "],""outputs"":["
+
+                                            For i As Integer = 0 To BitcoinTransaction.Outputs.Count - 1
+
+                                                Dim Outpu As ClsOutput = BitcoinTransaction.Outputs(i)
+                                                JSONExport += "{"
+                                                JSONExport += """index"":" + i.ToString() + ","
+                                                JSONExport += """addresses"":""" + Outpu.GetAddressesString + ""","
+                                                JSONExport += """type"":""" + Outpu.OutputType.ToString() + ""","
+                                                JSONExport += """script"":""" + Outpu.GetScriptString + ""","
+                                                JSONExport += """scriptHex"":""" + Outpu.ScriptHex + ""","
+                                                JSONExport += """scriptHash"":""" + Outpu.ScriptHash + ""","
+                                                JSONExport += """amount"":" + String.Format("{0:#0.00000000}", ClsSignumAPI.Planck2Dbl(Outpu.AmountNQT)).Replace(",", ".") + ","
+                                                JSONExport += "},"
+                                            Next
+
+                                            JSONExport = JSONExport.Remove(JSONExport.Length - 1)
+                                            JSONExport += "]}"
+
+                                            ResponseHTML = JSONExport
+
+                                        End If
+
+                                        If SenderAddresses.Count > 0 And PrivateKeys.Count > 0 Then
+
+                                            Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(InputIDs, SenderAddresses, Scripts)
+
+                                            For Each OP As ClsOutput In OutputIDs
+                                                BitcoinTransaction.CreateOutput(OP)
+                                            Next
+
+                                            BitcoinTransaction.FinalizingOutputs()
+                                            BitcoinTransaction.SignTransaction(PrivateKeys)
+
+                                            Dim JSONExport As String = "{""inputs"":["
+
+                                            For Each Inpu As ClsUnspentOutput In BitcoinTransaction.Inputs
+                                                JSONExport += "{"
+                                                JSONExport += """transactionId"":""" + Inpu.TransactionID + ""","
+                                                JSONExport += """index"":" + Inpu.InputIndex.ToString() + ","
+                                                JSONExport += """addresses"":""" + Inpu.GetAddressesString + ""","
+                                                JSONExport += """type"":""" + Inpu.OutputType.ToString() + ""","
+                                                JSONExport += """script"":""" + Inpu.GetScriptString + ""","
+                                                JSONExport += """scriptHex"":""" + Inpu.ScriptHex + ""","
+                                                JSONExport += """scriptHash"":""" + Inpu.ScriptHash + ""","
+                                                JSONExport += """amount"":" + String.Format("{0:#0.00000000}", ClsSignumAPI.Planck2Dbl(Inpu.AmountNQT)).Replace(",", ".") + ","
+                                                JSONExport += """spendable"":" + Inpu.Spendable.ToString().ToLower() + ","
+                                                JSONExport += """unsignedInput"":""" + Inpu.UnsignedTransactionHex + """"
+                                                JSONExport += "},"
+                                            Next
+
+                                            JSONExport = JSONExport.Remove(JSONExport.Length - 1)
+                                            JSONExport += "],""outputs"":["
+
+                                            For i As Integer = 0 To BitcoinTransaction.Outputs.Count - 1
+
+                                                Dim Outpu As ClsOutput = BitcoinTransaction.Outputs(i)
+                                                JSONExport += "{"
+                                                JSONExport += """index"":" + i.ToString() + ","
+                                                JSONExport += """addresses"":""" + Outpu.GetAddressesString + ""","
+                                                JSONExport += """type"":""" + Outpu.OutputType.ToString() + ""","
+                                                JSONExport += """script"":""" + Outpu.GetScriptString + ""","
+                                                JSONExport += """scriptHex"":""" + Outpu.ScriptHex + ""","
+                                                JSONExport += """scriptHash"":""" + Outpu.ScriptHash + ""","
+                                                JSONExport += """amount"":" + String.Format("{0:#0.00000000}", ClsSignumAPI.Planck2Dbl(Outpu.AmountNQT)).Replace(",", ".") + ","
+                                                JSONExport += "},"
+                                            Next
+
+                                            JSONExport = JSONExport.Remove(JSONExport.Length - 1)
+                                            JSONExport += "], ""signedTransaction"": """ + BitcoinTransaction.SignedTransactionHEX + """}"
+
+                                            ResponseHTML = JSONExport
+
+                                        End If
+
+
+                                        If SenderAddresses.Count = 0 And PrivateKeys.Count = 0 Then
+                                            'no addresses
+
+                                        End If
+
+
+                                    End If
+
+                                End If
+
+                            Case ClsAPIRequest.E_Endpoint.Transaction
+
+                                If APIRequest.Parameters.Count > 0 Then
+                                    'use Parameters
+
+                                Else
+                                    'check Body
+
+
+
+                                End If
+
+#Region "deprecaded"
+
+                                ''http://127.0.0.1:8130/API/v1.0/CreateBitcoinTransaction?BitcoinTransaction=8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957&BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinRecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinChainSwapHash=abcdef&BitcoinAmountNQT=2120
+
+                                'Dim BTCInputTX As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinTransaction).Value
+                                'Dim BTCSender As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinSenderAddress).Value
+                                'Dim BTCRecipient As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinRecipientAddress).Value
+                                'Dim BTCAmountNQT As ULong = Convert.ToUInt64(APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinAmountNQT).Value)
+                                'Dim BTCTimeOut As Integer = Convert.ToInt32(APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinTimeOut).Value)
+                                'Dim BTCChainSwapHash As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinChainSwapHash).Value
+
+                                'Dim BTCTX As ClsTransaction = New ClsTransaction(BTCInputTX, BTCSender)
+                                'BTCTX.CreateOutput(BTCRecipient, BTCChainSwapHash, "", ClsSignumAPI.Planck2Dbl(BTCAmountNQT))
+
+                                'BTCTX.FinalizingOutputs()
+
+                                'Dim ResponseData As String = ""
+
+                                'ResponseData += """inputs"":["
+
+                                'For Each x As ClsUnspentOutput In BTCTX.Inputs
+                                '    ResponseData += "{"
+                                '    ResponseData += """TransactionID"":""" + x.TransactionID + ""","
+                                '    ResponseData += """OutputType"":""" + x.OutputType.ToString() + ""","
+                                '    ResponseData += """ScriptHex"":""" + x.ScriptHex + ""","
+                                '    ResponseData += """ScriptHash"":""" + x.ScriptHash + ""","
+                                '    ResponseData += """UnsignedTransactionHex"":""" + x.UnsignedTransactionHex + """"
+                                '    ResponseData += "},"
+                                'Next
+
+                                'ResponseData = ResponseData.Remove(ResponseData.Count - 1)
+                                'ResponseData += "],"
+
+                                'ResponseData += """outputs"":["
+
+                                'For Each x As ClsOutput In BTCTX.Outputs
+
+                                '    ResponseData += "{"
+                                '    ResponseData += """AmountNQT"":" + x.AmountNQT.ToString() + ","
+                                '    ResponseData += """OutputType"":""" + x.OutputType.ToString() + "(" + AbsClsOutputs.E_Type.ChainSwapHashWithLockTime.ToString() + ")"","
+                                '    ResponseData += """ScriptHex"":""" + x.ScriptHex + ""","
+                                '    ResponseData += """ScriptHash"":""" + x.ScriptHash + """"
+                                '    ResponseData += "},"
+                                'Next
+
+                                'ResponseData = ResponseData.Remove(ResponseData.Count - 1)
+
+                                'ResponseData += "]"
+
+                                'ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateBitcoinTransaction"",""data"":{" + ResponseData + "}}"
+
+#End Region
+
+                        End Select
 
                     Else
                         ResponseHTML = "{""response"":""error wrong request""}"
