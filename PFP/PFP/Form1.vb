@@ -1042,12 +1042,17 @@ Public Class PFPForm
                         LabCollateralPercent.Enabled = False
                         LabColPercentage.Enabled = False
 
-                        'NUDSNOAmount.Maximum = Decimal.MaxValue '79228162514264337593543950335
-                        NUDSNOCollateral.Value = 0.0D
-                        NUDSNOCollateral.Enabled = False
-
                         TBarCollateralPercent.Value = 0
                         TBarCollateralPercent.Enabled = False
+
+                        'NUDSNOAmount.Maximum = Decimal.MaxValue '79228162514264337593543950335
+
+                        NUDSNOCollateral.Minimum = 0
+                        NUDSNOCollateral.Maximum = 1
+                        NUDSNOCollateral.Value = 0
+
+                        NUDSNOCollateral.Enabled = False
+
                         Label16.Enabled = False
 
                     Else
@@ -1067,11 +1072,12 @@ Public Class PFPForm
                         LabCollateralPercent.Enabled = True
                         LabColPercentage.Enabled = True
 
-                        NUDSNOCollateral.Value = 0.0D
-                        NUDSNOCollateral.Enabled = True
-
                         TBarCollateralPercent.Value = 0
                         TBarCollateralPercent.Enabled = True
+
+                        SetFeeControls()
+                        NUDSNOCollateral.Enabled = True
+
                         Label16.Enabled = True
 
                     End If
@@ -1094,11 +1100,12 @@ Public Class PFPForm
                     LabCollateralPercent.Enabled = True
                     LabColPercentage.Enabled = True
 
-                    NUDSNOCollateral.Value = 0.0D
-                    NUDSNOCollateral.Enabled = True
-
                     TBarCollateralPercent.Value = 0
                     TBarCollateralPercent.Enabled = True
+
+                    SetFeeControls()
+                    NUDSNOCollateral.Enabled = True
+
                     Label16.Enabled = True
 
                 End If
@@ -1124,11 +1131,12 @@ Public Class PFPForm
                 LabCollateralPercent.Enabled = True
                 LabColPercentage.Enabled = True
 
-                NUDSNOCollateral.Value = 0.0D
-                NUDSNOCollateral.Enabled = True
-
                 TBarCollateralPercent.Value = 0
                 TBarCollateralPercent.Enabled = True
+
+                SetFeeControls()
+                NUDSNOCollateral.Enabled = True
+
                 Label16.Enabled = True
 
             End If
@@ -1144,16 +1152,35 @@ Public Class PFPForm
             LabCollateralPercent.Enabled = True
             LabColPercentage.Enabled = True
 
-            NUDSNOCollateral.Value = 0.0D
-            NUDSNOCollateral.Enabled = True
-
             TBarCollateralPercent.Value = 0
             TBarCollateralPercent.Enabled = True
+
+            SetFeeControls()
+            NUDSNOCollateral.Enabled = True
+
             Label16.Enabled = True
 
         End If
 
     End Sub
+
+    Private Sub SetFeeControls()
+
+        Dim T_Amount As Decimal = NUDSNOAmount.Value
+        Dim T_Percentage As Decimal = Convert.ToDecimal(28 + (If(TBarCollateralPercent.Value = 0D, 1, TBarCollateralPercent.Value) * 2))
+
+        If T_Amount > 100 Then
+            NUDSNOCollateral.Minimum = (T_Amount / 100) * 30
+            NUDSNOCollateral.Maximum = (T_Amount / 100) * 50
+            NUDSNOCollateral.Value = (T_Amount / 100) * T_Percentage
+        Else
+            NUDSNOCollateral.Minimum = 0
+            NUDSNOCollateral.Maximum = 1
+            NUDSNOCollateral.Value = 0
+        End If
+
+    End Sub
+
     Private Sub TBSNOPassPhrase_KeyPress(sender As Object, e As KeyPressEventArgs)
 
         Dim keys As Integer = Asc(e.KeyChar)
