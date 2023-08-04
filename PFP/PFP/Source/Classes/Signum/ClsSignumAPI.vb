@@ -4,14 +4,13 @@ Option Explicit On
 Imports System.ComponentModel.Design
 Imports System.IO
 Imports System.Net
-Imports System.Net.Mail
 Imports System.Text
 Imports PFP.ClsDEXContract
 
 Public Class ClsSignumAPI
 
 #Region "SmartContract Structure"
-    'SmartContract: 2095252730760019711
+    'SmartContract: 14302362561079850525
 
     'ActivateDeactivateDispute: -9199918549131231789
 
@@ -32,8 +31,8 @@ Public Class ClsSignumAPI
 
 #End Region
 
-    Public Const _ReferenceTX As ULong = 17481325922122010625UL
-    Public Const _ReferenceTXFullHash As String = "0110e95e4e259af20f9bbb99f7e4abdbe02b43aedf127c7ae3ff5873c1ff4f98"
+    Public Const _ReferenceTX As ULong = 14302362561079850525UL
+    Public Const _ReferenceTXFullHash As String = "1db602def8327cc6650b90d857c079107d4fc542ad7ad60161e83b15929c441a"
     Public Const _DeployFeeNQT As ULong = 240000000UL
     Public Const _GasFeeNQT As ULong = 50000000UL
     Public Const _AddressPreFix As String = "TS-"
@@ -592,10 +591,45 @@ Public Class ClsSignumAPI
 
     End Function
 
-    Public Function GetTXFee(Optional ByVal Message As String = "") As Double
+    Enum E_Fee
+        Cheap = 0
+        Standard = 1
+        Priority = 2
+    End Enum
+
+    Public Function GetFees() As List(Of Double)
+
+        Dim FeeList As List(Of Double) = New List(Of Double)
+        Dim FeesXML As String = GetFeesXML()
+
+        FeeList.Add(ClsSignumAPI.Planck2Dbl(GetULongBetween(FeesXML, "<" + ClsSignumAPI.E_Fee.Cheap.ToString().ToLower() + ">", "</" + ClsSignumAPI.E_Fee.Cheap.ToString().ToLower() + ">")))
+        FeeList.Add(ClsSignumAPI.Planck2Dbl(GetULongBetween(FeesXML, "<" + ClsSignumAPI.E_Fee.Standard.ToString().ToLower() + ">", "</" + ClsSignumAPI.E_Fee.Standard.ToString().ToLower() + ">")))
+        FeeList.Add(ClsSignumAPI.Planck2Dbl(GetULongBetween(FeesXML, "<" + ClsSignumAPI.E_Fee.Priority.ToString().ToLower() + ">", "</" + ClsSignumAPI.E_Fee.Priority.ToString().ToLower() + ">")))
+
+        Return FeeList
+
+    End Function
+
+    Public Function GetFee(ByVal FeePrio As E_Fee) As Double
+
+        Dim Fees As List(Of Double) = GetFees()
+
+        Select Case FeePrio
+            Case E_Fee.Cheap
+                Return Fees(0)
+            Case E_Fee.Standard
+                Return Fees(1)
+            Case E_Fee.Priority
+                Return Fees(2)
+        End Select
+
+        Return Fees(1)
+
+    End Function
+
+    Public Function GetFeesXML() As String
 
         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-
         Dim Response As String = SignumRequest("requestType=suggestFee")
 
         If Response.Contains(Application.ProductName + "-error") Then
@@ -603,16 +637,12 @@ Public Class ClsSignumAPI
                 Out.ErrorLog2File(Application.ProductName + "-error in GetTXFee(1): -> " + Response)
             End If
 
-            Return CalculateFee(Message)
+            Return "<cheap>1000000</cheap><standard>2000000</standard><priority>3000000</priority>" '<requestProcessingTime>0</requestProcessingTime>
 
         End If
 
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
-
-        'Dim JSON As ClsJSON = New ClsJSON
-        'Dim RespList As List(Of Object) = JSON.JSONRecursive(Response)
-
-        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(RespList, "errorCode")
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode")
 
         If Error0 <> -1 Then
             'TX not OK
@@ -620,13 +650,17 @@ Public Class ClsSignumAPI
                 Out.ErrorLog2File(Application.ProductName + "-error in GetTXFee(2): " + Response)
             End If
 
-            Return CalculateFee(Message)
+            Return "<cheap>1000000</cheap><standard>2000000</standard><priority>3000000</priority>" '<requestProcessingTime>0</requestProcessingTime>
         End If
 
-        Dim XMLStr As String = Converter.FirstValue("standard").ToString()  ' JSON.JSONListToXMLRecursive(RespList)
-        '<cheap>1000000</cheap><standard>2000000</standard><priority>3000000</priority><requestProcessingTime>0</requestProcessingTime>
-        If Not XMLStr = "" Then
-            Return Planck2Dbl(Convert.ToUInt64(XMLStr))
+        Return Converter.XMLString
+
+    End Function
+
+    Public Function GetTXFee(Optional ByVal Message As String = "", Optional ByVal FeePriority As E_Fee = E_Fee.Standard) As Double
+
+        If Message = "" Then
+            Return GetFee(FeePriority)
         Else
             Return CalculateFee(Message)
         End If

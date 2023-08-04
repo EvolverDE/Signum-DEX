@@ -5,7 +5,7 @@ Imports System.Resources.ResXFileRef
 Public Class ClsDEXContract
 
 #Region "SmartContract Structure"
-    'SmartContract: 17481325922122010625
+    'SmartContract: 14302362561079850525
 
     'ActivateDeactivateDispute: -9199918549131231789
 
@@ -26,8 +26,8 @@ Public Class ClsDEXContract
 
 #End Region
 
-    'Public Const _ReferenceTX As ULong = 17481325922122010625UL
-    'Public Const _ReferenceTXFullHash As String = "0110e95e4e259af20f9bbb99f7e4abdbe02b43aedf127c7ae3ff5873c1ff4f98" 
+    'Public Const _ReferenceTX As ULong = 14302362561079850525UL
+    'Public Const _ReferenceTXFullHash As String = "1db602def8327cc6650b90d857c079107d4fc542ad7ad60161e83b15929c441a" 
     'Public Const _DeployFeeNQT As ULong = 240000000UL
     'Public Const _GasFeeNQT As ULong = 50000000UL
 
@@ -2154,6 +2154,47 @@ Public Class ClsDEXContract
 
 #Region "DEXContract interactions"
 
+    Public Function SendGasFee(ByVal SenderPublicKey As String, ByVal Amount As Double, Optional Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
+
+        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
+
+        Dim Refuel_Gas As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(-6149083573359271390), 0) 'aaaa1111bbbb2222
+
+        Dim ULngList As List(Of ULong) = New List(Of ULong)({Refuel_Gas})
+        Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
+        Dim Response As String = SignumAPI.SendMoney(SenderPublicKey, C_ID, Amount + ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim(), False)
+
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
+        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode")
+
+        If Error0 <> -1 Then
+            'TX not OK
+            Return Application.ProductName + "-error in SendGasFee(): ->" + vbCrLf + Response
+        End If
+
+        If Response.Contains(Application.ProductName + "-error") Then
+            Return Response
+        Else
+            Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
+            Response = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
+        End If
+
+        If Not SignKeyHEX.Trim() = "" Then
+
+            Dim SignumNET As ClsSignumNET = New ClsSignumNET
+            Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(Response, SignKeyHEX)
+            Response = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+            If Response.Contains(Application.ProductName + "-error") Then
+                Return Response
+            End If
+
+        End If
+
+        Return Response
+
+    End Function
+
     Public Function DeActivateDeniability(ByVal SenderPublicKey As String, Optional Fee As Double = 0.0, Optional ByVal SignKeyHEX As String = "") As String
 
         Dim Response As String = ""
@@ -2161,13 +2202,13 @@ Public Class ClsDEXContract
         CheckForTX()
 
         If Not C_Status = E_Status.NEW_ And Not C_Status = E_Status.FREE Then
-            Return Application.ProductName + "-error in DeActivateDeniability(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString
+            Return Application.ProductName + "-error in DeActivateDeniability(1): ->" + vbCrLf + "Contract Status:" + C_Status.ToString()
         End If
 
         Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(,, C_ID)
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ReferenceDeActivateDeniability})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
-        Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim, False)
+        Response = SignumAPI.SendMoney(SenderPublicKey, C_ID, ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT), Fee, MsgStr.Trim(), False)
 
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 

@@ -43,19 +43,18 @@ Partial Class PFPForm
         Me.Label3 = New System.Windows.Forms.Label()
         Me.BtSNOSetOrder = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.LabMinFee = New System.Windows.Forms.Label()
+        Me.TBarFee = New System.Windows.Forms.TrackBar()
         Me.ChBxDeniability = New System.Windows.Forms.CheckBox()
         Me.LabColPercentage = New System.Windows.Forms.Label()
         Me.TBarCollateralPercent = New System.Windows.Forms.TrackBar()
-        Me.Label18 = New System.Windows.Forms.Label()
         Me.LabXItem = New System.Windows.Forms.Label()
         Me.LabDealAmount = New System.Windows.Forms.Label()
         Me.Label16 = New System.Windows.Forms.Label()
-        Me.NUDSNOTXFee = New System.Windows.Forms.NumericUpDown()
         Me.NUDSNOItemAmount = New System.Windows.Forms.NumericUpDown()
         Me.NUDSNOCollateral = New System.Windows.Forms.NumericUpDown()
         Me.NUDSNOAmount = New System.Windows.Forms.NumericUpDown()
-        Me.BtSNOSetCurFee = New System.Windows.Forms.Button()
-        Me.Label8 = New System.Windows.Forms.Label()
+        Me.LabCollateralPercent = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
         Me.LabXitemAmount = New System.Windows.Forms.Label()
         Me.LabWTX = New System.Windows.Forms.Label()
@@ -105,6 +104,7 @@ Partial Class PFPForm
         Me.SplitContainer20 = New System.Windows.Forms.SplitContainer()
         Me.LVMySmartContracts = New System.Windows.Forms.ListView()
         Me.ColumnHeader3 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.BtMediatorRefuelGas = New System.Windows.Forms.Button()
         Me.BtMediatorDeActivateDeniability = New System.Windows.Forms.Button()
         Me.CoBxMediatorCandidateToSend = New System.Windows.Forms.ComboBox()
         Me.LabProposalPercent = New System.Windows.Forms.Label()
@@ -221,8 +221,8 @@ Partial Class PFPForm
         Me.TSSStatusImage = New System.Windows.Forms.ToolStripStatusLabel()
         Me.TSSCryptStatus = New System.Windows.Forms.ToolStripStatusLabel()
         Me.GroupBox1.SuspendLayout()
+        CType(Me.TBarFee, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.TBarCollateralPercent, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.NUDSNOTXFee, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NUDSNOItemAmount, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NUDSNOCollateral, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NUDSNOAmount, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -398,7 +398,7 @@ Partial Class PFPForm
         Me.LVSellorders.MultiSelect = False
         Me.LVSellorders.Name = "LVSellorders"
         Me.LVSellorders.RightToLeftLayout = True
-        Me.LVSellorders.Size = New System.Drawing.Size(762, 140)
+        Me.LVSellorders.Size = New System.Drawing.Size(762, 135)
         Me.LVSellorders.TabIndex = 2
         Me.LVSellorders.UseCompatibleStateImageBehavior = False
         Me.LVSellorders.View = System.Windows.Forms.View.Details
@@ -428,7 +428,7 @@ Partial Class PFPForm
         Me.LVBuyorders.Location = New System.Drawing.Point(0, 0)
         Me.LVBuyorders.MultiSelect = False
         Me.LVBuyorders.Name = "LVBuyorders"
-        Me.LVBuyorders.Size = New System.Drawing.Size(764, 139)
+        Me.LVBuyorders.Size = New System.Drawing.Size(764, 134)
         Me.LVBuyorders.TabIndex = 5
         Me.LVBuyorders.UseCompatibleStateImageBehavior = False
         Me.LVBuyorders.View = System.Windows.Forms.View.Details
@@ -479,7 +479,7 @@ Partial Class PFPForm
         Me.LVOpenChannels.Location = New System.Drawing.Point(0, 0)
         Me.LVOpenChannels.MultiSelect = False
         Me.LVOpenChannels.Name = "LVOpenChannels"
-        Me.LVOpenChannels.Size = New System.Drawing.Size(371, 68)
+        Me.LVOpenChannels.Size = New System.Drawing.Size(371, 71)
         Me.LVOpenChannels.TabIndex = 9
         Me.LVOpenChannels.UseCompatibleStateImageBehavior = False
         Me.LVOpenChannels.View = System.Windows.Forms.View.Details
@@ -510,7 +510,7 @@ Partial Class PFPForm
         'BtSNOSetOrder
         '
         Me.BtSNOSetOrder.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtSNOSetOrder.Location = New System.Drawing.Point(93, 225)
+        Me.BtSNOSetOrder.Location = New System.Drawing.Point(93, 238)
         Me.BtSNOSetOrder.Name = "BtSNOSetOrder"
         Me.BtSNOSetOrder.Size = New System.Drawing.Size(113, 23)
         Me.BtSNOSetOrder.TabIndex = 11
@@ -520,19 +520,18 @@ Partial Class PFPForm
         'GroupBox1
         '
         Me.GroupBox1.BackColor = System.Drawing.Color.Transparent
+        Me.GroupBox1.Controls.Add(Me.LabMinFee)
+        Me.GroupBox1.Controls.Add(Me.TBarFee)
         Me.GroupBox1.Controls.Add(Me.ChBxDeniability)
         Me.GroupBox1.Controls.Add(Me.LabColPercentage)
         Me.GroupBox1.Controls.Add(Me.TBarCollateralPercent)
-        Me.GroupBox1.Controls.Add(Me.Label18)
         Me.GroupBox1.Controls.Add(Me.LabXItem)
         Me.GroupBox1.Controls.Add(Me.LabDealAmount)
         Me.GroupBox1.Controls.Add(Me.Label16)
-        Me.GroupBox1.Controls.Add(Me.NUDSNOTXFee)
         Me.GroupBox1.Controls.Add(Me.NUDSNOItemAmount)
         Me.GroupBox1.Controls.Add(Me.NUDSNOCollateral)
         Me.GroupBox1.Controls.Add(Me.NUDSNOAmount)
-        Me.GroupBox1.Controls.Add(Me.BtSNOSetCurFee)
-        Me.GroupBox1.Controls.Add(Me.Label8)
+        Me.GroupBox1.Controls.Add(Me.LabCollateralPercent)
         Me.GroupBox1.Controls.Add(Me.Label7)
         Me.GroupBox1.Controls.Add(Me.LabXitemAmount)
         Me.GroupBox1.Controls.Add(Me.LabWTX)
@@ -543,10 +542,32 @@ Partial Class PFPForm
         Me.GroupBox1.Location = New System.Drawing.Point(0, 0)
         Me.GroupBox1.MinimumSize = New System.Drawing.Size(371, 253)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(371, 260)
+        Me.GroupBox1.Size = New System.Drawing.Size(371, 267)
         Me.GroupBox1.TabIndex = 12
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Set New Order"
+        '
+        'LabMinFee
+        '
+        Me.LabMinFee.AutoSize = True
+        Me.LabMinFee.Location = New System.Drawing.Point(6, 218)
+        Me.LabMinFee.Name = "LabMinFee"
+        Me.LabMinFee.Size = New System.Drawing.Size(48, 13)
+        Me.LabMinFee.TabIndex = 35
+        Me.LabMinFee.Text = "MinFee"
+        '
+        'TBarFee
+        '
+        Me.TBarFee.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.TBarFee.Cursor = System.Windows.Forms.Cursors.Default
+        Me.TBarFee.LargeChange = 1
+        Me.TBarFee.Location = New System.Drawing.Point(93, 195)
+        Me.TBarFee.Maximum = 2
+        Me.TBarFee.Name = "TBarFee"
+        Me.TBarFee.Size = New System.Drawing.Size(260, 45)
+        Me.TBarFee.TabIndex = 34
+        Me.TBarFee.TickStyle = System.Windows.Forms.TickStyle.Both
+        Me.TBarFee.Value = 1
         '
         'ChBxDeniability
         '
@@ -561,7 +582,7 @@ Partial Class PFPForm
         'LabColPercentage
         '
         Me.LabColPercentage.AutoSize = True
-        Me.LabColPercentage.Location = New System.Drawing.Point(8, 149)
+        Me.LabColPercentage.Location = New System.Drawing.Point(6, 146)
         Me.LabColPercentage.Name = "LabColPercentage"
         Me.LabColPercentage.Size = New System.Drawing.Size(34, 13)
         Me.LabColPercentage.TabIndex = 33
@@ -571,6 +592,7 @@ Partial Class PFPForm
         '
         Me.TBarCollateralPercent.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.TBarCollateralPercent.Cursor = System.Windows.Forms.Cursors.Default
+        Me.TBarCollateralPercent.LargeChange = 1
         Me.TBarCollateralPercent.Location = New System.Drawing.Point(93, 92)
         Me.TBarCollateralPercent.Maximum = 11
         Me.TBarCollateralPercent.Name = "TBarCollateralPercent"
@@ -579,19 +601,10 @@ Partial Class PFPForm
         Me.TBarCollateralPercent.TickStyle = System.Windows.Forms.TickStyle.Both
         Me.TBarCollateralPercent.Value = 1
         '
-        'Label18
-        '
-        Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(212, 204)
-        Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(109, 13)
-        Me.Label18.TabIndex = 31
-        Me.Label18.Text = "Signa (0.0 = auto)"
-        '
         'LabXItem
         '
         Me.LabXItem.AutoSize = True
-        Me.LabXItem.Location = New System.Drawing.Point(212, 176)
+        Me.LabXItem.Location = New System.Drawing.Point(212, 173)
         Me.LabXItem.Name = "LabXItem"
         Me.LabXItem.Size = New System.Drawing.Size(39, 13)
         Me.LabXItem.TabIndex = 30
@@ -609,25 +622,16 @@ Partial Class PFPForm
         'Label16
         '
         Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(212, 149)
+        Me.Label16.Location = New System.Drawing.Point(212, 146)
         Me.Label16.Name = "Label16"
         Me.Label16.Size = New System.Drawing.Size(64, 13)
         Me.Label16.TabIndex = 28
         Me.Label16.Text = "Loading..."
         '
-        'NUDSNOTXFee
-        '
-        Me.NUDSNOTXFee.DecimalPlaces = 8
-        Me.NUDSNOTXFee.Location = New System.Drawing.Point(93, 200)
-        Me.NUDSNOTXFee.Maximum = New Decimal(New Integer() {-1, -1, -1, 0})
-        Me.NUDSNOTXFee.Name = "NUDSNOTXFee"
-        Me.NUDSNOTXFee.Size = New System.Drawing.Size(113, 20)
-        Me.NUDSNOTXFee.TabIndex = 27
-        '
         'NUDSNOItemAmount
         '
         Me.NUDSNOItemAmount.DecimalPlaces = 8
-        Me.NUDSNOItemAmount.Location = New System.Drawing.Point(93, 172)
+        Me.NUDSNOItemAmount.Location = New System.Drawing.Point(93, 169)
         Me.NUDSNOItemAmount.Maximum = New Decimal(New Integer() {-1, -1, -1, 0})
         Me.NUDSNOItemAmount.Name = "NUDSNOItemAmount"
         Me.NUDSNOItemAmount.Size = New System.Drawing.Size(113, 20)
@@ -637,7 +641,7 @@ Partial Class PFPForm
         '
         Me.NUDSNOCollateral.DecimalPlaces = 8
         Me.NUDSNOCollateral.Increment = New Decimal(New Integer() {5, 0, 0, 131072})
-        Me.NUDSNOCollateral.Location = New System.Drawing.Point(93, 146)
+        Me.NUDSNOCollateral.Location = New System.Drawing.Point(93, 143)
         Me.NUDSNOCollateral.Maximum = New Decimal(New Integer() {-1, -1, -1, 0})
         Me.NUDSNOCollateral.Name = "NUDSNOCollateral"
         Me.NUDSNOCollateral.Size = New System.Drawing.Size(113, 20)
@@ -652,30 +656,19 @@ Partial Class PFPForm
         Me.NUDSNOAmount.Size = New System.Drawing.Size(113, 20)
         Me.NUDSNOAmount.TabIndex = 24
         '
-        'BtSNOSetCurFee
+        'LabCollateralPercent
         '
-        Me.BtSNOSetCurFee.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.BtSNOSetCurFee.Location = New System.Drawing.Point(331, 197)
-        Me.BtSNOSetCurFee.Name = "BtSNOSetCurFee"
-        Me.BtSNOSetCurFee.Size = New System.Drawing.Size(32, 23)
-        Me.BtSNOSetCurFee.TabIndex = 23
-        Me.BtSNOSetCurFee.Text = "set Current Slotfee"
-        Me.BtSNOSetCurFee.UseVisualStyleBackColor = False
-        Me.BtSNOSetCurFee.Visible = False
-        '
-        'Label8
-        '
-        Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(6, 94)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(64, 13)
-        Me.Label8.TabIndex = 17
-        Me.Label8.Text = "Collateral:"
+        Me.LabCollateralPercent.AutoSize = True
+        Me.LabCollateralPercent.Location = New System.Drawing.Point(6, 94)
+        Me.LabCollateralPercent.Name = "LabCollateralPercent"
+        Me.LabCollateralPercent.Size = New System.Drawing.Size(64, 13)
+        Me.LabCollateralPercent.TabIndex = 17
+        Me.LabCollateralPercent.Text = "Collateral:"
         '
         'Label7
         '
         Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(6, 202)
+        Me.Label7.Location = New System.Drawing.Point(6, 199)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(52, 13)
         Me.Label7.TabIndex = 16
@@ -684,7 +677,7 @@ Partial Class PFPForm
         'LabXitemAmount
         '
         Me.LabXitemAmount.AutoSize = True
-        Me.LabXitemAmount.Location = New System.Drawing.Point(6, 174)
+        Me.LabXitemAmount.Location = New System.Drawing.Point(6, 171)
         Me.LabXitemAmount.Name = "LabXitemAmount"
         Me.LabXitemAmount.Size = New System.Drawing.Size(81, 13)
         Me.LabXitemAmount.TabIndex = 15
@@ -808,7 +801,7 @@ Partial Class PFPForm
         Me.SplitContainer1.Panel2.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer1.Panel2.Controls.Add(Me.SplitContainer6)
         Me.SplitContainer1.Size = New System.Drawing.Size(1540, 673)
-        Me.SplitContainer1.SplitterDistance = 394
+        Me.SplitContainer1.SplitterDistance = 404
         Me.SplitContainer1.TabIndex = 14
         '
         'SplitContainer2
@@ -829,7 +822,7 @@ Partial Class PFPForm
         '
         Me.SplitContainer2.Panel2.BackColor = System.Drawing.Color.Transparent
         Me.SplitContainer2.Panel2.Controls.Add(Me.SplitContainer3)
-        Me.SplitContainer2.Size = New System.Drawing.Size(1540, 394)
+        Me.SplitContainer2.Size = New System.Drawing.Size(1540, 404)
         Me.SplitContainer2.SplitterDistance = 1163
         Me.SplitContainer2.TabIndex = 14
         '
@@ -853,8 +846,8 @@ Partial Class PFPForm
         Me.SplitContainer3.Panel2.AutoScroll = True
         Me.SplitContainer3.Panel2.AutoScrollMinSize = New System.Drawing.Size(371, 254)
         Me.SplitContainer3.Panel2.Controls.Add(Me.GroupBox1)
-        Me.SplitContainer3.Size = New System.Drawing.Size(373, 394)
-        Me.SplitContainer3.SplitterDistance = 128
+        Me.SplitContainer3.Size = New System.Drawing.Size(373, 404)
+        Me.SplitContainer3.SplitterDistance = 131
         Me.SplitContainer3.TabIndex = 13
         '
         'SplitContainer4
@@ -873,7 +866,7 @@ Partial Class PFPForm
         'SplitContainer4.Panel2
         '
         Me.SplitContainer4.Panel2.Controls.Add(Me.SplitContainer5)
-        Me.SplitContainer4.Size = New System.Drawing.Size(371, 126)
+        Me.SplitContainer4.Size = New System.Drawing.Size(371, 129)
         Me.SplitContainer4.SplitterDistance = 25
         Me.SplitContainer4.TabIndex = 0
         '
@@ -893,8 +886,8 @@ Partial Class PFPForm
         'SplitContainer5.Panel2
         '
         Me.SplitContainer5.Panel2.Controls.Add(Me.BtCreateNewSmartContract)
-        Me.SplitContainer5.Size = New System.Drawing.Size(371, 97)
-        Me.SplitContainer5.SplitterDistance = 68
+        Me.SplitContainer5.Size = New System.Drawing.Size(371, 100)
+        Me.SplitContainer5.SplitterDistance = 71
         Me.SplitContainer5.TabIndex = 0
         '
         'SplitContainer6
@@ -912,7 +905,7 @@ Partial Class PFPForm
         'SplitContainer6.Panel2
         '
         Me.SplitContainer6.Panel2.Controls.Add(Me.SplitContainer10)
-        Me.SplitContainer6.Size = New System.Drawing.Size(1538, 273)
+        Me.SplitContainer6.Size = New System.Drawing.Size(1538, 263)
         Me.SplitContainer6.SplitterDistance = 766
         Me.SplitContainer6.TabIndex = 9
         '
@@ -936,7 +929,7 @@ Partial Class PFPForm
         'SplitContainer7.Panel2
         '
         Me.SplitContainer7.Panel2.Controls.Add(Me.SplitContainer8)
-        Me.SplitContainer7.Size = New System.Drawing.Size(762, 269)
+        Me.SplitContainer7.Size = New System.Drawing.Size(762, 259)
         Me.SplitContainer7.SplitterDistance = 25
         Me.SplitContainer7.TabIndex = 0
         '
@@ -985,8 +978,8 @@ Partial Class PFPForm
         'SplitContainer8.Panel2
         '
         Me.SplitContainer8.Panel2.Controls.Add(Me.SplitContainer9)
-        Me.SplitContainer8.Size = New System.Drawing.Size(762, 240)
-        Me.SplitContainer8.SplitterDistance = 211
+        Me.SplitContainer8.Size = New System.Drawing.Size(762, 230)
+        Me.SplitContainer8.SplitterDistance = 201
         Me.SplitContainer8.TabIndex = 0
         '
         'SplitContainerSellFilter
@@ -1007,8 +1000,8 @@ Partial Class PFPForm
         'SplitContainerSellFilter.Panel2
         '
         Me.SplitContainerSellFilter.Panel2.Controls.Add(Me.LVSellorders)
-        Me.SplitContainerSellFilter.Size = New System.Drawing.Size(762, 211)
-        Me.SplitContainerSellFilter.SplitterDistance = 67
+        Me.SplitContainerSellFilter.Size = New System.Drawing.Size(762, 201)
+        Me.SplitContainerSellFilter.SplitterDistance = 62
         Me.SplitContainerSellFilter.TabIndex = 3
         '
         'ChBxSellFilterShowPayable
@@ -1086,7 +1079,7 @@ Partial Class PFPForm
         'SplitContainer10.Panel2
         '
         Me.SplitContainer10.Panel2.Controls.Add(Me.SplitContainer11)
-        Me.SplitContainer10.Size = New System.Drawing.Size(764, 269)
+        Me.SplitContainer10.Size = New System.Drawing.Size(764, 259)
         Me.SplitContainer10.SplitterDistance = 25
         Me.SplitContainer10.TabIndex = 0
         '
@@ -1135,8 +1128,8 @@ Partial Class PFPForm
         'SplitContainer11.Panel2
         '
         Me.SplitContainer11.Panel2.Controls.Add(Me.BtSell)
-        Me.SplitContainer11.Size = New System.Drawing.Size(764, 240)
-        Me.SplitContainer11.SplitterDistance = 210
+        Me.SplitContainer11.Size = New System.Drawing.Size(764, 230)
+        Me.SplitContainer11.SplitterDistance = 200
         Me.SplitContainer11.TabIndex = 0
         '
         'SplitContainerBuyFilter
@@ -1158,8 +1151,8 @@ Partial Class PFPForm
         'SplitContainerBuyFilter.Panel2
         '
         Me.SplitContainerBuyFilter.Panel2.Controls.Add(Me.LVBuyorders)
-        Me.SplitContainerBuyFilter.Size = New System.Drawing.Size(764, 210)
-        Me.SplitContainerBuyFilter.SplitterDistance = 67
+        Me.SplitContainerBuyFilter.Size = New System.Drawing.Size(764, 200)
+        Me.SplitContainerBuyFilter.SplitterDistance = 62
         Me.SplitContainerBuyFilter.TabIndex = 6
         '
         'ChBxBuyFilterShowOffChainOrders
@@ -1319,6 +1312,7 @@ Partial Class PFPForm
         '
         'SplitContainer20.Panel2
         '
+        Me.SplitContainer20.Panel2.Controls.Add(Me.BtMediatorRefuelGas)
         Me.SplitContainer20.Panel2.Controls.Add(Me.BtMediatorDeActivateDeniability)
         Me.SplitContainer20.Panel2.Controls.Add(Me.CoBxMediatorCandidateToSend)
         Me.SplitContainer20.Panel2.Controls.Add(Me.LabProposalPercent)
@@ -1355,11 +1349,22 @@ Partial Class PFPForm
         Me.ColumnHeader3.Text = "Loading..."
         Me.ColumnHeader3.Width = 90
         '
+        'BtMediatorRefuelGas
+        '
+        Me.BtMediatorRefuelGas.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.BtMediatorRefuelGas.ForeColor = System.Drawing.Color.White
+        Me.BtMediatorRefuelGas.Location = New System.Drawing.Point(6, 3)
+        Me.BtMediatorRefuelGas.Name = "BtMediatorRefuelGas"
+        Me.BtMediatorRefuelGas.Size = New System.Drawing.Size(68, 23)
+        Me.BtMediatorRefuelGas.TabIndex = 13
+        Me.BtMediatorRefuelGas.Text = "refuel gas"
+        Me.BtMediatorRefuelGas.UseVisualStyleBackColor = False
+        '
         'BtMediatorDeActivateDeniability
         '
         Me.BtMediatorDeActivateDeniability.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtMediatorDeActivateDeniability.ForeColor = System.Drawing.Color.White
-        Me.BtMediatorDeActivateDeniability.Location = New System.Drawing.Point(4, 3)
+        Me.BtMediatorDeActivateDeniability.Location = New System.Drawing.Point(80, 3)
         Me.BtMediatorDeActivateDeniability.Name = "BtMediatorDeActivateDeniability"
         Me.BtMediatorDeActivateDeniability.Size = New System.Drawing.Size(124, 23)
         Me.BtMediatorDeActivateDeniability.TabIndex = 12
@@ -2687,8 +2692,8 @@ Partial Class PFPForm
         Me.Text = "Codename: Perls for Pigs (TestNet)"
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
+        CType(Me.TBarFee, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.TBarCollateralPercent, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.NUDSNOTXFee, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NUDSNOItemAmount, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NUDSNOCollateral, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NUDSNOAmount, System.ComponentModel.ISupportInitialize).EndInit()
@@ -2888,8 +2893,7 @@ Partial Class PFPForm
     Friend WithEvents BtSNOSetOrder As Button
     Friend WithEvents GroupBox1 As GroupBox
     Friend WithEvents CoBxMarket As ComboBox
-    Friend WithEvents BtSNOSetCurFee As Button
-    Friend WithEvents Label8 As Label
+    Friend WithEvents LabCollateralPercent As Label
     Friend WithEvents Label7 As Label
     Friend WithEvents LabXitemAmount As Label
     Friend WithEvents LabWTX As Label
@@ -2939,13 +2943,11 @@ Partial Class PFPForm
     Friend WithEvents NUDSNOAmount As NumericUpDown
     Friend WithEvents NUDSNOCollateral As NumericUpDown
     Friend WithEvents NUDSNOItemAmount As NumericUpDown
-    Friend WithEvents NUDSNOTXFee As NumericUpDown
     Friend WithEvents ColumnHeader16 As ColumnHeader
     Friend WithEvents ColumnHeader18 As ColumnHeader
     Friend WithEvents Label16 As Label
     Friend WithEvents LabXItem As Label
     Friend WithEvents LabDealAmount As Label
-    Friend WithEvents Label18 As Label
     Friend WithEvents TBarCollateralPercent As TrackBar
     Friend WithEvents LabColPercentage As Label
     Friend WithEvents SCSettings As SplitContainer
@@ -3068,4 +3070,7 @@ Partial Class PFPForm
     Friend WithEvents ColumnHeader17 As ColumnHeader
     Friend WithEvents ColumnHeader19 As ColumnHeader
     Friend WithEvents ColumnHeader20 As ColumnHeader
+    Friend WithEvents BtMediatorRefuelGas As Button
+    Friend WithEvents LabMinFee As Label
+    Friend WithEvents TBarFee As TrackBar
 End Class

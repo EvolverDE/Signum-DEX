@@ -45,6 +45,7 @@ long SellOrder = false, FreeForAll = false, isFiatOrder = false, Deniability = 0
 #define FIAT_TWD 0x0000000000545744
 #define FIAT_USD 0x0000000000555344
 
+//#define REFUEL_GAS 0xaaaa1111bbbb2222
 #define ACTIVATE_DEACTIVATE_DISPUTE 0x805352d2a4817dd3
 #define CREATE_ORDER 0x09f2535fcf54cc3b
 #define CREATE_ORDER_WITH_RESPONDER 0xb5f321287b0a94fc
@@ -150,14 +151,16 @@ void main(void) {
         case FINISH_ORDER_WITH_CHAIN_SWAP_KEY:
             FinishOrderWithChainSwapKey();
             break;
+		//case REFUEL_GAS:
+		//	break;
         }
     } while (true);
 }
 void getTxDetails(void) {
     currentTX.txId = Get_A1();
+	currentTX.amount = getAmount(currentTX.txId);
 	currentTX.timestamp = Get_Timestamp_For_Tx_In_A();
 	currentTX.sender = getSender(currentTX.txId);
-	currentTX.amount = getAmount(currentTX.txId);
 	readMessage(currentTX.txId, 0, currentTX.message);
     readMessage(currentTX.txId, 1, currentTX.message + 4);
 	
@@ -172,7 +175,8 @@ void sendMessageSC(long recipient, long messageToSend1, long messageToSend2, lon
 void ActivateDeactivateDispute(void) {
     if (Initiator == 0 && currentTX.sender == CREATOR && FreeForAll) {
         Deniability = !Deniability;
-    } else {
+    }
+	else {
         sendBack();
     }
 }
@@ -181,18 +185,22 @@ void CreateOrder(void) {
     long T_BuyCollateralAmount = currentTX.message[1];
 	checkFiat();
 	
-    if (((currentTX.amount > (GAS_FEE - getPointOneSigna()) && (T_BuyCollateralAmount > 0 || !isFiatOrder)) || (currentTX.amount <= (ONETHOUSAND * ONETHOUSAND * TENTHOUSAND) + GAS_FEE && T_BuyCollateralAmount == 0)) && Initiator == 0 && (FreeForAll || currentTX.sender == CREATOR)) {
-        FreeForAll = true;
-        CreateOrderTX = currentTX.txId ;
+    if (((currentTX.amount > (GAS_FEE - getGasFee()) && (T_BuyCollateralAmount > 0 || !isFiatOrder)) || (currentTX.amount <= (ONETHOUSAND * ONETHOUSAND * TENTHOUSAND) + GAS_FEE && T_BuyCollateralAmount == 0)) && Initiator == 0 && (FreeForAll || currentTX.sender == CREATOR)) {
+        
+        CreateOrderTX = currentTX.txId;
         if (currentTX.amount > T_BuyCollateralAmount) {
             SellOrder = true;
             BuySellAmount = currentTX.amount - T_BuyCollateralAmount; //Sell: 100 = 130 - 30;
             InitiatorsCollateral = T_BuyCollateralAmount; //Sell: 30
-        } else {
+        }
+		else {
             SellOrder = false;
-            InitiatorsCollateral = currentTX.amount; //Buy: 30;
+            InitiatorsCollateral = currentTX.amount - getGasFee(); //Buy: 30;
             BuySellAmount = T_BuyCollateralAmount; //Buy: 100
         }
+		
+		FreeForAll = true;
+		
 		if ((isFiatOrder && checkOneCent(currentTX.message[2], BuySellAmount)) || !isFiatOrder) {
 			
 			if (InitiatorsCollateral >= 0) {
@@ -203,22 +211,23 @@ void CreateOrder(void) {
 				}
 				sendMessageSC(Initiator, CreateOrderTX, 0, 0, 0);
 
-			} else {
+			}
+			else {
 				sendBack();
 			}
-
-		} else {
+		}
+		else {
 			sendBack();
 		}
-
-    } else {
+    }
+	else {
         sendBack();
     }
 }
 
 void CreateOrderWithResponder(void) {
 	checkFiat();
-    if ((currentTX.amount > (GAS_FEE - getPointOneSigna()) && Initiator == 0 && (FreeForAll || currentTX.sender == CREATOR) && currentTX.message[1] != 0) && ((isFiatOrder && checkOneCent(currentTX.message[2], currentTX.amount)) || !isFiatOrder)) {
+    if ((currentTX.amount > GAS_FEE && Initiator == 0 && (FreeForAll || currentTX.sender == CREATOR) && currentTX.message[1] != 0) && ((isFiatOrder && checkOneCent(currentTX.message[2], currentTX.amount)) || !isFiatOrder)) {
 		
 		Initiator = currentTX.sender;
 		Responder = currentTX.message[1];
@@ -234,7 +243,8 @@ void CreateOrderWithResponder(void) {
 		
 		sendMessageSC(Initiator, CreateOrderTX, 0, 0, 0);
 		
-    } else {
+    }
+	else {
         sendBack();
 	}
 }
@@ -367,20 +377,21 @@ void CheckCloseDispute(void) {
 
 void FinishOrder(void) {
 
-    if(currentTX.amount >= (GAS_FEE - getPointOneSigna()) && checkCandidates() && checkIfSenderIsOneCandidate()) {
+    if(currentTX.amount >= GAS_FEE && checkCandidates() && checkIfSenderIsOneCandidate()) {
 
         if (Initiator == currentTX.sender){
             sendOut(0, BuySellAmount);
-        } else {
+        }
+		else {
             sendOut(BuySellAmount, 0);
         }
         sendMessageSC(Initiator, CreateOrderTX, AcceptOrderTX, currentTX.txId, Responder);
         reset();
 
-    } else {
+    }
+	else {
         sendBack();
     }
-
 }
 
 void InjectChainSwapHash(void) {
@@ -414,8 +425,14 @@ void FinishOrderWithChainSwapKey(void) {
 	
 }
 
-long getPointOneSigna(){
-	return TENTHOUSAND * ONETHOUSAND;
+long getGasFee(){
+	
+	if(FreeForAll){
+		return TENTHOUSAND * 3930;
+	}
+	else {
+		return TENTHOUSAND * 4380;
+	}
 }
 
 long getSumCollateral(void) {
@@ -459,7 +476,8 @@ void sendOut(long InitiatorsAmount, long RespondersAmount) {
         InitiatorsAmount += (HalfCollateral / 2);
         RespondersAmount += (HalfCollateral / 2);
         sendAmount(HalfCollateral + MediatorsDeposit, CREATOR);
-    } else {
+    }
+	else {
         InitiatorsAmount += InitiatorsCollateral - (GAS_FEE / 2);
         RespondersAmount += RespondersCollateral - (GAS_FEE / 2);
     }
@@ -502,6 +520,6 @@ void reset(void) {
     ConciliationAmount = 0;
 	
 	if (Get_Current_Balance() > GAS_FEE) {
-		 sendAmount(Get_Current_Balance() - GAS_FEE, CREATOR);
+		sendAmount(Get_Current_Balance() - GAS_FEE, CREATOR);
 	}
 }

@@ -6,6 +6,7 @@ Imports Microsoft.VisualBasic.ApplicationServices
 Imports System.Diagnostics.Contracts
 Imports PFP.ClsOrderSettings
 Imports PFP.PFPForm
+Imports System.Linq
 
 Public Class PFPForm
 
@@ -18,6 +19,7 @@ Public Class PFPForm
 
     Property NuBlock As Integer = 1
     Property Block() As Integer = 0
+    Property Fees() As List(Of Double) = New List(Of Double)
     Property Fee() As Double = 0.0
     Property UTXList() As List(Of List(Of String))
     Property RefreshTime() As Integer = 60
@@ -681,11 +683,10 @@ Public Class PFPForm
         PINForm.ShowDialog()
 
     End Sub
-    Private Sub NUDSNOAmount_KeyPress(sender As Object, e As KeyEventArgs) Handles NUDSNOTXFee.KeyDown, NUDSNOItemAmount.KeyDown, NUDSNOCollateral.KeyDown, NUDSNOAmount.KeyDown
+    Private Sub NUDSNOAmount_KeyDown(sender As Object, e As KeyEventArgs) Handles NUDSNOItemAmount.KeyDown, NUDSNOCollateral.KeyDown, NUDSNOAmount.KeyDown
         If e.KeyCode = Keys.Enter Then
             e.SuppressKeyPress = True
         End If
-
     End Sub
 
     Private Sub TSSCryptStatus_Click(sender As Object, e As EventArgs) Handles TSSCryptStatus.Click
@@ -1037,6 +1038,18 @@ Public Class PFPForm
                         ResetLVColumns()
                         ForceReload = True
                         TSSCryptStatus.Enabled = False
+
+                        LabCollateralPercent.Enabled = False
+                        LabColPercentage.Enabled = False
+
+                        'NUDSNOAmount.Maximum = Decimal.MaxValue '79228162514264337593543950335
+                        NUDSNOCollateral.Value = 0.0D
+                        NUDSNOCollateral.Enabled = False
+
+                        TBarCollateralPercent.Value = 0
+                        TBarCollateralPercent.Enabled = False
+                        Label16.Enabled = False
+
                     Else
                         Dim Message As String = "There are no Bitcoin-Accounts in the Settings " + vbCrLf
                         Message += "you have to add at least one Bitcoin-Account in the Settings"
@@ -1050,6 +1063,17 @@ Public Class PFPForm
                         ResetLVColumns()
                         ForceReload = True
                         TSSCryptStatus.Enabled = True
+
+                        LabCollateralPercent.Enabled = True
+                        LabColPercentage.Enabled = True
+
+                        NUDSNOCollateral.Value = 0.0D
+                        NUDSNOCollateral.Enabled = True
+
+                        TBarCollateralPercent.Value = 0
+                        TBarCollateralPercent.Enabled = True
+                        Label16.Enabled = True
+
                     End If
 
                 Else
@@ -1066,6 +1090,16 @@ Public Class PFPForm
                     ResetLVColumns()
                     ForceReload = True
                     TSSCryptStatus.Enabled = True
+
+                    LabCollateralPercent.Enabled = True
+                    LabColPercentage.Enabled = True
+
+                    NUDSNOCollateral.Value = 0.0D
+                    NUDSNOCollateral.Enabled = True
+
+                    TBarCollateralPercent.Value = 0
+                    TBarCollateralPercent.Enabled = True
+                    Label16.Enabled = True
 
                 End If
 
@@ -1087,6 +1121,16 @@ Public Class PFPForm
                 ForceReload = True
                 TSSCryptStatus.Enabled = True
 
+                LabCollateralPercent.Enabled = True
+                LabColPercentage.Enabled = True
+
+                NUDSNOCollateral.Value = 0.0D
+                NUDSNOCollateral.Enabled = True
+
+                TBarCollateralPercent.Value = 0
+                TBarCollateralPercent.Enabled = True
+                Label16.Enabled = True
+
             End If
 
         Else
@@ -1096,6 +1140,17 @@ Public Class PFPForm
             ResetLVColumns()
             ForceReload = True
             TSSCryptStatus.Enabled = True
+
+            LabCollateralPercent.Enabled = True
+            LabColPercentage.Enabled = True
+
+            NUDSNOCollateral.Value = 0.0D
+            NUDSNOCollateral.Enabled = True
+
+            TBarCollateralPercent.Value = 0
+            TBarCollateralPercent.Enabled = True
+            Label16.Enabled = True
+
         End If
 
     End Sub
@@ -1280,32 +1335,49 @@ Public Class PFPForm
 
 
     End Sub
+
+    Private Sub RBSNOSell_CheckedChanged(sender As Object, e As EventArgs) Handles RBSNOSell.CheckedChanged, RBSNOBuy.CheckedChanged
+
+        If RBSNOSell.Checked Then
+            LabWTX.Text = "WantToSell:"
+        ElseIf RBSNOBuy.Checked Then
+            LabWTX.Text = "WantToBuy:"
+        End If
+
+    End Sub
+
     Private Sub TBarCollateralPercent_Scroll(sender As Object, e As EventArgs) Handles TBarCollateralPercent.Scroll
 
-        If TBarCollateralPercent.Value = 0 Then
-            NUDSNOCollateral.Minimum = 0
-            NUDSNOCollateral.Maximum = 0
-            NUDSNOAmount.Maximum = 100
-            NUDSNOCollateral.Value = 0.0D
-            LabColPercentage.Text = "0 %"
+        If TBarCollateralPercent.Enabled Then
 
-        Else
-
-            NUDSNOAmount.Maximum = Decimal.MaxValue '79228162514264337593543950335
-
-            Dim T_Amount As Decimal = NUDSNOAmount.Value
-            Dim T_Percentage As Decimal = Convert.ToDecimal(28 + (TBarCollateralPercent.Value * 2))
-
-            LabColPercentage.Text = T_Percentage.ToString + " %"
-
-            If T_Amount > 0 Then
-                NUDSNOCollateral.Minimum = (T_Amount / 100) * 30
-                NUDSNOCollateral.Maximum = (T_Amount / 100) * 50
-                NUDSNOCollateral.Value = (T_Amount / 100) * T_Percentage
-            Else
+            If TBarCollateralPercent.Value = 0 Then
                 NUDSNOCollateral.Minimum = 0
-                NUDSNOCollateral.Maximum = 1
-                NUDSNOCollateral.Value = 0
+                NUDSNOCollateral.Maximum = 0
+
+                If NUDSNOAmount.Value > 100D Then
+                    NUDSNOAmount.Value = 100D
+                End If
+
+                NUDSNOCollateral.Value = 0.0D
+                LabColPercentage.Text = "0 %"
+
+            Else
+
+                Dim T_Amount As Decimal = NUDSNOAmount.Value
+                Dim T_Percentage As Decimal = Convert.ToDecimal(28 + (TBarCollateralPercent.Value * 2))
+
+                LabColPercentage.Text = T_Percentage.ToString + " %"
+
+                If T_Amount > 0 Then
+                    NUDSNOCollateral.Minimum = (T_Amount / 100) * 30
+                    NUDSNOCollateral.Maximum = (T_Amount / 100) * 50
+                    NUDSNOCollateral.Value = (T_Amount / 100) * T_Percentage
+                Else
+                    NUDSNOCollateral.Minimum = 0
+                    NUDSNOCollateral.Maximum = 1
+                    NUDSNOCollateral.Value = 0
+                End If
+
             End If
 
         End If
@@ -1332,38 +1404,27 @@ Public Class PFPForm
     End Sub
     Private Sub NUDSNOAmount_ValueChanged(sender As Object, e As EventArgs) Handles NUDSNOAmount.ValueChanged
 
-
-        TBarCollateralPercent_Scroll(Nothing, Nothing)
-
-
-
-        'Dim T_Amount As Decimal = NUDSNOAmount.Value
-        'Dim T_Collateral As Decimal = NUDSNOCollateral.Value
-
-        'Dim T_Percentage As Decimal = 0
-
-        'If T_Amount > 0 And T_Collateral > 0 Then
-        '    T_Percentage = T_Collateral / T_Amount * 100
-        'ElseIf T_Amount > 0 And TBarCollateralPercent.Value > 0 Then
-        '    T_Percentage = 28 + (TBarCollateralPercent.Value * 2)
-        'End If
-
-        'T_Percentage = Math.Round(T_Percentage, 2)
-
-        'LabColPercentage.Text = T_Percentage.ToString + " %"
-        'TBarCollateralPercent.Value = T_Percentage / 10
-
-    End Sub
-
-    Private Sub RBSNOSell_CheckedChanged(sender As Object, e As EventArgs) Handles RBSNOSell.CheckedChanged, RBSNOBuy.CheckedChanged
-
-        If RBSNOSell.Checked Then
-            LabWTX.Text = "WantToSell:"
-        ElseIf RBSNOBuy.Checked Then
-            LabWTX.Text = "WantToBuy:"
+        If NUDSNOAmount.Value > 100D Then
+            If TBarCollateralPercent.Enabled And TBarCollateralPercent.Value = 0 Then
+                TBarCollateralPercent.Value = 1
+            End If
         End If
 
+        TBarCollateralPercent_Scroll(sender, Nothing)
+
     End Sub
+
+    Private Sub TBarFee_Scroll(sender As Object, e As EventArgs) Handles TBarFee.Scroll
+
+        If Fees.Count > 0 Then
+            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
+            Fees = SignumAPI.GetFees()
+        End If
+
+        LabMinFee.Text = Fees(TBarFee.Value).ToString() + " Signa"
+
+    End Sub
+
     Private Sub BtSNOSetOrder_Click(sender As Object, e As EventArgs) Handles BtSNOSetOrder.Click
 
         BtSNOSetOrder.Text = "Wait..."
@@ -1380,7 +1441,16 @@ Public Class PFPForm
             Dim XItemMinAmount As Double = Convert.ToDouble(NUDSNOItemAmount.Value) '1,00000000
 
             Dim Amount As Double = Convert.ToDouble(NUDSNOAmount.Value)
-            Dim Fee As Double = Convert.ToDouble(NUDSNOTXFee.Value)
+            Dim CurrentFee As Integer = Convert.ToInt32(TBarFee.Value)
+
+            Dim FeeArray As Array = [Enum].GetValues(GetType(ClsSignumAPI.E_Fee))
+            Dim FeeList As List(Of ClsSignumAPI.E_Fee) = New List(Of ClsSignumAPI.E_Fee)
+
+            For Each FeeEnum As ClsSignumAPI.E_Fee In FeeArray
+                FeeList.Add(FeeEnum)
+            Next
+
+            Dim Fee As Double = SignumAPI.GetTXFee("", FeeList(CurrentFee)) ' Convert.ToDouble(NUDSNOTXFee.Value)
             Dim Collateral As Double = Convert.ToDouble(NUDSNOCollateral.Value)
             Dim Item As String = CurrentMarket
             Dim ItemAmount As Double = Convert.ToDouble(NUDSNOItemAmount.Value)
@@ -1563,6 +1633,12 @@ Public Class PFPForm
                     If AccAmount > Collateral + Fee Then
                         'enough balance
 
+                        If T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ Then
+                            Collateral += 0.438 '0 0000
+                        Else
+                            Collateral += 0.393 '0 0000
+                        End If
+
                         Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to create a new BuyOrder?" + vbCrLf + vbCrLf + "Amount: " + Dbl2LVStr(Amount, 8) + " SIGNA" + vbCrLf + "XItem: " + Dbl2LVStr(ItemAmount, Decimals) + " " + Item, "Create BuyOrder", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
 
                         If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
@@ -1666,7 +1742,6 @@ Public Class PFPForm
 
                         End If
 
-
                     End If
 
                 End If
@@ -1689,6 +1764,7 @@ Public Class PFPForm
                             End If
 
                         End If
+
                     Else
                         ClsMsgs.MBox("All Payment Channels are in Use.", "No free Payment Channel found",,, ClsMsgs.Status.Information)
                         BtSNOSetOrder.Text = "Set Order"
@@ -1715,10 +1791,10 @@ Public Class PFPForm
 
     End Sub
 
-    Private Sub BtSNOSetCurFee_Click(sender As Object, e As EventArgs) Handles BtSNOSetCurFee.Click
-        Dim SAPI As ClsSignumAPI = New ClsSignumAPI
-        NUDSNOTXFee.Value = CDec(SAPI.GetTXFee())
-    End Sub
+    'Private Sub BtSNOSetCurFee_Click(sender As Object, e As EventArgs)
+    '    Dim SAPI As ClsSignumAPI = New ClsSignumAPI
+    '    NUDSNOTXFee.Value = CDec(SAPI.GetTXFee())
+    'End Sub
 
     Private Sub LVSellorders_MouseUp(sender As Object, e As MouseEventArgs) Handles LVSellorders.MouseUp
         BtBuy.Text = "Buy"
@@ -2908,6 +2984,108 @@ Public Class PFPForm
 
     End Sub
 
+    Private Sub BtMediatorRefuelGas_Click(sender As Object, e As EventArgs) Handles BtMediatorRefuelGas.Click
+
+        If LVMySmartContracts.SelectedItems.Count > 0 Then
+            Dim LVi As ListViewItem = LVMySmartContracts.SelectedItems(0)
+            Dim T_DexContract As ClsDEXContract = DirectCast(LVi.Tag, ClsDEXContract)
+
+            BtMediatorRefuelGas.Text = "Wait..."
+            BtMediatorRefuelGas.Enabled = False
+
+            Dim MsgResult As ClsMsgs.CustomDialogResult = ClsMsgs.MBox("Do you really want to lubricate your smart contract?", "Refuelling Contract", ClsMsgs.DefaultButtonMaker(ClsMsgs.DBList._YesNo),, ClsMsgs.Status.Question)
+
+            If MsgResult = ClsMsgs.CustomDialogResult.Yes Then
+
+                Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode, GlobalAccountID,)
+                Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+                If MasterKeys.Count > 0 Then
+
+                    Dim Response As String = T_DexContract.SendGasFee(MasterKeys(0), 1.0,)
+
+                    If IsErrorOrWarning(Response) Then
+                        ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+                    Else
+
+                        Dim UTX As String = Response
+                        Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                        Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                        Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                        If IsErrorOrWarning(TX, Application.ProductName + "-error in BtMediatorRefuelGas_Click(1): -> " + vbCrLf, True) Then
+                            ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+                        Else
+                            ClsMsgs.MBox("Refuel gas send" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
+                        End If
+
+                    End If
+
+                Else 'Masterkeys = 0
+
+                    Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.SignMessage)
+                    Dim Response As String = ""
+
+                    If Not GlobalPublicKey.Trim = "" Then
+
+                        Response = T_DexContract.SendGasFee(GlobalPublicKey, 1.0,)
+
+                        If IsErrorOrWarning(Response, Application.ProductName + "-error in BtMediatorRefuelGas_Click(2): -> " + vbCrLf, True) Then
+                            ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+                        Else
+                            Dim UTX As String = Response
+                            PinForm.TBUnsignedBytes.Text = UTX
+                        End If
+                    End If
+
+                    PinForm.ShowDialog()
+
+                    If Not PinForm.SignKey = "" And Not PinForm.PublicKey = "" Then
+
+                        Response = T_DexContract.SendGasFee(PinForm.PublicKey, 1.0,)
+
+                        If IsErrorOrWarning(Response, Application.ProductName + "-error in BtMediatorRefuelGas_Click(3): -> " + vbCrLf, True) Then
+                            ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+                        Else
+
+                            Dim UTX As String = Response
+
+                            Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                            Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
+                            Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                            If IsErrorOrWarning(TX, Application.ProductName + "-error in BtMediatorRefuelGas_Click(4): -> " + vbCrLf, True) Then
+                                ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+                            Else
+                                ClsMsgs.MBox("Refuel gas send" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
+                            End If
+
+                        End If
+
+                    ElseIf Not PinForm.TBSignedBytes.Text.Trim = "" Then
+
+                        Dim TX As String = SignumAPI.BroadcastTransaction(PinForm.TBSignedBytes.Text.Trim)
+
+                        If IsErrorOrWarning(TX, Application.ProductName + "-error in BtMediatorRefuelGas_Click(5): -> " + vbCrLf, True) Then
+                            ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
+                        Else
+                            ClsMsgs.MBox("Refuel gas send" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
+                        End If
+
+                    Else
+                        ClsMsgs.MBox("Refuel gas send canceled.", "Canceled",,, ClsMsgs.Status.Erro)
+                    End If
+
+                End If
+
+            End If
+
+            BtMediatorRefuelGas.Text = "refuel gas"
+            BtMediatorRefuelGas.Enabled = True
+
+        End If
+
+    End Sub
 
     Private Sub BtMediatorDeActivateDeniability_Click(sender As Object, e As EventArgs) Handles BtMediatorDeActivateDeniability.Click
 
@@ -2933,7 +3111,7 @@ Public Class PFPForm
                     Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                     Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(1): -> " + vbCrLf, True) Then
+                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtMediatorDeActivateDeniability_Click(1): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
                     Else
                         ClsMsgs.MBox("Toggle Deniability" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
@@ -2950,7 +3128,7 @@ Public Class PFPForm
 
                     Response = T_DexContract.DeActivateDeniability(GlobalPublicKey,,)
 
-                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtOpenDispute_Click(2): -> " + vbCrLf, True) Then
+                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtMediatorDeActivateDeniability_Click(2): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
                     Else
                         Dim UTX As String = Response
@@ -2964,7 +3142,7 @@ Public Class PFPForm
 
                     Response = T_DexContract.DeActivateDeniability(PinForm.PublicKey,,)
 
-                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtOpenDispute_Click(3): -> " + vbCrLf, True) Then
+                    If IsErrorOrWarning(Response, Application.ProductName + "-error in BtMediatorDeActivateDeniability_Click(3): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
                     Else
 
@@ -2974,7 +3152,7 @@ Public Class PFPForm
                         Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, PinForm.SignKey)
                         Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
 
-                        If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(4): -> " + vbCrLf, True) Then
+                        If IsErrorOrWarning(TX, Application.ProductName + "-error in BtMediatorDeActivateDeniability_Click(4): -> " + vbCrLf, True) Then
                             ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
                         Else
                             ClsMsgs.MBox("Toggle deniability" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
@@ -2986,7 +3164,7 @@ Public Class PFPForm
 
                     Dim TX As String = SignumAPI.BroadcastTransaction(PinForm.TBSignedBytes.Text.Trim)
 
-                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtOpenDispute_Click(5): -> " + vbCrLf, True) Then
+                    If IsErrorOrWarning(TX, Application.ProductName + "-error in BtMediatorDeActivateDeniability_Click(5): -> " + vbCrLf, True) Then
                         ClsMsgs.MBox("An error has occured." + vbCrLf + Response, "Error",,, ClsMsgs.Status.Erro)
                     Else
                         ClsMsgs.MBox("Toggle deniability" + vbCrLf + vbCrLf + "TX: " + TX, "Transaction created",,, ClsMsgs.Status.Information)
@@ -6615,14 +6793,16 @@ Public Class PFPForm
         LabXItem.Text = CurrentMarket
         LabXitemAmount.Text = CurrentMarket + " Amount: "
 
+        Fees = SignumAPI.GetFees()
+        Fee = SignumAPI.GetFee(ClsSignumAPI.E_Fee.Standard)
+
+        LabMinFee.Text = Fee.ToString() + " Signa"
+
         MarketIsCrypto = ClsDEXContract.CurrencyIsCrypto(CurrentMarket)
         Decimals = ClsDEXContract.GetCurrencyDecimals(CurrentMarket)
 
         NUDSNOItemAmount.DecimalPlaces = Decimals
-
-
         CSVSmartContractList.Clear()
-
         OrderSettingsBuffer.Clear()
 
         Dim Wait As Boolean = GetAndCheckSmartContracts()
@@ -6643,7 +6823,6 @@ Public Class PFPForm
             HistoryOrderToXMLThreadList.Add(HistoryOrderToXMLThread)
 
         Next
-
 
         StatusLabel.Text = "Refreshing HistoryOrders..."
 
