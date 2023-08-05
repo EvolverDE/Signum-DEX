@@ -5454,12 +5454,44 @@ Public Class PFPForm
 
                     Try
 
+                        Dim Autosendinfotext As String = "False"
+                        Dim AutocompleteSmartContract As String = "False"
+
+                        Dim T_SellerRS As String = T_DEXContract.CurrentSellerAddress ' Order.SellerRS
+                        If TBSNOAddress.Text = T_SellerRS Then
+
+                            Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(T_DEXContract.CurrentCreationTransaction) ' Order.FirstTransaction)
+
+                            Dim T_OS As ClsOrderSettings = New ClsOrderSettings(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_DEXContract.IsSellOrder, T_DEXContract.Status)
+
+                            If T_OSList.Count = 0 Then
+                                T_OS.PaytypeString = GetINISetting(E_Setting.PaymentType, "Other")
+                                T_OS.Infotext = GetINISetting(E_Setting.PaymentInfoText, "Unknown")
+
+                                Dim T_OrderSettingFromTX As List(Of ClsOrderSettings) = GetOrderSettings(T_OS.TransactionID.ToString)
+
+                                If T_OrderSettingFromTX.Count > 0 Then
+                                    T_OS.AutoCompleteSmartContract = T_OrderSettingFromTX(0).AutoCompleteSmartContract
+                                    T_OS.AutoSendInfotext = T_OrderSettingFromTX(0).AutoSendInfotext
+                                    T_OS.Infotext = T_OrderSettingFromTX(0).Infotext
+                                    T_OS.PayType = T_OrderSettingFromTX(0).PayType
+                                    T_OS.PaytypeString = T_OrderSettingFromTX(0).PaytypeString
+                                End If
+
+                                OrderSettingsBuffer.Add(T_OS)
+                            Else
+                                T_OS = T_OSList(0)
+                                T_OS.SetPayType()
+                                PayMet = T_OS.PaytypeString
+                                Autosendinfotext = T_OS.AutoSendInfotext.ToString
+                                AutocompleteSmartContract = T_OS.AutoCompleteSmartContract.ToString
+                            End If
+
+                        End If
+
                         If T_DEXContract.CurrentXItem.Contains(Market) Then
 
 #Region "Market - GUI"
-
-                            Dim Autosendinfotext As String = "False"
-                            Dim AutocompleteSmartContract As String = "False"
 
                             If Not T_DEXContract.CheckForUTX And Not T_DEXContract.CheckForTX Then
 
@@ -5480,35 +5512,8 @@ Public Class PFPForm
                                     'T_LVI.SubItems.Add(Dbl2LVStr(Order.Collateral)) 'collateral
                                     T_LVE.Collateral = Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral) '  Order.Collateral)
 
-                                    Dim T_SellerRS As String = T_DEXContract.CurrentSellerAddress ' Order.SellerRS
+                                    '
                                     If T_SellerRS = TBSNOAddress.Text Then
-
-                                        Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(T_DEXContract.CurrentCreationTransaction) ' Order.FirstTransaction)
-
-                                        Dim T_OS As ClsOrderSettings = New ClsOrderSettings(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_DEXContract.IsSellOrder, T_DEXContract.Status)
-
-                                        If T_OSList.Count = 0 Then
-                                            T_OS.PaytypeString = GetINISetting(E_Setting.PaymentType, "Other")
-                                            T_OS.Infotext = GetINISetting(E_Setting.PaymentInfoText, "Unknown")
-
-                                            Dim T_OrderSettingFromTX As List(Of ClsOrderSettings) = GetOrderSettings(T_OS.TransactionID.ToString)
-
-                                            If T_OrderSettingFromTX.Count > 0 Then
-                                                T_OS.AutoCompleteSmartContract = T_OrderSettingFromTX(0).AutoCompleteSmartContract
-                                                T_OS.AutoSendInfotext = T_OrderSettingFromTX(0).AutoSendInfotext
-                                                T_OS.Infotext = T_OrderSettingFromTX(0).Infotext
-                                                T_OS.PayType = T_OrderSettingFromTX(0).PayType
-                                                T_OS.PaytypeString = T_OrderSettingFromTX(0).PaytypeString
-                                            End If
-
-                                            OrderSettingsBuffer.Add(T_OS)
-                                        Else
-                                            T_OS = T_OSList(0)
-                                            T_OS.SetPayType()
-                                            PayMet = T_OS.PaytypeString
-                                            Autosendinfotext = T_OS.AutoSendInfotext.ToString
-                                            AutocompleteSmartContract = T_OS.AutoCompleteSmartContract.ToString
-                                        End If
 
                                         T_SellerRS = "Me"
                                         'T_LVI.BackColor = Color.Magenta
@@ -5685,86 +5690,86 @@ Public Class PFPForm
 
 #End Region
 
+                        End If 'market(USD)
+
 #Region "MyOPENOrders - GUI"
 
-                            If TBSNOAddress.Text = T_DEXContract.CurrentSellerAddress Then ' Order.SellerRS Then
+                        If TBSNOAddress.Text = T_DEXContract.CurrentSellerAddress Then ' Order.SellerRS Then
 
-                                'Broadcast info over DEXNET
-                                If T_DEXContract.CurrencyIsCrypto Then
-                                    BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>AtomicSwap</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
-                                Else
-                                    BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
-                                End If
+                            'Broadcast info over DEXNET
+                            If T_DEXContract.CurrencyIsCrypto() Then
+                                BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString() + "</SCID><PayType>AtomicSwap</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
+                            Else
+                                BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString() + "</SCID><PayType>" + PayMet.Trim() + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
+                            End If
 
-                                T_LVI = New ListViewItem
-                                T_LVI.Text = Confirms 'confirms
-                                T_LVI.SubItems.Add(T_DEXContract.Address) 'SmartContract
-                                'T_LVI.SubItems.Add(T_DEXContract.CreatorAddress) 'creator
+                            T_LVI = New ListViewItem
+                            T_LVI.Text = Confirms 'confirms
+                            T_LVI.SubItems.Add(T_DEXContract.Address) 'SmartContract
+                            'T_LVI.SubItems.Add(T_DEXContract.CreatorAddress) 'creator
 
-                                If T_DEXContract.IsSellOrder Then
-                                    T_LVI.SubItems.Add("SellOrder") ' Order.Type) 'type
-                                Else
-                                    T_LVI.SubItems.Add("BuyOrder") ' Order.Type) 'type
-                                End If
+                            If T_DEXContract.IsSellOrder Then
+                                T_LVI.SubItems.Add("SellOrder") ' Order.Type) 'type
+                            Else
+                                T_LVI.SubItems.Add("BuyOrder") ' Order.Type) 'type
+                            End If
 
-                                T_LVI.SubItems.Add(PayMet) 'method
-                                T_LVI.SubItems.Add(Autosendinfotext + "/" + AutocompleteSmartContract) 'autoinfo/autofinish
-                                T_LVI.SubItems.Add("Me") 'seller
-                                T_LVI.SubItems.Add(T_DEXContract.CurrentBuyerAddress)  'buyer
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItemTicker) 'xitem/xamount
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentBuySellAmount)) 'buysellamount
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral))  'collateral
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItemTicker)  'price
+                            T_LVI.SubItems.Add(PayMet) 'method
+                            T_LVI.SubItems.Add(AutoSendInfotext + "/" + AutoCompleteSmartContract) 'autoinfo/autofinish
+                            T_LVI.SubItems.Add("Me") 'seller
+                            T_LVI.SubItems.Add(T_DEXContract.CurrentBuyerAddress)  'buyer
+                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItemTicker) 'xitem/xamount
+                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentBuySellAmount)) 'buysellamount
+                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral))  'collateral
+                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItemTicker)  'price
 
-                                T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString) 'deniability/dispute
-                                T_LVI.SubItems.Add("OPEN") 'status
-                                T_LVI.SubItems.Add("") 'infotext
-                                T_LVI.Tag = T_DEXContract ' Order
+                            T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString) 'deniability/dispute
+                            T_LVI.SubItems.Add("OPEN") 'status
+                            T_LVI.SubItems.Add("") 'infotext
+                            T_LVI.Tag = T_DEXContract ' Order
 
-                                MyOpenOrderLVIList.Add(T_LVI)
+                            MyOpenOrderLVIList.Add(T_LVI)
 
-                            ElseIf TBSNOAddress.Text = T_DEXContract.CurrentBuyerAddress Then ' Order.BuyerRS Then
+                        ElseIf TBSNOAddress.Text = T_DEXContract.CurrentBuyerAddress Then ' Order.BuyerRS Then
 
-                                'Broadcast info over DEXNET
-                                If T_DEXContract.CurrencyIsCrypto Then
-                                    BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>AtomicSwap</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
-                                Else
-                                    BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
-                                End If
+                            'Broadcast info over DEXNET
+                            If T_DEXContract.CurrencyIsCrypto Then
+                                BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>AtomicSwap</PayType><Autosendinfotext>" + AutoSendInfotext + "</Autosendinfotext><AutocompleteSC>" + AutoCompleteSmartContract + "</AutocompleteSC>")
+                            Else
+                                BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + AutoSendInfotext + "</Autosendinfotext><AutocompleteSC>" + AutoCompleteSmartContract + "</AutocompleteSC>")
+                            End If
 
-                                T_LVI = New ListViewItem
-                                T_LVI.Text = Confirms 'confirms
-                                T_LVI.SubItems.Add(T_DEXContract.Address) 'smartcontract
-                                'T_LVI.SubItems.Add(T_DEXContract.CreatorAddress) 'creator
+                            T_LVI = New ListViewItem
+                            T_LVI.Text = Confirms 'confirms
+                            T_LVI.SubItems.Add(T_DEXContract.Address) 'smartcontract
+                            'T_LVI.SubItems.Add(T_DEXContract.CreatorAddress) 'creator
 
-                                If T_DEXContract.IsSellOrder Then
-                                    T_LVI.SubItems.Add("SellOrder") 'type
-                                Else
-                                    T_LVI.SubItems.Add("BuyOrder") 'type
-                                End If
+                            If T_DEXContract.IsSellOrder Then
+                                T_LVI.SubItems.Add("SellOrder") 'type
+                            Else
+                                T_LVI.SubItems.Add("BuyOrder") 'type
+                            End If
 
-                                T_LVI.SubItems.Add(PayMet) 'method
-                                T_LVI.SubItems.Add(Autosendinfotext + "/" + AutocompleteSmartContract) 'autoinfo/autofinish
+                            T_LVI.SubItems.Add(PayMet) 'method
+                            T_LVI.SubItems.Add(AutoSendInfotext + "/" + AutoCompleteSmartContract) 'autoinfo/autofinish
 
-                                T_LVI.SubItems.Add(T_DEXContract.CurrentSellerAddress)  'seller
-                                T_LVI.SubItems.Add("Me") 'buyer
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItemTicker) 'xitem/xamount
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentBuySellAmount))  'buysellamount
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral))  'collateral
-                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItemTicker) 'price
+                            T_LVI.SubItems.Add(T_DEXContract.CurrentSellerAddress)  'seller
+                            T_LVI.SubItems.Add("Me") 'buyer
+                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItemTicker) 'xitem/xamount
+                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentBuySellAmount))  'buysellamount
+                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral))  'collateral
+                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, Decimals) + " " + XItemTicker) 'price
 
-                                T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString) 'deniability/dispute
-                                T_LVI.SubItems.Add("OPEN") 'status
-                                T_LVI.SubItems.Add("") 'infotext
-                                T_LVI.Tag = T_DEXContract
+                            T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString) 'deniability/dispute
+                            T_LVI.SubItems.Add("OPEN") 'status
+                            T_LVI.SubItems.Add("") 'infotext
+                            T_LVI.Tag = T_DEXContract
 
-                                MyOpenOrderLVIList.Add(T_LVI)
+                            MyOpenOrderLVIList.Add(T_LVI)
 
-                            End If 'myaddress
+                        End If 'myaddress
 
 #End Region
-
-                        End If 'market(USD)
 
                     Catch ex As Exception
                         IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(OPEN): -> " + ex.Message)
