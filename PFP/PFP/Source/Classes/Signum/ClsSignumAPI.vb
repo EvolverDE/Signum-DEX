@@ -1045,6 +1045,7 @@ Public Class ClsSignumAPI
         TXDetailList.Add(Converter.Search("attachment", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("sender", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("senderRS", ClsJSONAndXMLConverter.E_ParseType.XML))
+        TXDetailList.Add(Converter.Search("senderPublicKey", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("height", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("block", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("confirmations", ClsJSONAndXMLConverter.E_ParseType.XML))

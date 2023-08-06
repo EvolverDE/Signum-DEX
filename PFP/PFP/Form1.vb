@@ -212,7 +212,7 @@ Public Class PFPForm
         If APIOK = "True" Then
 
             Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode,)
-            Dim CheckAttachment As String = ClsSignumAPI.ULngList2DataStr(New List(Of ULong)({SignumAPI.ReferenceFinishOrder}))
+            'Dim CheckAttachment As String = ClsSignumAPI.ULngList2DataStr(New List(Of ULong)({SignumAPI.ReferenceFinishOrder}))
 
             If Not DEXContract.CheckForUTX And Not DEXContract.CheckForTX Then
 
@@ -3527,6 +3527,11 @@ Public Class PFPForm
                 AddHandler LVCMItem1.Click, AddressOf BtExecuteOrder_Click
                 LVContextMenu.Items.Add(LVCMItem1)
 
+                Dim LVCMItem2 As ToolStripMenuItem = New ToolStripMenuItem
+
+                LVCMItem2.Text = "show messages"
+                AddHandler LVCMItem2.Click, AddressOf ShowCurrentChat
+                LVContextMenu.Items.Add(LVCMItem2)
             End If
 
             LVMyOpenOrders.ContextMenuStrip = LVContextMenu
@@ -3535,6 +3540,27 @@ Public Class PFPForm
 
     End Sub
 
+    Private Sub ShowCurrentChat(sender As Object, e As EventArgs)
+
+        Dim T_Frm As Form = New Form With {.Name = "FrmMessage", .Text = "Messages", .StartPosition = FormStartPosition.CenterScreen, .Width = 800, .Icon = Me.Icon}
+        Dim RTB As RichTextBox = New RichTextBox
+        RTB.Dock = DockStyle.Fill
+
+        Dim LVi As ListViewItem = LVMyOpenOrders.SelectedItems(0)
+        Dim T_DexContract As ClsDEXContract = DirectCast(LVi.Tag, ClsDEXContract)
+
+        For Each ChatEntry As ClsDEXContract.S_Chat In T_DexContract.CurrentChat
+            Dim DateTime As Date = ConvertULongMSToDate(ChatEntry.Timestamp)
+            Dim DateTimeString As String = DateTime.ToShortDateString() + " " + DateTime.ToShortTimeString()
+            RTB.AppendText("(" + DateTimeString + ") From " + ChatEntry.SenderAddress + " To " + ChatEntry.RecipientAddress + ":" + vbCrLf)
+            RTB.AppendText(ChatEntry.Attachment + vbCrLf)
+            RTB.AppendText(vbCrLf)
+        Next
+
+        T_Frm.Controls.Add(RTB)
+        T_Frm.Show()
+
+    End Sub
 
     Private Sub BtExecuteOrder_Click(sender As Object, e As EventArgs) Handles BtExecuteOrder.Click
 
@@ -4270,10 +4296,37 @@ Public Class PFPForm
             LVContextMenu.Items.Add(LVCMItem2)
 
 
+            'Dim LVCMItem3 As ToolStripMenuItem = New ToolStripMenuItem
+            'LVCMItem3.Text = "show messages"
+            'AddHandler LVCMItem3.Click, AddressOf ShowHistoryChat
+            'LVContextMenu.Items.Add(LVCMItem3)
+
             LVMyClosedOrders.ContextMenuStrip = LVContextMenu
 
         End If
 
+
+    End Sub
+
+    Private Sub ShowHistoryChat(sender As Object, e As EventArgs)
+
+        'Dim T_Frm As Form = New Form With {.Name = "FrmMessage", .Text = "Messages", .StartPosition = FormStartPosition.CenterScreen, .Width = 800}
+        'Dim RTB As RichTextBox = New RichTextBox
+        'RTB.Dock = DockStyle.Fill
+
+        'Dim LVi As ListViewItem = LVMyClosedOrders.SelectedItems(0)
+        'Dim T_DexContract As ClsDEXContract = DirectCast(LVi.Tag, ClsDEXContract)
+
+        'For Each ChatEntry As ClsDEXContract.S_Chat In T_DexContract.CurrentChat
+        '    Dim DateTime As Date = ConvertULongMSToDate(ChatEntry.Timestamp)
+        '    Dim DateTimeString As String = DateTime.ToShortDateString() + " " + DateTime.ToShortTimeString()
+        '    RTB.AppendText("(" + DateTimeString + ") From " + ChatEntry.SenderAddress + " To " + ChatEntry.RecipientAddress + ":" + vbCrLf)
+        '    RTB.AppendText(ChatEntry.Attachment + vbCrLf)
+        '    RTB.AppendText(vbCrLf)
+        'Next
+
+        'T_Frm.Controls.Add(RTB)
+        'T_Frm.Show()
 
     End Sub
 
@@ -4594,7 +4647,7 @@ Public Class PFPForm
         If IsErrorOrWarning(TXID) Then
             ClsMsgs.MBox("The Transaction cant be signed", "Error",,, ClsMsgs.Status.Erro, 5, ClsMsgs.Timer_Type.ButtonEnable)
         Else
-            ClsMsgs.MBox("Transaction successfully send." + vbCrLf + " ID = " + TXID, "Success!",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+            ClsMsgs.MBox("Transaction successfully send." + vbCrLf + " ID = " + TXID + vbCrLf + "Details in " + TXID + ".log", "Success!",,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
             Dim out As ClsOut = New ClsOut()
             Dim TXOut As String = ""
 

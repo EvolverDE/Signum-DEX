@@ -1,6 +1,9 @@
 ﻿Option Strict On
 Option Explicit On
 Imports System.Resources.ResXFileRef
+Imports System.Runtime.Remoting.Messaging
+Imports System.Security.Cryptography
+Imports PFP.ClsDEXContract
 
 Public Class ClsDEXContract
 
@@ -460,7 +463,10 @@ Public Class ClsDEXContract
 
 #Region "Structures"
     Public Structure S_Chat
+        Dim SenderPublicKey As String
         Dim SenderAddress As String
+
+        Dim RecipientPublicKey As String
         Dim RecipientAddress As String
 
         Dim Attachment As String
@@ -509,6 +515,7 @@ Public Class ClsDEXContract
 
         Dim Sender As ULong
         Dim SenderRS As String
+        Dim SenderPublicKey As String
 
         Dim AmountNQT As ULong
         Dim FeeNQT As ULong
@@ -1889,6 +1896,10 @@ Public Class ClsDEXContract
             T_TXIDList.AddRange(SignumAPI.GetTransactionIds(C_CreatorID, C_CurrentResponderID, C_CurrentTimestamp))
             T_TXIDList.AddRange(SignumAPI.GetTransactionIds(C_CurrentResponderID, C_CreatorID, C_CurrentTimestamp))
 
+            T_TXIDList.AddRange(SignumAPI.GetTransactionIds(C_CurrentInitiatorID, ID, C_CurrentTimestamp))
+            T_TXIDList.AddRange(SignumAPI.GetTransactionIds(C_CurrentResponderID, ID, C_CurrentTimestamp))
+
+
             T_TXIDList = T_TXIDList.GroupBy(Function(c) c).Select(Function(a) a.First()).ToList()
 
             Dim T_TXRList As List(Of List(Of String)) = New List(Of List(Of String))
@@ -1910,41 +1921,160 @@ Public Class ClsDEXContract
 
                 T_TX.Sender = GetULongBetweenFromList(TX, "<sender>", "</sender>")
                 T_TX.SenderRS = GetStringBetweenFromList(TX, "<senderRS>", "</senderRS>")
+                T_TX.SenderPublicKey = GetStringBetweenFromList(TX, "<senderPublicKey>", "</senderPublicKey>")
 
                 T_TX.AmountNQT = GetULongBetweenFromList(TX, "<amountNQT>", "</amountNQT>")
                 T_TX.FeeNQT = GetULongBetweenFromList(TX, "<feeNQT>", "</feeNQT>")
-                T_TX.Attachment = GetStringBetweenFromList(TX, "<attachment>", "</attachment>")
 
+                If TX.Any(Function(Attachment) Attachment.Contains("<message>")) Then
 
-                If T_TX.Attachment.Trim() = "" Then
+                    Dim Message As String = GetStringBetweenFromList(TX, "<message>", "</message>")
+                    Dim IsText As Boolean = GetBooleanBetweenFromList(TX, "<messageIsText>", "</messageIsText>")
 
-                    T_TX.Attachment = GetStringBetweenFromList(TX, "<message>", "</message>")
+                    If IsText Then
+                        T_TX.Attachment = Message
+                    Else
 
-                    If T_TX.Attachment.Trim() = "" Then
+                        Dim ReferenceMessageList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(Message)
 
-                        Dim EncryptedMessage As String = GetStringBetweenFromList(TX, "<encryptedMessage>", "</encryptedMessage>")
-                        'Dim Data As String = GetStringBetweenFromList(TX, "<data>", "</data>")
-                        'Dim Nonce As String = GetStringBetweenFromList(TX, "<nonce>", "</nonce>")
+                        Dim Command As E_ReferenceCommand = GetReferenceCommand(ReferenceMessageList(0))
 
-                        'Dim MasterKeys As List(Of String) = GetPassPhrase()
+                        Select Case Command
 
-                        'If MasterKeys.Count > 0 Then
+                            Case E_ReferenceCommand.REFERENCE_DE_ACTIVATE_DENIABILITY
+                                T_TX.Attachment = "toggle deniability"
+                            Case E_ReferenceCommand.REFERENCE_CREATE_ORDER
 
-                        '    GetLastDecryptedMessageFromChat()
+                                '(0) ULong   creation method
+                                '(1) ULong   collateral
+                                '(2) ULong   xamountnqt
+                                '(3) ULong   xitem USD
 
+                                Dim T_BuyCollateralAmount As Double = ClsSignumAPI.Planck2Dbl(ReferenceMessageList(1))
+                                Dim T_XAmount As Double = ClsSignumAPI.Planck2Dbl(ReferenceMessageList(2))
+                                Dim T_XItem As String = ClsSignumAPI.ULng2String(ReferenceMessageList(3))
 
-                        'Else
-                        T_TX.Attachment = EncryptedMessage
-                        'End If
+                                If ClsSignumAPI.Planck2Dbl(T_TX.AmountNQT) > T_BuyCollateralAmount Then
+                                    T_TX.Attachment = "create sell order: " + PFPForm.Dbl2LVStr(ClsSignumAPI.Planck2Dbl(T_TX.AmountNQT) - ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT) - T_BuyCollateralAmount) + " Signa for " + PFPForm.Dbl2LVStr(T_XAmount) + " " + T_XItem
+                                Else
+                                    T_TX.Attachment = "create buy order: " + PFPForm.Dbl2LVStr(T_BuyCollateralAmount) + " Signa for " + PFPForm.Dbl2LVStr(T_XAmount) + " " + T_XItem
+                                End If
+
+                            Case E_ReferenceCommand.REFERENCE_CREATE_ORDER_WITH_RESPONDER
+
+                                '(0) ULong   creation method
+                                '(1) ULong   responder id
+                                '(2) ULong   xamountnqt
+                                '(3) ULong   xitem USD
+
+                                Dim T_Responder As String = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(ReferenceMessageList(1))
+                                Dim T_XAmount As Double = ClsSignumAPI.Planck2Dbl(ReferenceMessageList(2))
+                                Dim T_XItem As String = ClsSignumAPI.ULng2String(ReferenceMessageList(3))
+
+                                T_TX.Attachment = "create sell order with responder: " + PFPForm.Dbl2LVStr(ClsSignumAPI.Planck2Dbl(T_TX.AmountNQT) - ClsSignumAPI.Planck2Dbl(ClsSignumAPI._GasFeeNQT)) + " Signa for " + PFPForm.Dbl2LVStr(T_XAmount) + " " + T_XItem + " to " + T_Responder
+                            Case E_ReferenceCommand.REFERENCE_ACCEPT_ORDER
+
+                                '(0) ULong   accept method
+
+                                T_TX.Attachment = "accept order"
+                            Case E_ReferenceCommand.REFERENCE_INJECT_RESPONDER
+
+                                '(0) ULong   injection method
+                                '(1) ULong   responder id
+
+                                Dim T_Responder As String = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(ReferenceMessageList(1))
+                                T_TX.Attachment = "inject responder: " + T_Responder
+
+                            Case E_ReferenceCommand.REFERENCE_INJECT_CHAINSWAPHASH
+
+                                '(0) ULong   injection method
+                                '(1) ULong   First ChainSwapHashLong
+                                '(2) ULong   Second ChainSwapHashLong
+                                '(3) ULong   Third ChainSwapHashLong
+                                '(4) ULong   Fourth ChainSwapHashLong
+
+                                Dim ChainSwapHash As String = ULongListToHEXString(New List(Of ULong)({ReferenceMessageList(1), ReferenceMessageList(2), ReferenceMessageList(3), ReferenceMessageList(4)}))
+                                T_TX.Attachment = "inject ChainSwapHash: " + ChainSwapHash
+
+                            Case E_ReferenceCommand.REFERENCE_OPEN_DISPUTE
+
+                                '(0) ULong   open dispute method
+
+                                T_TX.Attachment = "open dispute"
+
+                            Case E_ReferenceCommand.REFERENCE_MEDIATE_DISPUTE
+
+                                '(0) ULong   mediate dispute method
+                                '(1) ULong   percentage (10000 = 100.00%)
+
+                                T_TX.Attachment = "mediate dispute: " + PFPForm.Dbl2LVStr(ClsSignumAPI.Planck2Dbl(ReferenceMessageList(1)) / 100, 2) + " % to Responder"
+
+                            Case E_ReferenceCommand.REFERENCE_APPEAL
+
+                                '(0) ULong   appeal method
+
+                                T_TX.Attachment = "appeal"
+
+                            Case E_ReferenceCommand.REFERENCE_CHECK_CLOSE_DISPUTE
+
+                                '(0) ULong   check or close dispute method
+
+                                T_TX.Attachment = "check or close dispute"
+
+                            Case E_ReferenceCommand.REFERENCE_FINISH_ORDER
+
+                                '(0) ULong   finish order method
+
+                                T_TX.Attachment = "finish order"
+
+                            Case E_ReferenceCommand.REFERENCE_FINISH_ORDER_WITH_CHAINSWAPKEY
+
+                                '(0) ULong   Finish Method FinishOrderWithChainSwapKey()
+                                '(1) ULong   First ChainSwapKeyLong
+                                '(2) ULong   Second ChainSwapKeyLong
+                                '(3) ULong   Third ChainSwapKeyLong
+                                '(4) ULong   Fourth ChainSwapKeyLong
+
+                                Dim ChainSwapKey As String = ULongListToHEXString(New List(Of ULong)({ReferenceMessageList(1), ReferenceMessageList(2), ReferenceMessageList(3), ReferenceMessageList(4)}))
+                                T_TX.Attachment = "finish order with ChainSwapKey: " + ChainSwapKey
+
+                        End Select
 
                     End If
 
+                ElseIf TX.Any(Function(Attachment) Attachment.Contains("<encryptedMessage>")) Then
 
+                    Dim EncryptedMessage As String = GetStringBetweenFromList(TX, "<encryptedMessage>", "</encryptedMessage>")
+
+                    Dim Data As String = GetStringBetween(EncryptedMessage, "<data>", "</data>")
+                    Dim Nonce As String = GetStringBetween(EncryptedMessage, "<nonce>", "</nonce>")
+                    Dim RecipientPublicKey As String = GetStringBetweenFromList(TX, "<recipientPublicKey>", "</recipientPublicKey>")
+
+                    Dim TempPubKey As String = If(RecipientPublicKey = GlobalPublicKey, T_TX.SenderPublicKey, RecipientPublicKey)
+
+                    Dim MasterKeys As List(Of String) = GetPassPhrase()
+
+                    If MasterKeys.Count > 0 Then
+
+                        Dim SigNET As ClsSignumNET = New ClsSignumNET()
+                        Dim DecryptResult As String = SigNET.DecryptMessage(Data, Nonce, TempPubKey, MasterKeys(2))
+
+                        If IsErrorOrWarning(DecryptResult, "", False, False) Then
+                            T_TX.Attachment = EncryptedMessage + "<recipientPublicKey>" + RecipientPublicKey + "</recipientPublicKey>"
+                        Else
+                            T_TX.Attachment = DecryptResult
+                        End If
+
+                    Else
+                        T_TX.Attachment = EncryptedMessage + "<recipientPublicKey>" + RecipientPublicKey + "</recipientPublicKey>"
+                    End If
+
+                Else
+                    T_TX.Attachment = ""
                 End If
 
                 T_TX.Recipient = GetULongBetweenFromList(TX, "<recipient>", "</recipient>")
                 T_TX.RecipientRS = GetStringBetweenFromList(TX, "<recipientRS>", "</recipientRS>")
-
                 T_TX.Confirmations = GetULongBetweenFromList(TX, "<confirmations>", "</confirmations>")
 
                 T_TXList.Add(T_TX)
@@ -1960,7 +2090,9 @@ Public Class ClsDEXContract
                 Dim T_Chat As S_Chat = New S_Chat
                 T_Chat.Timestamp = T_TX.Timestamp
                 T_Chat.SenderAddress = T_TX.SenderRS
+                T_Chat.SenderPublicKey = T_TX.SenderPublicKey
                 T_Chat.RecipientAddress = T_TX.RecipientRS
+                T_Chat.RecipientPublicKey = GetStringBetween(T_TX.Attachment, "<recipientPublicKey>", "</recipientPublicKey>")
                 T_Chat.Attachment = T_TX.Attachment
 
                 C_CurrentChat.Add(T_Chat)
@@ -1989,38 +2121,47 @@ Public Class ClsDEXContract
             If Chat.RecipientAddress = RecipientAddress Then
 
                 Dim DecryptedMessage As String = GetStringBetween(Chat.Attachment, "<data>", "</data>")
-                Dim Nonce As String = GetStringBetween(Chat.Attachment, "<nonce>", "</nonce>")
 
-                Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
-                Dim SenderPubkey As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(Chat.SenderAddress)
+                If DecryptedMessage.Trim() = "" Then
 
-                Dim SignumNET As ClsSignumNET = New ClsSignumNET
-                Dim Message As String = SignumNET.DecryptFrom(SenderPubkey, DecryptedMessage, Nonce)
+                    If Not Chat.Attachment.Trim() = "" Then
+                        Return Chat.Attachment
+                    End If
 
-                If Not IsErrorOrWarning(Message) Then
+                Else
+                    Dim Nonce As String = GetStringBetween(Chat.Attachment, "<nonce>", "</nonce>")
 
-                    If Not Message.Trim = "" Then
+                    Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
+                    Dim SenderPubkey As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(Chat.SenderAddress)
 
-                        If Shorten Then
+                    Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                    Dim Message As String = SignumNET.DecryptFrom(SenderPubkey, DecryptedMessage, Nonce)
 
-                            If Message.Contains("SmartContract=") And Message.Contains("Transaction=") Then
-                                Dim DCSmartContract As String = GetStringBetween(Message, "SmartContract=", " Transaction=")
-                                Dim DCTransaction As ULong = GetULongBetween(Message, "Transaction=", " ")
-                                Dim T_SCTX As String = "SmartContract=" + DCSmartContract + " Transaction=" + DCTransaction.ToString + " "
+                    If Not IsErrorOrWarning(Message) Then
 
-                                Message = Message.Substring(Message.IndexOf(T_SCTX) + T_SCTX.Length)
+                        If Not Message.Trim = "" Then
+
+                            If Shorten Then
+
+                                If Message.Contains("SmartContract=") And Message.Contains("Transaction=") Then
+                                    Dim DCSmartContract As String = GetStringBetween(Message, "SmartContract=", " Transaction=")
+                                    Dim DCTransaction As ULong = GetULongBetween(Message, "Transaction=", " ")
+                                    Dim T_SCTX As String = "SmartContract=" + DCSmartContract + " Transaction=" + DCTransaction.ToString + " "
+
+                                    Message = Message.Substring(Message.IndexOf(T_SCTX) + T_SCTX.Length)
+                                End If
+
+                                If Message.Contains("Infotext=") Then
+                                    Message = Message.Substring(Message.IndexOf("Infotext=") + 9)
+                                End If
+
+                                Return Message
+
+                            Else
+                                Return Message
                             End If
 
-                            If Message.Contains("Infotext=") Then
-                                Message = Message.Substring(Message.IndexOf("Infotext=") + 9)
-                            End If
-
-                            Return Message
-
-                        Else
-                            Return Message
                         End If
-
                     End If
                 End If
 

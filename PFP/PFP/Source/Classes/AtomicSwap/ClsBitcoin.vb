@@ -316,7 +316,7 @@
                     Returner = True
                     Dim Out As ClsOut = New ClsOut()
 
-                    Out.ToFile(Reason + "->" + vbCrLf + BitcoinTX, "bitcoin.log", IO.FileMode.Append)
+                    Out.ToFile(Reason + "->" + vbCrLf + BitcoinTX + vbCrLf, "bitcoin.log", IO.FileMode.Append)
 
                 Else
                     BitcoinTransactions += BitcoinTX + ";"
