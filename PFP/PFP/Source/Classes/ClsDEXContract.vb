@@ -2581,7 +2581,6 @@ Public Class ClsDEXContract
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
         'Dim JSON As ClsJSON = New ClsJSON
-
         Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(JSON.JSONRecursive(Response), "errorCode")
 
         If Error0 <> -1 Then

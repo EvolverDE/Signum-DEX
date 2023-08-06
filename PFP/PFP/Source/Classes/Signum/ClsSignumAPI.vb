@@ -101,7 +101,6 @@ Public Class ClsSignumAPI
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
         'Dim JSON As ClsJSON = New ClsJSON
-
         'Dim RespList As Object = JSON.JSONRecursive(Response)
 
         Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")

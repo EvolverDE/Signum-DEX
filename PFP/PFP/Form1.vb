@@ -8129,6 +8129,7 @@ Public Class PFPForm
 #End Region
 
             ElseIf RelMsg.RelevantMessage.Contains("<SCID>") And RelMsg.RelevantMessage.Contains("<PublicKey>") And RelMsg.RelevantMessage.Contains("<Ask>") Then
+
                 Dim RM_SmartContractID As ULong = GetULongBetween(RelMsg.RelevantMessage, "<SCID>", "</SCID>")
                 Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode)
                 Dim RM_AccountPublicKey As String = GetStringBetween(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>")
@@ -8170,8 +8171,7 @@ Public Class PFPForm
 
                                                     If Not IsErrorOrWarning(Response, "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs2): -> " + vbCrLf, True) Then
 
-                                                        Dim UTXList As List(Of String) = ClsSignumAPI.ConvertUnsignedTXToList(Response)
-                                                        Dim UTX As String = GetStringBetweenFromList(UTXList, "<unsignedTransactionBytes>", "</unsignedTransactionBytes>")
+                                                        Dim UTX As String = Response
                                                         Dim SignumNET As ClsSignumNET = New ClsSignumNET
                                                         Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
                                                         Dim TX As String = SignumAPI.BroadcastTransaction(STX.SignedTransaction)
@@ -8179,10 +8179,9 @@ Public Class PFPForm
                                                         If Not IsErrorOrWarning(TX, "-error in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs3): -> " + vbCrLf, True) Then
 
                                                             Dim PayInfo As String = GetPaymentInfoFromOrderSettings(MyOpenDEXContract.CurrentCreationTransaction, MyOpenDEXContract.CurrentBuySellAmount, MyOpenDEXContract.CurrentXAmount, MyOpenDEXContract.CurrentXItem)
-
                                                             Dim KnownAcc As String = SignumAPI.GetAccountPublicKeyFromAccountID_RS(RM_AccountID.ToString)
 
-                                                            If KnownAcc.Contains(Application.ProductName + "-error") Then
+                                                            If KnownAcc.Contains(Application.ProductName + "-error") And Not RM_AccountPublicKey.Trim() = "" Then
                                                                 'cant find account in blockchain, send message with pubkey to activate account
 
                                                                 If Not PayInfo.Trim = "" Then
@@ -8195,12 +8194,11 @@ Public Class PFPForm
                                                                     End If
 
                                                                     Dim T_MsgStr As String = "Account activation"
-                                                                    Dim TXr As String = T_Interactions.SendBillingInfos(RM_AccountID, PayInfo, False, True, RM_AccountPublicKey) 'TODO: need offchain pubkey
+                                                                    Dim TXr As String = T_Interactions.SendBillingInfos(RM_AccountID, PayInfo, False, True, RM_AccountPublicKey)
 
                                                                     IsErrorOrWarning(TXr, "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf, True)
 
                                                                 End If
-
                                                             End If
 
                                                         End If
