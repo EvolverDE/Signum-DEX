@@ -442,7 +442,7 @@ Public Class ClsTCPAPI
                                             For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
                                                 If T_DEXContract.ID.ToString() = OrderID Then
                                                     'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
-                                                    'publickey = 6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
+                                                    'publickey = 6FBE5B0C2A6BA726 12702795B2E25061 6C367BD8B28F965A 36CD59DD13D09A51
                                                     'http://127.0.0.1:8130/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
 
                                                     If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And

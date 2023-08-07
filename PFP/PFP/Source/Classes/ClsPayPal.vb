@@ -575,107 +575,56 @@ Public Class ClsPayPal
         End If
 
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(ResponseStr, ClsJSONAndXMLConverter.E_ParseType.JSON)
-        Dim TransactionDetails As List(Of KeyValuePair(Of String, Object)) = Converter.Search(Of List(Of KeyValuePair(Of String, Object)))("transaction_details")
-        Dim TransactionInfo As KeyValuePair(Of String, Object) = TransactionDetails.Where(Function(c) c.Key = "transaction_info").ToList().FirstOrDefault()
+        Dim T_TransactionDetails As KeyValuePair(Of String, Object) = Converter.GetFromPath("result/transaction_details")
+        Converter = New ClsJSONAndXMLConverter(T_TransactionDetails)
 
-        If Not IsNothing(TransactionInfo.Key) Then
+        Dim i As Integer = 0
+        Dim T_Entry As String = GetStringBetween(Converter.XMLString, "<" + i.ToString() + ">", "</" + i.ToString() + ">")
 
-            Dim TXNote As String = New ClsJSONAndXMLConverter(TransactionInfo).Search("transaction_note", ClsJSONAndXMLConverter.E_ParseType.XML)
+        Dim ReturnList As List(Of List(Of String)) = New List(Of List(Of String))
 
-            Dim TXAmountList As String = New ClsJSONAndXMLConverter(TransactionInfo).Search("transaction_amount", ClsJSONAndXMLConverter.E_ParseType.XML)
-            Dim TXStatus As String = New ClsJSONAndXMLConverter(TransactionInfo).Search("transaction_status", ClsJSONAndXMLConverter.E_ParseType.XML)
+        While Not T_Entry.Trim() = ""
+            Dim T_TransactionNote As String = GetStringBetween(T_Entry, "<transaction_note>", "</transaction_note>")
 
+            Dim T_TransactionAmount As String = GetStringBetween(T_Entry, "<transaction_amount>", "</transaction_amount>")
+            Dim T_CurrencyCode As String = GetStringBetween(T_TransactionAmount, "<currency_code>", "</currency_code>")
+            Dim T_Value As String = GetStringBetween(T_TransactionAmount, "<value>", "</value>")
+            Dim T_TransactionStatus As String = GetStringBetween(T_Entry, "<transaction_status>", "</transaction_status>")
 
-            If Not TXNote.Trim() = "" And Not TXAmountList.Trim() = "" And Not TXStatus.Trim() = "" Then
+            If Not SearchNote.Trim() = "" Then
 
-                If Not SearchNote.Trim = "" Then
-                    If TXNote.Trim().Contains(SearchNote.Trim()) Then
+                If T_TransactionNote.ToUpper() = SearchNote.ToUpper() Then
 
-                        Dim NuList As List(Of String) = New List(Of String)
+                    Dim NuList As List(Of String) = New List(Of String) From {
+                        "<transaction_note>" + SearchNote.Trim() + "</transaction_note>",
+                        "<transaction_currency_code>" + T_CurrencyCode + "</transaction_currency_code>",
+                        "<transaction_amount>" + T_Value + "</transaction_amount>",
+                        "<transaction_status>" + T_TransactionStatus + "</transaction_status>"
+                    }
 
-                        NuList.Add("<transaction_note>" + SearchNote.ToString + "</transaction_note>")
-                        NuList.Add("<transaction_currency_code>" + GetStringBetween(TXAmountList, "<currency_code>", "</currency_code>") + "</transaction_currency_code>")
-                        NuList.Add("<transaction_amount>" + GetDoubleBetween(TXAmountList, "<value>", "</value>").ToString() + "</transaction_amount>")
-                        NuList.Add(TXStatus)
+                    Return New List(Of List(Of String))({NuList})
 
-                        Return New List(Of List(Of String))({NuList})
-
-                    End If
                 End If
+
+            Else
+
+                ReturnList.Add(New List(Of String) From
+                    {
+                        "<transaction_note>" + SearchNote.Trim() + "</transaction_note>",
+                        "<transaction_currency_code>" + T_CurrencyCode + "</transaction_currency_code>",
+                        "<transaction_amount>" + T_Value + "</transaction_amount>",
+                        "<transaction_status>" + T_TransactionStatus + "</transaction_status>"
+                    }
+                )
 
             End If
 
-        End If
+            i += 1
+            T_Entry = GetStringBetween(Converter.XMLString, "<" + i.ToString() + ">", "</" + i.ToString() + ">")
 
-        Return New List(Of List(Of String))
+        End While
 
-#Region "deprecaded"
-        'If TXList.GetType = GetType(Boolean) Then
-
-        'Else
-
-        '    For Each TX In TXList
-
-        '        Dim TXInfoList = Converter.FirstValue("transaction_details/transaction_info") ' JSON.RecursiveListSearch(TX, "transaction_info")
-
-        '        If TXInfoList.GetType = GetType(Boolean) Then
-
-        '        Else
-
-        '            Dim TXNote = Converter.FirstValue("transaction_details/transaction_note") ' JSON.RecursiveListSearch(TXInfoList, "transaction_note")
-        '            Dim TXAmountList = Converter.FirstValue("transaction_details/transaction_amount") ' JSON.RecursiveListSearch(TXInfoList, "transaction_amount")
-        '            Dim TXStatus As String = Converter.FirstValue("transaction_details/transaction_status") ' JSON.RecursiveListSearch(TXInfoList, "transaction_status")
-
-
-        '            Dim TXAmount As String = "0.0"
-        '            If TXAmountList.GetType.Name = GetType(Boolean).Name Then
-        '            Else
-        '                TXAmount = Converter.FirstValue("transaction_details/value") ' JSON.RecursiveListSearch(TXAmountList, "value")
-        '            End If
-
-
-        '            If TXNote.GetType.Name = GetType(Boolean).Name Then
-        '            Else
-
-        '                If Not SearchNote.Trim = "" Then
-
-        '                    If TXNote.ToString.Trim.Contains(SearchNote.Trim) Then
-
-        '                        Dim NuList As List(Of String) = New List(Of String)
-
-        '                        NuList.Add("<transaction_note>" + SearchNote.ToString + "</transaction_note>")
-        '                        NuList.Add("<transaction_amount>" + TXAmount.Replace(".", ",") + "</transaction_amount>")
-        '                        NuList.Add("<transaction_status>" + TXStatus + "</transaction_status>")
-
-        '                        ReturnList.Add(NuList)
-
-        '                        Return ReturnList
-
-        '                    End If
-
-        '                Else
-
-        '                    Dim NuList As List(Of String) = New List(Of String)
-
-        '                    NuList.Add("<transaction_note>" + TXNote.ToString.Trim + "</transaction_note>")
-        '                    NuList.Add("<transaction_amount>" + TXAmount.Replace(".", ",") + "</transaction_amount>")
-        '                    NuList.Add("<transaction_status>" + TXStatus + "</transaction_status>")
-
-        '
-        '                   ReturnList.Add(NuList)
-
-        '                End If
-
-        '            End If
-
-        '        End If
-
-        '    Next
-
-        'End If
-
-        'Return ReturnList
-#End Region
+        Return ReturnList
 
 
 #Region "normal Payments"

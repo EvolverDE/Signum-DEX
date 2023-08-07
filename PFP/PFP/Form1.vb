@@ -214,7 +214,7 @@ Public Class PFPForm
             Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(PrimaryNode,)
             'Dim CheckAttachment As String = ClsSignumAPI.ULngList2DataStr(New List(Of ULong)({SignumAPI.ReferenceFinishOrder}))
 
-            If Not DEXContract.CheckForUTX And Not DEXContract.CheckForTX Then
+            If Not DEXContract.CheckForUTX() And Not DEXContract.CheckForTX() Then
 
                 If Not GetAutosignalTXFromINI(DEXContract.CurrentCreationTransaction) Then 'Check for autosignal-TX in Settings.ini and skip if founded
 
@@ -225,14 +225,14 @@ Public Class PFPForm
                     }
 
                     Dim ColWords As ClsColloquialWords = New ClsColloquialWords
-                    Dim TXDetails As List(Of List(Of String)) = PPAPI_GetPayPalTX_to_Autosignal_SmartContract.GetTransactionList(ColWords.GenerateColloquialWords(DEXContract.CurrentCreationTransaction.ToString, True, "-", 5))
+                    Dim TXDetails As List(Of List(Of String)) = PPAPI_GetPayPalTX_to_Autosignal_SmartContract.GetTransactionList(ColWords.GenerateColloquialWords(DEXContract.CurrentCreationTransaction.ToString(), True, "-", 5))
 
                     If TXDetails.Count > 0 Then
 
                         Dim PayPalStatus As String = GetStringBetweenFromList(TXDetails(0), "<transaction_status>", "</transaction_status>")
                         Dim Amount As String = GetStringBetweenFromList(TXDetails(0), "<transaction_amount>", "</transaction_amount>")
 
-                        If Convert.ToDouble(Amount) >= DEXContract.CurrentXAmount And PayPalStatus.ToLower.Trim = "s" Then
+                        If Convert.ToDouble(Amount) >= DEXContract.CurrentXAmount And PayPalStatus.ToLower().Trim() = "s" Then
                             'complete
 
                             Dim MasterKeys As List(Of String) = GetPassPhrase()
@@ -10123,7 +10123,6 @@ Public Class ListViewItemExtremeSorter
     Function DateUSToGer(datum As String, Optional ByVal PlusTage As Integer = 0) As String
 
         Try
-
 
             If PlusTage = 0 Then
                 'von YY.MM.DD zu DD.MM.YY (und DD.MM.YY zu YY.MM.DD)

@@ -372,7 +372,7 @@ Public Class ClsJSONAndXMLConverter
 
     Public Function AllValues(ByVal SearchPattern As String) As List(Of String)
 
-        Dim KeyVals = Search(Of List(Of KeyValuePair(Of String, Object)))(SearchPattern)
+        Dim KeyVals As List(Of KeyValuePair(Of String, Object)) = Search(Of List(Of KeyValuePair(Of String, Object)))(SearchPattern)
 
         If KeyVals.Count > 0 Then
 
