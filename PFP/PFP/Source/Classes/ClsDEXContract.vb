@@ -2050,7 +2050,7 @@ Public Class ClsDEXContract
                     Dim Nonce As String = GetStringBetween(EncryptedMessage, "<nonce>", "</nonce>")
                     Dim RecipientPublicKey As String = GetStringBetweenFromList(TX, "<recipientPublicKey>", "</recipientPublicKey>")
 
-                    Dim TempPubKey As String = If(RecipientPublicKey = GlobalPublicKey, T_TX.SenderPublicKey, RecipientPublicKey)
+                    Dim TempPubKey As String = If(RecipientPublicKey = GlobalPublicKey, T_TX.SenderPublicKey, If(RecipientPublicKey = "", T_TX.SenderPublicKey, RecipientPublicKey))
 
                     Dim MasterKeys As List(Of String) = GetPassPhrase()
 

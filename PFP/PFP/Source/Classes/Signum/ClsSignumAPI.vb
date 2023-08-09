@@ -1033,11 +1033,19 @@ Public Class ClsSignumAPI
             Return New List(Of String)
         End If
 
+        Dim RecipientAccountID As String = Converter.Search("recipient", ClsJSONAndXMLConverter.E_ParseType.XML)
+        Dim RecipientPublicKey As String = GetAccountPublicKeyFromAccountID_RS(RecipientAccountID)
+
+        If IsErrorOrWarning(RecipientPublicKey, "", False, False) Then
+            RecipientPublicKey = ""
+        End If
+
         Dim TXDetailList As List(Of String) = New List(Of String)
 
         TXDetailList.Add(Converter.Search("timestamp", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("recipient", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("recipientRS", ClsJSONAndXMLConverter.E_ParseType.XML))
+        TXDetailList.Add("<recipientPublicKey>" + RecipientPublicKey + "</recipientPublicKey>")
         TXDetailList.Add(Converter.Search("amountNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("feeNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("balanceNQT", ClsJSONAndXMLConverter.E_ParseType.XML))

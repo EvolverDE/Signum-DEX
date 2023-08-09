@@ -661,9 +661,10 @@ Public Class PFPForm
         DEXAPIInfo += """Candles"":[{""method"":""GET"",""description"":""response candleentries for chart plotting"",""queryExample"":""/API/v1/Candles/USD_SIGNA?days=3&tickmin=15""},"
         DEXAPIInfo += GetCandlesInfo
         DEXAPIInfo += "],"
-        DEXAPIInfo += """Orders"":{""method"":""GET"",""description"":""shows the list of open orders"",""queryExample"":""/API/v1/Orders""},"
-        DEXAPIInfo += """Orders"":{""method"":""POST"",""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1/Orders/TS-L623-BTHG-FX7M-H7K87&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51""},"
-        DEXAPIInfo += """CreateBitcoinTransaction"":{""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1/CreateBitcoinTransaction?BitcoinTransaction=8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957&BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinRecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinChainSwapHash=abcdef&BitcoinAmountNQT=2120""}"
+        DEXAPIInfo += """Orders(GET)"":{""method"":""GET"",""description"":""shows the list of open orders"",""queryExample"":""/API/v1/Orders""},"
+        DEXAPIInfo += """Orders(POST)"":{""method"":""POST"",""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1/Orders/{id or address}&PublicKey={32 bytes in Hex}""},"
+        DEXAPIInfo += """Bitcoin(GET)"":{""method"":""GET"",""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1/Bitcoin/Transaction/{32 bytes in Hex}?BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress={27 to 34 chars}&privateKey={32 bytes in Hex (NOT RECOMMENDED)}&BitcoinRecipientAddress={27 to 34 chars}&BitcoinChainSwapHash={32 bytes in Hex}&BitcoinAmountNQT={unsigned long}""},"
+        DEXAPIInfo += """Bitcoin(POST)"":{""method"":""POST"",""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1/Bitcoin/Transaction"",""bodyExample"":{""inputs"":[{""transaction"":""{32 bytes in Hex}"",""index"":0,""script"":""{hex string}"",""privateKey"":""{32 bytes in Hex (NOT RECOMMENDED)}"",""address"":""{32 bytes in Hex}""}],""outputs"":[{""type"":""TimeLockChainSwapHash"",""recipient"":""{27 to 34 chars}"",""change"":""{27 to 34 chars}"",""chainSwapHash"":""{32 bytes in Hex}"",""amount"":0.00001234}]}}"
         DEXAPIInfo += "}}"
 
         Dim DEXAPIGetInfoResponse As ClsTCPAPI.API_Response = New ClsTCPAPI.API_Response
