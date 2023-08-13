@@ -93,13 +93,19 @@ Public Class ClsAPIRequest
         Change = 14
         Recipient = 15
 
-        PrivateKey = 16
-        PublicKey = 17
+        PassPhrase = 16
+        Mnemonic = 17
 
-        ChainSwapKey = 18
-        ChainSwapHash = 19
+        PrivateKey = 18
+        PublicKey = 19
 
-        AmountNQT = 20
+        ChainSwapKey = 20
+        ChainSwapHash = 21
+
+        AmountNQT = 22
+        CollateralNQT = 23
+        XAmountNQT = 24
+        XItem = 25
 
     End Enum
 
@@ -245,7 +251,6 @@ Public Class ClsAPIRequest
                                                 'POST/API/v1/Orders/{id}?senderPublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
 
                                                 C_Parameters.Add(CreateParameter(E_Parameter.OrderID, Path(4).Remove(Path(4).IndexOf("?"c))))
-
                                                 Dim ParaString As String = Path(4).Substring(Path(4).IndexOf("?"c) + 1)
                                                 C_Parameters.AddRange(ParseParameters(ParaString))
 
@@ -265,19 +270,39 @@ Public Class ClsAPIRequest
                                                 '}
 
                                                 C_Parameters.Add(CreateParameter(E_Parameter.OrderID, Path(4)))
+                                                Dim JSONString As String = GetJSONFromRequest()
+                                                C_Body = GetParametersFromJSON(JSONString)
+
+                                            End If
+
+                                        ElseIf Path.Count > 3 Then
+
+                                            If Path(3).Contains("?") Then
+                                                'POST/API/v1/Orders?Type=SellOrder&AmountNQT=10000000000&CollateralNQT=3000000000&XAmountNQT=1000000000&XItem=USD
+
+                                                Dim Endpoint As String = Path(3).Remove(Path(3).IndexOf("?"c))
+
+                                                If Not Endpoint = E_Endpoint.Orders.ToString() Then
+                                                    C_Parameters.Add(CreateParameter(E_Parameter.OrderID, Endpoint))
+                                                End If
+
+                                                Dim ParaString As String = Path(3).Substring(Path(3).IndexOf("?"c) + 1)
+                                                C_Parameters.AddRange(ParseParameters(ParaString))
+
+                                            ElseIf C_RAWRequestList.Contains("{") Then
+                                                'check body
+
+                                                '{
+                                                '    "type": "SellOrder",
+                                                '    "amountNQT": 10000000000,
+                                                '    "collateralNQT": 3000000000,
+                                                '    "xAmountNQT": 1000000000,
+                                                '    "xItem": "USD"
+                                                '}
 
                                                 Dim JSONString As String = GetJSONFromRequest()
-                                                'Dim JSON As ClsJSON = New ClsJSON()
-                                                'Dim XML As String = JSON.JSONToXML(JSONString)
-                                                'Dim SenderPubKey As String = GetStringBetween(XML, "<" + E_Parameter.SenderPublicKey.ToString().ToLower() + ">", "</" + E_Parameter.SenderPublicKey.ToString().ToLower() + ">", False, False)
+                                                C_Body = GetParametersFromJSON(JSONString)
 
-                                                'C_Parameters.Add(CreateParameter(E_Parameter.SenderPublicKey, SenderPubKey))
-
-                                                C_Parameters.AddRange(GetParametersFromJSON(JSONString))
-
-                                            Else
-                                                C_Method = E_Method.NONE
-                                                C_Endpoint = E_Endpoint.NONE
                                             End If
 
                                         Else
@@ -285,7 +310,7 @@ Public Class ClsAPIRequest
                                             C_Endpoint = E_Endpoint.NONE
                                         End If
 
-                                    Case E_Endpoint.Transaction
+                                    Case E_Endpoint.Bitcoin
 
                                         'POST/API/v1/Transaction HTTP/1.1
                                         'Content-Type: Application/ json
@@ -446,26 +471,20 @@ Public Class ClsAPIRequest
 
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(JSONString, ClsJSONAndXMLConverter.E_ParseType.JSON)
 
-        'Dim JSON As ClsJSON = New ClsJSON()
-        'Dim o = JSON.JSONRecursive2(JSONString)
-        'Dim p = Between2List(o(0), "[", "]")
+        Dim XML As String = Converter.XMLString
 
-        Dim XML As String = Converter.XMLString  ' JSON.JSONToXML(JSONString)
+        Dim Token As KeyValuePair(Of String, Object) = Converter.GetFromPath("result/token")
 
-        Dim Inputs As KeyValuePair(Of String, Object) = Converter.GetFromPath("result/inputs") '.Search(Of List(Of KeyValuePair(Of String, Object)))("inputs")
-        Dim Outputs As KeyValuePair(Of String, Object) = Converter.GetFromPath("result/outputs") '.Search(Of List(Of KeyValuePair(Of String, Object)))("outputs")
+        If IsNothing(Token.Key) Then
+            Return Converter.ListOfKeyValues
+        ElseIf Token.Key = "BTC" Then
+            Dim Inputs As KeyValuePair(Of String, Object) = Converter.GetFromPath("result/inputs")
+            Dim Outputs As KeyValuePair(Of String, Object) = Converter.GetFromPath("result/outputs")
 
-        'Dim FirstInput As KeyValuePair(Of String, Object) = Inputs.FirstOrDefault()
-        'If FirstInput.Key <> "inputs" Then
-        '    FirstInput = New KeyValuePair(Of String, Object)("inputs", New List(Of KeyValuePair(Of String, Object))({New KeyValuePair(Of String, Object)("0", Outputs)}))
-        'End If
+            Return New List(Of KeyValuePair(Of String, Object))({Inputs, Outputs})
+        End If
 
-        'Dim FirstOutput As KeyValuePair(Of String, Object) = Outputs.FirstOrDefault()
-        'If FirstOutput.Key <> "outputs" Then
-        '    FirstOutput = New KeyValuePair(Of String, Object)("outputs", New List(Of KeyValuePair(Of String, Object))({New KeyValuePair(Of String, Object)("0", Outputs)}))
-        'End If
-
-        Return New List(Of KeyValuePair(Of String, Object))({Inputs, Outputs})
+        Return New List(Of KeyValuePair(Of String, Object))
 
     End Function
 
@@ -487,10 +506,18 @@ Public Class ClsAPIRequest
                 If Para.Contains("="c) Then
 
                     Dim Parameter As S_Parameter = New S_Parameter
-                    Parameter.Parameter = Parameters.FirstOrDefault(Function(param) Para.ToLower().Contains(param.ToString().ToLower()))
-                    Parameter.Value = Para.Substring(Para.IndexOf("="c) + 1)
+                    Dim Exact As E_Parameter = Parameters.FirstOrDefault(Function(param) Para.Remove(Para.IndexOf("=")).ToLower() = param.ToString().ToLower())
 
-                    T_Parameters.Add(Parameter)
+                    If Exact = E_Parameter.NONE Then
+                        Parameter.Parameter = Parameters.FirstOrDefault(Function(param) Para.ToLower().Contains(param.ToString().ToLower()))
+                    Else
+                        Parameter.Parameter = Exact
+                    End If
+
+                    If Not Parameter.Parameter = E_Parameter.NONE Then
+                        Parameter.Value = Para.Substring(Para.IndexOf("="c) + 1)
+                        T_Parameters.Add(Parameter)
+                    End If
 
                 End If
 
@@ -501,10 +528,18 @@ Public Class ClsAPIRequest
         ElseIf ParametersString.Contains("="c) Then
 
             Dim Parameter As S_Parameter = New S_Parameter
-            Parameter.Parameter = Parameters.FirstOrDefault(Function(param) ParametersString.ToLower().Contains(param.ToString().ToLower()))
-            Parameter.Value = ParametersString.Substring(ParametersString.IndexOf("="c) + 1)
+            Dim Exact As E_Parameter = Parameters.FirstOrDefault(Function(param) ParametersString.Remove(ParametersString.IndexOf("=")).ToLower() = param.ToString().ToLower())
 
-            Return New List(Of S_Parameter)({Parameter})
+            If Exact = E_Parameter.NONE Then
+                Parameter.Parameter = Parameters.FirstOrDefault(Function(param) ParametersString.ToLower().Contains(param.ToString().ToLower()))
+            Else
+                Parameter.Parameter = Exact
+            End If
+
+            If Not Parameter.Parameter = E_Parameter.NONE Then
+                Parameter.Value = ParametersString.Substring(ParametersString.IndexOf("="c) + 1)
+                Return New List(Of S_Parameter)({Parameter})
+            End If
 
         End If
 

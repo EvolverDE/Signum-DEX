@@ -613,6 +613,8 @@ Public Class PFPForm
         ResetLVColumns()
         ForceReload = True
 
+        'Dim Currencies As List(Of String) = New List(Of String)({"AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"})
+
         Dim Currency_Day_TickList As List(Of List(Of String)) = GetTCPAPICurrencyDaysTicks()
 
         Dim GetCandlesInfo As String = ""
@@ -622,8 +624,6 @@ Public Class PFPForm
 
         GetCandlesInfo = GetCandlesInfo.Remove(GetCandlesInfo.Length - 1)
         GetCandlesInfo += ""
-
-
 
         Dim DEXAPIInfo As String = ""
         'DEXAPIInfo += "{""openapi"":""3.0.3"","
@@ -658,14 +658,31 @@ Public Class PFPForm
         DEXAPIInfo += "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""Info"","
         DEXAPIInfo += """requests"":{"
         DEXAPIInfo += """Info"":{""method"":""GET"",""description"":""shows this info"",""queryExample"":""/API/v1/Info""},"
-        DEXAPIInfo += """Candles"":[{""method"":""GET"",""description"":""response candleentries for chart plotting"",""queryExample"":""/API/v1/Candles/USD_SIGNA?days=3&tickmin=15""},"
+        DEXAPIInfo += """Candles"":[{""method"":""GET"",""description"":""response candleentries for chart plotting"",""queryExample"":""/API/v1/Candles/USD_SIGNA?days=3&tickmin=60""},"
         DEXAPIInfo += GetCandlesInfo
         DEXAPIInfo += "],"
-        DEXAPIInfo += """Orders(GET)"":{""method"":""GET"",""description"":""shows the list of open orders"",""queryExample"":""/API/v1/Orders""},"
-        DEXAPIInfo += """Orders(POST)"":{""method"":""POST"",""description"":""accepts an order with the responders publickey"",""queryExample"":""/API/v1/Orders/{id or address}&PublicKey={32 bytes in Hex}""},"
-        DEXAPIInfo += """Bitcoin(GET)"":{""method"":""GET"",""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1/Bitcoin/Transaction/{32 bytes in Hex}?BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress={27 to 34 chars}&privateKey={32 bytes in Hex (NOT RECOMMENDED)}&BitcoinRecipientAddress={27 to 34 chars}&BitcoinChainSwapHash={32 bytes in Hex}&BitcoinAmountNQT={unsigned long}""},"
-        DEXAPIInfo += """Bitcoin(POST)"":{""method"":""POST"",""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1/Bitcoin/Transaction"",""bodyExample"":{""inputs"":[{""transaction"":""{32 bytes in Hex}"",""index"":0,""script"":""{hex string}"",""privateKey"":""{32 bytes in Hex (NOT RECOMMENDED)}"",""address"":""{32 bytes in Hex}""}],""outputs"":[{""type"":""TimeLockChainSwapHash"",""recipient"":""{27 to 34 chars}"",""change"":""{27 to 34 chars}"",""chainSwapHash"":""{32 bytes in Hex}"",""amount"":0.00001234}]}}"
-        DEXAPIInfo += "}}"
+
+
+        DEXAPIInfo += """Orders"":[{""command"":""show"",""method"":""GET"",""description"":""shows the list of open orders"",""queryExample"":""/API/v1/Orders""},"
+
+        DEXAPIInfo += "{""command"":""create"",""method"":""GET,POST"",""description"":""creates a new order on a contract"","
+        DEXAPIInfo += """queryExample"":""/API/v1/Orders{/id or address (OPTIONAL)}?PublicKey={32 bytes in Hex}&Type=SellOrder&AmountNQT={unsigned long}&CollateralNQT={unsigned long}&XAmountNQT={unsigned long}&XItem=USD"","
+        DEXAPIInfo += """queryExample2"":""/API/v1/Orders{/id or address (OPTIONAL)}?PassPhrase={string (NOT RECOMMENDED)}&Type=SellOrder&AmountNQT={unsigned long}&CollateralNQT={unsigned long}&XAmountNQT={unsigned long}&XItem=USD""},"
+
+        DEXAPIInfo += "{""command"":""create"",""method"":""POST"",""description"":""creates a new order on a contract"","
+        DEXAPIInfo += """queryExample"":""/API/v1/Orders"","
+        DEXAPIInfo += """bodyExample"":{""contract"":""{id or address (OPTIONAL)}"",""type"":""SellOrder"",""passPhrase"":""{string (NOT RECOMMENDED)} (Optional)"",""publicKey"":""{32 bytes in Hex}"",""amountNQT"":""{unsigned long}"",""collateralNQT"":""{unsigned long}"",""xAmountNQT"":""{unsigned long}"",""xItem"":""USD""}},"
+
+        DEXAPIInfo += "{""command"":""accept"",""method"":""GET,POST"",""description"":""accepts an order"","
+        DEXAPIInfo += """queryExample"":""/API/v1/Orders/{id or address}?PublicKey={32 bytes in Hex}"","
+        DEXAPIInfo += """queryExample2"":""/API/v1/Orders/{id or address}?PassPhrase={string (NOT RECOMMENDED)}""}"
+
+        DEXAPIInfo += "],"
+
+
+        DEXAPIInfo += """Bitcoin"":[{""command"":""create"",""method"":""GET,POST"",""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1/Bitcoin/Transaction/{32 bytes in Hex}?BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress={27 to 34 chars}&privateKey={32 bytes in Hex (NOT RECOMMENDED)}&BitcoinRecipientAddress={27 to 34 chars}&BitcoinChainSwapHash={32 bytes in Hex}&BitcoinAmountNQT={unsigned long}""},"
+        DEXAPIInfo += "{""command"":""create"",""method"":""POST"",""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1/Bitcoin/Transaction"",""bodyExample"":{""inputs"":[{""transaction"":""{32 bytes in Hex}"",""index"":0,""script"":""{hex string}"",""privateKey"":""{32 bytes in Hex (NOT RECOMMENDED)}"",""address"":""{32 bytes in Hex}""}],""outputs"":[{""type"":""TimeLockChainSwapHash"",""recipient"":""{27 to 34 chars}"",""change"":""{27 to 34 chars}"",""chainSwapHash"":""{32 bytes in Hex}"",""amount"":0.00001234}]}}"
+        DEXAPIInfo += "]}}"
 
         Dim DEXAPIGetInfoResponse As ClsTCPAPI.API_Response = New ClsTCPAPI.API_Response
         DEXAPIGetInfoResponse.API_Interface = "API"
@@ -7608,11 +7625,11 @@ Public Class PFPForm
 
         Try
 
-            '"AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"
+            'Dim Currencies As List(Of String) = New List(Of String)({"AUD", "BRL", "BTC", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"})
             'CoBxChart.Items.AddRange({1, 3, 7, 15, 30})
             'CoBxTick.Items.AddRange({1, 5, 15, 30, 60, 360, 720})
 
-            Dim Currency_Day_TickList As List(Of List(Of String)) = GetTCPAPICurrencyDaysTicks()
+            Dim Currency_Day_TickList As List(Of List(Of String)) = GetTCPAPICurrencyDaysTicks(SupportedCurrencies)
 
             Try
 
@@ -7624,7 +7641,7 @@ Public Class PFPForm
 
                     Dim ViewThread As Threading.Thread = New Threading.Thread(AddressOf LoadTCPAPIHistory)
                     ViewThread.Start(New List(Of Object)({Curr, OrderList, Day.ToString, Tick.ToString}))
-                    Threading.Thread.Sleep(10)
+                    'Threading.Thread.Sleep(10)
                 Next
 
             Catch ex As Exception
@@ -7674,7 +7691,7 @@ Public Class PFPForm
 
 
             Dim Days As List(Of Integer) = New List(Of Integer)({1})
-            Dim TickMins As List(Of Integer) = New List(Of Integer)({5, 15, 30, 60, 360, 720})
+            Dim TickMins As List(Of Integer) = New List(Of Integer)({5, 15, 30})
 
             For Each Cur As String In Currencys
 
@@ -7692,7 +7709,7 @@ Public Class PFPForm
             Next
 
             Days = New List(Of Integer)({3})
-            TickMins = New List(Of Integer)({15, 30, 60, 360, 720})
+            TickMins = New List(Of Integer)({60, 360, 720})
 
 
             For Each Cur As String In Currencys
@@ -7712,7 +7729,7 @@ Public Class PFPForm
 
 
             Days = New List(Of Integer)({7})
-            TickMins = New List(Of Integer)({30, 60, 360, 720})
+            TickMins = New List(Of Integer)({360, 720})
 
 
             For Each Cur As String In Currencys
@@ -7732,7 +7749,7 @@ Public Class PFPForm
 
 
             Days = New List(Of Integer)({15, 30})
-            TickMins = New List(Of Integer)({60, 360, 720})
+            TickMins = New List(Of Integer)({360, 720})
 
             For Each Cur As String In Currencys
 

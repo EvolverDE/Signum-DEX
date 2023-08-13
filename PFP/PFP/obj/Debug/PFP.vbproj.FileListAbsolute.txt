@@ -3,7 +3,6 @@ C:\Current_Development\Signum\Signum\PFP\PFP\bin\Debug\PFP.exe
 C:\Current_Development\Signum\Signum\PFP\PFP\bin\Debug\PFP.pdb
 C:\Current_Development\Signum\Signum\PFP\PFP\bin\Debug\PFP.xml
 C:\Current_Development\Signum\Signum\PFP\PFP\obj\Debug\PFP.vbproj.AssemblyReference.cache
-C:\Current_Development\Signum\Signum\PFP\PFP\obj\Debug\PFP.vbproj.SuggestedBindingRedirects.cache
 C:\Current_Development\Signum\Signum\PFP\PFP\obj\Debug\PFP.PFPForm.resources
 C:\Current_Development\Signum\Signum\PFP\PFP\obj\Debug\PFP.FrmBitcoinAccounts.resources
 C:\Current_Development\Signum\Signum\PFP\PFP\obj\Debug\PFP.FrmEnterPIN.resources

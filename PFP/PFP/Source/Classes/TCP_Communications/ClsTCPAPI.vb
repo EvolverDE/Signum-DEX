@@ -293,6 +293,442 @@ Public Class ClsTCPAPI
                             Select Case APIRequest.Endpoint
                                 Case ClsAPIRequest.E_Endpoint.Bitcoin
 
+                                    If APIRequest.Parameters.Count > 0 Then
+
+                                        Dim Inputs As List(Of String) = New List(Of String)
+                                        Dim PrivateKeys As List(Of ClsTransaction.S_PrivateKey) = New List(Of ClsTransaction.S_PrivateKey)
+                                        Dim SenderAddresses As List(Of ClsTransaction.S_Address) = New List(Of ClsTransaction.S_Address)
+                                        Dim RecipientAddress As String = ""
+                                        Dim ChainSwapHash As String = ""
+                                        Dim Amount As Double = 0.0
+
+                                        For Each Parameter As ClsAPIRequest.S_Parameter In APIRequest.Parameters
+
+                                            Select Case Parameter.Parameter
+                                                Case ClsAPIRequest.E_Parameter.Inputs
+
+                                                    If Parameter.Value.Contains(",") Then
+                                                        Inputs.AddRange(Parameter.Value.Split(","c))
+                                                    Else
+                                                        Inputs.Add(Parameter.Value)
+                                                    End If
+
+                                                Case ClsAPIRequest.E_Parameter.Sender
+
+                                                    If Parameter.Value.Contains(",") Then
+
+                                                        Dim T_Addresses As List(Of String) = New List(Of String)(Parameter.Value.Split(","c))
+
+                                                        For Each T_Address As String In T_Addresses
+                                                            SenderAddresses.Add(New ClsTransaction.S_Address(T_Address))
+                                                        Next
+
+                                                    Else
+                                                        SenderAddresses.Add(New ClsTransaction.S_Address(Parameter.Value))
+                                                    End If
+
+                                                Case ClsAPIRequest.E_Parameter.PrivateKey
+
+                                                    Dim T_PKCSK As ClsTransaction.S_PrivateKey = New ClsTransaction.S_PrivateKey(,)
+
+                                                    If Parameter.Value.Contains(",") Then
+
+                                                        Dim T_Privatekeys As List(Of String) = New List(Of String)(Parameter.Value.Split(","c))
+
+                                                        For Each T_PrivateKey As String In T_Privatekeys
+                                                            PrivateKeys.Add(New ClsTransaction.S_PrivateKey(T_PrivateKey))
+                                                        Next
+                                                    Else
+                                                        PrivateKeys.Add(New ClsTransaction.S_PrivateKey(Parameter.Value))
+                                                    End If
+
+                                                Case ClsAPIRequest.E_Parameter.Recipient
+                                                    RecipientAddress = Parameter.Value
+
+                                                Case ClsAPIRequest.E_Parameter.ChainSwapHash
+                                                    ChainSwapHash = Parameter.Value
+
+                                                Case ClsAPIRequest.E_Parameter.AmountNQT
+
+                                                    If IsNumeric(Parameter.Value) Then
+                                                        Amount = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(Parameter.Value))
+                                                    End If
+
+                                            End Select
+
+                                        Next
+
+                                        If SenderAddresses.Count = 0 And PrivateKeys.Count > 0 Then
+                                            For Each T_PrivateKey As ClsTransaction.S_PrivateKey In PrivateKeys
+                                                Dim T_Address As ClsTransaction.S_Address = New ClsTransaction.S_Address()
+                                                T_Address.Address = (PrivKeyToPubKey(T_PrivateKey.PrivateKey))
+                                                T_Address.ChainSwapKey = If(T_PrivateKey.ChainSwapKey.Trim() = "", False, True)
+                                                SenderAddresses.Add(T_Address)
+                                            Next
+                                        End If
+
+                                        If SenderAddresses.Count > 0 And PrivateKeys.Count = 0 Then
+
+                                            Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(Inputs, SenderAddresses, "")
+                                            BitcoinTransaction.CreateOutput(RecipientAddress, ChainSwapHash, SenderAddresses(0).Address, Amount)
+                                            BitcoinTransaction.FinalizingOutputs()
+
+                                            Dim JSONExport As String = "{""inputs"":["
+
+                                            For Each Inpu As ClsUnspentOutput In BitcoinTransaction.Inputs
+                                                JSONExport += "{"
+                                                JSONExport += """transactionId"":""" + Inpu.TransactionID + ""","
+                                                JSONExport += """index"":" + Inpu.InputIndex.ToString() + ","
+                                                JSONExport += """addresses"":""" + Inpu.GetAddressesString + ""","
+                                                JSONExport += """type"":""" + Inpu.OutputType.ToString() + ""","
+                                                JSONExport += """script"":""" + Inpu.GetScriptString + ""","
+                                                JSONExport += """scriptHex"":""" + Inpu.ScriptHex + ""","
+                                                JSONExport += """scriptHash"":""" + Inpu.ScriptHash + ""","
+                                                JSONExport += """amount"":" + String.Format("{0:#0.00000000}", ClsSignumAPI.Planck2Dbl(Inpu.AmountNQT)).Replace(",", ".") + ","
+                                                JSONExport += """spendable"":" + Inpu.Spendable.ToString().ToLower() + ","
+                                                JSONExport += """unsignedInput"":""" + Inpu.UnsignedTransactionHex + """"
+                                                JSONExport += "},"
+                                            Next
+
+                                            If BitcoinTransaction.Inputs.Count > 0 Then
+                                                JSONExport = JSONExport.Remove(JSONExport.Length - 1)
+                                            End If
+
+                                            JSONExport += "],""outputs"":["
+
+                                            For i As Integer = 0 To BitcoinTransaction.Outputs.Count - 1
+
+                                                Dim Outpu As ClsOutput = BitcoinTransaction.Outputs(i)
+                                                JSONExport += "{"
+                                                JSONExport += """index"":" + i.ToString() + ","
+                                                JSONExport += """addresses"":""" + Outpu.GetAddressesString + ""","
+                                                JSONExport += """type"":""" + Outpu.OutputType.ToString() + ""","
+                                                JSONExport += """script"":""" + Outpu.GetScriptString + ""","
+                                                JSONExport += """scriptHex"":""" + Outpu.ScriptHex + ""","
+                                                JSONExport += """scriptHash"":""" + Outpu.ScriptHash + ""","
+                                                JSONExport += """amount"":" + String.Format("{0:#0.00000000}", ClsSignumAPI.Planck2Dbl(Outpu.AmountNQT)).Replace(",", ".") + ","
+                                                JSONExport += "},"
+
+                                            Next
+
+                                            If BitcoinTransaction.Outputs.Count > 0 Then
+                                                JSONExport = JSONExport.Remove(JSONExport.Length - 1)
+                                            End If
+
+                                            JSONExport += "]}"
+
+                                            ResponseHTML = JSONExport
+
+                                        End If
+
+                                        If SenderAddresses.Count > 0 And PrivateKeys.Count > 0 Then
+
+                                            Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(Inputs, SenderAddresses, "")
+                                            BitcoinTransaction.CreateOutput(RecipientAddress, ChainSwapHash, SenderAddresses(0).Address, Amount)
+                                            BitcoinTransaction.FinalizingOutputs()
+                                            BitcoinTransaction.SignTransaction(PrivateKeys)
+
+                                            Dim JSONExport As String = "{""inputs"":["
+
+                                            For Each Inpu As ClsUnspentOutput In BitcoinTransaction.Inputs
+                                                JSONExport += "{"
+                                                JSONExport += """transactionId"":""" + Inpu.TransactionID + ""","
+                                                JSONExport += """index"":" + Inpu.InputIndex.ToString() + ","
+                                                JSONExport += """addresses"":""" + Inpu.GetAddressesString + ""","
+                                                JSONExport += """type"":""" + Inpu.OutputType.ToString() + ""","
+                                                JSONExport += """script"":""" + Inpu.GetScriptString + ""","
+                                                JSONExport += """scriptHex"":""" + Inpu.ScriptHex + ""","
+                                                JSONExport += """scriptHash"":""" + Inpu.ScriptHash + ""","
+                                                JSONExport += """amount"":" + String.Format("{0:#0.00000000}", ClsSignumAPI.Planck2Dbl(Inpu.AmountNQT)).Replace(",", ".") + ","
+                                                JSONExport += """spendable"":" + Inpu.Spendable.ToString().ToLower() + ","
+                                                JSONExport += """unsignedInput"":""" + Inpu.UnsignedTransactionHex + """"
+                                                JSONExport += "},"
+                                            Next
+
+                                            If BitcoinTransaction.Inputs.Count > 0 Then
+                                                JSONExport = JSONExport.Remove(JSONExport.Length - 1)
+                                            End If
+
+                                            JSONExport += "],""outputs"":["
+
+                                            For i As Integer = 0 To BitcoinTransaction.Outputs.Count - 1
+
+                                                Dim Outpu As ClsOutput = BitcoinTransaction.Outputs(i)
+                                                JSONExport += "{"
+                                                JSONExport += """index"":" + i.ToString() + ","
+                                                JSONExport += """addresses"":""" + Outpu.GetAddressesString + ""","
+                                                JSONExport += """type"":""" + Outpu.OutputType.ToString() + ""","
+                                                JSONExport += """script"":""" + Outpu.GetScriptString + ""","
+                                                JSONExport += """scriptHex"":""" + Outpu.ScriptHex + ""","
+                                                JSONExport += """scriptHash"":""" + Outpu.ScriptHash + ""","
+                                                JSONExport += """amount"":" + String.Format("{0:#0.00000000}", ClsSignumAPI.Planck2Dbl(Outpu.AmountNQT)).Replace(",", ".") + ","
+                                                JSONExport += "},"
+                                            Next
+
+                                            If BitcoinTransaction.Outputs.Count > 0 Then
+                                                JSONExport = JSONExport.Remove(JSONExport.Length - 1)
+                                            End If
+
+                                            JSONExport += "], ""signedTransaction"": """ + BitcoinTransaction.SignedTransactionHEX + """}"
+
+                                            ResponseHTML = JSONExport
+
+                                        End If
+
+                                    End If
+
+                                Case ClsAPIRequest.E_Endpoint.Orders
+
+                                    If APIRequest.Parameters.Count > 0 Then
+                                        'use Parameters
+
+                                        Dim OrderID As String = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.OrderID).Value
+
+                                        If Not IsNothing(OrderID) Then
+                                            If Not IsNumeric(OrderID) Then
+                                                OrderID = ClsReedSolomon.Decode(OrderID).ToString()
+                                            End If
+                                        Else
+                                            OrderID = ""
+                                        End If
+
+                                        Dim PassPhrase As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PassPhrase).Value
+                                        Dim PublicKey As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PublicKey).Value
+                                        If IsNothing(PublicKey) Then PublicKey = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.SenderPublicKey).Value
+
+                                        Dim Type As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.Type).Value
+                                        Dim AmountNQT As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.AmountNQT).Value
+                                        Dim XAmountNQT As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.XAmountNQT).Value
+                                        Dim CollateralNQT As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.CollateralNQT).Value
+                                        Dim XItem As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.XItem).Value
+
+                                        If IsNothing(Type) Then Type = ""
+                                        If IsNothing(AmountNQT) Then AmountNQT = ""
+                                        If IsNothing(XAmountNQT) Then XAmountNQT = ""
+                                        If IsNothing(CollateralNQT) Then CollateralNQT = ""
+                                        If IsNothing(XItem) Then
+                                            XItem = ""
+                                        ElseIf Not SupportedCurrencies.Contains(XItem) Then
+                                            XItem = ""
+                                        End If
+
+                                        Dim Masterkeys As List(Of String) = New List(Of String)
+                                        If Not IsNothing(PassPhrase) Then
+                                            Masterkeys = GetMasterKeys(PassPhrase)
+                                            PublicKey = Masterkeys(0)
+
+                                        Else
+                                            If IsNothing(PublicKey) Then PublicKey = ""
+                                            PassPhrase = ""
+                                        End If
+
+                                        If Not OrderID = "" And PassPhrase = "" And Not PublicKey = "" And Type = "" And AmountNQT = "" And CollateralNQT = "" And XAmountNQT = "" And XItem = "" Then
+                                            'Accept
+                                            If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
+                                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                    If T_DEXContract.ID.ToString() = OrderID Then
+                                                        'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
+                                                        'publickey = 6FBE5B0C2A6BA726 12702795B2E25061 6C367BD8B28F965A 36CD59DD13D09A51
+
+                                                        If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
+                                                            Dim T_UnsignedTransactionBytes As String = T_DEXContract.AcceptSellOrder(PublicKey)
+
+                                                            If T_UnsignedTransactionBytes.Contains("errorCode") Then
+                                                                ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
+                                                            ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
+
+                                                            Else
+                                                                '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                                ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+
+                                                            End If
+
+                                                        End If
+
+                                                    End If
+                                                Next
+
+                                            End If
+
+                                        ElseIf Not OrderID = "" And Not PassPhrase = "" And Not PublicKey = "" And Type = "" And AmountNQT = "" And CollateralNQT = "" And XAmountNQT = "" And XItem = "" Then
+                                            'Accept + Sign
+                                            If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
+                                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                    If T_DEXContract.ID.ToString() = OrderID Then
+
+                                                        If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
+                                                            Dim T_TransactionID As String = T_DEXContract.AcceptSellOrder(PublicKey,,, Masterkeys(1))
+
+                                                            If T_TransactionID.Contains("errorCode") Then
+                                                                ResponseHTML = T_TransactionID.Substring(T_TransactionID.IndexOf("->") + 2).Trim
+                                                            ElseIf T_TransactionID.Contains(Application.ProductName + "-error") Then
+
+                                                            Else
+                                                                '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                                ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
+                                                            End If
+
+                                                        End If
+
+                                                    End If
+                                                Next
+
+                                            End If
+
+                                        ElseIf Not OrderID = "" And PassPhrase = "" And Not PublicKey = "" And Not Type = "" And Not AmountNQT = "" And Not CollateralNQT = "" And Not XAmountNQT = "" And Not XItem = "" Then
+                                            'Create
+                                            If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 And SupportedCurrencies.Contains(XItem) Then
+
+                                                Dim Amount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(AmountNQT))
+                                                Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+                                                Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+
+                                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                    If T_DEXContract.ID.ToString() = OrderID And (T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey))) Then
+
+                                                        Dim T_UnsignedTransactionBytes As String = T_DEXContract.CreateSellOrder(PublicKey, Amount, Collateral, XItem, XAmount, 0.0)
+
+                                                        If T_UnsignedTransactionBytes.Contains("errorCode") Then
+                                                            ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
+                                                        ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
+
+                                                        Else
+                                                            '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                        End If
+
+                                                    End If
+                                                Next
+
+                                            End If
+
+                                        ElseIf OrderID = "" And PassPhrase = "" And Not PublicKey = "" And Not Type = "" And Not AmountNQT = "" And Not CollateralNQT = "" And Not XAmountNQT = "" And Not XItem = "" Then
+                                            'Create
+                                            If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 And SupportedCurrencies.Contains(XItem) Then
+
+                                                Dim Amount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(AmountNQT))
+                                                Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+                                                Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(XAmountNQT))
+
+                                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                    If T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey)) Then
+
+                                                        Dim T_UnsignedTransactionBytes As String = T_DEXContract.CreateSellOrder(PublicKey, Amount, Collateral, XItem, XAmount, 0.0)
+
+                                                        If T_UnsignedTransactionBytes.Contains("errorCode") Then
+                                                            ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
+                                                        ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
+
+                                                        Else
+                                                            '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                            Exit For
+                                                        End If
+
+                                                    End If
+                                                Next
+
+                                            End If
+
+                                        ElseIf Not OrderID = "" And Not PassPhrase = "" And Not PublicKey = "" And Not Type = "" And Not AmountNQT = "" And Not CollateralNQT = "" And Not XAmountNQT = "" And Not XItem = "" Then
+                                            'Create + Sign
+                                            If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 And SupportedCurrencies.Contains(XItem) Then
+
+                                                Dim Amount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(AmountNQT))
+                                                Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+                                                Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+
+                                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                    If T_DEXContract.ID.ToString() = OrderID And (T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey))) Then
+
+                                                        Dim T_TransactionID As String = T_DEXContract.CreateSellOrder(Masterkeys(0), Amount, Collateral, XItem, XAmount, 0.0, Masterkeys(1))
+
+                                                        If T_TransactionID.Contains("errorCode") Then
+                                                            ResponseHTML = T_TransactionID.Substring(T_TransactionID.IndexOf("->") + 2).Trim
+                                                        ElseIf T_TransactionID.Contains(Application.ProductName + "-error") Then
+
+                                                        Else
+                                                            '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
+                                                        End If
+
+                                                    End If
+                                                Next
+
+                                            End If
+
+                                        ElseIf OrderID = "" And Not PassPhrase = "" And Not PublicKey = "" And Not Type = "" And Not AmountNQT = "" And Not CollateralNQT = "" And Not XAmountNQT = "" And Not XItem = "" Then
+                                            'Create + Sign
+                                            If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 And SupportedCurrencies.Contains(XItem) Then
+
+                                                Dim Amount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(AmountNQT))
+                                                Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+                                                Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+
+                                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                    If T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey)) Then
+
+                                                        Dim T_TransactionID As String = T_DEXContract.CreateSellOrder(Masterkeys(0), Amount, Collateral, XItem, XAmount, 0.0, Masterkeys(1))
+
+                                                        If T_TransactionID.Contains("errorCode") Then
+                                                            ResponseHTML = T_TransactionID.Substring(T_TransactionID.IndexOf("->") + 2).Trim
+                                                        ElseIf T_TransactionID.Contains(Application.ProductName + "-error") Then
+
+                                                        Else
+                                                            '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
+                                                            Exit For
+                                                        End If
+
+                                                    End If
+                                                Next
+
+                                            End If
+
+                                        End If
+
+                                    End If
+
+                            End Select
+
+                        End If
+
+                    ElseIf APIRequest.Method = ClsAPIRequest.E_Method.HTTP_POST Then
+
+#Region "POST request template"
+
+                        '### Chrome ###
+                        '		(0)	"POST /GetCandles HTTP/1.1"	String
+                        '		(1)	"Host: localhost:8130"	String
+                        '		(2)	"Connection: keep-alive"	String
+                        '		(3)	"Content-Length: 30"	String
+                        '		(4)	"Cache-Control: max-age=0"	String
+                        '		(5)	"sec-ch-ua: "" Not A;Brand"";v=""99"", ""Chromium"";v=""90"", ""Google Chrome"";v=""90"""	String
+                        '		(6)	"sec-ch-ua-mobile: ?0"	String
+                        '		(7)	"Upgrade-Insecure-Requests: 1"	String
+                        '		(8)	"Origin: http://localhost:8130"	String
+                        '		(9)	"Content-Type: application/x-www-form-urlencoded"	String
+                        '		(10)	"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"	String
+                        '		(11)	"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"	String
+                        '		(12)	"Sec-Fetch-Site: same-origin"	String
+                        '		(13)	"Sec-Fetch-Mode: navigate"	String
+                        '		(14)	"Sec-Fetch-User: ?1"	String
+                        '		(15)	"Sec-Fetch-Dest: document"	String
+                        '		(16)	"Referer: http://localhost:8130/"	String
+                        '		(17)	"Accept-Encoding: gzip, deflate, br"	String
+                        '		(18)	"Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7"	String
+                        '		(19)	""	String
+                        '		(20)	"APIUser=apimann&APIKey=apipass"	String
+
+#End Region
+
+                        Select Case APIRequest.Endpoint
+
+                            Case ClsAPIRequest.E_Endpoint.Bitcoin
+
+                                If APIRequest.Parameters.Count > 0 Then
+                                    'use Parameters
+
                                     Dim Inputs As List(Of String) = New List(Of String)
                                     Dim PrivateKeys As List(Of ClsTransaction.S_PrivateKey) = New List(Of ClsTransaction.S_PrivateKey)
                                     Dim SenderAddresses As List(Of ClsTransaction.S_Address) = New List(Of ClsTransaction.S_Address)
@@ -356,7 +792,6 @@ Public Class ClsTCPAPI
 
                                     Next
 
-
                                     If SenderAddresses.Count = 0 And PrivateKeys.Count > 0 Then
                                         For Each T_PrivateKey As ClsTransaction.S_PrivateKey In PrivateKeys
                                             Dim T_Address As ClsTransaction.S_Address = New ClsTransaction.S_Address()
@@ -365,7 +800,6 @@ Public Class ClsTCPAPI
                                             SenderAddresses.Add(T_Address)
                                         Next
                                     End If
-
 
                                     If SenderAddresses.Count > 0 And PrivateKeys.Count = 0 Then
 
@@ -474,100 +908,6 @@ Public Class ClsTCPAPI
                                         ResponseHTML = JSONExport
 
                                     End If
-
-                                Case ClsAPIRequest.E_Endpoint.Transaction
-
-                            End Select
-
-                        End If
-
-                    ElseIf APIRequest.Method = ClsAPIRequest.E_Method.HTTP_POST Then
-
-#Region "POST request template"
-
-                        '### Chrome ###
-                        '		(0)	"POST /GetCandles HTTP/1.1"	String
-                        '		(1)	"Host: localhost:8130"	String
-                        '		(2)	"Connection: keep-alive"	String
-                        '		(3)	"Content-Length: 30"	String
-                        '		(4)	"Cache-Control: max-age=0"	String
-                        '		(5)	"sec-ch-ua: "" Not A;Brand"";v=""99"", ""Chromium"";v=""90"", ""Google Chrome"";v=""90"""	String
-                        '		(6)	"sec-ch-ua-mobile: ?0"	String
-                        '		(7)	"Upgrade-Insecure-Requests: 1"	String
-                        '		(8)	"Origin: http://localhost:8130"	String
-                        '		(9)	"Content-Type: application/x-www-form-urlencoded"	String
-                        '		(10)	"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"	String
-                        '		(11)	"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"	String
-                        '		(12)	"Sec-Fetch-Site: same-origin"	String
-                        '		(13)	"Sec-Fetch-Mode: navigate"	String
-                        '		(14)	"Sec-Fetch-User: ?1"	String
-                        '		(15)	"Sec-Fetch-Dest: document"	String
-                        '		(16)	"Referer: http://localhost:8130/"	String
-                        '		(17)	"Accept-Encoding: gzip, deflate, br"	String
-                        '		(18)	"Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7"	String
-                        '		(19)	""	String
-                        '		(20)	"APIUser=apimann&APIKey=apipass"	String
-
-#End Region
-
-                        Select Case APIRequest.Endpoint
-
-                            Case ClsAPIRequest.E_Endpoint.Orders
-
-                                If APIRequest.Parameters.Count > 0 Then
-                                    'use Parameters
-
-                                    Dim PublicKey As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.SenderPublicKey).Value
-
-                                    If IsNothing(PublicKey) Then PublicKey = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PublicKey).Value
-
-                                    Dim OrderID As String = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.OrderID).Value
-
-                                    If Not IsNumeric(OrderID) Then
-                                        OrderID = ClsReedSolomon.Decode(OrderID).ToString()
-                                    End If
-
-                                    If Not IsNothing(PublicKey) And Not IsNothing(OrderID) Then
-
-                                        If Not OrderID Is Nothing And MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
-                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
-                                                If T_DEXContract.ID.ToString() = OrderID Then
-                                                    'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
-                                                    'publickey = 6FBE5B0C2A6BA726 12702795B2E25061 6C367BD8B28F965A 36CD59DD13D09A51
-                                                    'http://127.0.0.1:8130/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
-
-                                                    If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
-                                                        Dim T_UnsignedTransactionBytes As String = T_DEXContract.AcceptSellOrder(PublicKey)
-
-                                                        If T_UnsignedTransactionBytes.Contains("errorCode") Then
-                                                            ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
-                                                        ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
-
-                                                        Else
-                                                            '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
-                                                        End If
-
-                                                    End If
-
-                                                End If
-                                            Next
-
-                                        End If
-
-                                    End If
-
-                                Else
-                                    'check Body
-
-
-
-                                End If
-
-                            Case ClsAPIRequest.E_Endpoint.Bitcoin
-
-                                If APIRequest.Parameters.Count > 0 Then
-                                    'use Parameters
 
                                 Else
                                     'check Body
@@ -819,70 +1159,313 @@ Public Class ClsTCPAPI
 
                                 End If
 
-                            Case ClsAPIRequest.E_Endpoint.Transaction
+                            Case ClsAPIRequest.E_Endpoint.Orders
 
                                 If APIRequest.Parameters.Count > 0 Then
                                     'use Parameters
 
+                                    Dim OrderID As String = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.OrderID).Value
+
+                                    If Not IsNothing(OrderID) Then
+                                        If Not IsNumeric(OrderID) Then
+                                            OrderID = ClsReedSolomon.Decode(OrderID).ToString()
+                                        End If
+                                    Else
+                                        OrderID = ""
+                                    End If
+
+                                    Dim PassPhrase As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PassPhrase).Value
+                                    Dim PublicKey As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PublicKey).Value
+                                    If IsNothing(PublicKey) Then PublicKey = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.SenderPublicKey).Value
+
+                                    Dim Type As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.Type).Value
+                                    Dim AmountNQT As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.AmountNQT).Value
+                                    Dim XAmountNQT As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.XAmountNQT).Value
+                                    Dim CollateralNQT As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.CollateralNQT).Value
+                                    Dim XItem As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.XItem).Value
+
+                                    If IsNothing(Type) Then Type = ""
+                                    If IsNothing(AmountNQT) Then AmountNQT = ""
+                                    If IsNothing(XAmountNQT) Then XAmountNQT = ""
+                                    If IsNothing(CollateralNQT) Then CollateralNQT = ""
+                                    If IsNothing(XItem) Then
+                                        XItem = ""
+                                    ElseIf Not SupportedCurrencies.Contains(XItem) Then
+                                        XItem = ""
+                                    End If
+
+                                    Dim Masterkeys As List(Of String) = New List(Of String)
+                                    If Not IsNothing(PassPhrase) Then
+                                        Masterkeys = GetMasterKeys(PassPhrase)
+                                        PublicKey = Masterkeys(0)
+                                    Else
+                                        If IsNothing(PublicKey) Then PublicKey = ""
+                                        PassPhrase = ""
+                                    End If
+
+                                    If Not OrderID = "" And PassPhrase = "" And Not PublicKey = "" And Type = "" And AmountNQT = "" And CollateralNQT = "" And XAmountNQT = "" And XItem = "" Then
+                                        'Accept
+                                        If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                If T_DEXContract.ID.ToString() = OrderID Then
+                                                    'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
+                                                    'publickey = 6FBE5B0C2A6BA726 12702795B2E25061 6C367BD8B28F965A 36CD59DD13D09A51
+
+                                                    If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
+                                                        Dim T_UnsignedTransactionBytes As String = T_DEXContract.AcceptSellOrder(PublicKey)
+
+                                                        If T_UnsignedTransactionBytes.Contains("errorCode") Then
+                                                            ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
+                                                        ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
+
+                                                        Else
+                                                            '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+
+                                                        End If
+
+                                                    End If
+
+                                                End If
+                                            Next
+
+                                        End If
+
+                                    ElseIf Not OrderID = "" And Not PassPhrase = "" And Not PublicKey = "" And Type = "" And AmountNQT = "" And CollateralNQT = "" And XAmountNQT = "" And XItem = "" Then
+                                        'Accept + Sign
+                                        If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                If T_DEXContract.ID.ToString() = OrderID Then
+
+                                                    If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
+                                                        Dim T_TransactionID As String = T_DEXContract.AcceptSellOrder(PublicKey,,, Masterkeys(1))
+
+                                                        If T_TransactionID.Contains("errorCode") Then
+                                                            ResponseHTML = T_TransactionID.Substring(T_TransactionID.IndexOf("->") + 2).Trim
+                                                        ElseIf T_TransactionID.Contains(Application.ProductName + "-error") Then
+
+                                                        Else
+                                                            '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
+                                                        End If
+
+                                                    End If
+
+                                                End If
+                                            Next
+
+                                        End If
+
+                                    ElseIf Not OrderID = "" And PassPhrase = "" And Not PublicKey = "" And Not Type = "" And Not AmountNQT = "" And Not CollateralNQT = "" And Not XAmountNQT = "" And Not XItem = "" Then
+                                        'Create
+                                        If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 And SupportedCurrencies.Contains(XItem) Then
+
+                                            Dim Amount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(AmountNQT))
+                                            Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+                                            Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                If T_DEXContract.ID.ToString() = OrderID And (T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey))) Then
+
+                                                    Dim T_UnsignedTransactionBytes As String = T_DEXContract.CreateSellOrder(Masterkeys(0), Amount, Collateral, XItem, XAmount, 0.0)
+
+                                                    If T_UnsignedTransactionBytes.Contains("errorCode") Then
+                                                        ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
+                                                    ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
+
+                                                    Else
+                                                        '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                    End If
+
+                                                End If
+                                            Next
+
+                                        End If
+
+                                    ElseIf OrderID = "" And PassPhrase = "" And Not PublicKey = "" And Not Type = "" And Not AmountNQT = "" And Not CollateralNQT = "" And Not XAmountNQT = "" And Not XItem = "" Then
+                                        'Create
+                                        If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 And SupportedCurrencies.Contains(XItem) Then
+
+                                            Dim Amount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(AmountNQT))
+                                            Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+                                            Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(XAmountNQT))
+
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                If T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey)) Then
+
+                                                    Dim T_UnsignedTransactionBytes As String = T_DEXContract.CreateSellOrder(PublicKey, Amount, Collateral, XItem, XAmount, 0.0)
+
+                                                    If T_UnsignedTransactionBytes.Contains("errorCode") Then
+                                                        ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
+                                                    ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
+
+                                                    Else
+                                                        '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                        Exit For
+                                                    End If
+
+                                                End If
+                                            Next
+
+                                        End If
+
+                                    ElseIf Not OrderID = "" And Not PassPhrase = "" And Not PublicKey = "" And Not Type = "" And Not AmountNQT = "" And Not CollateralNQT = "" And Not XAmountNQT = "" And Not XItem = "" Then
+                                        'Create + Sign
+                                        If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 And SupportedCurrencies.Contains(XItem) Then
+
+                                            Dim Amount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(AmountNQT))
+                                            Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+                                            Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                If T_DEXContract.ID.ToString() = OrderID And (T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey))) Then
+
+                                                    Dim T_TransactionID As String = T_DEXContract.CreateSellOrder(Masterkeys(0), Amount, Collateral, XItem, XAmount, 0.0, Masterkeys(1))
+
+                                                    If T_TransactionID.Contains("errorCode") Then
+                                                        ResponseHTML = T_TransactionID.Substring(T_TransactionID.IndexOf("->") + 2).Trim
+                                                    ElseIf T_TransactionID.Contains(Application.ProductName + "-error") Then
+
+                                                    Else
+                                                        '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
+                                                    End If
+
+                                                End If
+                                            Next
+
+                                        End If
+
+                                    ElseIf OrderID = "" And Not PassPhrase = "" And Not PublicKey = "" And Not Type = "" And Not AmountNQT = "" And Not CollateralNQT = "" And Not XAmountNQT = "" And Not XItem = "" Then
+                                        'Create + Sign
+                                        If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 And SupportedCurrencies.Contains(XItem) Then
+
+                                            Dim Amount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(AmountNQT))
+                                            Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+                                            Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
+
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                If T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey)) Then
+
+                                                    Dim T_TransactionID As String = T_DEXContract.CreateSellOrder(Masterkeys(0), Amount, Collateral, XItem, XAmount, 0.0, Masterkeys(1))
+
+                                                    If T_TransactionID.Contains("errorCode") Then
+                                                        ResponseHTML = T_TransactionID.Substring(T_TransactionID.IndexOf("->") + 2).Trim
+                                                    ElseIf T_TransactionID.Contains(Application.ProductName + "-error") Then
+
+                                                    Else
+                                                        '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
+                                                        Exit For
+                                                    End If
+
+                                                End If
+                                            Next
+
+                                        End If
+
+                                    End If
+
                                 Else
                                     'check Body
+                                    Dim OrderID As String = ""
+                                    Dim SellOrder As Boolean = True
+                                    Dim PublicKey As String = ""
+                                    Dim PassPhrase As String = ""
+                                    Dim SignHexKey As String = ""
+                                    Dim AmountNQT As String = ""
+                                    Dim CollateralNQT As String = ""
+                                    Dim XAmountNQT As String = ""
+                                    Dim XItem As String = ""
 
+                                    For Each BodyEntry As KeyValuePair(Of String, Object) In APIRequest.Body
 
+                                        Select Case BodyEntry.Key.ToLower()
+                                            Case "orderid"
+                                                OrderID = BodyEntry.Value.ToString()
+                                            Case "type"
+                                                If Not BodyEntry.Value.ToString() = "SellOrder" Then
+                                                    SellOrder = False
+                                                End If
+                                            Case "publickey"
+                                                PublicKey = BodyEntry.Value.ToString()
+                                            Case "passphrase"
+                                                PassPhrase = BodyEntry.Value.ToString()
+                                            Case "amountnqt"
+                                                AmountNQT = BodyEntry.Value.ToString()
+                                            Case "collateralnqt"
+                                                CollateralNQT = BodyEntry.Value.ToString()
+                                            Case "xamountnqt"
+                                                XAmountNQT = BodyEntry.Value.ToString()
+                                            Case "xitem"
+                                                XItem = BodyEntry.Value.ToString()
+                                        End Select
+
+                                    Next
+
+                                    Dim Masterkeys As List(Of String) = New List(Of String)
+                                    If Not PassPhrase = "" Then
+                                        Masterkeys = GetMasterKeys(PassPhrase)
+                                        PublicKey = Masterkeys(0)
+                                        SignHexKey = Masterkeys(1)
+                                    End If
+
+                                    Dim Amount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(If(AmountNQT = "", "0.0", AmountNQT)))
+                                    Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(If(CollateralNQT = "", "0.0", CollateralNQT)))
+                                    Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(If(XAmountNQT = "", "0.0", CollateralNQT)))
+
+                                    For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+
+                                        If OrderID = "" Then
+                                            If T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey)) Then
+
+                                                Dim T_Result As String = T_DEXContract.CreateSellOrder(PublicKey, Amount, Collateral, XItem, XAmount, 0.0, SignHexKey)
+
+                                                If T_Result.Contains("errorCode") Then
+                                                    ResponseHTML = T_Result.Substring(T_Result.IndexOf("->") + 2).Trim
+                                                ElseIf T_Result.Contains(Application.ProductName + "-error") Then
+
+                                                Else
+
+                                                    If SignHexKey.Trim() = "" Then
+                                                        '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_Result + """}}"
+                                                    Else
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""transaction"":""" + T_Result + """}}"
+                                                    End If
+
+                                                    Exit For
+                                                End If
+
+                                            End If
+                                        Else
+                                            If T_DEXContract.ID.ToString() = OrderID And T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey)) Then
+
+                                                Dim T_Result As String = T_DEXContract.CreateSellOrder(PublicKey, Amount, Collateral, XItem, XAmount, 0.0, SignHexKey)
+
+                                                If T_Result.Contains("errorCode") Then
+                                                    ResponseHTML = T_Result.Substring(T_Result.IndexOf("->") + 2).Trim
+                                                ElseIf T_Result.Contains(Application.ProductName + "-error") Then
+
+                                                Else
+
+                                                    If SignHexKey.Trim() = "" Then
+                                                        '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_Result + """}}"
+                                                    Else
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""transaction"":""" + T_Result + """}}"
+                                                    End If
+
+                                                End If
+
+                                            End If
+                                        End If
+
+                                    Next
 
                                 End If
-
-#Region "deprecaded"
-
-                                ''http://127.0.0.1:8130/API/v1.0/CreateBitcoinTransaction?BitcoinTransaction=8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957&BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinRecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&BitcoinChainSwapHash=abcdef&BitcoinAmountNQT=2120
-
-                                'Dim BTCInputTX As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinTransaction).Value
-                                'Dim BTCSender As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinSenderAddress).Value
-                                'Dim BTCRecipient As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinRecipientAddress).Value
-                                'Dim BTCAmountNQT As ULong = Convert.ToUInt64(APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinAmountNQT).Value)
-                                'Dim BTCTimeOut As Integer = Convert.ToInt32(APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinTimeOut).Value)
-                                'Dim BTCChainSwapHash As String = APIRequest.Parameters.FirstOrDefault(Function(c) c.Parameter = ClsAPIRequest.E_Parameter.BitcoinChainSwapHash).Value
-
-                                'Dim BTCTX As ClsTransaction = New ClsTransaction(BTCInputTX, BTCSender)
-                                'BTCTX.CreateOutput(BTCRecipient, BTCChainSwapHash, "", ClsSignumAPI.Planck2Dbl(BTCAmountNQT))
-
-                                'BTCTX.FinalizingOutputs()
-
-                                'Dim ResponseData As String = ""
-
-                                'ResponseData += """inputs"":["
-
-                                'For Each x As ClsUnspentOutput In BTCTX.Inputs
-                                '    ResponseData += "{"
-                                '    ResponseData += """TransactionID"":""" + x.TransactionID + ""","
-                                '    ResponseData += """OutputType"":""" + x.OutputType.ToString() + ""","
-                                '    ResponseData += """ScriptHex"":""" + x.ScriptHex + ""","
-                                '    ResponseData += """ScriptHash"":""" + x.ScriptHash + ""","
-                                '    ResponseData += """UnsignedTransactionHex"":""" + x.UnsignedTransactionHex + """"
-                                '    ResponseData += "},"
-                                'Next
-
-                                'ResponseData = ResponseData.Remove(ResponseData.Count - 1)
-                                'ResponseData += "],"
-
-                                'ResponseData += """outputs"":["
-
-                                'For Each x As ClsOutput In BTCTX.Outputs
-
-                                '    ResponseData += "{"
-                                '    ResponseData += """AmountNQT"":" + x.AmountNQT.ToString() + ","
-                                '    ResponseData += """OutputType"":""" + x.OutputType.ToString() + "(" + AbsClsOutputs.E_Type.ChainSwapHashWithLockTime.ToString() + ")"","
-                                '    ResponseData += """ScriptHex"":""" + x.ScriptHex + ""","
-                                '    ResponseData += """ScriptHash"":""" + x.ScriptHash + """"
-                                '    ResponseData += "},"
-                                'Next
-
-                                'ResponseData = ResponseData.Remove(ResponseData.Count - 1)
-
-                                'ResponseData += "]"
-
-                                'ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateBitcoinTransaction"",""data"":{" + ResponseData + "}}"
-
-#End Region
 
                         End Select
 
@@ -893,208 +1476,6 @@ Public Class ClsTCPAPI
                     SendHTMLResponse(TCPClient, ResponseHTML)
 
                 End If
-
-#Region "deprecaded"
-
-                ''MultiInvoker(ListBox1, "Items", {"Insert", 0, htmlReq})
-                ''MultiInvoker(ListBox1, "Items", {"Insert", 0, "HTTP Request: "})
-
-                'Dim RequestList As List(Of String) = New List(Of String)
-                'Dim CarrierReturn As Char = Convert.ToChar(vbCr)
-                'RequestList.AddRange(htmlReq.Split(CarrierReturn))
-
-
-                ''		(0)	    "GET /API/v1.0/GetCandles?pair=USD_SIGNA&days=3&tickmin=15 HTTP/1.1"	String
-                ''		(1)	    "Host: localhost:8130"	String
-                ''		(2)	    "Connection: keep-alive"	String
-                ''		(3) 	"Cache-Control: max-age=0"	String
-                ''		(4)	    "sec-ch-ua: ""Google Chrome"";v=""89"", ""Chromium"";v=""89"", "";Not A Brand"";v=""99"""	String
-                ''		(5)	    "sec-ch-ua-mobile: ?0"	String
-                ''		(6)	    "Upgrade-Insecure-Requests: 1"	String
-                ''		(7)	    "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.128 Safari/537.36"	String
-                ''		(8)	    "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"	String
-                ''		(9)	    "Sec-Fetch-Site: none"	String
-                ''		(10)	"Sec-Fetch-Mode: navigate"	String
-                ''		(11)	"Sec-Fetch-User: ?1"	String
-                ''		(12)	"Sec-Fetch-Dest: document"	String
-                ''		(13)	"Accept-Encoding: gzip, deflate, br"	String
-                ''		(14)	"Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7"	String
-                ''		(15)	""	String
-                ''		(16)	""	String
-
-
-                'If RequestList.Count > 0 Then
-
-                '    Dim Method_Path_HTTPv As List(Of String) = New List(Of String)(RequestList(0).Split(" "c))
-
-                '    If Method_Path_HTTPv(0).Trim.ToUpper = "GET" Then
-
-                '        Dim Request As String = Method_Path_HTTPv(1).Trim
-                '        Dim SubRequest As List(Of String) = New List(Of String)
-
-                '        If Request.Contains("/") Then
-                '            SubRequest.AddRange(Request.Split("/"c))
-                '        End If
-
-                '        If SubRequest.Count > 0 Then
-                '            If SubRequest(0).Trim = "" Then
-                '                SubRequest.RemoveAt(0)
-                '            End If
-                '        End If
-
-                '        Dim APIInterface As String = ""
-                '        Dim APIVersion As String = ""
-                '        Dim APICommand As String = ""
-
-                '        If SubRequest.Count >= 3 Then
-                '            APIInterface = SubRequest(0)
-                '            APIVersion = SubRequest(1)
-                '            APICommand = SubRequest(2)
-                '        End If
-
-
-                '        Dim ResponseHTML As String = "{""response"":""no data.""}"
-
-                '        Dim QueryParameters As List(Of String) = New List(Of String)
-                '        If APICommand.Contains("?") Then
-                '            Dim T_Parameters As String = APICommand.Substring(APICommand.IndexOf("?") + 1)
-                '            APICommand = APICommand.Remove(APICommand.IndexOf("?"))
-                '            QueryParameters.AddRange(T_Parameters.Split("&"c).ToArray)
-                '        End If
-
-                '        Dim FoundStatic As Boolean = False
-                '        For Each Response As API_Response In ResponseMSGList
-                '            If Response.API_Interface = APIInterface And Response.API_Version = APIVersion And Response.API_Command = APICommand Then
-
-                '                If QueryParameters.Count > 0 Then
-                '                    If CheckLists(QueryParameters, Response.API_Parameters) Then
-                '                        ResponseHTML = Response.API_Response
-                '                        FoundStatic = True
-                '                    End If
-                '                Else
-                '                    ResponseHTML = Response.API_Response
-                '                    FoundStatic = True
-                '                End If
-
-                '            End If
-                '        Next
-
-                '        If Not FoundStatic Then
-
-                '            If APICommand = "AcceptOrder" Then
-
-                '                If QueryParameters.Count > 0 Then
-
-                '                    Dim ReqID As String = ""
-                '                    Dim PublicKey As String = ""
-
-                '                    For Each Query As String In QueryParameters
-
-                '                        Dim T_ReqKey As String = Query.Split("="c)(0)
-                '                        Dim T_ReqValue As String = Query.Split("="c)(1)
-
-                '                        If T_ReqKey = "DEXContractAddress" Then
-                '                            ReqID = ClsReedSolomon.Decode(T_ReqValue).ToString
-                '                        End If
-
-
-                '                        If T_ReqKey = "DEXContractID" Then
-                '                            ReqID = T_ReqValue
-                '                        End If
-
-                '                        If T_ReqKey = "PublicKey" Then
-                '                            PublicKey = T_ReqValue
-                '                        End If
-
-                '                    Next
-
-
-                '                    If Not ReqID = "" And Not ReqID = "0" And Not PublicKey = "" And MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
-                '                        For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
-                '                            If T_DEXContract.ID.ToString = ReqID Then
-                '                                'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
-                '                                'publickey = 6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
-                '                                'http://127.0.0.1:8130/API/v1.0/AcceptOrder?DEXContractAddress=TS-4FCL-YHVW-R94Z-F4D7J&PublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
-
-                '                                If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
-                '                                    Dim T_UnsignedTransactionBytes As String = T_DEXContract.AcceptSellOrder(PublicKey)
-
-                '                                    If T_UnsignedTransactionBytes.Contains("errorCode") Then
-                '                                        ResponseHTML = T_UnsignedTransactionBytes.Substring(T_UnsignedTransactionBytes.IndexOf("->") + 2).Trim
-                '                                    ElseIf T_UnsignedTransactionBytes.Contains(Application.ProductName + "-error") Then
-
-                '                                    Else
-                '                                        '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                '                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
-                '                                    End If
-
-                '                                End If
-
-                '                            End If
-                '                        Next
-                '                    End If
-
-                '                End If
-
-                '            End If
-
-                '        End If
-
-                '        'ResponseHTML += "<form action = ""GetCandles"" id=""person"" method=""POST"">"
-                '        'ResponseHTML += "<Label Class=""h2"" form=""person"">API-login</label>"
-                '        'ResponseHTML += "<Label for=""vorname"">APIUser</label>"
-                '        'ResponseHTML += "<input type = ""text"" name=""APIUser"" id=""APIUser"" maxlength=""30"">"
-                '        'ResponseHTML += "<Label for=""zuname"">APIKey</label>"
-                '        'ResponseHTML += "<input type = ""text"" name=""APIKey"" id=""APIKey"" maxlength=""40"">"
-                '        'ResponseHTML += "<Button type = ""reset"" > Eingaben zur&uuml;cksetzen</button>"
-                '        'ResponseHTML += "<Button type = ""submit"" > Eingaben absenden</button>"
-                '        'ResponseHTML += "</form>"
-
-                '        'ResponseHTML += "{""response"":""GetCandles"",""Data"":{""PAIR"":""USD/SIGNA"",""TICMIN"":""5"",{""Date"":""01.01.2021 12:30:00"",""OPEN"":""12.34567890"",""HIGH"":""15.12345678"",""LOW"":""10.87654321"",""CLOSE"":""13.24681357""},{""Date"":""01.01.2021 12:35:00"",""OPEN"":""13.24681357"",""HIGH"":""16.12345678"",""LOW"":""9.87654321"",""CLOSE"":""12.09876543""}}}"
-
-                '        SendHTMLResponse(TCPClient, ResponseHTML)
-
-                '    ElseIf Method_Path_HTTPv(0).Trim.ToUpper = "POST" Then
-
-                '        '### Chrome ###
-                '        '		(0)	"POST /GetCandles HTTP/1.1"	String
-                '        '		(1)	"Host: localhost:8130"	String
-                '        '		(2)	"Connection: keep-alive"	String
-                '        '		(3)	"Content-Length: 30"	String
-                '        '		(4)	"Cache-Control: max-age=0"	String
-                '        '		(5)	"sec-ch-ua: "" Not A;Brand"";v=""99"", ""Chromium"";v=""90"", ""Google Chrome"";v=""90"""	String
-                '        '		(6)	"sec-ch-ua-mobile: ?0"	String
-                '        '		(7)	"Upgrade-Insecure-Requests: 1"	String
-                '        '		(8)	"Origin: http://localhost:8130"	String
-                '        '		(9)	"Content-Type: application/x-www-form-urlencoded"	String
-                '        '		(10)	"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"	String
-                '        '		(11)	"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"	String
-                '        '		(12)	"Sec-Fetch-Site: same-origin"	String
-                '        '		(13)	"Sec-Fetch-Mode: navigate"	String
-                '        '		(14)	"Sec-Fetch-User: ?1"	String
-                '        '		(15)	"Sec-Fetch-Dest: document"	String
-                '        '		(16)	"Referer: http://localhost:8130/"	String
-                '        '		(17)	"Accept-Encoding: gzip, deflate, br"	String
-                '        '		(18)	"Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7"	String
-                '        '		(19)	""	String
-                '        '		(20)	"APIUser=apimann&APIKey=apipass"	String	
-
-
-                '        'Dim ResponseHTML As String = ""
-                '        'ResponseHTML += "{""response"":""GetCandles"",""Data"":{""PAIR"":""USD/SIGNA"",""TICMIN"":""5"",{""Date"":""01.01.2021 12:30:00"",""OPEN"":""12.34567890"",""HIGH"":""15.12345678"",""LOW"":""10.87654321"",""CLOSE"":""13.24681357""},{""Date"":""01.01.2021 12:35:00"",""OPEN"":""13.24681357"",""HIGH"":""16.12345678"",""LOW"":""9.87654321"",""CLOSE"":""12.09876543""}}}"
-
-                '        SendHTMLResponse(TCPClient, "{""response"":""no data.""}")
-
-                '    Else
-                '        ' Not HTTP GET method
-
-                '        SendHTMLResponse(TCPClient, "{""response"":""error wrong request""}")
-
-                '    End If
-
-                'End If
-
-#End Region
 
             Catch ex As Exception
 
@@ -1164,11 +1545,11 @@ Public Class ClsTCPAPI
             Dim respByte() As Byte = Encoding.ASCII.GetBytes(httpRequest)
 
             Dim htmlHeader As String =
-                "HTTP/1.0 200 OK" & ControlChars.CrLf &
-                "Server: PFPAPIServer 1.0" & ControlChars.CrLf &
-                "Content-Length: " & respByte.Length & ControlChars.CrLf &
-                "Content-Type: " & "application/json" &' getContentType(httpRequest) &
-                ControlChars.CrLf & ControlChars.CrLf
+                    "HTTP/1.0 200 OK" & ControlChars.CrLf &
+                    "Server: PFPAPIServer 1.0" & ControlChars.CrLf &
+                    "Content-Length: " & respByte.Length & ControlChars.CrLf &
+                    "Content-Type: " & "application/json" &' getContentType(httpRequest) &
+                    ControlChars.CrLf & ControlChars.CrLf
             ' The content Length of HTML Header
             Dim headerByte() As Byte = Encoding.ASCII.GetBytes(htmlHeader)
 

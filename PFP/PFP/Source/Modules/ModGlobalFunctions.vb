@@ -5,6 +5,7 @@ Module ModGlobalFunctions
     Property GlobalAddress() As String = ""
 
     Property CurrentMarket As String = ""
+    Property SupportedCurrencies As List(Of String) = New List(Of String)({"AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"})
 
     Property GlobalPIN As String = ""
 
