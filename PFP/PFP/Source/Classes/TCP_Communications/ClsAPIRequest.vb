@@ -55,15 +55,15 @@ Public Class ClsAPIRequest
     'Private Property PathValues As List(Of S_PathValues) = New List(Of S_PathValues)
 
     Public Enum E_Endpoint
+
         NONE = 0
 
         Info = 1
         Candles = 2
         Orders = 3
+        Bitcoin = 4
 
-        Transaction = 5
-
-        Bitcoin = 6
+        Broadcast = 5
 
     End Enum
 
@@ -78,7 +78,7 @@ Public Class ClsAPIRequest
         Days = 4
         Tickmin = 5
 
-        SenderPublicKey = 6
+        'SenderPublicKey = 6
 
         Token = 7
 
@@ -107,17 +107,9 @@ Public Class ClsAPIRequest
         XAmountNQT = 24
         XItem = 25
 
+        SignedTransactionBytes = 26
+
     End Enum
-
-    'http://localhost:8130/API/v1/Bitcoin/Transaction/8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957?Type=TimeLockChainSwapHash&SenderAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&RecipientAddress=msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha&ChainSwapHash=abcdef&AmountNQT=2120
-
-    'Public Enum E_BitcoinType
-    '    NONE = 0
-    '    Standard = 1
-    '    TimeLock = 2
-    '    ChainSwapHash = 3
-    '    TimeLockChainSwapHash = 4
-    'End Enum
 
     Public Structure S_Parameter
         Dim Parameter As E_Parameter

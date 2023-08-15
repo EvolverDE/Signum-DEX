@@ -775,4 +775,8 @@
 
     End Function
 
+    Public Overrides Function BroadcastTransaction(SignedTransactionBytes As String) As String
+        Return SendRawBitcoinTransaction(SignedTransactionBytes)
+    End Function
+
 End Class

@@ -494,7 +494,7 @@ Public Class ClsTCPAPI
 
                                         Dim PassPhrase As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PassPhrase).Value
                                         Dim PublicKey As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PublicKey).Value
-                                        If IsNothing(PublicKey) Then PublicKey = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.SenderPublicKey).Value
+                                        'If IsNothing(PublicKey) Then PublicKey = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.SenderPublicKey).Value
 
                                         Dim Type As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.Type).Value
                                         Dim AmountNQT As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.AmountNQT).Value
@@ -1176,7 +1176,7 @@ Public Class ClsTCPAPI
 
                                     Dim PassPhrase As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PassPhrase).Value
                                     Dim PublicKey As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.PublicKey).Value
-                                    If IsNothing(PublicKey) Then PublicKey = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.SenderPublicKey).Value
+                                    'If IsNothing(PublicKey) Then PublicKey = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.SenderPublicKey).Value
 
                                     Dim Type As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.Type).Value
                                     Dim AmountNQT As String = APIRequest.Parameters.FirstOrDefault(Function(PK) PK.Parameter = ClsAPIRequest.E_Parameter.AmountNQT).Value
@@ -1437,6 +1437,7 @@ Public Class ClsTCPAPI
                                                     End If
 
                                                     Exit For
+
                                                 End If
 
                                             End If
@@ -1464,6 +1465,54 @@ Public Class ClsTCPAPI
                                         End If
 
                                     Next
+
+                                End If
+
+                            Case ClsAPIRequest.E_Endpoint.Broadcast
+
+                                Dim Token As String = ""
+                                Dim SignedTransactionBytes As String = ""
+
+                                If APIRequest.Parameters.Count > 0 Then
+                                    'use Parameters
+                                    Token = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.Token).Value
+                                    SignedTransactionBytes = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.SignedTransactionBytes).Value
+
+                                    If IsNothing(Token) Then Token = ""
+                                    If IsNothing(SignedTransactionBytes) Then SignedTransactionBytes = ""
+                                Else
+                                    'check Body
+
+                                    For Each BodyEntry As KeyValuePair(Of String, Object) In APIRequest.Body
+
+                                        Select Case BodyEntry.Key.ToLower()
+                                            Case "token"
+                                                Token = BodyEntry.Value.ToString()
+                                            Case "signedtransactionbytes"
+                                                SignedTransactionBytes = BodyEntry.Value.ToString()
+                                        End Select
+                                    Next
+
+                                End If
+
+
+                                If Not Token = "" And Not SignedTransactionBytes = "" And MessageIsHEXString(SignedTransactionBytes) Then
+
+                                    If SupportedCurrencies.Contains(Token) Then
+
+                                        If ClsDEXContract.CurrencyIsCrypto(Token) Then
+                                            Dim XItem As AbsClsXItem = ClsXItemAdapter.NewXItem(Token)
+                                            Dim T_Result As String = XItem.BroadcastTransaction(SignedTransactionBytes)
+                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""Broadcast"",""data"":{""message"":""" + T_Result + """}}"
+                                        End If
+
+                                    ElseIf Token = "Signum" Then
+
+                                        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
+                                        Dim T_Result As String = SignumAPI.BroadcastTransaction(SignedTransactionBytes)
+                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""Broadcast"",""data"":{""message"":""" + T_Result + """}}"
+
+                                    End If
 
                                 End If
 
