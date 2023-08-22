@@ -161,45 +161,48 @@ Public Class ClsJSONAndXMLConverter
     Private Function ProcessJSONCollections(ByRef input As String) As Object
 
         input = input.Trim()
+        If Not input = "" Then
 
-        Select Case input(0)
-            Case "{"c
-                Dim T_BetweenBraces As List(Of String) = Between2List(input, "{", "}")
+            Select Case input(0)
+                Case "{"c
+                    Dim T_BetweenBraces As List(Of String) = Between2List(input, "{", "}")
 
-                Dim KeyVal As List(Of S_KeyVal) = CollectListOfKeyValStructures(T_BetweenBraces(0))
-                input = T_BetweenBraces(0)
+                    Dim KeyVal As List(Of S_KeyVal) = CollectListOfKeyValStructures(T_BetweenBraces(0))
+                    input = T_BetweenBraces(0)
 
-                If input = "" And Not T_BetweenBraces(1).Trim() = "" Then
-                    input = T_BetweenBraces(1)
-                End If
+                    If input = "" And Not T_BetweenBraces(1).Trim() = "" Then
+                        input = T_BetweenBraces(1)
+                    End If
 
-                Dim BraceCollection As List(Of KeyValuePair(Of String, Object)) = ProcessKeyValues(KeyVal)
+                    Dim BraceCollection As List(Of KeyValuePair(Of String, Object)) = ProcessKeyValues(KeyVal)
 
-                If BraceCollection.Count = 1 Then
-                    Return BraceCollection(0).Value
-                Else
-                    Return BraceCollection
-                End If
+                    If BraceCollection.Count = 1 Then
+                        Return BraceCollection(0).Value
+                    Else
+                        Return BraceCollection
+                    End If
 
-            Case "["c
-                Dim T_BetweenBraces As List(Of String) = Between2List(input, "[", "]")
+                Case "["c
+                    Dim T_BetweenBraces As List(Of String) = Between2List(input, "[", "]")
 
-                Dim KeyVal As List(Of S_KeyVal) = CollectListOfKeyValStructures(T_BetweenBraces(0))
-                input = T_BetweenBraces(0)
+                    Dim KeyVal As List(Of S_KeyVal) = CollectListOfKeyValStructures(T_BetweenBraces(0))
+                    input = T_BetweenBraces(0)
 
-                If input = "" And Not T_BetweenBraces(1).Trim() = "" Then
-                    input = T_BetweenBraces(1)
-                End If
+                    If input = "" And Not T_BetweenBraces(1).Trim() = "" Then
+                        input = T_BetweenBraces(1)
+                    End If
 
-                Dim BraceCollection As List(Of KeyValuePair(Of String, Object)) = ProcessKeyValues(KeyVal)
+                    Dim BraceCollection As List(Of KeyValuePair(Of String, Object)) = ProcessKeyValues(KeyVal)
 
-                If BraceCollection.Count = 1 Then
-                    Return BraceCollection(0).Value
-                Else
-                    Return BraceCollection
-                End If
+                    If BraceCollection.Count = 1 Then
+                        Return BraceCollection(0).Value
+                    Else
+                        Return BraceCollection
+                    End If
 
-        End Select
+            End Select
+
+        End If
 
         Return New KeyValuePair(Of String, Object)
 

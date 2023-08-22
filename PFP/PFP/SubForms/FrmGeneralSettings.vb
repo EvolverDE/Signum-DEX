@@ -557,7 +557,7 @@ Public Class FrmGeneralSettings
         Dim XItem As AbsClsXItem = ClsXItemAdapter.NewXItem("BTC")
         Dim Info As String = XItem.GetXItemInfo()
 
-        If Not IsErrorOrWarning(Info) Then
+        If Not IsErrorOrWarning(Info) And Not Info.Trim() = "" Then
 
             Dim BCA As FrmBitcoinAccounts = New FrmBitcoinAccounts()
             BCA.StartPosition = FormStartPosition.CenterParent

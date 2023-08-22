@@ -65,6 +65,8 @@ Public Class ClsAPIRequest
 
         Broadcast = 5
 
+        SmartContract = 6
+
     End Enum
 
     Public Enum E_Parameter
@@ -72,7 +74,7 @@ Public Class ClsAPIRequest
         NONE = 0
 
         Status = 1
-        OrderID = 2
+        ID = 2
 
         Pair = 3
         Days = 4
@@ -157,7 +159,7 @@ Public Class ClsAPIRequest
                                         If Path.Count > 4 Then
 
                                             Dim OrderID As S_Parameter = New S_Parameter
-                                            OrderID.Parameter = E_Parameter.OrderID
+                                            OrderID.Parameter = E_Parameter.ID
 
                                             'GET/API/v1/Orders/{id}?status=open
                                             If Path(4).Contains("?") Then
@@ -222,6 +224,61 @@ Public Class ClsAPIRequest
 
                                         End If
 
+                                    Case E_Endpoint.Broadcast
+
+                                        If Path.Count > 4 Then
+
+                                            If Path(4).Contains("?") Then
+                                                'GET/API/v1/Broadcast/BTC?SignedTransactionBytes={hex string}
+                                                C_Parameters.Add(CreateParameter(E_Parameter.Token, Path(4).Remove(Path(4).IndexOf("?"c))))
+                                                Dim ParaString As String = Path(4).Substring(Path(4).IndexOf("?"c) + 1)
+                                                C_Parameters.AddRange(ParseParameters(ParaString))
+
+                                            End If
+
+                                        ElseIf Path.Count > 3 Then
+
+                                            If Path(3).Contains("?") Then
+                                                'GET/API/v1/Broadcast?Token=BTC&SignedTransactionBytes={hex string}
+                                                Dim ParaString As String = Path(3).Substring(Path(3).IndexOf("?"c) + 1)
+                                                C_Parameters.AddRange(ParseParameters(ParaString))
+                                            End If
+
+                                        ElseIf C_RAWRequestList.Contains("{") Then
+                                            'POST/API/v1/Broadcast
+                                            '{
+                                            '   "token": "BTC",
+                                            '   "signedTransactionBytes": "{Hex string}"
+                                            '}
+                                            Dim JSONString As String = GetJSONFromRequest()
+                                            C_Body = GetParametersFromJSON(JSONString)
+
+                                        End If
+
+                                    Case E_Endpoint.SmartContract
+
+                                        If Path.Count > 3 Then
+
+                                            'POST/API/v1/SmartContract?ID={long[,long,long]}
+
+                                            If Path(3).Contains("?ID=") Then
+                                                Dim ParaString As String = Path(3).Substring(Path(3).IndexOf("?"c) + 1)
+                                                C_Parameters.AddRange(ParseParameters(ParaString))
+                                            End If
+
+                                        ElseIf C_RAWRequestList.Contains("{") Then
+
+                                            'POST/API/v1/SmartContract
+                                            '{ "id": [
+                                            '   "{long}",
+                                            '   "{long (OPTIONAL)}",
+                                            '   "{long (OPTIONAL)}"
+                                            ']}
+
+                                            Dim JSONString As String = GetJSONFromRequest()
+                                            C_Body = GetParametersFromJSON(JSONString)
+
+                                        End If
 
                                     Case Else
 
@@ -240,9 +297,9 @@ Public Class ClsAPIRequest
                                         If Path.Count > 4 Then
 
                                             If Path(4).Contains("?") Then
-                                                'POST/API/v1/Orders/{id}?senderPublicKey=6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51
+                                                'POST/API/v1/Orders/{id}?senderPublicKey={32 bytes in Hex}
 
-                                                C_Parameters.Add(CreateParameter(E_Parameter.OrderID, Path(4).Remove(Path(4).IndexOf("?"c))))
+                                                C_Parameters.Add(CreateParameter(E_Parameter.ID, Path(4).Remove(Path(4).IndexOf("?"c))))
                                                 Dim ParaString As String = Path(4).Substring(Path(4).IndexOf("?"c) + 1)
                                                 C_Parameters.AddRange(ParseParameters(ParaString))
 
@@ -258,10 +315,10 @@ Public Class ClsAPIRequest
                                                 'Content-Length:  87
 
                                                 '{
-                                                '    "senderPublicKey": "6FBE5B0C2A6BA72612702795B2E250616C367BD8B28F965A36CD59DD13D09A51"
+                                                '    "senderPublicKey": "{32 bytes in Hex}"
                                                 '}
 
-                                                C_Parameters.Add(CreateParameter(E_Parameter.OrderID, Path(4)))
+                                                C_Parameters.Add(CreateParameter(E_Parameter.ID, Path(4)))
                                                 Dim JSONString As String = GetJSONFromRequest()
                                                 C_Body = GetParametersFromJSON(JSONString)
 
@@ -275,7 +332,7 @@ Public Class ClsAPIRequest
                                                 Dim Endpoint As String = Path(3).Remove(Path(3).IndexOf("?"c))
 
                                                 If Not Endpoint = E_Endpoint.Orders.ToString() Then
-                                                    C_Parameters.Add(CreateParameter(E_Parameter.OrderID, Endpoint))
+                                                    C_Parameters.Add(CreateParameter(E_Parameter.ID, Endpoint))
                                                 End If
 
                                                 Dim ParaString As String = Path(3).Substring(Path(3).IndexOf("?"c) + 1)
@@ -304,45 +361,68 @@ Public Class ClsAPIRequest
 
                                     Case E_Endpoint.Bitcoin
 
-                                        'POST/API/v1/Transaction HTTP/1.1
-                                        'Content-Type: Application/ json
-                                        'User-Agent: PostmanRuntime/ 7.32.3
-                                        'Accept: */*
-                                        'Postman-Token: bf140a20-8124 - 4354 - 9Dcd-33be63c4f2e1
-                                        'Host:                                   localhost :  8130
-                                        'Accept-Encoding: gzip, deflate, br
-                                        'Connection:                             keep-alive
-                                        'Content-Length:   509
-
-                                        '{
-                                        '    "token": "BTC",
-                                        '    "inputs": [
-                                        '        {
-                                        '            "type": "standard",
-                                        '            "transaction": "8f6d4029eefc4d3e86ca4759acc5c3a02b754850a371621c053a5cae14c3c957",
-                                        '            "unlockingScript": "76a9148562fc5e57b965f8a62deaafeee84a7fc457c1d688ac", //optional: only if type is pay2ScriptHash (of timeLockChainSwapHash or chainSwapHash)
-                                        '            "chainSwapKey":"a1b2c3d4e5f6", //optional: only if type is timeLockChainSwapHash or chainSwapHash
-                                        '            "senderAddress": "msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha"
-                                        '        }
-                                        '    ],
-                                        '    "outputs": [
-                                        '        {
-                                        '            "type": "timeLockChainSwapHash",
-                                        '            "changeAddress": "msgEkDrXVpAYCgY5vZFzRRyBddiks2G2ha", //optional: default=first input senderAddress
-                                        '            "recipientAddress": "n3tv3tqp7QvTiUCX5cRaEqtuAHYoGdkjJG",
-                                        '            "chainSwapHash": "6f5e4d3c2b1a", //optional: only if type is pay2ScriptHash (timeLockChainSwapHash or chainSwapHash)
-                                        '            "amountNQT": 1234
-                                        '        }
-                                        '    ]
-                                        '}
-
                                         Dim JSONString As String = GetJSONFromRequest()
                                         C_Body = GetParametersFromJSON(JSONString)
 
-                                    Case E_Endpoint.Bitcoin
+                                    Case E_Endpoint.Broadcast
 
-                                        Dim JSONString As String = GetJSONFromRequest()
-                                        C_Body = GetParametersFromJSON(JSONString)
+                                        If Path.Count > 4 Then
+
+                                            If Path(4).Contains("?") Then
+                                                'POST/API/v1/Broadcast/BTC?SignedTransactionBytes={some hex string}
+                                                C_Parameters.Add(CreateParameter(E_Parameter.Token, Path(4).Remove(Path(4).IndexOf("?"c))))
+                                                Dim ParaString As String = Path(4).Substring(Path(4).IndexOf("?"c) + 1)
+                                                C_Parameters.AddRange(ParseParameters(ParaString))
+
+                                            End If
+
+                                        ElseIf Path.Count > 3 Then
+
+                                            If Path(3).Contains("?") Then
+                                                'POST/API/v1/Broadcast?Token=BTC&SignedTransactionBytes={hex string}
+                                                Dim ParaString As String = Path(3).Substring(Path(3).IndexOf("?"c) + 1)
+                                                C_Parameters.AddRange(ParseParameters(ParaString))
+                                            End If
+
+                                        ElseIf C_RAWRequestList.Contains("{") Then
+                                            'POST/API/v1/Broadcast
+                                            '{
+                                            '   "token": "BTC",
+                                            '   "signedTransactionBytes": "{hex string}"
+                                            '}
+                                            Dim JSONString As String = GetJSONFromRequest()
+                                            C_Body = GetParametersFromJSON(JSONString)
+
+                                        End If
+
+                                    Case E_Endpoint.SmartContract
+
+                                        If Path.Count > 3 Then
+                                            'POST/API/v1/SmartContract?privateKey={32 bytes in Hex (NOT RECOMMENDED)}
+                                            'POST/API/v1/SmartContract?publicKey={32 bytes in Hex}
+
+                                            If Path(3).Contains("?") Then
+                                                'create new contract
+                                                Dim ParaString As String = Path(3).Substring(Path(3).IndexOf("?"c) + 1)
+                                                C_Parameters.AddRange(ParseParameters(ParaString))
+
+                                            ElseIf C_RAWRequestList.Contains("{") Then
+
+                                                'POST/API/v1/SmartContract
+                                                '{
+                                                '   "privateKey": "{32 bytes in Hex (NOT RECOMMENDED)}"
+                                                '}
+
+                                                'POST/API/v1/SmartContract
+                                                '{
+                                                '   "publicKey": "{32 bytes in Hex}"
+                                                '}
+
+                                                Dim JSONString As String = GetJSONFromRequest()
+                                                C_Body = GetParametersFromJSON(JSONString)
+                                            End If
+
+                                        End If
 
                                     Case Else
 

@@ -6,8 +6,10 @@ Option Explicit On
 
 Imports System.Net
 Imports System.Net.Sockets
+Imports System.Runtime.Remoting.Channels
 Imports System.Text
 Imports System.Threading
+Imports PFP.ClsTransaction
 
 Public Class ClsTCPAPI
 
@@ -482,7 +484,7 @@ Public Class ClsTCPAPI
                                     If APIRequest.Parameters.Count > 0 Then
                                         'use Parameters
 
-                                        Dim OrderID As String = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.OrderID).Value
+                                        Dim OrderID As String = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.ID).Value
 
                                         If Not IsNothing(OrderID) Then
                                             If Not IsNumeric(OrderID) Then
@@ -539,7 +541,7 @@ Public Class ClsTCPAPI
 
                                                             Else
                                                                 '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                                ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                                ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""acceptOrder"",""data"":{""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
 
                                                             End If
 
@@ -565,7 +567,7 @@ Public Class ClsTCPAPI
 
                                                             Else
                                                                 '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                                ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
+                                                                ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""acceptOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
                                                             End If
 
                                                         End If
@@ -594,7 +596,7 @@ Public Class ClsTCPAPI
 
                                                         Else
                                                             '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
                                                         End If
 
                                                     End If
@@ -621,7 +623,7 @@ Public Class ClsTCPAPI
 
                                                         Else
                                                             '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
                                                             Exit For
                                                         End If
 
@@ -649,7 +651,7 @@ Public Class ClsTCPAPI
 
                                                         Else
                                                             '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
                                                         End If
 
                                                     End If
@@ -676,7 +678,7 @@ Public Class ClsTCPAPI
 
                                                         Else
                                                             '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
                                                             Exit For
                                                         End If
 
@@ -685,6 +687,110 @@ Public Class ClsTCPAPI
 
                                             End If
 
+                                        End If
+
+                                    End If
+
+                                Case ClsAPIRequest.E_Endpoint.Broadcast
+
+                                    Dim Token As String = ""
+                                    Dim SignedTransactionBytes As String = ""
+
+                                    If APIRequest.Parameters.Count > 0 Then
+                                        'use Parameters
+                                        Token = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.Token).Value
+                                        SignedTransactionBytes = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.SignedTransactionBytes).Value
+
+                                        If IsNothing(Token) Then Token = ""
+                                        If IsNothing(SignedTransactionBytes) Then SignedTransactionBytes = ""
+                                    Else
+                                        'check Body
+
+                                        For Each BodyEntry As KeyValuePair(Of String, Object) In APIRequest.Body
+
+                                            Select Case BodyEntry.Key.ToLower()
+                                                Case "token"
+                                                    Token = BodyEntry.Value.ToString()
+                                                Case "signedtransactionbytes"
+                                                    SignedTransactionBytes = BodyEntry.Value.ToString()
+                                            End Select
+                                        Next
+
+                                    End If
+
+                                    If Not Token = "" And Not SignedTransactionBytes = "" And MessageIsHEXString(SignedTransactionBytes) Then
+
+                                        If SupportedCurrencies.Contains(Token) Then
+
+                                            If ClsDEXContract.CurrencyIsCrypto(Token) Then
+                                                Dim XItem As AbsClsXItem = ClsXItemAdapter.NewXItem(Token)
+                                                Dim T_Result As String = XItem.BroadcastTransaction(SignedTransactionBytes)
+                                                If Not IsErrorOrWarning(T_Result,,, False) Then
+                                                    ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""broadcast"",""data"":{""message"":""" + T_Result + """}}"
+                                                End If
+                                            End If
+
+                                        ElseIf Token = "Signum" Then
+
+                                            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
+                                            Dim T_Result As String = SignumAPI.BroadcastTransaction(SignedTransactionBytes)
+                                            If Not IsErrorOrWarning(T_Result,,, False) Then
+                                                ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""broadcast"",""data"":{""message"":""" + T_Result + """}}"
+                                            End If
+
+                                        End If
+
+                                    End If
+
+                                Case ClsAPIRequest.E_Endpoint.SmartContract
+
+                                    Dim ID As String = ""
+
+                                    If APIRequest.Parameters.Count > 0 Then
+                                        ID = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.ID).Value
+
+                                        If IsNothing(ID) Then ID = ""
+                                    Else
+                                        'check Body
+
+                                        For Each BodyEntry As KeyValuePair(Of String, Object) In APIRequest.Body
+
+                                            Select Case BodyEntry.Key.ToLower()
+                                                Case "id"
+                                                    ID = BodyEntry.Value.ToString()
+                                            End Select
+                                        Next
+
+                                    End If
+
+                                    If Not ID.Trim() = "" Then
+
+                                        Dim IDs As List(Of String) = New List(Of String)(ID.Split(","c))
+
+                                        Dim T_Response As String = "{""application"":""PFPDEX"",""Interface"":""API"",""version"":""1"",""contentType"":""application/json"",""response"":""smartContract"",""data"":["
+
+                                        For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+
+                                            If IDs.Contains(T_DEXContract.ID.ToString()) Then
+
+                                                T_Response += "{"
+                                                T_Response += """at"":""" + T_DEXContract.ID.ToString() + ""","
+                                                T_Response += """atRS"":""" + T_DEXContract.Address + ""","
+                                                T_Response += """creatorID"":""" + T_DEXContract.CreatorID.ToString() + ""","
+                                                T_Response += """creatorRS"":""" + T_DEXContract.CreatorAddress + ""","
+                                                T_Response += """status"":""" + T_DEXContract.Status.ToString() + ""","
+                                                T_Response += """deniability"":""" + T_DEXContract.Deniability.ToString().ToLower() + ""","
+                                                T_Response += "},"
+
+                                            End If
+
+                                        Next
+
+                                        T_Response = T_Response.Remove(T_Response.Length - 1)
+                                        T_Response += "]}"
+
+                                        If PFPForm.DEXContractList.Count = 0 Then
+                                            ResponseHTML = T_Response
                                         End If
 
                                     End If
@@ -1164,7 +1270,7 @@ Public Class ClsTCPAPI
                                 If APIRequest.Parameters.Count > 0 Then
                                     'use Parameters
 
-                                    Dim OrderID As String = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.OrderID).Value
+                                    Dim OrderID As String = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.ID).Value
 
                                     If Not IsNothing(OrderID) Then
                                         If Not IsNumeric(OrderID) Then
@@ -1220,7 +1326,7 @@ Public Class ClsTCPAPI
 
                                                         Else
                                                             '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""acceptOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
 
                                                         End If
 
@@ -1246,7 +1352,7 @@ Public Class ClsTCPAPI
 
                                                         Else
                                                             '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""AcceptOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
+                                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""acceptOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
                                                         End If
 
                                                     End If
@@ -1275,7 +1381,7 @@ Public Class ClsTCPAPI
 
                                                     Else
                                                         '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
                                                     End If
 
                                                 End If
@@ -1302,7 +1408,7 @@ Public Class ClsTCPAPI
 
                                                     Else
                                                         '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_UnsignedTransactionBytes + """}}"
                                                         Exit For
                                                     End If
 
@@ -1330,7 +1436,7 @@ Public Class ClsTCPAPI
 
                                                     Else
                                                         '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
                                                     End If
 
                                                 End If
@@ -1357,7 +1463,7 @@ Public Class ClsTCPAPI
 
                                                     Else
                                                         '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""transaction"":""" + T_TransactionID + """}}"
                                                         Exit For
                                                     End If
 
@@ -1431,9 +1537,9 @@ Public Class ClsTCPAPI
 
                                                     If SignHexKey.Trim() = "" Then
                                                         '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_Result + """}}"
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_Result + """}}"
                                                     Else
-                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""transaction"":""" + T_Result + """}}"
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""transaction"":""" + T_Result + """}}"
                                                     End If
 
                                                     Exit For
@@ -1454,9 +1560,9 @@ Public Class ClsTCPAPI
 
                                                     If SignHexKey.Trim() = "" Then
                                                         '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
-                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_Result + """}}"
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_Result + """}}"
                                                     Else
-                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""CreateOrder"",""data"":{""transaction"":""" + T_Result + """}}"
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""transaction"":""" + T_Result + """}}"
                                                     End If
 
                                                 End If
@@ -1495,7 +1601,6 @@ Public Class ClsTCPAPI
 
                                 End If
 
-
                                 If Not Token = "" And Not SignedTransactionBytes = "" And MessageIsHEXString(SignedTransactionBytes) Then
 
                                     If SupportedCurrencies.Contains(Token) Then
@@ -1503,14 +1608,77 @@ Public Class ClsTCPAPI
                                         If ClsDEXContract.CurrencyIsCrypto(Token) Then
                                             Dim XItem As AbsClsXItem = ClsXItemAdapter.NewXItem(Token)
                                             Dim T_Result As String = XItem.BroadcastTransaction(SignedTransactionBytes)
-                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""Broadcast"",""data"":{""message"":""" + T_Result + """}}"
+                                            If Not IsErrorOrWarning(T_Result,,, False) Then
+                                                ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""broadcast"",""data"":{""message"":""" + T_Result + """}}"
+                                            End If
                                         End If
 
                                     ElseIf Token = "Signum" Then
 
                                         Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
                                         Dim T_Result As String = SignumAPI.BroadcastTransaction(SignedTransactionBytes)
-                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""Broadcast"",""data"":{""message"":""" + T_Result + """}}"
+                                        If Not IsErrorOrWarning(T_Result,,, False) Then
+                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""broadcast"",""data"":{""message"":""" + T_Result + """}}"
+                                        End If
+
+                                    End If
+
+                                End If
+
+                            Case ClsAPIRequest.E_Endpoint.SmartContract
+
+                                Dim PrivateKey As String = ""
+                                Dim PublicKey As String = ""
+
+                                If APIRequest.Parameters.Count > 0 Then
+
+                                    PrivateKey = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.PrivateKey).Value
+                                    PublicKey = APIRequest.Parameters.FirstOrDefault(Function(OID) OID.Parameter = ClsAPIRequest.E_Parameter.PublicKey).Value
+
+                                    If IsNothing(PrivateKey) Then PrivateKey = ""
+                                    If IsNothing(PublicKey) Then PublicKey = ""
+
+                                Else
+                                    'check Body
+
+                                    For Each BodyEntry As KeyValuePair(Of String, Object) In APIRequest.Body
+
+                                        Select Case BodyEntry.Key.ToLower()
+                                            Case "privatekey"
+                                                PrivateKey = BodyEntry.Value.ToString()
+                                            Case "publickey"
+                                                PublicKey = BodyEntry.Value.ToString()
+                                        End Select
+                                    Next
+
+                                End If
+
+                                If Not PrivateKey.Trim() = "" Then
+                                    PublicKey = PrivKeyToPubKey(PrivateKey)
+                                End If
+
+                                If Not PublicKey.Trim() = "" Then
+
+                                    Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
+
+                                    Dim T_Result As String = SignumAPI.CreateSmartContract(PublicKey)
+                                    If Not IsErrorOrWarning(T_Result,,, False) Then
+
+                                        Dim UnsignedTransactionBytes As String = ""
+
+                                        If T_Result.Contains("{") Then
+                                            Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(T_Result, ClsJSONAndXMLConverter.E_ParseType.JSON)
+                                            UnsignedTransactionBytes = Converter.FirstValue("unsignedTransactionBytes").ToString()
+                                        End If
+
+                                        If Not PrivateKey.Trim() = "" Then
+                                            T_Result = SignumAPI.BroadcastTransaction(T_Result)
+                                            If Not IsErrorOrWarning(T_Result,,, False) Then
+                                                ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createSmartContract"",""data"":{""transaction"":""" + T_Result + """}}"
+                                            End If
+                                        Else
+                                            ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createSmartContract"",""data"":{""unsignedTransactionBytes"":""" + UnsignedTransactionBytes + """}}"
+                                        End If
 
                                     End If
 

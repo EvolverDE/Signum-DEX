@@ -58,11 +58,9 @@ Public Class ClsSignumAPI
     Property C_AccountID As ULong
     Property C_Address As String
 
-
     Property C_UTXList As List(Of List(Of String)) = New List(Of List(Of String))
 
     Public Property DEXSmartContractList As List(Of String) = New List(Of String)
-
 
     Sub New(Optional ByVal Node As String = "", Optional ByVal Account As ULong = 0UL, Optional ByVal ReferenceTX As ULong = _ReferenceTX)
 
@@ -2004,7 +2002,6 @@ Public Class ClsSignumAPI
         Return ReturnStr
 
     End Function
-
 
     Function ConvertList2String(ByVal input As Object) As String
 

@@ -655,7 +655,7 @@ Public Class PFPForm
 
         'DEXAPIInfo += "}}"
 
-        DEXAPIInfo += "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""Info"","
+        DEXAPIInfo += "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""primaryNode"":""" + PrimaryNode + """,""response"":""Info"","
         DEXAPIInfo += """requests"":{"
         DEXAPIInfo += """Info"":{""method"":""GET"",""description"":""shows this info"",""queryExample"":""/API/v1/Info""},"
         DEXAPIInfo += """Candles"":[{""method"":""GET"",""description"":""response candleentries for chart plotting"",""queryExample"":""/API/v1/Candles/USD_SIGNA?days=3&tickmin=60""},"
@@ -679,6 +679,11 @@ Public Class PFPForm
 
         DEXAPIInfo += "],"
 
+        DEXAPIInfo += """Broadcast"":[{""command"":""broadcast"",""method"":""GET,POST"",""description"":""broadcasts an signed transaction to the network of the token"",""queryExample"":""/API/v1/Broadcast/{token (eg. Signum,BTC)}?SignedTransactionBytes={hex string}"","
+        DEXAPIInfo += """queryExample2"":""/API/v1/Broadcast?Token={token (eg. Signum,BTC)}&SignedTransactionBytes={hex string}"","
+        DEXAPIInfo += """queryExample3"":""/API/v1/Broadcast"","
+        DEXAPIInfo += """bodyExample"":{""token"":""BTC"",""signedTransactionBytes"":""{hex string}""}}"
+        DEXAPIInfo += "],"
 
         DEXAPIInfo += """Bitcoin"":[{""command"":""create"",""method"":""GET,POST"",""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1/Bitcoin/Transaction/{32 bytes in Hex}?BitcoinOutputType=TimeLockChainSwapHash&BitcoinSenderAddress={27 to 34 chars}&privateKey={32 bytes in Hex (NOT RECOMMENDED)}&BitcoinRecipientAddress={27 to 34 chars}&BitcoinChainSwapHash={32 bytes in Hex}&BitcoinAmountNQT={unsigned long}""},"
         DEXAPIInfo += "{""command"":""create"",""method"":""POST"",""description"":""creates an bitcoin transaction"",""queryExample"":""/API/v1/Bitcoin/Transaction"",""bodyExample"":{""inputs"":[{""transaction"":""{32 bytes in Hex}"",""index"":0,""script"":""{hex string}"",""privateKey"":""{32 bytes in Hex (NOT RECOMMENDED)}"",""address"":""{32 bytes in Hex}""}],""outputs"":[{""type"":""TimeLockChainSwapHash"",""recipient"":""{27 to 34 chars}"",""change"":""{27 to 34 chars}"",""chainSwapHash"":""{32 bytes in Hex}"",""amount"":0.00001234}]}}"
@@ -1043,7 +1048,7 @@ Public Class PFPForm
             Dim XItem As AbsClsXItem = ClsXItemAdapter.NewXItem(NuMarket)
             Dim Info As String = XItem.GetXItemInfo()
 
-            If Not IsErrorOrWarning(Info) Then
+            If Not IsErrorOrWarning(Info) And Not Info.Trim() = "" Then
                 If (Not GlobalPIN.Trim() = "" And Not GetINISetting(E_Setting.PINFingerPrint, "").Trim() = "") Or GetINISetting(E_Setting.PINFingerPrint, "").Trim() = "" Then
 
                     'TODO: XItem adapter
@@ -6990,7 +6995,7 @@ Public Class PFPForm
                         Dim Bitcoin As AbsClsXItem = ClsXItemAdapter.NewXItem(XItem)
                         Dim Info As String = Bitcoin.GetXItemInfo()
 
-                        If Not IsErrorOrWarning(Info) Then
+                        If Not IsErrorOrWarning(Info) And Not Info.Trim() = "" Then
                             Dim Wait As Boolean = LoadBitcoin()
                         End If
                     Case Else
@@ -7128,6 +7133,7 @@ Public Class PFPForm
 
 
             If GetINISetting(E_Setting.TCPAPIEnable, True) Then ' ChBxTCPAPI.Checked Then
+                LoadTCPAPIDEXContracts(DEXContractList)
                 LoadTCPAPIOpenOrders(T_OpenDEXContractList)
                 LoadTCPAPIHistorys(T_OrderList)
             End If
@@ -7137,8 +7143,6 @@ Public Class PFPForm
 
             Dim Minval As Double = Double.MaxValue
             Dim Maxval As Double = 0.0
-
-            Dim TradeHistoryJSON As String = "{""response"":""GetCandles"",""PAIR"":""" + Xitem.Trim + "/SIGNA"",""DAYS"":""" + CoBxChartVal.ToString + """,""TICKMIN"":""" + CoBxTickVal.ToString + """,""DATA"":{"
 
             For Each HisCandle As S_Candle In Chart
 
@@ -7516,6 +7520,37 @@ Public Class PFPForm
 #Region "TCP API"
 
     Property TCPAPI As ClsTCPAPI
+
+    Sub LoadTCPAPIDEXContracts(ByVal DEXContracts As List(Of ClsDEXContract))
+
+        Try
+
+            Dim ChannelsJSON As String = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1"",""contentType"":""application/json"",""response"":""SmartContract"",""data"":[ "
+
+            For Each T_Channel As ClsDEXContract In DEXContracts
+
+                ChannelsJSON += "{"
+                ChannelsJSON += """at"":""" + T_Channel.ID.ToString() + ""","
+                ChannelsJSON += """atRS"":""" + T_Channel.Address + ""","
+                ChannelsJSON += """creatorID"":""" + T_Channel.CreatorID.ToString() + ""","
+                ChannelsJSON += """creatorRS"":""" + T_Channel.CreatorAddress + ""","
+                ChannelsJSON += """status"":""" + T_Channel.Status.ToString() + ""","
+                ChannelsJSON += """deniability"":""" + T_Channel.Deniability.ToString().ToLower() + ""","
+                ChannelsJSON += "},"
+
+            Next
+
+            ChannelsJSON = ChannelsJSON.Remove(ChannelsJSON.Length - 1)
+            ChannelsJSON += "]}"
+
+            Dim Parameters As List(Of String) = New List(Of String) '({"type=" + Type, "pair=" + XItem})
+            RefreshTCPAPIResponse("SmartContract", Parameters, ChannelsJSON)
+
+        Catch ex As Exception
+            IsErrorOrWarning(Application.ProductName + "-error in LoadTCPAPIOpenOrders(): -> " + ex.Message)
+        End Try
+
+    End Sub
 
     Sub LoadTCPAPIOpenOrders(ByVal OpenDEXContracts As List(Of ClsDEXContract))
 
