@@ -662,6 +662,18 @@ Public Class PFPForm
         DEXAPIInfo += GetCandlesInfo
         DEXAPIInfo += "],"
 
+        DEXAPIInfo += """SmartContracts"":[{""command"":""show"",""method"":""GET"",""description"":""shows the list of the DEX contracts"","
+        DEXAPIInfo += """queryExample"":""/API/v1/SmartContract{?ID={long[,long,long]} (OPTIONAL)}"","
+        DEXAPIInfo += """queryExample2"":""/API/v1/SmartContract"","
+        DEXAPIInfo += """queryBody2"":{""id"":[""{long}"",""{long (OPTIONAL)}"",""{long (OPTIONAL)}""]}},"
+
+        DEXAPIInfo += "{""command"":""create"",""method"":""POST"",""description"":""creates a new DEX smart contract"","
+        DEXAPIInfo += """queryExample"":""/API/v1/SmartContract{?privateKey={32 bytes in Hex (NOT RECOMMENDED)} (OPTIONAL)}"","
+        DEXAPIInfo += """queryBody"":{""privateKey"":""{32 bytes in Hex (NOT RECOMMENDED)}""},"
+        DEXAPIInfo += """queryExample2"":""/API/v1/SmartContract{?publicKey={32 bytes in Hex} (OPTIONAL)}"","
+        DEXAPIInfo += """queryBody2"":{""publicKey"":""{32 bytes in Hex}""}}"
+
+        DEXAPIInfo += "],"
 
         DEXAPIInfo += """Orders"":[{""command"":""show"",""method"":""GET"",""description"":""shows the list of open orders"",""queryExample"":""/API/v1/Orders""},"
 
@@ -669,7 +681,7 @@ Public Class PFPForm
         DEXAPIInfo += """queryExample"":""/API/v1/Orders{/id or address (OPTIONAL)}?PublicKey={32 bytes in Hex}&Type=SellOrder&AmountNQT={unsigned long}&CollateralNQT={unsigned long}&XAmountNQT={unsigned long}&XItem=USD"","
         DEXAPIInfo += """queryExample2"":""/API/v1/Orders{/id or address (OPTIONAL)}?PassPhrase={string (NOT RECOMMENDED)}&Type=SellOrder&AmountNQT={unsigned long}&CollateralNQT={unsigned long}&XAmountNQT={unsigned long}&XItem=USD""},"
 
-        DEXAPIInfo += "{""command"":""create"",""method"":""POST"",""description"":""creates a new order on a contract"","
+        DEXAPIInfo += "{""command"":""create"",""method"":""POST"",""description"":""creates a new order on a DEX contract"","
         DEXAPIInfo += """queryExample"":""/API/v1/Orders"","
         DEXAPIInfo += """bodyExample"":{""contract"":""{id or address (OPTIONAL)}"",""type"":""SellOrder"",""passPhrase"":""{string (NOT RECOMMENDED)} (Optional)"",""publicKey"":""{32 bytes in Hex}"",""amountNQT"":""{unsigned long}"",""collateralNQT"":""{unsigned long}"",""xAmountNQT"":""{unsigned long}"",""xItem"":""USD""}},"
 

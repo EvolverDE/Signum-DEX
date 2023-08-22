@@ -259,7 +259,7 @@ Public Class ClsAPIRequest
 
                                         If Path.Count > 3 Then
 
-                                            'POST/API/v1/SmartContract?ID={long[,long,long]}
+                                            'GET/API/v1/SmartContract?ID={long[,long,long]}
 
                                             If Path(3).Contains("?ID=") Then
                                                 Dim ParaString As String = Path(3).Substring(Path(3).IndexOf("?"c) + 1)
@@ -268,7 +268,7 @@ Public Class ClsAPIRequest
 
                                         ElseIf C_RAWRequestList.Contains("{") Then
 
-                                            'POST/API/v1/SmartContract
+                                            'GET/API/v1/SmartContract
                                             '{ "id": [
                                             '   "{long}",
                                             '   "{long (OPTIONAL)}",
