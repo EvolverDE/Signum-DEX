@@ -168,6 +168,29 @@ PFP
  <param name="UnconformedToo">The Boolean to check in Unconfirmed ones</param>
  <returns>vout,confirmations,value and hex of the lockingscript</returns>
 </member>
+<member name="M:PFP.ClsBitcoinAPI.ScanTXOUTSet(System.String,System.String)">
+ <summary>
+ This method needs to be Threaded
+ </summary>
+ <param name="Address"></param>
+ <param name="Command">start, status, abort</param>
+ <returns></returns>
+</member>
+<member name="M:PFP.ClsBitcoinAPI.ScanBlocks(System.String,System.String)">
+ <summary>
+ This method needs to be Threaded
+ </summary>
+ <param name="Address"></param>
+ <param name="Command">start, status, abort</param>
+ <returns></returns>
+</member>
+<member name="M:PFP.ClsBitcoinAPI.ImportDescriptors(System.String,System.String)">
+ <summary>
+ This Method needs to be Threaded
+ </summary>
+ <param name="Address"></param>
+ <returns></returns>
+</member>
 <member name="M:PFP.ClsOutput.#ctor(System.String,System.Double,System.Boolean)">
  <summary>
  Create a Standard Script

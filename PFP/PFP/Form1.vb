@@ -7547,7 +7547,7 @@ Public Class PFPForm
                 ChannelsJSON += """creatorID"":""" + T_Channel.CreatorID.ToString() + ""","
                 ChannelsJSON += """creatorRS"":""" + T_Channel.CreatorAddress + ""","
                 ChannelsJSON += """status"":""" + T_Channel.Status.ToString() + ""","
-                ChannelsJSON += """deniability"":""" + T_Channel.Deniability.ToString().ToLower() + ""","
+                ChannelsJSON += """deniability"":""" + T_Channel.Deniability.ToString().ToLower() + """"
                 ChannelsJSON += "},"
 
             Next

@@ -428,8 +428,7 @@
 
     Public Function CreateNewBitcoinWallet(ByVal WalletName As String) As Boolean
         Dim BitNET As ClsBitcoinNET = New ClsBitcoinNET()
-        Dim Result As Boolean = BitNET.CreateNewWallet(WalletName)
-        Return Result
+        Return BitNET.CreateNewWallet(WalletName)
     End Function
 
     Public Function LoadBitcoinWallet(ByVal WalletName As String) As Boolean
@@ -444,14 +443,17 @@
         Return Result
     End Function
 
-    Public Function CreateNewBitcoinAddress(ByVal Address As String) As Boolean
-        Dim BitNET As ClsBitcoinNET = New ClsBitcoinNET()
-        Return BitNET.CreateNewAddress(Address)
-    End Function
+#Region "deprecaded"
+    'Public Function CreateNewBitcoinAddress(ByVal Address As String) As Boolean
+    '    Dim BitNET As ClsBitcoinNET = New ClsBitcoinNET()
+    '    Return BitNET.CreateNewAddress(Address)
+    'End Function
+#End Region
 
-    Public Function ImportNewBitcoinAddress(ByVal Address As String) As Boolean
+    Public Function ImportBitcoinDescriptor(ByVal Address As String, Optional ByVal FromTimestamp As String = """now""") As Boolean
         Dim BitNET As ClsBitcoinNET = New ClsBitcoinNET()
-        Return BitNET.ImportAddress(Address)
+        Dim Result As String = BitNET.ImportDescriptor(Address, FromTimestamp)
+        Return True
     End Function
 
 #End Region

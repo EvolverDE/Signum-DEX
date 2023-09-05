@@ -26,13 +26,25 @@ Public Class ClsBitcoinNET
         End Sub
     End Structure
 
-    Enum E_BitcoinConfigEntry
+    Public Structure S_ThreadedMethod
+        Dim APICALL As ClsBitcoinAPI.BTC_API_CALLS
+        Dim CallThread As Threading.Thread
+        Dim Result As String
+    End Structure
+
+    Private Enum E_BitcoinConfigEntry
         BITCOINAPINODE = 0
-        BITCOINAPIWALLET = 1
-        BITCOINAPIUSER = 2
-        BITCOINAPIPASSWORD = 3
-        BITCOINDEXADDRESS = 4
-        BITCOINMNEMONIC = 5
+        BITCOINWALLET = 1
+        BITCOINAPIWALLET = 2
+        BITCOINAPIUSER = 3
+        BITCOINAPIPASSWORD = 4
+        BITCOINDEXADDRESS = 5
+        BITCOINMNEMONIC = 6
+    End Enum
+
+    Public Enum E_Output
+        JSON = 0
+        XML = 1
     End Enum
 
     Private Function GetBitcoinConfig(ByVal ConfigEntry As E_BitcoinConfigEntry, Optional ByVal DefaultValue As String = "") As String
@@ -46,7 +58,7 @@ Public Class ClsBitcoinNET
     Sub New()
 
         Dim API_URL As String = GetBitcoinConfig(E_BitcoinConfigEntry.BITCOINAPINODE, "http://127.0.0.1:18332")
-        Dim API_Wallet As String = GetBitcoinConfig(E_BitcoinConfigEntry.BITCOINAPIWALLET, "DEXWALLET")
+        Dim API_Wallet As String = GetBitcoinConfig(E_BitcoinConfigEntry.BITCOINWALLET, "DEXWALLET")
 
         Dim API_User As String = GetBitcoinConfig(E_BitcoinConfigEntry.BITCOINAPIUSER, "bitcoin")
         Dim API_Password As String = GetBitcoinConfig(E_BitcoinConfigEntry.BITCOINAPIPASSWORD, "bitcoin")
@@ -67,7 +79,7 @@ Public Class ClsBitcoinNET
         Dim Result As String = New ClsJSONAndXMLConverter(BTC_API.CreateWallet(WalletName), ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
         '<name>DEXWALLET</name><warning></warning>
 
-        If IsErrorOrWarning(Result) Then
+        If IsErrorOrWarning(Result, Application.ProductName + "-error in CreateNewWallet(): -> ", True) Then
             Return False
         End If
 
@@ -82,15 +94,28 @@ Public Class ClsBitcoinNET
         End If
 
         '{"result":{"name":"DEXWALLET","warning":""},"Error":null,"id":1}
-        Dim Result As String = New ClsJSONAndXMLConverter(BTC_API.LoadWallet(WalletName), ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        Dim Result As String = LoadWalletRaw(WalletName)
         '<name>DEXWALLET</name><warning></warning>
         '<error><code>-35</code><0>message</0><1>Wallet file verification failed. Refusing to load database. Data file 'C</1><2>\\Coinz\\bitcoin_testnet\\testnet3\\wallets\\DEXWALLET\\wallet.dat' is already loaded.</2></error>
 
-        If IsErrorOrWarning(Result) Then
+        If IsErrorOrWarning(Result, Application.ProductName + "-error in LoadWallet(): -> ", True) Then
             Return False
         End If
 
         Return True
+
+    End Function
+
+    Public Function LoadWalletRaw(ByVal WalletName As String) As String
+
+        If WalletName.Trim = "" Then
+            Return ""
+        End If
+
+        '{"result":{"name":"DEXWALLET","warning":""},"Error":null,"id":1}
+        Return New ClsJSONAndXMLConverter(BTC_API.LoadWallet(WalletName), ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        '<name>DEXWALLET</name><warning></warning>
+        '<error><code>-35</code><0>message</0><1>Wallet file verification failed. Refusing to load database. Data file 'C</1><2>\\Coinz\\bitcoin_testnet\\testnet3\\wallets\\DEXWALLET\\wallet.dat' is already loaded.</2></error>
 
     End Function
 
@@ -104,7 +129,7 @@ Public Class ClsBitcoinNET
         Dim Result As String = New ClsJSONAndXMLConverter(BTC_API.UnloadWallet(WalletName), ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
         '<name>DEXWALLET</name><warning></warning>
 
-        If IsErrorOrWarning(Result) Then
+        If IsErrorOrWarning(Result, Application.ProductName + "-error in UnloadWallet(): -> ", True) Then
             Return False
         End If
 
@@ -113,56 +138,179 @@ Public Class ClsBitcoinNET
     End Function
 
 
-    Public Function CreateNewAddress(ByVal Address As String) As Boolean
+#Region "deprecaded"
+
+    'Public Function CreateNewAddress(ByVal Address As String) As Boolean
+
+    '    Dim Result As String = ""
+
+    '    Dim LambdaThread As New Threading.Thread(
+    '        Sub()
+    '            Result = BTC_API.ImportAddress(Address, "", False)
+    '        End Sub
+    '    )
+    '    LambdaThread.Start()
+
+    '    While LambdaThread.IsAlive
+    '        Application.DoEvents()
+    '    End While
+
+    '    '{"result":null, "error": null, "id": 1}
+    '    Result = New ClsJSONAndXMLConverter(Result, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+
+    '    If IsErrorOrWarning(Result, Application.ProductName + "-error in CreateNewAddress(): -> ", True) Then
+    '        Return False
+    '    End If
+
+    '    Return True
+
+    'End Function
+
+    'Public Function ImportAddress(ByVal Address As String) As Boolean
+
+    '    Dim Result As String = BTC_API.ImportAddress(Address, "", True)
+
+    '    'Dim LambdaThread As New Threading.Thread(
+    '    '    Sub()
+    '    '        Result = BTC_API.ImportAddress(Address, "", True)
+    '    '    End Sub
+    '    ')
+    '    'LambdaThread.Start()
+
+    '    'While LambdaThread.IsAlive
+    '    '    Application.DoEvents()
+    '    'End While
+
+    '    '{"result":null, "error": null, "id": 1}
+    '    '{"result":null,"error":{"code":-4,"message":"Wallet is currently rescanning. Abort existing rescan or wait."},"id":1}
+    '    Result = New ClsJSONAndXMLConverter(Result, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+
+    '    If IsErrorOrWarning(Result, Application.ProductName + "-error in ImportAddress(): -> ", True) Then
+    '        Return False
+    '    End If
+
+    '    Return True
+
+    'End Function
+
+    'Public Function ImportAddress(ByVal Address As String, ByVal Output As E_Output) As String
+
+    '    Dim Result As String = BTC_API.ImportAddress(Address, "", True)
+
+    '    Return Result
+    '    'return New ClsJSONAndXMLConverter(Result, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+
+    'End Function
+
+#End Region
+
+    Public Function ImportDescriptor(ByVal Address As String, Optional ByVal FromTimestamp As String = """now""") As String
 
         Dim Result As String = ""
+        Dim found As Boolean = False
+        For i As Integer = 0 To BitcoinNodeRequestList.Count - 1
+            Dim T_Thread As S_ThreadedMethod = BitcoinNodeRequestList(i)
+            If T_Thread.APICALL = ClsBitcoinAPI.BTC_API_CALLS.importdescriptors Then
+                found = True
 
-        Dim LambdaThread As New Threading.Thread(
-            Sub()
-                Result = BTC_API.ImportAddress(Address, "", False)
-            End Sub
-        )
-        LambdaThread.Start()
+                If T_Thread.CallThread.ThreadState = Threading.ThreadState.Running Then
+                    '{"result":{"walletname":"TESTWALLET","walletversion":169900,"format":"sqlite","balance":0.00012628,"unconfirmed_balance":0.00000000,"immature_balance":0.00000000,"txcount":3,"keypoolsize":0,"keypoolsize_hd_internal":0,"paytxfee":0.00000000,"private_keys_enabled":false,"avoid_reuse":false,"scanning":{"duration":0,"progress":0},"descriptors":true,"external_signer":false},"error":null,"id":1}
+                    Result = New ClsJSONAndXMLConverter(BTC_API.GetWalletInfo(), ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+                    Result = GetStringBetween(Result, "<scanning>", "</scanning>")
+                    Return GetStringBetween(Result, "<progress>", "</progress>")
+                Else
+                    '{"result":[{"success":true}],"error":null,"id":1}
+                    Result = New ClsJSONAndXMLConverter(T_Thread.Result, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+                    Result = GetStringBetween(Result, "<success>", "</success>")
+                    BitcoinNodeRequestList.RemoveAt(i)
+                    Return Result
+                End If
 
-        While LambdaThread.IsAlive
-            Application.DoEvents()
-        End While
+                Exit For
+            End If
 
-        '{"result":null, "error": null, "id": 1}
-        Result = New ClsJSONAndXMLConverter(Result, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        Next
 
-        If IsErrorOrWarning(Result) Then
-            Return False
+        If Not found Then
+
+            Dim CallThread As S_ThreadedMethod = New S_ThreadedMethod
+            CallThread.APICALL = ClsBitcoinAPI.BTC_API_CALLS.importdescriptors
+            CallThread.CallThread = New Threading.Thread(AddressOf SubImportDescriptor)
+            BitcoinNodeRequestList.Add(CallThread)
+            BitcoinNodeRequestList(BitcoinNodeRequestList.Count - 1).CallThread.Start({Address, FromTimestamp, (BitcoinNodeRequestList.Count - 1).ToString()})
+
         End If
 
-        Return True
+        '{"result":{"walletname":"TESTWALLET","walletversion":169900,"format":"sqlite","balance":0.00012628,"unconfirmed_balance":0.00000000,"immature_balance":0.00000000,"txcount":3,"keypoolsize":0,"keypoolsize_hd_internal":0,"paytxfee":0.00000000,"private_keys_enabled":false,"avoid_reuse":false,"scanning":false,"descriptors":true,"external_signer":false},"error":null,"id":1}
+        Result = New ClsJSONAndXMLConverter(BTC_API.GetWalletInfo(), ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        Result = GetStringBetween(Result, "<scanning>", "</scanning>")
+        Return GetStringBetween(Result, "<progress>", "</progress>")
 
     End Function
 
-    Public Function ImportAddress(ByVal Address As String) As Boolean
+    Private Sub SubImportDescriptor(ByVal Paras As Object)
 
-        Dim Result As String = BTC_API.ImportAddress(Address, "", True)
+        Dim ParaList As List(Of String) = New List(Of String)(DirectCast(Paras, String()))
+        Dim ThreadIdx As Integer = CInt(ParaList(ParaList.Count - 1))
+        Dim SubThread As S_ThreadedMethod = BitcoinNodeRequestList(ThreadIdx)
+        SubThread.Result = BTC_API.ImportDescriptors(ParaList(0), ParaList(1))
+        BitcoinNodeRequestList(ThreadIdx) = SubThread
 
-        'Dim LambdaThread As New Threading.Thread(
-        '    Sub()
-        '        Result = BTC_API.ImportAddress(Address, "", True)
-        '    End Sub
-        ')
-        'LambdaThread.Start()
+    End Sub
 
-        'While LambdaThread.IsAlive
-        '    Application.DoEvents()
-        'End While
+    Public Function GetBalance() As String
 
-        '{"result":null, "error": null, "id": 1}
-        '{"result":null,"error":{"code":-4,"message":"Wallet is currently rescanning. Abort existing rescan or wait."},"id":1}
-        Result = New ClsJSONAndXMLConverter(Result, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
+        Dim Result As String = BTC_API.GetBalance()
+        Return Result
 
-        If IsErrorOrWarning(Result) Then
-            Return False
-        End If
+    End Function
 
-        Return True
+    Public Function GetBalances() As String
+
+        Dim Result As String = BTC_API.GetBalances()
+        Return Result
+
+    End Function
+
+    Public Function GetDescriptorInfo(ByVal Descriptor As String) As String
+
+        Dim Result As String = BTC_API.GetDescriptorInfo(Descriptor)
+        Return Result
+
+    End Function
+
+    Public Function GetRawTransaction(ByVal TransactionID As String) As String
+
+        Dim ResultJSON As String = BTC_API.GetRawTransaction(TransactionID)
+        Return ResultJSON
+
+    End Function
+
+    Public Function GetTransaction(ByVal TransactionID As String) As String
+
+        Dim ResultJSON As String = BTC_API.GetTransaction(TransactionID)
+        Return ResultJSON
+
+    End Function
+
+    Public Function ListUnspentRaw(ByVal Address As String) As String
+
+        Dim ResultJSON As String = BTC_API.ListUnspent(Address)
+        Return ResultJSON
+
+    End Function
+
+    Public Function GetReceivedByAddress(ByVal Address As String) As String
+
+        Dim ResultJSON As String = BTC_API.GetReceivedByAddress(Address)
+        Return ResultJSON
+
+    End Function
+
+    Public Function ScanBlocks(ByVal Address As String) As String
+
+        Dim ResultJSON As String = BTC_API.ScanBlocks(Address)
+        Return ResultJSON
 
     End Function
 
@@ -172,13 +320,28 @@ Public Class ClsBitcoinNET
 
     Public Function GetUnspent(Optional ByVal Address As String = "") As List(Of S_UnspentTransactionOutput)
 
-        Dim XML_Vouts As List(Of KeyValuePair(Of String, Object)) = BTC_API.ListUnspent(Address)
+        Dim Result As String = BTC_API.ListUnspent(Address)
+
+        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Result, ClsJSONAndXMLConverter.E_ParseType.JSON)
+
+        Dim XML_Vouts As List(Of KeyValuePair(Of String, Object)) = Converter.Search(Of List(Of KeyValuePair(Of String, Object)))("result")
+
+        If XML_Vouts.Count > 0 Then
+            If XML_Vouts(0).Value.GetType = GetType(List(Of KeyValuePair(Of String, Object))) Then
+                Dim KeyVals As List(Of KeyValuePair(Of String, Object)) = DirectCast(XML_Vouts(0).Value, List(Of KeyValuePair(Of String, Object)))
+                XML_Vouts = KeyVals
+            Else
+                Dim KeyVals As List(Of KeyValuePair(Of String, Object)) = New List(Of KeyValuePair(Of String, Object))
+                KeyVals.Add(New KeyValuePair(Of String, Object)("result", XML_Vouts))
+                XML_Vouts = KeyVals
+            End If
+        End If
 
         Dim T_PrevTXList As List(Of S_UnspentTransactionOutput) = New List(Of S_UnspentTransactionOutput)
 
         For Each Entry As KeyValuePair(Of String, Object) In XML_Vouts
 
-            Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Entry)
+            Converter = New ClsJSONAndXMLConverter(Entry)
 
             Dim T_PrevTX As S_UnspentTransactionOutput = New S_UnspentTransactionOutput("")
 
@@ -250,7 +413,7 @@ Public Class ClsBitcoinNET
 
         Dim AbortReScanResult As String = BTC_API.AbortRescan()
 
-        If Not IsErrorOrWarning(AbortReScanResult) Then
+        If Not IsErrorOrWarning(AbortReScanResult, Application.ProductName + "-error in AbortReScan(): -> ", True) Then
             Return New ClsJSONAndXMLConverter(AbortReScanResult, ClsJSONAndXMLConverter.E_ParseType.JSON).XMLString
         Else
             Return AbortReScanResult
@@ -283,6 +446,51 @@ Public Class ClsBitcoinNET
         Return BTC_API.GetTXOut(TX, VOut)
 
     End Function
+
+    Public Function ScanTXOUTSet(Optional ByVal Address As String = "") As String
+
+        Dim found As Boolean = False
+        For i As Integer = 0 To BitcoinNodeRequestList.Count - 1
+            Dim T_Thread As S_ThreadedMethod = BitcoinNodeRequestList(i)
+            If T_Thread.APICALL = ClsBitcoinAPI.BTC_API_CALLS.scantxoutset Then
+                found = True
+
+                If T_Thread.CallThread.ThreadState = Threading.ThreadState.Running Then
+                    Return BTC_API.ScanTXOUTSet(Address, "status")
+                Else
+                    Dim T_Result As String = T_Thread.Result
+                    BitcoinNodeRequestList.RemoveAt(i)
+                    Return T_Result
+                End If
+
+                Exit For
+            End If
+
+        Next
+
+        If Not found Then
+
+            Dim CallThread As S_ThreadedMethod = New S_ThreadedMethod
+            CallThread.APICALL = ClsBitcoinAPI.BTC_API_CALLS.scantxoutset
+            CallThread.CallThread = New Threading.Thread(AddressOf SubScanTXOUTSet)
+            BitcoinNodeRequestList.Add(CallThread)
+            BitcoinNodeRequestList(BitcoinNodeRequestList.Count - 1).CallThread.Start({Address, "start", (BitcoinNodeRequestList.Count - 1).ToString()})
+
+        End If
+
+        Return BTC_API.ScanTXOUTSet(Address, "status")
+
+    End Function
+
+    Private Sub SubScanTXOUTSet(ByVal Paras As Object)
+
+        Dim ParaList As List(Of String) = New List(Of String)(DirectCast(Paras, String()))
+        Dim ThreadIdx As Integer = CInt(ParaList(ParaList.Count - 1))
+        Dim SubThread As S_ThreadedMethod = BitcoinNodeRequestList(ThreadIdx)
+        SubThread.Result = BTC_API.ScanTXOUTSet(ParaList(0), ParaList(1))
+        BitcoinNodeRequestList(ThreadIdx) = SubThread
+
+    End Sub
 
     Public Function GetTXDetails(ByVal TXID As String) As List(Of String)
 

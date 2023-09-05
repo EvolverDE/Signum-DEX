@@ -257,52 +257,10 @@ Public Class FrmBitcoinAccounts
     Private Function AddAddress(ByVal Address As String) As Boolean
 
         Dim XItem As ClsBitcoin = New ClsBitcoin
-
         If ChBxReScan.Checked Then
-            If XItem.LoadBitcoinWallet(GetINISetting(E_Setting.BitcoinWallet, "")) Then
-            End If
-
-            Dim Result As Boolean = False
-            Dim LambdaThread As New Threading.Thread(
-                Sub()
-                    Result = XItem.ImportNewBitcoinAddress(Address)
-                End Sub
-            )
-            LambdaThread.Start()
-
-            'While LambdaThread.IsAlive
-            '    Application.DoEvents()
-
-            'Dim WalletInfo As String = XItem.GetWalletInfo()
-            ''<walletname>DEXWALLET</walletname><walletversion>169900</walletversion><format>bdb</format><balance>0.00000000</balance><unconfirmed_balance>0.00000000</unconfirmed_balance><immature_balance>0.00000000</immature_balance><txcount>46</txcount><keypoololdest>1673007808</keypoololdest><keypoolsize>1000</keypoolsize><hdseedid>d3eb50b74aab6b30fc1ef5de130dfff614170668</hdseedid><keypoolsize_hd_internal>1000</keypoolsize_hd_internal><paytxfee>0.00000000</paytxfee><private_keys_enabled>true</private_keys_enabled><avoid_reuse>false</avoid_reuse><scanning><duration>16</duration><progress>0.004873486990590367</progress></scanning><descriptors>false</descriptors>
-            'WalletInfo = WalletInfo
-
-            'Dim Scanning As String = GetStringBetween(WalletInfo, "<scanning>", "</scanning>")
-            'Dim Progress As Double = GetDoubleBetween(Scanning, "<progress>", "</progress>")
-
-
-            'For i As Integer = 0 To 100
-            '    Threading.Thread.Sleep(1)
-            '    Application.DoEvents()
-            'Next
-
-            'End While
-
-
-            'If XItem.ImportNewBitcoinAddress(Address) Then
-            '    ClsMsgs.MBox(Address + " successfully added to " + GetINISetting(E_Setting.BitcoinWallet, ""))
-            Return True
-            'End If
-
+            Return XItem.ImportBitcoinDescriptor(Address, "0")
         Else
-
-            If XItem.LoadBitcoinWallet(GetINISetting(E_Setting.BitcoinWallet, "")) Then
-            End If
-            If XItem.CreateNewBitcoinAddress(Address) Then
-                'ClsMsgs.MBox(Address + " successfully added to " + GetINISetting(E_Setting.BitcoinWallet, ""))
-                Return True
-            End If
-
+            Return XItem.ImportBitcoinDescriptor(Address)
         End If
 
         Return False
@@ -316,7 +274,9 @@ Public Class FrmBitcoinAccounts
 
     Private Sub BtCreateWallet_Click(sender As Object, e As EventArgs) Handles BtCreateWallet.Click
         Dim XItem As ClsBitcoin = New ClsBitcoin
-        XItem.CreateNewBitcoinWallet(TBWallet.Text)
+        If XItem.CreateNewBitcoinWallet(TBWallet.Text) Then
+            SetINISetting(E_Setting.BitcoinWallet, TBWallet.Text)
+        End If
     End Sub
 
     Private Sub BtUnloadWallet_Click(sender As Object, e As EventArgs) Handles BtUnloadWallet.Click
@@ -337,13 +297,107 @@ Public Class FrmBitcoinAccounts
             StatusBar.Value = 0
             StatusBar.Visible = False
             BtAbortScan.Enabled = False
+            If LVAddresses.SelectedItems.Count > 0 Then
+                BtRescan.Enabled = True
+                BtRefresh.Enabled = True
+            End If
         Else
             StatusLabel.Text = "(Re)scanning... " + Math.Round(Progress * 100, 2).ToString() + " %"
             StatusBar.Visible = True
             StatusBar.Value = Progress * 100
             BtAbortScan.Enabled = True
+            BtRescan.Enabled = False
+            BtRefresh.Enabled = False
         End If
 
+    End Sub
+
+    Private Sub LVAddresses_MouseDown(sender As Object, e As MouseEventArgs) Handles LVAddresses.MouseDown
+        LVAddresses.ContextMenuStrip = Nothing
+    End Sub
+
+    Private Sub LVAddresses_MouseUp(sender As Object, e As MouseEventArgs) Handles LVAddresses.MouseUp
+        LVAddresses.ContextMenuStrip = Nothing
+
+        If LVAddresses.SelectedItems.Count > 0 Then
+
+            Dim LVi As ListViewItem = LVAddresses.SelectedItems(0)
+
+            Dim Address As String = Convert.ToString(GetLVColNameFromSubItem(LVAddresses, "Address", LVi))
+
+            Dim LVContextMenu As ContextMenuStrip = New ContextMenuStrip
+
+            Dim LVCMItem As ToolStripMenuItem = New ToolStripMenuItem
+            LVCMItem.Text = "copy address"
+            LVCMItem.Tag = Address
+            AddHandler LVCMItem.Click, AddressOf Copy2CB
+            LVContextMenu.Items.Add(LVCMItem)
+
+            LVAddresses.ContextMenuStrip = LVContextMenu
+
+        End If
+    End Sub
+
+    Private Sub Copy2CB(sender As Object, e As EventArgs)
+
+        Try
+            If sender.GetType.Name = GetType(ToolStripMenuItem).Name Then
+
+                Dim T_TSMI As ToolStripMenuItem = DirectCast(sender, ToolStripMenuItem)
+
+                If Not T_TSMI.Tag Is Nothing Then
+                    Clipboard.SetText(T_TSMI.Tag.ToString)
+                Else
+
+                End If
+
+            End If
+
+        Catch ex As Exception
+
+        End Try
+
+    End Sub
+
+    Private Sub BtRescan_Click(sender As Object, e As EventArgs) Handles BtRescan.Click
+        BtRescan.Enabled = False
+
+        If LVAddresses.SelectedItems.Count > 0 Then
+
+            Dim Address As String = GetLVColNameFromSubItem(LVAddresses, "Address", LVAddresses.SelectedItems(0))
+
+            Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+            Dim Result As String = BitNet.ImportDescriptor(Address, "0")
+            Result = Result
+
+        End If
+
+    End Sub
+
+    Private Sub LVAddresses_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LVAddresses.SelectedIndexChanged
+
+        BtRescan.Enabled = False
+        BtRefresh.Enabled = False
+
+        If LVAddresses.SelectedItems.Count > 0 Then
+            BtRescan.Enabled = True
+            BtRefresh.Enabled = True
+        End If
+
+    End Sub
+
+    Private Sub BtRefresh_Click(sender As Object, e As EventArgs) Handles BtRefresh.Click
+        BtRefresh.Enabled = False
+
+        If LVAddresses.SelectedItems.Count > 0 Then
+
+            Dim Address As String = GetLVColNameFromSubItem(LVAddresses, "Address", LVAddresses.SelectedItems(0))
+
+            Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+            Dim Result As String = BitNet.ImportDescriptor(Address)
+            Result = Result
+
+        End If
     End Sub
 
 End Class

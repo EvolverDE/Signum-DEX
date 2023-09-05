@@ -11,6 +11,8 @@ Module ModBitcoinFunctions
     Property BitcoinConfigFile As String = Application.StartupPath + "\Settings.ini"
     Property BitcoinConfigFileSection As String = "Bitcoin"
 
+    Property BitcoinNodeRequestList As List(Of ClsBitcoinNET.S_ThreadedMethod) = New List(Of ClsBitcoinNET.S_ThreadedMethod) ' TODO: this list has to be cleared on program shutdown
+
     Public Function IntToHex(ByVal Int As Integer, Optional ByVal Length As Integer = -1, Optional BigEndian As Boolean = True) As String
         Dim BI As BigInteger = New BigInteger(Int)
         Return BigIntToHEX(BI, Length, BigEndian)

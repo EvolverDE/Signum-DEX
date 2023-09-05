@@ -249,6 +249,35 @@ Partial Class FrmDevelope
         Me.SplitContainer8 = New System.Windows.Forms.SplitContainer()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.LiBoTestPeers = New System.Windows.Forms.ListBox()
+        Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.SplitContainer15 = New System.Windows.Forms.SplitContainer()
+        Me.TBTestBitcoinAddress = New System.Windows.Forms.TextBox()
+        Me.GroupBox12 = New System.Windows.Forms.GroupBox()
+        Me.BtTestBitcoinScanBlocks = New System.Windows.Forms.Button()
+        Me.Label62 = New System.Windows.Forms.Label()
+        Me.GroupBox11 = New System.Windows.Forms.GroupBox()
+        Me.BtTestBitcoinGetTransaction = New System.Windows.Forms.Button()
+        Me.BtTestBitcoinGetRawTransaction = New System.Windows.Forms.Button()
+        Me.Label61 = New System.Windows.Forms.Label()
+        Me.TBTestBitcoinTransactionID = New System.Windows.Forms.TextBox()
+        Me.GroupBox10 = New System.Windows.Forms.GroupBox()
+        Me.BtTestBitcoinGetReceivedByAddress = New System.Windows.Forms.Button()
+        Me.BtTestBitcoinListUnspent = New System.Windows.Forms.Button()
+        Me.BtTestBitcoinGetDescriptorInfo = New System.Windows.Forms.Button()
+        Me.BtTestBitcoinImportDescriptor = New System.Windows.Forms.Button()
+        Me.Label59 = New System.Windows.Forms.Label()
+        Me.BtTestBitcoinGetUTXOSet = New System.Windows.Forms.Button()
+        Me.GroupBox9 = New System.Windows.Forms.GroupBox()
+        Me.BtTestBitcoionLoadWallet = New System.Windows.Forms.Button()
+        Me.BtTestBitcoinWalletName = New System.Windows.Forms.Button()
+        Me.Label60 = New System.Windows.Forms.Label()
+        Me.TBTestBitcoinWalletName = New System.Windows.Forms.TextBox()
+        Me.GroupBox8 = New System.Windows.Forms.GroupBox()
+        Me.BtTestBitcoinGetBalance = New System.Windows.Forms.Button()
+        Me.BtTestBitcoinGetBalances = New System.Windows.Forms.Button()
+        Me.BtTestBitcoinGetInfo = New System.Windows.Forms.Button()
+        Me.BtTestBitcoinGetWalletInfo = New System.Windows.Forms.Button()
+        Me.RTBTestBitcoin = New System.Windows.Forms.RichTextBox()
         Me.DevTimer = New System.Windows.Forms.Timer(Me.components)
         Me.SplitContainer11 = New System.Windows.Forms.SplitContainer()
         Me.Label32 = New System.Windows.Forms.Label()
@@ -343,6 +372,16 @@ Partial Class FrmDevelope
         Me.SplitContainer8.Panel1.SuspendLayout()
         Me.SplitContainer8.Panel2.SuspendLayout()
         Me.SplitContainer8.SuspendLayout()
+        Me.TabPage2.SuspendLayout()
+        CType(Me.SplitContainer15, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer15.Panel1.SuspendLayout()
+        Me.SplitContainer15.Panel2.SuspendLayout()
+        Me.SplitContainer15.SuspendLayout()
+        Me.GroupBox12.SuspendLayout()
+        Me.GroupBox11.SuspendLayout()
+        Me.GroupBox10.SuspendLayout()
+        Me.GroupBox9.SuspendLayout()
+        Me.GroupBox8.SuspendLayout()
         CType(Me.SplitContainer11, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer11.Panel1.SuspendLayout()
         Me.SplitContainer11.Panel2.SuspendLayout()
@@ -359,6 +398,7 @@ Partial Class FrmDevelope
         Me.TestTabControl.Controls.Add(Me.TabPage11)
         Me.TestTabControl.Controls.Add(Me.TabPage12)
         Me.TestTabControl.Controls.Add(Me.TabPage1)
+        Me.TestTabControl.Controls.Add(Me.TabPage2)
         Me.TestTabControl.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TestTabControl.Location = New System.Drawing.Point(0, 0)
         Me.TestTabControl.Name = "TestTabControl"
@@ -2629,6 +2669,315 @@ Partial Class FrmDevelope
         Me.LiBoTestPeers.Size = New System.Drawing.Size(141, 655)
         Me.LiBoTestPeers.TabIndex = 0
         '
+        'TabPage2
+        '
+        Me.TabPage2.Controls.Add(Me.SplitContainer15)
+        Me.TabPage2.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage2.Name = "TabPage2"
+        Me.TabPage2.Size = New System.Drawing.Size(1232, 686)
+        Me.TabPage2.TabIndex = 8
+        Me.TabPage2.Text = "Bitcoin"
+        Me.TabPage2.UseVisualStyleBackColor = True
+        '
+        'SplitContainer15
+        '
+        Me.SplitContainer15.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer15.Location = New System.Drawing.Point(0, 0)
+        Me.SplitContainer15.Name = "SplitContainer15"
+        Me.SplitContainer15.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer15.Panel1
+        '
+        Me.SplitContainer15.Panel1.Controls.Add(Me.TBTestBitcoinAddress)
+        Me.SplitContainer15.Panel1.Controls.Add(Me.GroupBox12)
+        Me.SplitContainer15.Panel1.Controls.Add(Me.GroupBox11)
+        Me.SplitContainer15.Panel1.Controls.Add(Me.GroupBox10)
+        Me.SplitContainer15.Panel1.Controls.Add(Me.GroupBox9)
+        Me.SplitContainer15.Panel1.Controls.Add(Me.GroupBox8)
+        '
+        'SplitContainer15.Panel2
+        '
+        Me.SplitContainer15.Panel2.Controls.Add(Me.RTBTestBitcoin)
+        Me.SplitContainer15.Size = New System.Drawing.Size(1232, 686)
+        Me.SplitContainer15.SplitterDistance = 270
+        Me.SplitContainer15.TabIndex = 2
+        '
+        'TBTestBitcoinAddress
+        '
+        Me.TBTestBitcoinAddress.Location = New System.Drawing.Point(260, 38)
+        Me.TBTestBitcoinAddress.Name = "TBTestBitcoinAddress"
+        Me.TBTestBitcoinAddress.Size = New System.Drawing.Size(306, 20)
+        Me.TBTestBitcoinAddress.TabIndex = 2
+        Me.TBTestBitcoinAddress.Text = "n3E33ZG4wLwh4hRuFWNgxofhx52ANniQbY"
+        '
+        'GroupBox12
+        '
+        Me.GroupBox12.Controls.Add(Me.BtTestBitcoinScanBlocks)
+        Me.GroupBox12.Controls.Add(Me.Label62)
+        Me.GroupBox12.Location = New System.Drawing.Point(371, 6)
+        Me.GroupBox12.Name = "GroupBox12"
+        Me.GroupBox12.Size = New System.Drawing.Size(200, 156)
+        Me.GroupBox12.TabIndex = 9
+        Me.GroupBox12.TabStop = False
+        Me.GroupBox12.Text = "Block"
+        '
+        'BtTestBitcoinScanBlocks
+        '
+        Me.BtTestBitcoinScanBlocks.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinScanBlocks.Location = New System.Drawing.Point(9, 58)
+        Me.BtTestBitcoinScanBlocks.Name = "BtTestBitcoinScanBlocks"
+        Me.BtTestBitcoinScanBlocks.Size = New System.Drawing.Size(75, 23)
+        Me.BtTestBitcoinScanBlocks.TabIndex = 2
+        Me.BtTestBitcoinScanBlocks.Text = "scan blocks"
+        Me.BtTestBitcoinScanBlocks.UseVisualStyleBackColor = True
+        '
+        'Label62
+        '
+        Me.Label62.AutoSize = True
+        Me.Label62.Location = New System.Drawing.Point(6, 16)
+        Me.Label62.Name = "Label62"
+        Me.Label62.Size = New System.Drawing.Size(48, 13)
+        Me.Label62.TabIndex = 0
+        Me.Label62.Text = "Address:"
+        '
+        'GroupBox11
+        '
+        Me.GroupBox11.Controls.Add(Me.BtTestBitcoinGetTransaction)
+        Me.GroupBox11.Controls.Add(Me.BtTestBitcoinGetRawTransaction)
+        Me.GroupBox11.Controls.Add(Me.Label61)
+        Me.GroupBox11.Controls.Add(Me.TBTestBitcoinTransactionID)
+        Me.GroupBox11.Location = New System.Drawing.Point(578, 6)
+        Me.GroupBox11.Name = "GroupBox11"
+        Me.GroupBox11.Size = New System.Drawing.Size(119, 156)
+        Me.GroupBox11.TabIndex = 8
+        Me.GroupBox11.TabStop = False
+        Me.GroupBox11.Text = "Transaction"
+        '
+        'BtTestBitcoinGetTransaction
+        '
+        Me.BtTestBitcoinGetTransaction.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinGetTransaction.Location = New System.Drawing.Point(6, 87)
+        Me.BtTestBitcoinGetTransaction.Name = "BtTestBitcoinGetTransaction"
+        Me.BtTestBitcoinGetTransaction.Size = New System.Drawing.Size(106, 23)
+        Me.BtTestBitcoinGetTransaction.TabIndex = 3
+        Me.BtTestBitcoinGetTransaction.Text = "get transaction"
+        Me.BtTestBitcoinGetTransaction.UseVisualStyleBackColor = True
+        '
+        'BtTestBitcoinGetRawTransaction
+        '
+        Me.BtTestBitcoinGetRawTransaction.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinGetRawTransaction.Location = New System.Drawing.Point(6, 58)
+        Me.BtTestBitcoinGetRawTransaction.Name = "BtTestBitcoinGetRawTransaction"
+        Me.BtTestBitcoinGetRawTransaction.Size = New System.Drawing.Size(106, 23)
+        Me.BtTestBitcoinGetRawTransaction.TabIndex = 2
+        Me.BtTestBitcoinGetRawTransaction.Text = "get raw transaction"
+        Me.BtTestBitcoinGetRawTransaction.UseVisualStyleBackColor = True
+        '
+        'Label61
+        '
+        Me.Label61.AutoSize = True
+        Me.Label61.Location = New System.Drawing.Point(6, 16)
+        Me.Label61.Name = "Label61"
+        Me.Label61.Size = New System.Drawing.Size(80, 13)
+        Me.Label61.TabIndex = 1
+        Me.Label61.Text = "Transaction ID:"
+        '
+        'TBTestBitcoinTransactionID
+        '
+        Me.TBTestBitcoinTransactionID.Location = New System.Drawing.Point(6, 32)
+        Me.TBTestBitcoinTransactionID.Name = "TBTestBitcoinTransactionID"
+        Me.TBTestBitcoinTransactionID.Size = New System.Drawing.Size(106, 20)
+        Me.TBTestBitcoinTransactionID.TabIndex = 0
+        Me.TBTestBitcoinTransactionID.Text = "00fafdf52acd69839f60fe20ad0adc2352bb1f737720997c19b4f9e24c22e832"
+        '
+        'GroupBox10
+        '
+        Me.GroupBox10.Controls.Add(Me.BtTestBitcoinGetReceivedByAddress)
+        Me.GroupBox10.Controls.Add(Me.BtTestBitcoinListUnspent)
+        Me.GroupBox10.Controls.Add(Me.BtTestBitcoinGetDescriptorInfo)
+        Me.GroupBox10.Controls.Add(Me.BtTestBitcoinImportDescriptor)
+        Me.GroupBox10.Controls.Add(Me.Label59)
+        Me.GroupBox10.Controls.Add(Me.BtTestBitcoinGetUTXOSet)
+        Me.GroupBox10.Location = New System.Drawing.Point(253, 6)
+        Me.GroupBox10.Name = "GroupBox10"
+        Me.GroupBox10.Size = New System.Drawing.Size(112, 207)
+        Me.GroupBox10.TabIndex = 7
+        Me.GroupBox10.TabStop = False
+        Me.GroupBox10.Text = "Address"
+        '
+        'BtTestBitcoinGetReceivedByAddress
+        '
+        Me.BtTestBitcoinGetReceivedByAddress.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinGetReceivedByAddress.Location = New System.Drawing.Point(6, 174)
+        Me.BtTestBitcoinGetReceivedByAddress.Name = "BtTestBitcoinGetReceivedByAddress"
+        Me.BtTestBitcoinGetReceivedByAddress.Size = New System.Drawing.Size(100, 23)
+        Me.BtTestBitcoinGetReceivedByAddress.TabIndex = 8
+        Me.BtTestBitcoinGetReceivedByAddress.Text = "get by address"
+        Me.BtTestBitcoinGetReceivedByAddress.UseVisualStyleBackColor = True
+        '
+        'BtTestBitcoinListUnspent
+        '
+        Me.BtTestBitcoinListUnspent.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinListUnspent.Location = New System.Drawing.Point(6, 145)
+        Me.BtTestBitcoinListUnspent.Name = "BtTestBitcoinListUnspent"
+        Me.BtTestBitcoinListUnspent.Size = New System.Drawing.Size(100, 23)
+        Me.BtTestBitcoinListUnspent.TabIndex = 7
+        Me.BtTestBitcoinListUnspent.Text = "list unspent"
+        Me.BtTestBitcoinListUnspent.UseVisualStyleBackColor = True
+        '
+        'BtTestBitcoinGetDescriptorInfo
+        '
+        Me.BtTestBitcoinGetDescriptorInfo.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinGetDescriptorInfo.Location = New System.Drawing.Point(6, 116)
+        Me.BtTestBitcoinGetDescriptorInfo.Name = "BtTestBitcoinGetDescriptorInfo"
+        Me.BtTestBitcoinGetDescriptorInfo.Size = New System.Drawing.Size(100, 23)
+        Me.BtTestBitcoinGetDescriptorInfo.TabIndex = 6
+        Me.BtTestBitcoinGetDescriptorInfo.Text = "get descriptor info"
+        Me.BtTestBitcoinGetDescriptorInfo.UseVisualStyleBackColor = True
+        '
+        'BtTestBitcoinImportDescriptor
+        '
+        Me.BtTestBitcoinImportDescriptor.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinImportDescriptor.Location = New System.Drawing.Point(6, 87)
+        Me.BtTestBitcoinImportDescriptor.Name = "BtTestBitcoinImportDescriptor"
+        Me.BtTestBitcoinImportDescriptor.Size = New System.Drawing.Size(100, 23)
+        Me.BtTestBitcoinImportDescriptor.TabIndex = 4
+        Me.BtTestBitcoinImportDescriptor.Text = "import descriptor"
+        Me.BtTestBitcoinImportDescriptor.UseVisualStyleBackColor = True
+        '
+        'Label59
+        '
+        Me.Label59.AutoSize = True
+        Me.Label59.ForeColor = System.Drawing.Color.Black
+        Me.Label59.Location = New System.Drawing.Point(6, 16)
+        Me.Label59.Name = "Label59"
+        Me.Label59.Size = New System.Drawing.Size(48, 13)
+        Me.Label59.TabIndex = 3
+        Me.Label59.Text = "Address:"
+        '
+        'BtTestBitcoinGetUTXOSet
+        '
+        Me.BtTestBitcoinGetUTXOSet.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinGetUTXOSet.Location = New System.Drawing.Point(6, 58)
+        Me.BtTestBitcoinGetUTXOSet.Name = "BtTestBitcoinGetUTXOSet"
+        Me.BtTestBitcoinGetUTXOSet.Size = New System.Drawing.Size(100, 23)
+        Me.BtTestBitcoinGetUTXOSet.TabIndex = 1
+        Me.BtTestBitcoinGetUTXOSet.Text = "getutxoset"
+        Me.BtTestBitcoinGetUTXOSet.UseVisualStyleBackColor = True
+        '
+        'GroupBox9
+        '
+        Me.GroupBox9.Controls.Add(Me.BtTestBitcoionLoadWallet)
+        Me.GroupBox9.Controls.Add(Me.BtTestBitcoinWalletName)
+        Me.GroupBox9.Controls.Add(Me.Label60)
+        Me.GroupBox9.Controls.Add(Me.TBTestBitcoinWalletName)
+        Me.GroupBox9.Location = New System.Drawing.Point(107, 6)
+        Me.GroupBox9.Name = "GroupBox9"
+        Me.GroupBox9.Size = New System.Drawing.Size(140, 156)
+        Me.GroupBox9.TabIndex = 6
+        Me.GroupBox9.TabStop = False
+        Me.GroupBox9.Text = "Wallet"
+        '
+        'BtTestBitcoionLoadWallet
+        '
+        Me.BtTestBitcoionLoadWallet.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoionLoadWallet.Location = New System.Drawing.Point(6, 87)
+        Me.BtTestBitcoionLoadWallet.Name = "BtTestBitcoionLoadWallet"
+        Me.BtTestBitcoionLoadWallet.Size = New System.Drawing.Size(126, 23)
+        Me.BtTestBitcoionLoadWallet.TabIndex = 3
+        Me.BtTestBitcoionLoadWallet.Text = "load wallet"
+        Me.BtTestBitcoionLoadWallet.UseVisualStyleBackColor = True
+        '
+        'BtTestBitcoinWalletName
+        '
+        Me.BtTestBitcoinWalletName.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinWalletName.Location = New System.Drawing.Point(6, 58)
+        Me.BtTestBitcoinWalletName.Name = "BtTestBitcoinWalletName"
+        Me.BtTestBitcoinWalletName.Size = New System.Drawing.Size(126, 23)
+        Me.BtTestBitcoinWalletName.TabIndex = 2
+        Me.BtTestBitcoinWalletName.Text = "create descriptor wallet"
+        Me.BtTestBitcoinWalletName.UseVisualStyleBackColor = True
+        '
+        'Label60
+        '
+        Me.Label60.AutoSize = True
+        Me.Label60.Location = New System.Drawing.Point(6, 16)
+        Me.Label60.Name = "Label60"
+        Me.Label60.Size = New System.Drawing.Size(38, 13)
+        Me.Label60.TabIndex = 1
+        Me.Label60.Text = "Name:"
+        '
+        'TBTestBitcoinWalletName
+        '
+        Me.TBTestBitcoinWalletName.Location = New System.Drawing.Point(6, 32)
+        Me.TBTestBitcoinWalletName.Name = "TBTestBitcoinWalletName"
+        Me.TBTestBitcoinWalletName.Size = New System.Drawing.Size(126, 20)
+        Me.TBTestBitcoinWalletName.TabIndex = 0
+        Me.TBTestBitcoinWalletName.Text = "TESTWALLET"
+        '
+        'GroupBox8
+        '
+        Me.GroupBox8.Controls.Add(Me.BtTestBitcoinGetBalance)
+        Me.GroupBox8.Controls.Add(Me.BtTestBitcoinGetBalances)
+        Me.GroupBox8.Controls.Add(Me.BtTestBitcoinGetInfo)
+        Me.GroupBox8.Controls.Add(Me.BtTestBitcoinGetWalletInfo)
+        Me.GroupBox8.Location = New System.Drawing.Point(8, 3)
+        Me.GroupBox8.Name = "GroupBox8"
+        Me.GroupBox8.Size = New System.Drawing.Size(93, 159)
+        Me.GroupBox8.TabIndex = 5
+        Me.GroupBox8.TabStop = False
+        Me.GroupBox8.Text = "Info"
+        '
+        'BtTestBitcoinGetBalance
+        '
+        Me.BtTestBitcoinGetBalance.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinGetBalance.Location = New System.Drawing.Point(6, 77)
+        Me.BtTestBitcoinGetBalance.Name = "BtTestBitcoinGetBalance"
+        Me.BtTestBitcoinGetBalance.Size = New System.Drawing.Size(80, 23)
+        Me.BtTestBitcoinGetBalance.TabIndex = 6
+        Me.BtTestBitcoinGetBalance.Text = "getBalance"
+        Me.BtTestBitcoinGetBalance.UseVisualStyleBackColor = True
+        '
+        'BtTestBitcoinGetBalances
+        '
+        Me.BtTestBitcoinGetBalances.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinGetBalances.Location = New System.Drawing.Point(6, 106)
+        Me.BtTestBitcoinGetBalances.Name = "BtTestBitcoinGetBalances"
+        Me.BtTestBitcoinGetBalances.Size = New System.Drawing.Size(80, 23)
+        Me.BtTestBitcoinGetBalances.TabIndex = 5
+        Me.BtTestBitcoinGetBalances.Text = "getBalances"
+        Me.BtTestBitcoinGetBalances.UseVisualStyleBackColor = True
+        '
+        'BtTestBitcoinGetInfo
+        '
+        Me.BtTestBitcoinGetInfo.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinGetInfo.Location = New System.Drawing.Point(6, 19)
+        Me.BtTestBitcoinGetInfo.Name = "BtTestBitcoinGetInfo"
+        Me.BtTestBitcoinGetInfo.Size = New System.Drawing.Size(80, 23)
+        Me.BtTestBitcoinGetInfo.TabIndex = 0
+        Me.BtTestBitcoinGetInfo.Text = "getInfo"
+        Me.BtTestBitcoinGetInfo.UseVisualStyleBackColor = True
+        '
+        'BtTestBitcoinGetWalletInfo
+        '
+        Me.BtTestBitcoinGetWalletInfo.ForeColor = System.Drawing.Color.Black
+        Me.BtTestBitcoinGetWalletInfo.Location = New System.Drawing.Point(5, 48)
+        Me.BtTestBitcoinGetWalletInfo.Name = "BtTestBitcoinGetWalletInfo"
+        Me.BtTestBitcoinGetWalletInfo.Size = New System.Drawing.Size(81, 23)
+        Me.BtTestBitcoinGetWalletInfo.TabIndex = 4
+        Me.BtTestBitcoinGetWalletInfo.Text = "getWalletInfo"
+        Me.BtTestBitcoinGetWalletInfo.UseVisualStyleBackColor = True
+        '
+        'RTBTestBitcoin
+        '
+        Me.RTBTestBitcoin.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.RTBTestBitcoin.ForeColor = System.Drawing.Color.Black
+        Me.RTBTestBitcoin.Location = New System.Drawing.Point(0, 0)
+        Me.RTBTestBitcoin.Name = "RTBTestBitcoin"
+        Me.RTBTestBitcoin.Size = New System.Drawing.Size(1232, 412)
+        Me.RTBTestBitcoin.TabIndex = 1
+        Me.RTBTestBitcoin.Text = ""
+        '
         'DevTimer
         '
         Me.DevTimer.Enabled = True
@@ -2848,6 +3197,21 @@ Partial Class FrmDevelope
         Me.SplitContainer8.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer8, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer8.ResumeLayout(False)
+        Me.TabPage2.ResumeLayout(False)
+        Me.SplitContainer15.Panel1.ResumeLayout(False)
+        Me.SplitContainer15.Panel1.PerformLayout()
+        Me.SplitContainer15.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer15, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer15.ResumeLayout(False)
+        Me.GroupBox12.ResumeLayout(False)
+        Me.GroupBox12.PerformLayout()
+        Me.GroupBox11.ResumeLayout(False)
+        Me.GroupBox11.PerformLayout()
+        Me.GroupBox10.ResumeLayout(False)
+        Me.GroupBox10.PerformLayout()
+        Me.GroupBox9.ResumeLayout(False)
+        Me.GroupBox9.PerformLayout()
+        Me.GroupBox8.ResumeLayout(False)
         Me.SplitContainer11.Panel1.ResumeLayout(False)
         Me.SplitContainer11.Panel1.PerformLayout()
         Me.SplitContainer11.Panel2.ResumeLayout(False)
@@ -3091,4 +3455,33 @@ Partial Class FrmDevelope
     Friend WithEvents TBTestHashHEX As TextBox
     Friend WithEvents Label58 As Label
     Friend WithEvents RTBTestDebug As RichTextBox
+    Friend WithEvents TabPage2 As TabPage
+    Friend WithEvents RTBTestBitcoin As RichTextBox
+    Friend WithEvents BtTestBitcoinGetInfo As Button
+    Friend WithEvents SplitContainer15 As SplitContainer
+    Friend WithEvents BtTestBitcoinGetUTXOSet As Button
+    Friend WithEvents Label59 As Label
+    Friend WithEvents TBTestBitcoinAddress As TextBox
+    Friend WithEvents BtTestBitcoinGetWalletInfo As Button
+    Friend WithEvents GroupBox10 As GroupBox
+    Friend WithEvents BtTestBitcoinImportDescriptor As Button
+    Friend WithEvents GroupBox9 As GroupBox
+    Friend WithEvents BtTestBitcoinWalletName As Button
+    Friend WithEvents Label60 As Label
+    Friend WithEvents TBTestBitcoinWalletName As TextBox
+    Friend WithEvents GroupBox8 As GroupBox
+    Friend WithEvents BtTestBitcoionLoadWallet As Button
+    Friend WithEvents BtTestBitcoinGetBalances As Button
+    Friend WithEvents BtTestBitcoinGetBalance As Button
+    Friend WithEvents BtTestBitcoinGetDescriptorInfo As Button
+    Friend WithEvents GroupBox11 As GroupBox
+    Friend WithEvents BtTestBitcoinGetRawTransaction As Button
+    Friend WithEvents Label61 As Label
+    Friend WithEvents TBTestBitcoinTransactionID As TextBox
+    Friend WithEvents BtTestBitcoinGetTransaction As Button
+    Friend WithEvents BtTestBitcoinListUnspent As Button
+    Friend WithEvents BtTestBitcoinGetReceivedByAddress As Button
+    Friend WithEvents GroupBox12 As GroupBox
+    Friend WithEvents BtTestBitcoinScanBlocks As Button
+    Friend WithEvents Label62 As Label
 End Class

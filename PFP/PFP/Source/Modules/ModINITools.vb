@@ -58,8 +58,8 @@ Module ModINITools
         DEXNETEnable = 502
         DEXNETShowStatus = 503
         'Bitcoin
-        BitcoinDPath = 600
-        BitcoinDArguments = 601
+        'BitcoinDPath = 600
+        'BitcoinDArguments = 601
         BitcoinAPINode = 602
         BitcoinAPIUser = 603
         BitcoinAPIPassword = 604
@@ -172,8 +172,8 @@ Module ModINITools
 
 #Region "Bitcoin"
 
-            Temp = SetINISetting(E_Setting.BitcoinDPath, "")
-            Temp = SetINISetting(E_Setting.BitcoinDArguments, "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex")
+            'Temp = SetINISetting(E_Setting.BitcoinDPath, "")
+            'Temp = SetINISetting(E_Setting.BitcoinDArguments, "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex")
 
             Temp = SetINISetting(E_Setting.BitcoinAPINode, "http://127.0.0.1:18332")
             Temp = SetINISetting(E_Setting.BitcoinAPIUser, "bitcoin")
@@ -270,8 +270,8 @@ Module ModINITools
 
 #Region "Bitcoin"
 
-        Temp = GetINISetting(E_Setting.BitcoinDPath, "").ToString
-        Temp = GetINISetting(E_Setting.BitcoinDArguments, "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex").ToString
+        'Temp = GetINISetting(E_Setting.BitcoinDPath, "").ToString
+        'Temp = GetINISetting(E_Setting.BitcoinDArguments, "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex").ToString
 
         Temp = GetINISetting(E_Setting.BitcoinAPINode, "http://127.0.0.1:18332").ToString
         Temp = GetINISetting(E_Setting.BitcoinAPIUser, "bitcoin").ToString

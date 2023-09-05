@@ -43,7 +43,7 @@ Public Class FrmGeneralSettings
         C_MainForm.PrimaryNode = GetINISetting(E_Setting.DefaultNode, ClsSignumAPI._DefaultNode)
 
         Dim RefreshMins = GetINISetting(E_Setting.RefreshMinutes, 1)
-        CoBxRefresh.SelectedItem = RefreshMins.ToString
+        'CoBxRefresh.SelectedItem = RefreshMins.ToString
 
         CoBxPayType.SelectedItem = GetINISetting(E_Setting.PaymentType, "Other")
 
@@ -128,12 +128,12 @@ Public Class FrmGeneralSettings
 
 #Region "Bitcoin"
 
-        TBBitcoindPath.Text = GetINISetting(E_Setting.BitcoinDPath, "")
-        TBBitcoinArgs.Text = GetINISetting(E_Setting.BitcoinDArguments, "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex")
+        'TBBitcoindPath.Text = GetINISetting(E_Setting.BitcoinDPath, "")
+        'TBBitcoinArgs.Text = GetINISetting(E_Setting.BitcoinDArguments, "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex")
         TBBitcoinAPINode.Text = GetINISetting(E_Setting.BitcoinAPINode, "http://127.0.0.1:18332")
         TBBitcoinAPIUser.Text = GetINISetting(E_Setting.BitcoinAPIUser, "bitcoin")
         TBBitcoinAPIPass.Text = GetINISetting(E_Setting.BitcoinAPIPassword, "bitcoin")
-        TBBitcoinWallet.Text = GetINISetting(E_Setting.BitcoinWallet, "DEXWALLET")
+        'TBBitcoinWallet.Text = GetINISetting(E_Setting.BitcoinWallet, "DEXWALLET")
 
         Dim T_Accounts As String = GetINISetting(E_Setting.BitcoinAccounts, "")
 
@@ -188,9 +188,9 @@ Public Class FrmGeneralSettings
             Changes = True
         End If
 
-        If CoBxRefresh.SelectedItem.ToString <> GetINISetting(E_Setting.RefreshMinutes, 1).ToString Then
-            Changes = True
-        End If
+        'If CoBxRefresh.SelectedItem.ToString <> GetINISetting(E_Setting.RefreshMinutes, 1).ToString Then
+        '    Changes = True
+        'End If
 
         If CoBxNode.SelectedItem.ToString <> GetINISetting(E_Setting.DefaultNode, ClsSignumAPI._DefaultNode).ToString Then
             Changes = True
@@ -267,7 +267,7 @@ Public Class FrmGeneralSettings
 
                 'SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
                 SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
-                SetINISetting(E_Setting.RefreshMinutes, Integer.Parse(CoBxRefresh.Text))
+                SetINISetting(E_Setting.RefreshMinutes, 1)
                 SetINISetting(E_Setting.DefaultNode, C_MainForm.PrimaryNode)
 
                 SetINISetting(E_Setting.AutoSendPaymentInfo, ChBxAutoSendPaymentInfo.Checked)
@@ -296,7 +296,7 @@ Public Class FrmGeneralSettings
 
         'SetINISetting(E_Setting.PassPhrase, C_MainForm.TBSNOPassPhrase.Text)
         SetINISetting(E_Setting.LastMarketViewed, CurrentMarket)
-        SetINISetting(E_Setting.RefreshMinutes, Integer.Parse(CoBxRefresh.Text))
+        SetINISetting(E_Setting.RefreshMinutes, 1)
         SetINISetting(E_Setting.DefaultNode, C_MainForm.PrimaryNode)
 
         Dim Nodes As String = ""
@@ -339,12 +339,12 @@ Public Class FrmGeneralSettings
         SetINISetting(E_Setting.PayPalAPISecret, TBPayPalAPISecret.Text)
 
 
-        SetINISetting(E_Setting.BitcoinDPath, TBBitcoindPath.Text.Trim)
-        SetINISetting(E_Setting.BitcoinDArguments, TBBitcoinArgs.Text.Trim) ' "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex")
+        'SetINISetting(E_Setting.BitcoinDPath, TBBitcoindPath.Text.Trim)
+        'SetINISetting(E_Setting.BitcoinDArguments, TBBitcoinArgs.Text.Trim) ' "-testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex")
         SetINISetting(E_Setting.BitcoinAPINode, TBBitcoinAPINode.Text.Trim) ' "http://127.0.0.1:18332")
         SetINISetting(E_Setting.BitcoinAPIUser, TBBitcoinAPIUser.Text.Trim) ' "bitcoin")
         SetINISetting(E_Setting.BitcoinAPIPassword, TBBitcoinAPIPass.Text.Trim) ' "bitcoin")
-        SetINISetting(E_Setting.BitcoinWallet, TBBitcoinWallet.Text.Trim) ' "DEXWALLET")
+        'SetINISetting(E_Setting.BitcoinWallet, TBBitcoinWallet.Text.Trim) ' "DEXWALLET")
 
 
     End Sub
@@ -535,22 +535,22 @@ Public Class FrmGeneralSettings
 
     End Sub
 
-    Private Sub BtBitcoindPath_Click(sender As Object, e As EventArgs) Handles BtBitcoindPath.Click
+    'Private Sub BtBitcoindPath_Click(sender As Object, e As EventArgs)
 
-        Dim OFD As OpenFileDialog = New OpenFileDialog()
+    '    Dim OFD As OpenFileDialog = New OpenFileDialog()
 
-        OFD.Title = "Bitcoind Path"
-        'OFD.InitialDirectory = "C:\"
-        OFD.Filter = "*.exe|*.exe"
-        OFD.Multiselect = False
+    '    OFD.Title = "Bitcoind Path"
+    '    'OFD.InitialDirectory = "C:\"
+    '    OFD.Filter = "*.exe|*.exe"
+    '    OFD.Multiselect = False
 
-        OFD.ShowDialog()
+    '    OFD.ShowDialog()
 
-        If OFD.CheckFileExists() Then
-            TBBitcoindPath.Text = OFD.FileName
-        End If
+    '    If OFD.CheckFileExists() Then
+    '        TBBitcoindPath.Text = OFD.FileName
+    '    End If
 
-    End Sub
+    'End Sub
 
     Private Sub BtBitcoinAddresses_Click(sender As Object, e As EventArgs) Handles BtBitcoinAddresses.Click
 
@@ -607,6 +607,53 @@ Public Class FrmGeneralSettings
             ClsMsgs.MBox(Message, "Error",,, ClsMsgs.Status.Erro, 3, ClsMsgs.Timer_Type.ButtonEnable)
 
         End If
+
+    End Sub
+
+
+
+    Private Sub LVAddresses_MouseDown(sender As Object, e As MouseEventArgs) Handles LVBitcoinAddress.MouseDown
+        LVBitcoinAddress.ContextMenuStrip = Nothing
+    End Sub
+
+    Private Sub LVBitcoinAddress_MouseUp(sender As Object, e As MouseEventArgs) Handles LVBitcoinAddress.MouseUp
+        LVBitcoinAddress.ContextMenuStrip = Nothing
+
+        If LVBitcoinAddress.SelectedItems.Count > 0 Then
+
+            Dim LVi As ListViewItem = LVBitcoinAddress.SelectedItems(0)
+            Dim Address As String = Convert.ToString(GetLVColNameFromSubItem(LVBitcoinAddress, "Address", LVi))
+            Dim LVContextMenu As ContextMenuStrip = New ContextMenuStrip
+
+            Dim LVCMItem As ToolStripMenuItem = New ToolStripMenuItem
+            LVCMItem.Text = "copy address"
+            LVCMItem.Tag = Address
+            AddHandler LVCMItem.Click, AddressOf Copy2CB
+            LVContextMenu.Items.Add(LVCMItem)
+
+            LVBitcoinAddress.ContextMenuStrip = LVContextMenu
+
+        End If
+    End Sub
+
+    Private Sub Copy2CB(sender As Object, e As EventArgs)
+
+        Try
+            If sender.GetType.Name = GetType(ToolStripMenuItem).Name Then
+
+                Dim T_TSMI As ToolStripMenuItem = DirectCast(sender, ToolStripMenuItem)
+
+                If Not T_TSMI.Tag Is Nothing Then
+                    Clipboard.SetText(T_TSMI.Tag.ToString)
+                Else
+
+                End If
+
+            End If
+
+        Catch ex As Exception
+
+        End Try
 
     End Sub
 

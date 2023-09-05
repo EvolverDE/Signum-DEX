@@ -1287,6 +1287,136 @@ Public Class FrmDevelope
 
     End Sub
 
+    Private Sub BtTestBitcoinGetInfo_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinGetInfo.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+        RTBTestBitcoin.AppendText(BitNet.GetMiningInfo() + vbCrLf)
+
+    End Sub
+
+    Private Sub BtTestBitcoinGetUTXOSet_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinGetUTXOSet.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+
+        Dim Result As String = BitNet.ScanTXOUTSet(TBTestBitcoinAddress.Text) + vbCrLf
+
+        Result = Result.Replace("\n", vbCrLf)
+        Result = Result.Replace("\""", """")
+
+        RTBTestBitcoin.AppendText(Result)
+
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinGetWalletInfo.Click
+
+        Dim XItem As ClsBitcoin = New ClsBitcoin
+        Dim WalletInfo As String = XItem.GetWalletInfo()
+
+        RTBTestBitcoin.AppendText(WalletInfo + vbCrLf)
+
+    End Sub
+
+    Private Sub BtTestBitcoinImportDescriptor_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinImportDescriptor.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+        Dim Result As String = BitNet.ImportDescriptor(TBTestBitcoinAddress.Text, "0") + vbCrLf
+
+        Result = Result.Replace("\n", vbCrLf)
+        Result = Result.Replace("\""", """")
+
+        RTBTestBitcoin.AppendText(Result)
+
+    End Sub
+
+    Private Sub BtTestBitcoinWalletName_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinWalletName.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+        Dim Result As String = BitNet.CreateNewWallet(TBTestBitcoinWalletName.Text).ToString() + vbCrLf
+
+        RTBTestBitcoin.AppendText(Result)
+
+    End Sub
+
+    Private Sub BtTestBitcoionLoadWallet_Click(sender As Object, e As EventArgs) Handles BtTestBitcoionLoadWallet.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+        Dim Result As String = BitNet.LoadWalletRaw(TBTestBitcoinWalletName.Text).ToString() + vbCrLf
+
+        RTBTestBitcoin.AppendText(Result)
+
+    End Sub
+
+    Private Sub BtTestBitcoinGetBalances_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinGetBalances.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+        Dim Result As String = BitNet.GetBalances()
+
+        RTBTestBitcoin.AppendText(Result)
+
+    End Sub
+
+    Private Sub BtTestBitcoinGetBalance_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinGetBalance.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+        Dim Result As String = BitNet.GetBalance()
+
+        RTBTestBitcoin.AppendText(Result)
+
+    End Sub
+
+    Private Sub BtTestBitcoinGetDescriptorInfo_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinGetDescriptorInfo.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+        Dim Result As String = BitNet.GetDescriptorInfo(TBTestBitcoinAddress.Text)
+
+        RTBTestBitcoin.AppendText(Result)
+
+    End Sub
+
+    Private Sub BtTestBitcoinGetRawTransaction_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinGetRawTransaction.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+        Dim Result As String = BitNet.GetRawTransaction(TBTestBitcoinTransactionID.Text)
+
+        RTBTestBitcoin.AppendText(Result)
+
+    End Sub
+
+    Private Sub BtTestBitcoinGetTransaction_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinGetTransaction.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+        Dim Result As String = BitNet.GetTransaction(TBTestBitcoinTransactionID.Text)
+
+        RTBTestBitcoin.AppendText(Result)
+
+    End Sub
+
+    Private Sub BtTestBitcoinListUnspent_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinListUnspent.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+        Dim Result = BitNet.ListUnspentRaw(TBTestBitcoinAddress.Text)
+
+        RTBTestBitcoin.AppendText(Result)
+
+    End Sub
+
+    Private Sub BtTestBitcoinGetReceivedByAddress_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinGetReceivedByAddress.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+        Dim Result = BitNet.GetReceivedByAddress(TBTestBitcoinAddress.Text)
+
+        RTBTestBitcoin.AppendText(Result)
+
+    End Sub
+
+    Private Sub BtTestBitcoinScanBlocks_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinScanBlocks.Click
+
+        Dim BitNet As ClsBitcoinNET = New ClsBitcoinNET()
+        Dim Result = BitNet.ScanBlocks(TBTestBitcoinAddress.Text)
+
+        RTBTestBitcoin.AppendText(Result)
+
+    End Sub
 
 #End Region
 

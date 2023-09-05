@@ -51,6 +51,8 @@ Partial Class FrmBitcoinAccounts
         Me.StatusBar = New System.Windows.Forms.ToolStripProgressBar()
         Me.ScanningTime = New System.Windows.Forms.Timer(Me.components)
         Me.BtAbortScan = New System.Windows.Forms.Button()
+        Me.BtRescan = New System.Windows.Forms.Button()
+        Me.BtRefresh = New System.Windows.Forms.Button()
         Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -314,12 +316,38 @@ Partial Class FrmBitcoinAccounts
         Me.BtAbortScan.BackColor = System.Drawing.Color.FromArgb(CType(CType(247, Byte), Integer), CType(CType(147, Byte), Integer), CType(CType(26, Byte), Integer))
         Me.BtAbortScan.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.BtAbortScan.ForeColor = System.Drawing.Color.White
-        Me.BtAbortScan.Location = New System.Drawing.Point(537, 146)
+        Me.BtAbortScan.Location = New System.Drawing.Point(490, 235)
         Me.BtAbortScan.Name = "BtAbortScan"
         Me.BtAbortScan.Size = New System.Drawing.Size(80, 23)
         Me.BtAbortScan.TabIndex = 22
         Me.BtAbortScan.Text = "Abort scan"
         Me.BtAbortScan.UseVisualStyleBackColor = False
+        '
+        'BtRescan
+        '
+        Me.BtRescan.BackColor = System.Drawing.Color.FromArgb(CType(CType(247, Byte), Integer), CType(CType(147, Byte), Integer), CType(CType(26, Byte), Integer))
+        Me.BtRescan.Enabled = False
+        Me.BtRescan.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtRescan.ForeColor = System.Drawing.Color.White
+        Me.BtRescan.Location = New System.Drawing.Point(490, 206)
+        Me.BtRescan.Name = "BtRescan"
+        Me.BtRescan.Size = New System.Drawing.Size(80, 23)
+        Me.BtRescan.TabIndex = 23
+        Me.BtRescan.Text = "Rescan"
+        Me.BtRescan.UseVisualStyleBackColor = False
+        '
+        'BtRefresh
+        '
+        Me.BtRefresh.BackColor = System.Drawing.Color.FromArgb(CType(CType(247, Byte), Integer), CType(CType(147, Byte), Integer), CType(CType(26, Byte), Integer))
+        Me.BtRefresh.Enabled = False
+        Me.BtRefresh.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BtRefresh.ForeColor = System.Drawing.Color.White
+        Me.BtRefresh.Location = New System.Drawing.Point(490, 177)
+        Me.BtRefresh.Name = "BtRefresh"
+        Me.BtRefresh.Size = New System.Drawing.Size(80, 23)
+        Me.BtRefresh.TabIndex = 24
+        Me.BtRefresh.Text = "Refresh"
+        Me.BtRefresh.UseVisualStyleBackColor = False
         '
         'FrmBitcoinAccounts
         '
@@ -329,6 +357,8 @@ Partial Class FrmBitcoinAccounts
         Me.BackgroundImage = Global.PFP.My.Resources.Resources.bitcoin_logo_512
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
         Me.ClientSize = New System.Drawing.Size(629, 311)
+        Me.Controls.Add(Me.BtRefresh)
+        Me.Controls.Add(Me.BtRescan)
         Me.Controls.Add(Me.BtAbortScan)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.BtUnloadWallet)
@@ -389,4 +419,6 @@ Partial Class FrmBitcoinAccounts
     Friend WithEvents bouncer As ToolStripStatusLabel
     Friend WithEvents ScanningTime As Timer
     Friend WithEvents BtAbortScan As Button
+    Friend WithEvents BtRescan As Button
+    Friend WithEvents BtRefresh As Button
 End Class
