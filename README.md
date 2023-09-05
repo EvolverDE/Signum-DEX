@@ -10,7 +10,24 @@ PFP basiert auf den Smart Contracts der Signum.network Blockchain und unterstüt
 Des weiteren wird nun mit der ersten zusätzlichen Blockchain-implementierung AtomicSwaps mit bitcoin (BTC) möglich.
 Für die Interaktion mit BTC muss bitcoin core installiert sein und der Daemon mit zusätzlichen parametern gestartet werden:
 
-`C:\coins\bitcoind.exe -testnet -datadir=C:\coindata\bitcoin_testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex`
+`C:\pfad\zu\bitcoind.exe -conf=C:\pfad\zu\bitcoin.conf`
+
+Für die bitcoin.conf wird folgender Inhalt festgelegt:
+
+```
+testnet=1
+datadir=C:\pfad\zu\bitcoin_testnet
+txindex=1
+blockfilterindex=1
+
+[test]
+rpcauth=bitcointest:64df7b3d85540109cc356d46180b7cfe$79455d660e5b9ec940912bf619c1ff959462ff9c663ae79cc4a49c3ed165f72b
+#rpcpass=C8_o5A4uu7RHd6Fs8yStABQLSnZ8WWO49tTqp9UD1Bo
+onlynet=ipv4
+rpcbind=0.0.0.0:18332
+rpcallowip=192.168.1.0/24
+```
+
 # Welche Vorraussetzungen braucht man?
 Da PFP auf dem .NET-Framework in der Version 4.8 basiert, ist ein Betriebssystem welches dieses unterstützt ebenfalls Vorraussetzung.
 # Wie installiert man PFP?
@@ -47,7 +64,24 @@ PFP is based on the Signum.network blockchain smart contracts and supports all a
 Furthermore, with the first additional blockchain implementation, AtomicSwaps with bitcoin (BTC) is now possible.
 To interact with BTC, bitcoin core must be installed and the daemon must be started with additional parameters:
 
-`C:\coins\bitcoind.exe -testnet -datadir=C:\coindata\bitcoin_testnet -rpcuser=bitcoin -rpcpassword=bitcoin -txindex`
+`C:\path\to\bitcoind.exe -conf=C:\path\to\bitcoin.conf`
+
+The following content is defined for the bitcoin.conf:
+
+```
+testnet=1
+datadir=C:\path\to\bitcoin_testnet
+txindex=1
+blockfilterindex=1
+
+[test]
+rpcauth=bitcointest:64df7b3d85540109cc356d46180b7cfe$79455d660e5b9ec940912bf619c1ff959462ff9c663ae79cc4a49c3ed165f72b
+#rpcpass=C8_o5A4uu7RHd6Fs8yStABQLSnZ8WWO49tTqp9UD1Bo
+onlynet=ipv4
+rpcbind=0.0.0.0:18332
+rpcallowip=192.168.1.0/24
+```
+
 # What are the prerequisites?
 Since PFP is based on the .NET framework in version 4.8, an operating system that supports it is also required.
 # How to install PFP?
