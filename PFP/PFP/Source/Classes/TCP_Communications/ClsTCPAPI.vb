@@ -230,14 +230,21 @@ Public Class ClsTCPAPI
                 TCPClient.SendTimeout = 1000
                 TCPClient.ReceiveTimeout = 1000
 
-                Dim recvBytes(CInt(Integer.MaxValue * 0.5)) As Byte
+                Dim byterange As Integer = CInt(Integer.MaxValue * 0.25)
+
+                Dim recvBytes(byterange) As Byte
                 Dim htmlReq As String = Nothing
                 Dim bytes As Integer = 0
 
-                bytes = TCPClient.Client.Receive(recvBytes, 0, TCPClient.Client.Available, SocketFlags.None)
-                htmlReq = Encoding.ASCII.GetString(recvBytes, 0, bytes)
+                Try
+                    bytes = TCPClient.Client.Receive(recvBytes, 0, TCPClient.Client.Available, SocketFlags.None)
+                    htmlReq = Encoding.ASCII.GetString(recvBytes, 0, bytes)
+                    htmlReq = htmlReq.Replace(vbLf, "")
 
-                htmlReq = htmlReq.Replace(vbLf, "")
+                Catch ex As Exception
+                    TCPClient.Close()
+                    Continue For
+                End Try
 
                 Dim APIRequest As ClsAPIRequest = New ClsAPIRequest(htmlReq)
 

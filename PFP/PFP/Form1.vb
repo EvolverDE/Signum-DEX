@@ -880,7 +880,7 @@ Public Class PFPForm
 
             'Me.Text = "Codename: Perls for Pigs (TestNet) " & MaxWidth.ToString & "/" & MaxHeight.ToString + " TO " + Me.Size.Width.ToString + "/" + Me.Size.Height.ToString
 
-            ReloadINI()
+            Wait = ReloadINI()
 
             If MaxWidth < Me.Size.Width Or MaxHeight < Me.Size.Height Then
                 Wait = AutoResizeWindow()
@@ -892,7 +892,7 @@ Public Class PFPForm
 
                 BlockTimer.Enabled = False
 
-                TSSStatusImage.Text = "in Synchronization..."
+                TSSStatusImage.Text = "in Sync..."
                 TSSStatusImage.Image = My.Resources.status_wait
 
                 If CheckPIN() Then
@@ -962,6 +962,7 @@ Public Class PFPForm
                     Wait = Loading()
                     Wait = SetInLVs()
 
+
                     'resend offchain order
                     If OffchainBuyOrder.Ask = "WantToBuy" Then
                         Dim Masterkeys As List(Of String) = GetPassPhrase()
@@ -971,14 +972,12 @@ Public Class PFPForm
                         End If
                     End If
 
-
                     RefreshTime = GetINISetting(E_Setting.RefreshMinutes, 1) * 60
 
                     Dim CoBxChartVal As Integer = 1
                     Dim CoBxTickVal As Integer = 1
 
                     For Each CTRL As Object In TimeLineSplitContainer.Panel1.Controls
-
 
                         If CTRL.GetType.Name = GetType(ComboBox).Name Then
 
@@ -1000,7 +999,6 @@ Public Class PFPForm
 
                     Dim ViewThread As Threading.Thread = New Threading.Thread(AddressOf LoadHistory)
                     ViewThread.Start(New List(Of Object)({CoBxChartVal, CoBxTickVal, CurrentMarket}))
-
 
                     'BlockTimer.Enabled = True
 
@@ -1026,7 +1024,7 @@ Public Class PFPForm
                     TSSStatusImage.Text = "Offline"
                     TSSStatusImage.Image = My.Resources.status_offline
                 Case E_ConnectionStatus.InSync
-                    TSSStatusImage.Text = "in Synchronization..."
+                    TSSStatusImage.Text = "in Sync..."
                     TSSStatusImage.Image = My.Resources.status_wait
                 Case E_ConnectionStatus.NoDEXNETPeers
                     TSSStatusImage.Text = "no DEXNET-Connection"
