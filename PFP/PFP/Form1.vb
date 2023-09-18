@@ -219,7 +219,7 @@ Public Class PFPForm
                 If Not GetAutosignalTXFromINI(DEXContract.CurrentCreationTransaction) Then 'Check for autosignal-TX in Settings.ini and skip if founded
 
                     'PayPal Approving check
-                    Dim PPAPI_GetPayPalTX_to_Autosignal_SmartContract As ClsPayPal = New ClsPayPal With {
+                    Dim PPAPI_GetPayPalTX_to_Autosignal_SmartContract As ClsPayPal = New ClsPayPal(GlobalPayPalNetwork) With {
                         .Client_ID = GetINISetting(E_Setting.PayPalAPIUser, ""),
                         .Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
                     }
@@ -683,11 +683,33 @@ Public Class PFPForm
 
         DEXAPIInfo += "{""command"":""create"",""method"":""POST"",""description"":""creates a new order on a DEX contract"","
         DEXAPIInfo += """queryExample"":""/API/v1/Orders"","
-        DEXAPIInfo += """bodyExample"":{""contract"":""{id or address (OPTIONAL)}"",""type"":""SellOrder"",""passPhrase"":""{string (NOT RECOMMENDED)} (Optional)"",""publicKey"":""{32 bytes in Hex}"",""amountNQT"":""{unsigned long}"",""collateralNQT"":""{unsigned long}"",""xAmountNQT"":""{unsigned long}"",""xItem"":""USD""}},"
+        DEXAPIInfo += """bodyExample"":{""contract"":""{id or address} (OPTIONAL)"",""type"":""SellOrder"",""passPhrase"":""{string (NOT RECOMMENDED)} (OPTIONAL)"",""publicKey"":""{32 bytes in Hex}"",""amountNQT"":""{unsigned long}"",""collateralNQT"":""{unsigned long}"",""xAmountNQT"":""{unsigned long}"",""xItem"":""USD""}},"
 
         DEXAPIInfo += "{""command"":""accept"",""method"":""GET,POST"",""description"":""accepts an order"","
         DEXAPIInfo += """queryExample"":""/API/v1/Orders/{id or address}?PublicKey={32 bytes in Hex}"","
-        DEXAPIInfo += """queryExample2"":""/API/v1/Orders/{id or address}?PassPhrase={string (NOT RECOMMENDED)}""}"
+        DEXAPIInfo += """queryExample2"":""/API/v1/Orders/{id or address}?PassPhrase={string (NOT RECOMMENDED)}""},"
+
+
+        DEXAPIInfo += "{""command"":""accept"",""method"":""POST"",""description"":""accepts an order (only sellorders)"","
+        DEXAPIInfo += """queryExample"":""/API/v1/Orders"","
+        DEXAPIInfo += """bodyExample"":{""orderId"":""{id or address}"",""passPhrase"":""{string (NOT RECOMMENDED)} (OPTIONAL)"",""publicKey"":""{32 bytes in Hex}""}},"
+
+        DEXAPIInfo += "{""command"":""injectResponder"",""method"":""POST"",""description"":""injects an responder (only seller) (only sellorders)"","
+        DEXAPIInfo += """queryExample"":""/API/v1/Orders"","
+        DEXAPIInfo += """bodyExample"":{""orderId"":""{id or address}"",""passPhrase"":""{string (NOT RECOMMENDED)} (OPTIONAL)"",""publicKey"":""{32 bytes in Hex}"",""injectPublicKey"":""{32 bytes in Hex}""}},"
+
+        DEXAPIInfo += "{""command"":""injectChainSwapHash"",""method"":""POST"",""description"":""injects a chain swap hash into an reserved order (only seller) (only sellorders) (only crypto to crypto)"","
+        DEXAPIInfo += """queryExample"":""/API/v1/Orders"","
+        DEXAPIInfo += """bodyExample"":{""orderId"":""{id or address}"",""passPhrase"":""{string (NOT RECOMMENDED)} (OPTIONAL)"",""publicKey"":""{32 bytes in Hex}"",""injectChainSwapHash"":""{32 bytes in Hex}""}},"
+
+        DEXAPIInfo += "{""command"":""finishOrder"",""method"":""POST"",""description"":""finishes an reserved order"","
+        DEXAPIInfo += """queryExample"":""/API/v1/Orders"","
+        DEXAPIInfo += """bodyExample"":{""orderId"":""{id or address}"",""passPhrase"":""{string (NOT RECOMMENDED)} (OPTIONAL)"",""publicKey"":""{32 bytes in Hex}""}},"
+
+        DEXAPIInfo += "{""command"":""finishOrderWithChainSwapKey"",""method"":""POST"",""description"":""finishes an reserved order with an chain swap key (only crypto to crypto)"","
+        DEXAPIInfo += """queryExample"":""/API/v1/Orders"","
+        DEXAPIInfo += """bodyExample"":{""orderId"":""{id or address}"",""passPhrase"":""{string (NOT RECOMMENDED)} (OPTIONAL)"",""publicKey"":""{32 bytes in Hex}"",""chainSwapKey"":""{32 bytes in Hex}""}}"
+
 
         DEXAPIInfo += "],"
 
@@ -731,9 +753,15 @@ Public Class PFPForm
         If PassPhrase = "" Then
             Dim Result As FrmManual.CustomDialogResult = FrmManual.MBox()
         Else
-            If TSSCryptStatus.Tag.ToString = "encrypted" Then
-                Dim PINForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.EnterPINOnly)
-                PINForm.ShowDialog()
+
+            If Not IsNothing(TSSCryptStatus.Tag) Then
+
+                If TSSCryptStatus.Tag.ToString = "encrypted" Then
+                    Dim PINForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.EnterPINOnly)
+                    PINForm.ShowDialog()
+                Else
+                    GlobalPIN = ""
+                End If
             Else
                 GlobalPIN = ""
             End If
@@ -1406,6 +1434,8 @@ Public Class PFPForm
 
     End Sub
 
+    Private oldAmount As Decimal = 0D
+
     Private Sub TBarCollateralPercent_Scroll(sender As Object, e As EventArgs) Handles TBarCollateralPercent.Scroll
 
         If TBarCollateralPercent.Enabled Then
@@ -1415,6 +1445,7 @@ Public Class PFPForm
                 NUDSNOCollateral.Maximum = 0
 
                 If NUDSNOAmount.Value > 100D Then
+                    oldAmount = NUDSNOAmount.Value
                     NUDSNOAmount.Value = 100D
                 End If
 
@@ -1423,13 +1454,19 @@ Public Class PFPForm
 
             Else
 
+                NUDSNOAmount.Value = If(NUDSNOAmount.Value <= 100D, oldAmount, NUDSNOAmount.Value)
+
                 Dim T_Amount As Decimal = NUDSNOAmount.Value
-                Dim T_Percentage As Decimal = Convert.ToDecimal(28 + (TBarCollateralPercent.Value * 2))
+                Dim T_Percentage As Decimal = Convert.ToDecimal(8 + (TBarCollateralPercent.Value * 2))
+
+                If T_Percentage > 50D Then
+                    T_Percentage = 50D
+                End If
 
                 LabColPercentage.Text = T_Percentage.ToString + " %"
 
                 If T_Amount > 0 Then
-                    NUDSNOCollateral.Minimum = (T_Amount / 100) * 30
+                    NUDSNOCollateral.Minimum = (T_Amount / 100) * 10
                     NUDSNOCollateral.Maximum = (T_Amount / 100) * 50
                     NUDSNOCollateral.Value = (T_Amount / 100) * T_Percentage
                 Else

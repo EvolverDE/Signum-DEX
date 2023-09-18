@@ -72,7 +72,7 @@ Public Class FrmDevelope
         ChBxTestDEXNETEnable.Checked = GetINISetting(E_Setting.DEXNETEnable, True)
         ChBxTestDEXNETShowStatus.Checked = GetINISetting(E_Setting.DEXNETShowStatus, False)
 
-        Dim PPAPI As ClsPayPal = New ClsPayPal
+        Dim PPAPI As ClsPayPal = New ClsPayPal(GlobalPayPalNetwork)
         CoBxTestPPCurrency.Items.AddRange(PPAPI.Currencys.ToArray)
 
         CoBxTestPPCurrency.SelectedItem = "USD"
@@ -377,7 +377,7 @@ Public Class FrmDevelope
     End Sub
     Private Sub BtPPAPI_Click(sender As Object, e As EventArgs) Handles BtTestPPGetAllTX.Click
 
-        Dim PPAPI As ClsPayPal = New ClsPayPal
+        Dim PPAPI As ClsPayPal = New ClsPayPal(GlobalPayPalNetwork)
         PPAPI.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
         PPAPI.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
 
@@ -394,7 +394,7 @@ Public Class FrmDevelope
     End Sub
     Private Sub BtTestPPGetTXWithNote_Click(sender As Object, e As EventArgs) Handles BtTestPPGetTXWithNote.Click
 
-        Dim PPAPI As ClsPayPal = New ClsPayPal
+        Dim PPAPI As ClsPayPal = New ClsPayPal(GlobalPayPalNetwork)
         PPAPI.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
         PPAPI.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
 
@@ -411,7 +411,7 @@ Public Class FrmDevelope
     End Sub
     Private Sub BtTestCreatePPOrder_Click(sender As Object, e As EventArgs) Handles BtTestCreatePPOrder.Click
 
-        Dim PPAPI As ClsPayPal = New ClsPayPal
+        Dim PPAPI As ClsPayPal = New ClsPayPal(GlobalPayPalNetwork)
         PPAPI.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
         PPAPI.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
 
@@ -427,7 +427,7 @@ Public Class FrmDevelope
 
     Private Sub BtTestPPPayout_Click(sender As Object, e As EventArgs) Handles BtTestPPPayout.Click
 
-        Dim PPAPI As ClsPayPal = New ClsPayPal
+        Dim PPAPI As ClsPayPal = New ClsPayPal(GlobalPayPalNetwork)
         PPAPI.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
         PPAPI.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
 

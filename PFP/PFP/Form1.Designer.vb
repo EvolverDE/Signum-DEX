@@ -586,7 +586,7 @@ Partial Class PFPForm
         Me.LabColPercentage.Name = "LabColPercentage"
         Me.LabColPercentage.Size = New System.Drawing.Size(34, 13)
         Me.LabColPercentage.TabIndex = 33
-        Me.LabColPercentage.Text = "30 %"
+        Me.LabColPercentage.Text = "20 %"
         '
         'TBarCollateralPercent
         '
@@ -594,12 +594,12 @@ Partial Class PFPForm
         Me.TBarCollateralPercent.Cursor = System.Windows.Forms.Cursors.Default
         Me.TBarCollateralPercent.LargeChange = 1
         Me.TBarCollateralPercent.Location = New System.Drawing.Point(93, 92)
-        Me.TBarCollateralPercent.Maximum = 11
+        Me.TBarCollateralPercent.Maximum = 21
         Me.TBarCollateralPercent.Name = "TBarCollateralPercent"
         Me.TBarCollateralPercent.Size = New System.Drawing.Size(266, 45)
         Me.TBarCollateralPercent.TabIndex = 32
         Me.TBarCollateralPercent.TickStyle = System.Windows.Forms.TickStyle.Both
-        Me.TBarCollateralPercent.Value = 1
+        Me.TBarCollateralPercent.Value = 6
         '
         'LabXItem
         '

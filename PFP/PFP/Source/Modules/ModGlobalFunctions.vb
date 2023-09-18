@@ -4,6 +4,9 @@ Module ModGlobalFunctions
     Property GlobalAccountID() As ULong = 0UL
     Property GlobalAddress() As String = ""
 
+    Property GlobalPayPalNetwork() As String = "sandbox" 'main=live; sandbox=test 
+    Property GlobalBitcoinPreFix() As String = "6f" '00=main; 6f=testnet
+
     Property CurrentMarket As String = ""
     Property SupportedCurrencies As List(Of String) = New List(Of String)({"AUD", "BRL", "BTC", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"})
 
@@ -323,7 +326,18 @@ Module ModGlobalFunctions
 
     Function IsReedSolomon(ByVal RSString As String) As Boolean
 
+        If RSString.Length > 2 Then
+            Dim T_PreFix As String = RSString.Substring(0, 3)
+            If T_PreFix = ClsSignumAPI._AddressPreFix Then
+                RSString = RSString.Substring(3)
+            End If
+        End If
+
         If Not RSString.Length = 20 Then
+            Return False
+        End If
+
+        If Not RSString.Contains("-") Then
             Return False
         End If
 
@@ -375,7 +389,7 @@ Module ModGlobalFunctions
 #Region "PayPal Interactions"
     Function CheckPayPalAPI() As String
 
-        Dim PPAPI As ClsPayPal = New ClsPayPal
+        Dim PPAPI As ClsPayPal = New ClsPayPal(GlobalPayPalNetwork)
         PPAPI.Client_ID = GetINISetting(E_Setting.PayPalAPIUser, "")
         PPAPI.Secret = GetINISetting(E_Setting.PayPalAPISecret, "")
 

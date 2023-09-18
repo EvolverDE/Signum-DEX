@@ -515,6 +515,7 @@ Public Class ClsTCPAPI
                                         If IsNothing(AmountNQT) Then AmountNQT = ""
                                         If IsNothing(XAmountNQT) Then XAmountNQT = ""
                                         If IsNothing(CollateralNQT) Then CollateralNQT = ""
+
                                         If IsNothing(XItem) Then
                                             XItem = ""
                                         ElseIf Not SupportedCurrencies.Contains(XItem) Then
@@ -525,7 +526,6 @@ Public Class ClsTCPAPI
                                         If Not IsNothing(PassPhrase) Then
                                             Masterkeys = GetMasterKeys(PassPhrase)
                                             PublicKey = Masterkeys(0)
-
                                         Else
                                             If IsNothing(PublicKey) Then PublicKey = ""
                                             PassPhrase = ""
@@ -1487,6 +1487,9 @@ Public Class ClsTCPAPI
                                     Dim SellOrder As Boolean = True
                                     Dim PublicKey As String = ""
                                     Dim PassPhrase As String = ""
+                                    Dim InjectPublicKey As String = ""
+                                    Dim InjectChainSwapHash As String = ""
+                                    Dim ChainSwapKey As String = ""
                                     Dim SignHexKey As String = ""
                                     Dim AmountNQT As String = ""
                                     Dim CollateralNQT As String = ""
@@ -1496,8 +1499,11 @@ Public Class ClsTCPAPI
                                     For Each BodyEntry As KeyValuePair(Of String, Object) In APIRequest.Body
 
                                         Select Case BodyEntry.Key.ToLower()
-                                            Case "orderid"
+                                            Case "orderid", "contract"
                                                 OrderID = BodyEntry.Value.ToString()
+                                                If IsReedSolomon(OrderID) Then
+                                                    OrderID = ClsReedSolomon.Decode(OrderID).ToString()
+                                                End If
                                             Case "type"
                                                 If Not BodyEntry.Value.ToString() = "SellOrder" Then
                                                     SellOrder = False
@@ -1506,6 +1512,12 @@ Public Class ClsTCPAPI
                                                 PublicKey = BodyEntry.Value.ToString()
                                             Case "passphrase"
                                                 PassPhrase = BodyEntry.Value.ToString()
+                                            Case "injectpublickey"
+                                                InjectPublicKey = BodyEntry.Value.ToString()
+                                            Case "injectchainswaphash"
+                                                InjectChainSwapHash = BodyEntry.Value.ToString()
+                                            Case "chainswapkey"
+                                                ChainSwapKey = BodyEntry.Value.ToString()
                                             Case "amountnqt"
                                                 AmountNQT = BodyEntry.Value.ToString()
                                             Case "collateralnqt"
@@ -1525,13 +1537,21 @@ Public Class ClsTCPAPI
                                         SignHexKey = Masterkeys(1)
                                     End If
 
-                                    Dim Amount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(If(AmountNQT = "", "0.0", AmountNQT)))
-                                    Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(If(CollateralNQT = "", "0.0", CollateralNQT)))
-                                    Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(If(XAmountNQT = "", "0.0", CollateralNQT)))
+                                    Dim Amount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(If(Not IsNumeric(AmountNQT), "0", AmountNQT)))
+                                    Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(If(Not IsNumeric(CollateralNQT), "0", CollateralNQT)))
+                                    Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(If(Not IsNumeric(XAmountNQT), "0", XAmountNQT)))
+
+                                    Dim ReservedOrder As ClsDEXContract
+
+                                    If PFPForm.DEXContractList.Count > 0 Then
+                                        ReservedOrder = PFPForm.DEXContractList.FirstOrDefault(Function(reserved) reserved.Status = ClsDEXContract.E_Status.NEW_ And reserved.CreatorID = GetAccountID(PublicKey))
+                                        'Nothing
+                                    End If
 
                                     For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
 
-                                        If OrderID = "" Then
+                                        If OrderID.Trim() = "" Then
+
                                             If T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey)) Then
 
                                                 Dim T_Result As String = T_DEXContract.CreateSellOrder(PublicKey, Amount, Collateral, XItem, XAmount, 0.0, SignHexKey)
@@ -1554,11 +1574,12 @@ Public Class ClsTCPAPI
                                                 End If
 
                                             End If
+
                                         Else
-                                            If T_DEXContract.ID.ToString() = OrderID And T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey)) Then
 
+                                            If T_DEXContract.ID.ToString() = OrderID And (T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey))) Then
+                                                'create new order
                                                 Dim T_Result As String = T_DEXContract.CreateSellOrder(PublicKey, Amount, Collateral, XItem, XAmount, 0.0, SignHexKey)
-
                                                 If T_Result.Contains("errorCode") Then
                                                     ResponseHTML = T_Result.Substring(T_Result.IndexOf("->") + 2).Trim
                                                 ElseIf T_Result.Contains(Application.ProductName + "-error") Then
@@ -1572,9 +1593,99 @@ Public Class ClsTCPAPI
                                                         ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""createOrder"",""data"":{""transaction"":""" + T_Result + """}}"
                                                     End If
 
+                                                    Exit For
+
+                                                End If
+                                            ElseIf T_DEXContract.ID.ToString() = OrderID And T_DEXContract.Status = ClsDEXContract.E_Status.OPEN And InjectChainSwapHash.Trim() = "" And InjectPublicKey.Trim() = "" Then
+                                                'accept order
+                                                Dim T_Result As String = ""
+                                                If T_DEXContract.IsSellOrder Then
+                                                    T_Result = T_DEXContract.AcceptSellOrder(PublicKey, Collateral, 0.0, SignHexKey)
+                                                Else
+                                                    T_Result = T_DEXContract.AcceptBuyOrder(PublicKey, -1, Collateral, 0.0, SignHexKey)
+                                                End If
+                                                If T_Result.Contains("errorCode") Then
+                                                    ResponseHTML = T_Result.Substring(T_Result.IndexOf("->") + 2).Trim
+                                                ElseIf T_Result.Contains(Application.ProductName + "-error") Then
+
+                                                Else
+
+                                                    If SignHexKey.Trim() = "" Then
+                                                        '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""acceptOrder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_Result + """}}"
+                                                    Else
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""acceptOrder"",""data"":{""transaction"":""" + T_Result + """}}"
+                                                    End If
+
+                                                    Exit For
+
+                                                End If
+                                            ElseIf T_DEXContract.ID.ToString() = OrderID And T_DEXContract.Status = ClsDEXContract.E_Status.OPEN And T_DEXContract.IsSellOrder And T_DEXContract.CurrentInitiatorID = GetAccountID(PublicKey) And InjectChainSwapHash.Trim() = "" And MessageIsHEXString(InjectPublicKey) And InjectPublicKey.Length() = 64 Then
+                                                'inject responder
+                                                Dim T_Result As String = T_DEXContract.InjectResponder(PublicKey, GetAccountID(InjectPublicKey), 0.0, SignHexKey)
+                                                If T_Result.Contains("errorCode") Then
+                                                    ResponseHTML = T_Result.Substring(T_Result.IndexOf("->") + 2).Trim
+                                                ElseIf T_Result.Contains(Application.ProductName + "-error") Then
+
+                                                Else
+                                                    If SignHexKey.Trim() = "" Then
+                                                        '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""injectResponder"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_Result + """}}"
+                                                    Else
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""injectResponder"",""data"":{""transaction"":""" + T_Result + """}}"
+                                                    End If
+
+                                                    Exit For
+                                                End If
+                                            ElseIf T_DEXContract.ID.ToString() = OrderID And T_DEXContract.Status = ClsDEXContract.E_Status.OPEN And T_DEXContract.IsSellOrder And T_DEXContract.CurrentInitiatorID = GetAccountID(PublicKey) And InjectPublicKey.Trim() = "" And MessageIsHEXString(InjectChainSwapHash) And InjectChainSwapHash.Length() = 64 Then
+                                                'inject chainswaphash
+                                                Dim T_Result As String = T_DEXContract.InjectChainSwapHash(PublicKey, InjectChainSwapHash, 0.0, SignHexKey)
+                                                If T_Result.Contains("errorCode") Then
+                                                    ResponseHTML = T_Result.Substring(T_Result.IndexOf("->") + 2).Trim
+                                                ElseIf T_Result.Contains(Application.ProductName + "-error") Then
+
+                                                Else
+                                                    If SignHexKey.Trim() = "" Then
+                                                        '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""injectChainSwapHash"",""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_Result + """}}"
+                                                    Else
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""injectChainSwapHash"",""data"":{""transaction"":""" + T_Result + """}}"
+                                                    End If
+
+                                                    Exit For
+                                                End If
+
+                                            ElseIf T_DEXContract.ID.ToString() = OrderID And T_DEXContract.Status = ClsDEXContract.E_Status.RESERVED And (T_DEXContract.CurrentInitiatorID = GetAccountID(PublicKey) Or T_DEXContract.CurrentResponderID = GetAccountID(PublicKey)) Then
+                                                'finish order
+                                                Dim T_Result As String = ""
+                                                Dim ResponseText As String = ""
+                                                If ChainSwapKey.Trim() = "" Then
+                                                    ResponseText = "finishOrder"
+                                                    T_Result = T_DEXContract.FinishOrder(PublicKey, 0.0, SignHexKey)
+                                                Else
+                                                    ResponseText = "finishOrderWithChainSwapKey"
+                                                    If MessageIsHEXString(ChainSwapKey) Then
+                                                        T_Result = T_DEXContract.FinishOrderWithChainSwapKey(PublicKey, ChainSwapKey, 0.0, SignHexKey)
+                                                    End If
+                                                End If
+
+                                                If T_Result.Contains("errorCode") Then
+                                                    ResponseHTML = T_Result.Substring(T_Result.IndexOf("->") + 2).Trim
+                                                ElseIf T_Result.Contains(Application.ProductName + "-error") Then
+
+                                                Else
+                                                    If SignHexKey.Trim() = "" Then
+                                                        '"{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""" + ResponseText + """,""data"":{""contract"":""" + T_DEXContract.ID.ToString() + """,""unsignedTransactionBytes"":""" + T_Result + """}}"
+                                                    Else
+                                                        ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""" + ResponseText + """,""data"":{""transaction"":""" + T_Result + """}}"
+                                                    End If
+
+                                                    Exit For
                                                 End If
 
                                             End If
+
                                         End If
 
                                     Next

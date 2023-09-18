@@ -9,8 +9,8 @@ Imports System.Text
 
 Public Class ClsPayPal
 
-    Public Const SandboxURL As String = "https://www.sandbox.paypal.com"
-    Public Const LiveURL As String = "https://www.api.paypal.com"
+    Public Const SandboxURL As String = "https://api-m.sandbox.paypal.com"
+    Public Const LiveURL As String = "https://api-m.paypal.com"
 
     Property Currencys As List(Of String) = New List(Of String)({"AUD", "BRL", "CAD", "CNY", "CZK", "DKK", "EUR", "HKD", "HUF", "INR", "ILS", "JPY", "MYR", "MXN", "TWD", "NZD", "NOK", "PHP", "PLN", "GBP", "RUB", "SGD", "SEK", "CHF", "THB", "USD"})
 
@@ -576,39 +576,41 @@ Public Class ClsPayPal
 
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(ResponseStr, ClsJSONAndXMLConverter.E_ParseType.JSON)
         Dim T_TransactionDetails As KeyValuePair(Of String, Object) = Converter.GetFromPath("result/transaction_details")
-        Converter = New ClsJSONAndXMLConverter(T_TransactionDetails)
+        If Not IsNothing(T_TransactionDetails.Key) Then
 
-        Dim i As Integer = 0
-        Dim T_Entry As String = GetStringBetween(Converter.XMLString, "<" + i.ToString() + ">", "</" + i.ToString() + ">")
+            Converter = New ClsJSONAndXMLConverter(T_TransactionDetails)
 
-        Dim ReturnList As List(Of List(Of String)) = New List(Of List(Of String))
+            Dim i As Integer = 0
+            Dim T_Entry As String = GetStringBetween(Converter.XMLString, "<" + i.ToString() + ">", "</" + i.ToString() + ">")
 
-        While Not T_Entry.Trim() = ""
-            Dim T_TransactionNote As String = GetStringBetween(T_Entry, "<transaction_note>", "</transaction_note>")
+            Dim ReturnList As List(Of List(Of String)) = New List(Of List(Of String))
 
-            Dim T_TransactionAmount As String = GetStringBetween(T_Entry, "<transaction_amount>", "</transaction_amount>")
-            Dim T_CurrencyCode As String = GetStringBetween(T_TransactionAmount, "<currency_code>", "</currency_code>")
-            Dim T_Value As String = GetStringBetween(T_TransactionAmount, "<value>", "</value>")
-            Dim T_TransactionStatus As String = GetStringBetween(T_Entry, "<transaction_status>", "</transaction_status>")
+            While Not T_Entry.Trim() = ""
+                Dim T_TransactionNote As String = GetStringBetween(T_Entry, "<transaction_note>", "</transaction_note>")
 
-            If Not SearchNote.Trim() = "" Then
+                Dim T_TransactionAmount As String = GetStringBetween(T_Entry, "<transaction_amount>", "</transaction_amount>")
+                Dim T_CurrencyCode As String = GetStringBetween(T_TransactionAmount, "<currency_code>", "</currency_code>")
+                Dim T_Value As String = GetStringBetween(T_TransactionAmount, "<value>", "</value>")
+                Dim T_TransactionStatus As String = GetStringBetween(T_Entry, "<transaction_status>", "</transaction_status>")
 
-                If T_TransactionNote.ToUpper() = SearchNote.ToUpper() Then
+                If Not SearchNote.Trim() = "" Then
 
-                    Dim NuList As List(Of String) = New List(Of String) From {
+                    If T_TransactionNote.ToUpper() = SearchNote.ToUpper() Then
+
+                        Dim NuList As List(Of String) = New List(Of String) From {
                         "<transaction_note>" + SearchNote.Trim() + "</transaction_note>",
                         "<transaction_currency_code>" + T_CurrencyCode + "</transaction_currency_code>",
                         "<transaction_amount>" + T_Value + "</transaction_amount>",
                         "<transaction_status>" + T_TransactionStatus + "</transaction_status>"
                     }
 
-                    Return New List(Of List(Of String))({NuList})
+                        Return New List(Of List(Of String))({NuList})
 
-                End If
+                    End If
 
-            Else
+                Else
 
-                ReturnList.Add(New List(Of String) From
+                    ReturnList.Add(New List(Of String) From
                     {
                         "<transaction_note>" + SearchNote.Trim() + "</transaction_note>",
                         "<transaction_currency_code>" + T_CurrencyCode + "</transaction_currency_code>",
@@ -617,15 +619,17 @@ Public Class ClsPayPal
                     }
                 )
 
-            End If
+                End If
 
-            i += 1
-            T_Entry = GetStringBetween(Converter.XMLString, "<" + i.ToString() + ">", "</" + i.ToString() + ">")
+                i += 1
+                T_Entry = GetStringBetween(Converter.XMLString, "<" + i.ToString() + ">", "</" + i.ToString() + ">")
 
-        End While
+            End While
 
-        Return ReturnList
-
+            Return ReturnList
+        Else
+            Return New List(Of List(Of String))
+        End If
 
 #Region "normal Payments"
 
