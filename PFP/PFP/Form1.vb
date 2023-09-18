@@ -7,6 +7,7 @@ Imports System.Diagnostics.Contracts
 Imports PFP.ClsOrderSettings
 Imports PFP.PFPForm
 Imports System.Linq
+Imports PFP.ClsAPIRequest
 
 Public Class PFPForm
 
@@ -1835,8 +1836,22 @@ Public Class PFPForm
                                 Dim T_Method As String = GetINISetting(E_Setting.PaymentType, "")
                                 OffchainBuyOrder = New S_OffchainBuyOrder("0", GlobalPublicKey, "WantToBuy", Amount, ItemAmount, Item, T_Method)
                                 DEXNET.BroadcastMessage("<SCID>0</SCID><Ask>WantToBuy</Ask><Amount>" + Amount.ToString + "</Amount><XAmount>" + ItemAmount.ToString + "</XAmount><XItem>" + Item + "</XItem><Method>" + T_Method + "</Method>", Masterkeys(1), Masterkeys(2), Masterkeys(0))
+                            Else
+                                TSSCryptStatus_Click(Nothing, Nothing)
+                                Masterkeys = GetPassPhrase()
+                                If Masterkeys.Count > 0 Then
+                                    'DEXNET.AddRelevantKey("<Answer>")
+                                    Dim T_Method As String = GetINISetting(E_Setting.PaymentType, "")
+                                    OffchainBuyOrder = New S_OffchainBuyOrder("0", GlobalPublicKey, "WantToBuy", Amount, ItemAmount, Item, T_Method)
+                                    DEXNET.BroadcastMessage("<SCID>0</SCID><Ask>WantToBuy</Ask><Amount>" + Amount.ToString + "</Amount><XAmount>" + ItemAmount.ToString + "</XAmount><XItem>" + Item + "</XItem><Method>" + T_Method + "</Method>", Masterkeys(1), Masterkeys(2), Masterkeys(0))
+
+                                Else
+                                    ClsMsgs.MBox("offchain order canceled", "jour offchain order was canceled.",,, ClsMsgs.Status.Warning, 3, ClsMsgs.Timer_Type.AutoOK)
+                                End If
                             End If
 
+                        Else
+                            ClsMsgs.MBox("offchain order canceled", "jour offchain order was canceled.",,, ClsMsgs.Status.Warning, 3, ClsMsgs.Timer_Type.AutoOK)
                         End If
 
                     End If
@@ -2133,7 +2148,22 @@ Public Class PFPForm
                         '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
                         If Masterkeys.Count > 0 Then
                             DEXNET.BroadcastMessage("<SCID>" + T_DEXContract.ID.ToString + "</SCID><Ask>AcceptOrderRequest</Ask>", Masterkeys(1), Masterkeys(2), Masterkeys(0), SignumAPI.GetAccountPublicKeyFromAccountID_RS(T_DEXContract.CurrentInitiatorAddress))
+                        Else
+                            Dim PinForm As FrmEnterPIN = New FrmEnterPIN(FrmEnterPIN.E_Mode.EnterPINOnly)
+                            PinForm.ShowDialog()
+
+                            Masterkeys = GetPassPhrase()
+
+                            If Masterkeys.Count > 0 Then
+                                DEXNET.BroadcastMessage("<SCID>" + T_DEXContract.ID.ToString + "</SCID><Ask>AcceptOrderRequest</Ask>", Masterkeys(1), Masterkeys(2), Masterkeys(0), SignumAPI.GetAccountPublicKeyFromAccountID_RS(T_DEXContract.CurrentInitiatorAddress))
+                                GlobalPIN = ""
+                            Else
+                                ClsMsgs.MBox("request canceled", "jour request was canceled.",,, ClsMsgs.Status.Warning, 3, ClsMsgs.Timer_Type.AutoOK)
+                            End If
+
                         End If
+                    Else
+                        ClsMsgs.MBox("request canceled", "jour request was canceled.",,, ClsMsgs.Status.Warning, 3, ClsMsgs.Timer_Type.AutoOK)
 
                     End If
 
@@ -5838,7 +5868,7 @@ Public Class PFPForm
                             End If
 
                             T_LVI.SubItems.Add(PayMet) 'method
-                            T_LVI.SubItems.Add(AutoSendInfotext + "/" + AutoCompleteSmartContract) 'autoinfo/autofinish
+                            T_LVI.SubItems.Add(Autosendinfotext + "/" + AutocompleteSmartContract) 'autoinfo/autofinish
                             T_LVI.SubItems.Add("Me") 'seller
                             T_LVI.SubItems.Add(T_DEXContract.CurrentBuyerAddress)  'buyer
                             T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, Decimals) + " " + XItemTicker) 'xitem/xamount
@@ -5857,9 +5887,9 @@ Public Class PFPForm
 
                             'Broadcast info over DEXNET
                             If T_DEXContract.CurrencyIsCrypto Then
-                                BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>AtomicSwap</PayType><Autosendinfotext>" + AutoSendInfotext + "</Autosendinfotext><AutocompleteSC>" + AutoCompleteSmartContract + "</AutocompleteSC>")
+                                BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>AtomicSwap</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
                             Else
-                                BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + AutoSendInfotext + "</Autosendinfotext><AutocompleteSC>" + AutoCompleteSmartContract + "</AutocompleteSC>")
+                                BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
                             End If
 
                             T_LVI = New ListViewItem
@@ -8349,7 +8379,16 @@ Public Class PFPForm
                                                                     Dim T_MsgStr As String = "Account activation"
                                                                     Dim TXr As String = T_Interactions.SendBillingInfos(RM_AccountID, PayInfo, False, True, RM_AccountPublicKey)
 
-                                                                    IsErrorOrWarning(TXr, "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf, True)
+                                                                    If Not IsErrorOrWarning(TXr, "-warning in SetDEXNETRelevantMsgsToLVs(UnexpectetMsgs4): -> " + vbCrLf, True) Then
+                                                                        'DEXNET send Answer
+
+                                                                        '0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+                                                                        If Masterkeys.Count > 0 Then
+                                                                            DEXNET.BroadcastMessage("<SCID>" + MyOpenDEXContract.ID.ToString + "</SCID><Answer>request accepted</Answer>", MasterKeys(1), MasterKeys(2), MasterKeys(0), RM_AccountPublicKey)
+                                                                        End If
+                                                                    Else
+                                                                        DEXNET.BroadcastMessage("<SCID>" + MyOpenDEXContract.ID.ToString + "</SCID><Answer>request rejected</Answer>", MasterKeys(1), MasterKeys(2), MasterKeys(0), RM_AccountPublicKey)
+                                                                    End If
 
                                                                 End If
                                                             End If
@@ -8451,6 +8490,15 @@ Public Class PFPForm
                 Else
                     IsErrorOrWarning(Application.ProductName + "-error in SetDEXNETRelevantMsgsToLVs(UnexpectedMsgs): -> ASK=" + RM_Ask + " ACCID=" + RM_AccountID.ToString + " Pubkey=" + RM_AccountPublicKey)
                 End If
+
+            ElseIf RelMsg.RelevantMessage.Contains("<SCID>") And RelMsg.RelevantMessage.Contains("<PublicKey>") And RelMsg.RelevantMessage.Contains("<Answer>") Then
+
+                Dim RM_SmartContractID As ULong = GetULongBetween(RelMsg.RelevantMessage, "<SCID>", "</SCID>")
+                Dim RM_AccountPublicKey As String = GetStringBetween(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>")
+                Dim RM_Answer As String = GetStringBetween(RelMsg.RelevantMessage, "<Answer>", "</Answer>")
+
+                ClsMsgs.MBox("Request answer", "The Seller " + ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(GetAccountID(RM_AccountPublicKey)) + " from Contract " + ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(RM_SmartContractID) + " answered """ + RM_Answer + """", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                'DEXNET.DelRelevantKey("<Answer>")
 
             End If
 

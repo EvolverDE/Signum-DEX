@@ -237,6 +237,10 @@ Module ModJSON
     ''' <remarks></remarks>
     Function GetStringBetween(ByVal input As String, Optional ByVal startchar As String = "(", Optional ByVal endchar As String = ")", Optional LastIdxOf As Boolean = False, Optional ByVal CaseSensitive As Boolean = True) As String
 
+        If IsNothing(input) Then
+            Return ""
+        End If
+
         If Not CaseSensitive Then
             startchar = startchar.ToLower()
             endchar = endchar.ToLower()

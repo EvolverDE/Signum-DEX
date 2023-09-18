@@ -1304,14 +1304,17 @@ Public Class ClsDEXNET
             For ii As Integer = 0 To RelevantMsgs.Count - 1
                 Dim RevMsg As S_RelevantMessage = RelevantMsgs(ii)
 
-                If Not RevMsg.RelevantKey.Name.Trim = "" And Not RevMsg.RelevantKey.Different.Trim = "" And RevMsg.RelevantKey.TriggerTag.Trim = "" Then
+                If Not IsNothing(RevMsg.RelevantKey.Name) And Not IsNothing(RevMsg.RelevantKey.Different) And Not IsNothing(RevMsg.RelevantKey.TriggerTag) Then
 
-                    If BCMessage.Contains(RevMsg.RelevantKey.Name) And BCMessage.Contains(RevMsg.RelevantKey.Different) Then
-                        ExpectedMessage = True
-                        RevMsg.RelevantMessage = BCMessage
-                        RevMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
-                        RelevantMsgs(ii) = RevMsg
-                        Exit For
+                    If Not RevMsg.RelevantKey.Name.Trim = "" And Not RevMsg.RelevantKey.Different.Trim = "" And RevMsg.RelevantKey.TriggerTag.Trim = "" Then
+
+                        If BCMessage.Contains(RevMsg.RelevantKey.Name) And BCMessage.Contains(RevMsg.RelevantKey.Different) Then
+                            ExpectedMessage = True
+                            RevMsg.RelevantMessage = BCMessage
+                            RevMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
+                            RelevantMsgs(ii) = RevMsg
+                            Exit For
+                        End If
                     End If
 
                 End If
@@ -1331,7 +1334,7 @@ Public Class ClsDEXNET
                             If BCMessage.Contains(RevMsg.RelevantKey.Name) Then
                                 ExpectedMessage = True
 
-                                RelevantKeys.Add(New S_RelevantKey(RevMsg.RelevantKey.Name,, "<" + RevMsg.RelevantKey.TriggerTag + ">" + T_Trigger + "</" + RevMsg.RelevantKey.TriggerTag + ">"))
+                                RelevantKeys.Add(New S_RelevantKey(RevMsg.RelevantKey.Name, "", "<" + RevMsg.RelevantKey.TriggerTag + ">" + T_Trigger + "</" + RevMsg.RelevantKey.TriggerTag + ">"))
 
                                 Dim T_RelevantMsg As S_RelevantMessage = New S_RelevantMessage
 
