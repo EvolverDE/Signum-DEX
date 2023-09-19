@@ -288,6 +288,8 @@ Partial Class FrmDevelope
         Me.Label29 = New System.Windows.Forms.Label()
         Me.TBTestMyPublicKey = New System.Windows.Forms.TextBox()
         Me.Label28 = New System.Windows.Forms.Label()
+        Me.Label63 = New System.Windows.Forms.Label()
+        Me.LiBoDEXNETPublicKeys = New System.Windows.Forms.ListBox()
         Me.TestTabControl.SuspendLayout()
         Me.TabPage6.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
@@ -2283,6 +2285,7 @@ Partial Class FrmDevelope
         Me.SplitContainer6.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer6.Location = New System.Drawing.Point(0, 0)
         Me.SplitContainer6.Name = "SplitContainer6"
+        Me.SplitContainer6.Orientation = System.Windows.Forms.Orientation.Horizontal
         '
         'SplitContainer6.Panel1
         '
@@ -2292,7 +2295,7 @@ Partial Class FrmDevelope
         '
         Me.SplitContainer6.Panel2.Controls.Add(Me.SplitContainer7)
         Me.SplitContainer6.Size = New System.Drawing.Size(1232, 686)
-        Me.SplitContainer6.SplitterDistance = 605
+        Me.SplitContainer6.SplitterDistance = 334
         Me.SplitContainer6.TabIndex = 2
         '
         'SplitContainer2
@@ -2305,6 +2308,8 @@ Partial Class FrmDevelope
         '
         'SplitContainer2.Panel1
         '
+        Me.SplitContainer2.Panel1.Controls.Add(Me.LiBoDEXNETPublicKeys)
+        Me.SplitContainer2.Panel1.Controls.Add(Me.Label63)
         Me.SplitContainer2.Panel1.Controls.Add(Me.ChBxDEXNETEncryptMsg)
         Me.SplitContainer2.Panel1.Controls.Add(Me.BtTestBroadcastMsg)
         Me.SplitContainer2.Panel1.Controls.Add(Me.TBTestRecipientPubKey)
@@ -2322,7 +2327,7 @@ Partial Class FrmDevelope
         'SplitContainer2.Panel2
         '
         Me.SplitContainer2.Panel2.Controls.Add(Me.LiBoDEXNETStatus)
-        Me.SplitContainer2.Size = New System.Drawing.Size(603, 684)
+        Me.SplitContainer2.Size = New System.Drawing.Size(1230, 332)
         Me.SplitContainer2.SplitterDistance = 129
         Me.SplitContainer2.TabIndex = 0
         '
@@ -2351,16 +2356,16 @@ Partial Class FrmDevelope
         '
         'TBTestRecipientPubKey
         '
-        Me.TBTestRecipientPubKey.Location = New System.Drawing.Point(175, 75)
+        Me.TBTestRecipientPubKey.Location = New System.Drawing.Point(285, 29)
         Me.TBTestRecipientPubKey.Name = "TBTestRecipientPubKey"
-        Me.TBTestRecipientPubKey.Size = New System.Drawing.Size(393, 20)
+        Me.TBTestRecipientPubKey.Size = New System.Drawing.Size(283, 20)
         Me.TBTestRecipientPubKey.TabIndex = 10
         '
         'Label11
         '
         Me.Label11.AutoSize = True
         Me.Label11.ForeColor = System.Drawing.Color.Black
-        Me.Label11.Location = New System.Drawing.Point(175, 54)
+        Me.Label11.Location = New System.Drawing.Point(175, 32)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(95, 13)
         Me.Label11.TabIndex = 9
@@ -2368,17 +2373,17 @@ Partial Class FrmDevelope
         '
         'TBTestBroadcastMessage
         '
-        Me.TBTestBroadcastMessage.Location = New System.Drawing.Point(285, 26)
+        Me.TBTestBroadcastMessage.Location = New System.Drawing.Point(285, 3)
         Me.TBTestBroadcastMessage.Name = "TBTestBroadcastMessage"
         Me.TBTestBroadcastMessage.Size = New System.Drawing.Size(283, 20)
         Me.TBTestBroadcastMessage.TabIndex = 8
-        Me.TBTestBroadcastMessage.Text = "<ATID>1234</ATID>"
+        Me.TBTestBroadcastMessage.Text = "<SCID>0</SCID><Answer>request rejected</Answer>"
         '
         'Label10
         '
         Me.Label10.AutoSize = True
         Me.Label10.ForeColor = System.Drawing.Color.Black
-        Me.Label10.Location = New System.Drawing.Point(175, 29)
+        Me.Label10.Location = New System.Drawing.Point(175, 6)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(104, 13)
         Me.Label10.TabIndex = 7
@@ -2459,7 +2464,7 @@ Partial Class FrmDevelope
         Me.LiBoDEXNETStatus.FormattingEnabled = True
         Me.LiBoDEXNETStatus.Location = New System.Drawing.Point(0, 0)
         Me.LiBoDEXNETStatus.Name = "LiBoDEXNETStatus"
-        Me.LiBoDEXNETStatus.Size = New System.Drawing.Size(603, 551)
+        Me.LiBoDEXNETStatus.Size = New System.Drawing.Size(1230, 199)
         Me.LiBoDEXNETStatus.TabIndex = 0
         '
         'CMSTestLiBoDEXNETStatus
@@ -2493,8 +2498,8 @@ Partial Class FrmDevelope
         'SplitContainer7.Panel2
         '
         Me.SplitContainer7.Panel2.Controls.Add(Me.SplitContainer8)
-        Me.SplitContainer7.Size = New System.Drawing.Size(621, 684)
-        Me.SplitContainer7.SplitterDistance = 476
+        Me.SplitContainer7.Size = New System.Drawing.Size(1230, 346)
+        Me.SplitContainer7.SplitterDistance = 942
         Me.SplitContainer7.TabIndex = 2
         '
         'SplitContainer3
@@ -2511,7 +2516,7 @@ Partial Class FrmDevelope
         'SplitContainer3.Panel2
         '
         Me.SplitContainer3.Panel2.Controls.Add(Me.SplitContainer5)
-        Me.SplitContainer3.Size = New System.Drawing.Size(476, 684)
+        Me.SplitContainer3.Size = New System.Drawing.Size(942, 346)
         Me.SplitContainer3.SplitterDistance = 150
         Me.SplitContainer3.TabIndex = 1
         '
@@ -2533,7 +2538,7 @@ Partial Class FrmDevelope
         'SplitContainer4.Panel2
         '
         Me.SplitContainer4.Panel2.Controls.Add(Me.LiBoTestRelKeys)
-        Me.SplitContainer4.Size = New System.Drawing.Size(150, 684)
+        Me.SplitContainer4.Size = New System.Drawing.Size(150, 346)
         Me.SplitContainer4.SplitterDistance = 91
         Me.SplitContainer4.TabIndex = 0
         '
@@ -2580,7 +2585,7 @@ Partial Class FrmDevelope
         Me.LiBoTestRelKeys.FormattingEnabled = True
         Me.LiBoTestRelKeys.Location = New System.Drawing.Point(0, 0)
         Me.LiBoTestRelKeys.Name = "LiBoTestRelKeys"
-        Me.LiBoTestRelKeys.Size = New System.Drawing.Size(150, 589)
+        Me.LiBoTestRelKeys.Size = New System.Drawing.Size(150, 251)
         Me.LiBoTestRelKeys.TabIndex = 0
         '
         'SplitContainer5
@@ -2599,7 +2604,7 @@ Partial Class FrmDevelope
         'SplitContainer5.Panel2
         '
         Me.SplitContainer5.Panel2.Controls.Add(Me.LiBoTestRelMsgs)
-        Me.SplitContainer5.Size = New System.Drawing.Size(322, 684)
+        Me.SplitContainer5.Size = New System.Drawing.Size(788, 346)
         Me.SplitContainer5.SplitterDistance = 25
         Me.SplitContainer5.TabIndex = 0
         '
@@ -2628,7 +2633,7 @@ Partial Class FrmDevelope
         Me.LiBoTestRelMsgs.FormattingEnabled = True
         Me.LiBoTestRelMsgs.Location = New System.Drawing.Point(0, 0)
         Me.LiBoTestRelMsgs.Name = "LiBoTestRelMsgs"
-        Me.LiBoTestRelMsgs.Size = New System.Drawing.Size(322, 655)
+        Me.LiBoTestRelMsgs.Size = New System.Drawing.Size(788, 317)
         Me.LiBoTestRelMsgs.TabIndex = 0
         '
         'SplitContainer8
@@ -2646,7 +2651,7 @@ Partial Class FrmDevelope
         'SplitContainer8.Panel2
         '
         Me.SplitContainer8.Panel2.Controls.Add(Me.LiBoTestPeers)
-        Me.SplitContainer8.Size = New System.Drawing.Size(141, 684)
+        Me.SplitContainer8.Size = New System.Drawing.Size(284, 346)
         Me.SplitContainer8.SplitterDistance = 25
         Me.SplitContainer8.TabIndex = 0
         '
@@ -2666,7 +2671,7 @@ Partial Class FrmDevelope
         Me.LiBoTestPeers.FormattingEnabled = True
         Me.LiBoTestPeers.Location = New System.Drawing.Point(0, 0)
         Me.LiBoTestPeers.Name = "LiBoTestPeers"
-        Me.LiBoTestPeers.Size = New System.Drawing.Size(141, 655)
+        Me.LiBoTestPeers.Size = New System.Drawing.Size(284, 317)
         Me.LiBoTestPeers.TabIndex = 0
         '
         'TabPage2
@@ -3077,6 +3082,23 @@ Partial Class FrmDevelope
         Me.Label28.TabIndex = 0
         Me.Label28.Text = "My Public Key:"
         '
+        'Label63
+        '
+        Me.Label63.AutoSize = True
+        Me.Label63.Location = New System.Drawing.Point(574, 6)
+        Me.Label63.Name = "Label63"
+        Me.Label63.Size = New System.Drawing.Size(62, 13)
+        Me.Label63.TabIndex = 13
+        Me.Label63.Text = "PublicKeys:"
+        '
+        'LiBoDEXNETPublicKeys
+        '
+        Me.LiBoDEXNETPublicKeys.FormattingEnabled = True
+        Me.LiBoDEXNETPublicKeys.Location = New System.Drawing.Point(577, 22)
+        Me.LiBoDEXNETPublicKeys.Name = "LiBoDEXNETPublicKeys"
+        Me.LiBoDEXNETPublicKeys.Size = New System.Drawing.Size(646, 95)
+        Me.LiBoDEXNETPublicKeys.TabIndex = 14
+        '
         'FrmDevelope
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -3484,4 +3506,6 @@ Partial Class FrmDevelope
     Friend WithEvents GroupBox12 As GroupBox
     Friend WithEvents BtTestBitcoinScanBlocks As Button
     Friend WithEvents Label62 As Label
+    Friend WithEvents LiBoDEXNETPublicKeys As ListBox
+    Friend WithEvents Label63 As Label
 End Class

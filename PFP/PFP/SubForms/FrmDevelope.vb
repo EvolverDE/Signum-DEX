@@ -114,6 +114,9 @@ Public Class FrmDevelope
 
             Next
 
+
+            SetRefreshListsInListBox(LiBoTestRelMsgs, GetRefreshLists(RelMsgs.Select(Function(msg) msg.RelevantMessage).ToList(), GetListBoxItems(LiBoTestRelMsgs)))
+
             'Dim Empty_CNT As Integer = 0
             'Dim CNT As Integer = 0
             'For Each x As String In LiBoTestRelMsgs.Items
@@ -134,54 +137,57 @@ Public Class FrmDevelope
             '    End If
             'Next
 
-            'If Empty_CNT <> Empty_CNT1 And CNT <> CNT1 Then
-            LiBoTestRelMsgs.Items.Clear()
+            ''If Empty_CNT <> Empty_CNT1 And CNT <> CNT1 Then
+            'LiBoTestRelMsgs.Items.Clear()
 
-            '    For i As Integer = 0 To Empty_CNT1 - 1
-            '        LiBoTestRelMsgs.Items.Add("")
-            '    Next
+            ''    For i As Integer = 0 To Empty_CNT1 - 1
+            ''        LiBoTestRelMsgs.Items.Add("")
+            ''    Next
 
-            'End If
+            ''End If
 
-            For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
+            'For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
 
-                'If RelMsg.RelevantMessage.Trim = "" Then
-                '    Continue For
-                'End If
+            '    'If RelMsg.RelevantMessage.Trim = "" Then
+            '    '    Continue For
+            '    'End If
 
-                'Dim FoundedMsg As Boolean = False
-                'For Each LiBoRelMsg As String In LiBoTestRelMsgs.Items
+            '    'Dim FoundedMsg As Boolean = False
+            '    'For Each LiBoRelMsg As String In LiBoTestRelMsgs.Items
 
-                '    If LiBoRelMsg.Trim = "" Then
-                '        Continue For
-                '    End If
+            '    '    If LiBoRelMsg.Trim = "" Then
+            '    '        Continue For
+            '    '    End If
 
-                '    If LiBoRelMsg.Contains("<PublicKey>") Then
+            '    '    If LiBoRelMsg.Contains("<PublicKey>") Then
 
-                '        Dim T_Trigger As String = GetStringBetween(LiBoRelMsg, "<PublicKey>", "</PublicKey>")
+            '    '        Dim T_Trigger As String = GetStringBetween(LiBoRelMsg, "<PublicKey>", "</PublicKey>")
 
-                '        If RelMsg.RelevantMessage.Contains(T_Trigger) Then
-                '            FoundedMsg = True
-                '            Exit For
-                '        End If
+            '    '        If RelMsg.RelevantMessage.Contains(T_Trigger) Then
+            '    '            FoundedMsg = True
+            '    '            Exit For
+            '    '        End If
 
-                '    End If
+            '    '    End If
 
-                'Next
+            '    'Next
 
-                'If Not FoundedMsg Then
-                LiBoTestRelMsgs.Items.Add(RelMsg.RelevantMessage)
-                'End If
+            '    'If Not FoundedMsg Then
+            '    LiBoTestRelMsgs.Items.Add(RelMsg.RelevantMessage)
+            '    'End If
 
-            Next
+            'Next
 
-            LiBoTestPeers.Items.Clear()
 
             Dim Peers As List(Of ClsDEXNET.S_Peer) = C_MainForm.DEXNET.GetPeers
+            SetRefreshListsInListBox(LiBoTestPeers, GetRefreshLists(Peers.Select(Function(pe) pe.PossibleHost + ":" + pe.Port.ToString()).ToList(), GetListBoxItems(LiBoTestPeers)))
+            SetRefreshListsInListBox(LiBoDEXNETPublicKeys, GetRefreshLists(Peers.Select(Function(pe) pe.PublicKey).ToList(), GetListBoxItems(LiBoDEXNETPublicKeys)))
 
-            For Each Peer As ClsDEXNET.S_Peer In Peers
-                LiBoTestPeers.Items.Add(Peer.PossibleHost + ":" + Peer.Port.ToString)
-            Next
+
+            'LiBoTestPeers.Items.Clear()
+            'For Each Peer As ClsDEXNET.S_Peer In Peers
+            '    LiBoTestPeers.Items.Add(Peer.PossibleHost + ":" + Peer.Port.ToString)
+            'Next
 
         End If
 
@@ -281,6 +287,43 @@ Public Class FrmDevelope
             SpecialTimer += 1
 
         End If
+
+    End Sub
+
+
+    Private Function GetListBoxItems(ByVal LiBo As ListBox) As List(Of String)
+
+        Dim CurrentList As List(Of String) = New List(Of String)
+        For Each Entry As String In LiBo.Items
+            CurrentList.Add(Entry)
+        Next
+
+        Return CurrentList
+
+    End Function
+    Private Function GetRefreshLists(ByVal NewList As List(Of String), ByVal CurrentList As List(Of String)) As List(Of List(Of String))
+
+        Dim AddList As List(Of String) = NewList.Where(Function(li) Not CurrentList.Contains(li) And li.Trim() <> "").ToList()
+        If CurrentList.Count = 0 Then
+            Return New List(Of List(Of String))({New List(Of String), AddList})
+        End If
+
+        Dim DeleteList As List(Of String) = CurrentList.Where(Function(p) Not AddList.Contains(p) And Not NewList.Contains(p)).ToList()
+
+        Return New List(Of List(Of String))({DeleteList, AddList})
+
+    End Function
+    Private Sub SetRefreshListsInListBox(ByVal LiBo As ListBox, ByVal RefreshLists As List(Of List(Of String)))
+
+        Dim CurrentList As List(Of String) = GetListBoxItems(LiBo)
+
+        For Each Del As String In RefreshLists(0)
+            LiBo.Items.Remove(Del)
+        Next
+
+        For Each add As String In RefreshLists(1)
+            LiBo.Items.Add(add)
+        Next
 
     End Sub
 
@@ -846,28 +889,25 @@ Public Class FrmDevelope
     End Sub
 
     Private Sub LiBoDEXNETStatus_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LiBoDEXNETStatus.DoubleClick
-
-        If Not LiBoDEXNETStatus.SelectedItem Is Nothing Then
-
-            Dim T_Frm As Form = New Form With {.Name = "FrmMessage", .Text = "FrmMessage", .StartPosition = FormStartPosition.CenterScreen}
-            Dim RTB As RichTextBox = New RichTextBox
-            RTB.Dock = DockStyle.Fill
-            RTB.AppendText(LiBoDEXNETStatus.SelectedItem.ToString)
-            T_Frm.Controls.Add(RTB)
-            T_Frm.Show()
-
-        End If
-
+        ShowListBoxEntry(LiBoDEXNETStatus)
     End Sub
 
     Private Sub LiBoTestRelMsgs_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LiBoTestRelMsgs.DoubleClick
+        ShowListBoxEntry(LiBoTestRelMsgs)
+    End Sub
 
-        If Not LiBoTestRelMsgs.SelectedItem Is Nothing Then
+    Private Sub LiBoDEXNETPublicKeys_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LiBoDEXNETPublicKeys.DoubleClick
+        ShowListBoxEntry(LiBoDEXNETPublicKeys)
+    End Sub
+
+    Private Sub ShowListBoxEntry(ByVal LiBo As ListBox)
+
+        If Not LiBo.SelectedItem Is Nothing Then
 
             Dim T_Frm As Form = New Form With {.Name = "FrmMessage", .Text = "FrmMessage", .StartPosition = FormStartPosition.CenterScreen}
             Dim RTB As RichTextBox = New RichTextBox
             RTB.Dock = DockStyle.Fill
-            RTB.AppendText(LiBoTestRelMsgs.SelectedItem.ToString)
+            RTB.AppendText(LiBo.SelectedItem.ToString)
             T_Frm.Controls.Add(RTB)
             T_Frm.Show()
 
@@ -901,6 +941,8 @@ Public Class FrmDevelope
     End Sub
     Private Sub BtTestBroadcastMsg_Click(sender As Object, e As EventArgs) Handles BtTestBroadcastMsg.Click
 
+        'DEXNET.BroadcastMessage("<SCID>0</SCID><Answer>request rejected</Answer>", MasterKeys(1), MasterKeys(2), MasterKeys(0), RM_AccountPublicKey)
+
         If Not TBTestBroadcastMessage.Text.Trim = "" Then
             If ChBxDEXNETEncryptMsg.Checked Then
 
@@ -920,6 +962,8 @@ Public Class FrmDevelope
     Private Sub BtTestAddRelKey_Click(sender As Object, e As EventArgs) Handles BtTestAddRelKey.Click
         C_MainForm.DEXNET.AddRelevantKey(TBTestAddRelKey.Text)
     End Sub
+
+
 
     Private Sub LiBoTestRelKeys_SelectedIndexChanged(sender As Object, e As EventArgs) Handles LiBoTestRelKeys.DoubleClick
 
@@ -1417,6 +1461,8 @@ Public Class FrmDevelope
         RTBTestBitcoin.AppendText(Result)
 
     End Sub
+
+
 
 #End Region
 

@@ -8493,14 +8493,26 @@ Public Class PFPForm
 
             ElseIf RelMsg.RelevantMessage.Contains("<SCID>") And RelMsg.RelevantMessage.Contains("<PublicKey>") And RelMsg.RelevantMessage.Contains("<Answer>") Then
 
+                RelMsg.Setted = True
+
                 Dim RM_SmartContractID As ULong = GetULongBetween(RelMsg.RelevantMessage, "<SCID>", "</SCID>")
                 Dim RM_AccountPublicKey As String = GetStringBetween(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>")
                 Dim RM_Answer As String = GetStringBetween(RelMsg.RelevantMessage, "<Answer>", "</Answer>")
 
-                ClsMsgs.MBox("Request answer", "The Seller " + ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(GetAccountID(RM_AccountPublicKey)) + " from Contract " + ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(RM_SmartContractID) + " answered """ + RM_Answer + """", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                Try
+                    StatusLabel.Text = "The Seller " + ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(GetAccountID(RM_AccountPublicKey)) + " from Contract " + ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(RM_SmartContractID) + " answered """ + RM_Answer + """"
+                    'ClsMsgs.MBox("Request answer", "The Seller " + ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(GetAccountID(RM_AccountPublicKey)) + " from Contract " + ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(RM_SmartContractID) + " answered """ + RM_Answer + """", ,, ClsMsgs.Status.Information, 5, ClsMsgs.Timer_Type.AutoOK)
+                Catch ex As Exception
+
+                End Try
+
+
                 'DEXNET.DelRelevantKey("<Answer>")
 
+                RelevantMsgsBuffer(ii) = RelMsg
+
             End If
+
 
         Next
 

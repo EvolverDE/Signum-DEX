@@ -1379,12 +1379,13 @@ Public Class ClsDEXNET
 
                 Dim ShortID As String = GetID()
                 ShortID = ShortID.Remove(8)
-                RelevantKeys.Add(New S_RelevantKey("Unexpected" + ShortID))
+                Dim T_RelKey As S_RelevantKey = New S_RelevantKey("Unexpected" + ShortID)
+                RelevantKeys.Add(T_RelKey)
 
                 Dim T_RelevantMsg As S_RelevantMessage = New S_RelevantMessage
 
                 T_RelevantMsg.Lifetime = 480.0
-                T_RelevantMsg.RelevantKey.Name = "Unexpected" + ShortID
+                T_RelevantMsg.RelevantKey = T_RelKey
                 T_RelevantMsg.RelevantMessage = BCMessage
                 T_RelevantMsg.Timestamp = Convert.ToDouble(GetUnixTimestamp())
 
