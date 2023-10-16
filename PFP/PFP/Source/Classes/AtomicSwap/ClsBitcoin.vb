@@ -458,22 +458,22 @@
 
 #End Region
 
-    Public Function CreateBitcoinTransaction(ByVal Amount As Double, ByVal RecipientAddress As String, Optional ByVal FilterSenderAddress As String = "") As ClsTransaction
+    Public Function CreateBitcoinTransaction(ByVal Amount As Double, ByVal RecipientAddress As String, Optional ByVal FilterSenderAddress As String = "") As ClsBitcoinTransaction
         Dim T_BitNet As ClsBitcoinNET = New ClsBitcoinNET()
         Dim T_UTXOs As List(Of ClsBitcoinNET.S_UnspentTransactionOutput) = T_BitNet.GetFilteredTransactions(FilterSenderAddress, Amount)
 
-        Dim T_Trx As ClsTransaction = New ClsTransaction(T_UTXOs)
+        Dim T_Trx As ClsBitcoinTransaction = New ClsBitcoinTransaction(T_UTXOs)
         T_Trx.CreateOutput(RecipientAddress, Amount)
         T_Trx.FinalizingOutputs(FilterSenderAddress)
         Return T_Trx
 
     End Function
 
-    Public Function CreateBitcoinTransaction(ByVal Amount As Double, ByVal RecipientAddress As String, Optional ByVal FilterSenderAddress As String = "", Optional ByVal LockTime As Integer = 12) As ClsTransaction
+    Public Function CreateBitcoinTransaction(ByVal Amount As Double, ByVal RecipientAddress As String, Optional ByVal FilterSenderAddress As String = "", Optional ByVal LockTime As Integer = 12) As ClsBitcoinTransaction
         Dim T_BitNet As ClsBitcoinNET = New ClsBitcoinNET()
         Dim T_UTXOs As List(Of ClsBitcoinNET.S_UnspentTransactionOutput) = T_BitNet.GetFilteredTransactions(FilterSenderAddress, Amount)
 
-        Dim T_Trx As ClsTransaction = New ClsTransaction(T_UTXOs)
+        Dim T_Trx As ClsBitcoinTransaction = New ClsBitcoinTransaction(T_UTXOs)
 
         T_Trx.CreateOutput(RecipientAddress, Amount, LockTime)
 
@@ -482,11 +482,11 @@
 
     End Function
 
-    Public Function CreateBitcoinTransaction(ByVal Amount As Double, ByVal RecipientAddress As String, ByVal FilterSenderAddress As String, ByVal ChainSwapHash As String, Optional ByVal LockTime As Integer = -1) As ClsTransaction
+    Public Function CreateBitcoinTransaction(ByVal Amount As Double, ByVal RecipientAddress As String, ByVal FilterSenderAddress As String, ByVal ChainSwapHash As String, Optional ByVal LockTime As Integer = -1) As ClsBitcoinTransaction
         Dim T_BitNet As ClsBitcoinNET = New ClsBitcoinNET()
         Dim T_UTXOs As List(Of ClsBitcoinNET.S_UnspentTransactionOutput) = T_BitNet.GetFilteredTransactions(FilterSenderAddress, Amount)
 
-        Dim T_Trx As ClsTransaction = New ClsTransaction(T_UTXOs)
+        Dim T_Trx As ClsBitcoinTransaction = New ClsBitcoinTransaction(T_UTXOs)
         If LockTime <= 0 Then
             T_Trx.CreateOutput(ChainSwapHash, RecipientAddress, Amount)
         Else
@@ -522,7 +522,7 @@
 
     'End Function
 
-    Public Function SignBitcoinTransaction(ByVal Transaction As ClsTransaction, ByVal PrivateKey As String) As String
+    Public Function SignBitcoinTransaction(ByVal Transaction As ClsBitcoinTransaction, ByVal PrivateKey As String) As String
         Return Transaction.SignTransaction(PrivateKey)
     End Function
 
@@ -569,7 +569,7 @@
     Public Overrides Function CreateXItemTransactionWithChainSwapHash(ByVal RecipientAddress As String, ByVal Amount As Double, ByVal ChainSwapHash As String) As S_Transaction
 
         Dim T_Transaction As S_Transaction = New S_Transaction(Application.ProductName + "-error in CreateXItemTransactionWithChainSwapHash(AtomicSwapError) -> No Keys",)
-        Dim T_BTCTransaction As ClsTransaction = CreateBitcoinTransaction(Amount, RecipientAddress, GetBitcoinMainAddress(), ChainSwapHash, 12) '12 * ~10min/block = 120min = 2 hours locktime
+        Dim T_BTCTransaction As ClsBitcoinTransaction = CreateBitcoinTransaction(Amount, RecipientAddress, GetBitcoinMainAddress(), ChainSwapHash, 12) '12 * ~10min/block = 120min = 2 hours locktime
         Dim BitcoinPrivateKey As String = GetBitcoinMainPrivateKey(False).ToLower()
 
         If Not BitcoinPrivateKey = "" Then
@@ -616,7 +616,7 @@
             RedeemScript = ChainSwapHash
         End If
 
-        Dim T_BTCTransaction As ClsTransaction = New ClsTransaction(XItemTransaction, New List(Of ClsTransaction.S_Address))
+        Dim T_BTCTransaction As ClsBitcoinTransaction = New ClsBitcoinTransaction(XItemTransaction, New List(Of ClsBitcoinTransaction.S_Address))
 
         Dim InputConfirmations As Integer = 0
         Dim InputScript As List(Of ClsScriptEntry) = New List(Of ClsScriptEntry)
@@ -638,13 +638,13 @@
         If InputConfirmations <= 10 Then
 
             Dim InputScriptHash As String = ClsBitcoinNET.GetXFromScript(InputScript, ClsScriptEntry.E_OP_Code.ScriptHash)
-            Dim Script As List(Of ClsScriptEntry) = ClsTransaction.ConvertLockingScriptStrToList(RedeemScript)
+            Dim Script As List(Of ClsScriptEntry) = ClsBitcoinTransaction.ConvertLockingScriptStrToList(RedeemScript)
             Dim T_Output As ClsOutput = New ClsOutput(Script)
             Dim RedeemScriptHash As String = PubKeyToRipe160(T_Output.ScriptHex)
 
             If RedeemScriptHash = InputScriptHash Then
 
-                Dim SType As AbsClsOutputs.E_Type = ClsTransaction.GetScriptType(Script)
+                Dim SType As AbsClsOutputs.E_Type = ClsBitcoinTransaction.GetScriptType(Script)
 
                 If SType = AbsClsOutputs.E_Type.ChainSwapHashWithLockTime Then
 
@@ -678,7 +678,7 @@
     Public Overrides Function CheckChainSwapHash(ByVal ChainSwapHash As String) As String
 
         If MessageIsHEXString(ChainSwapHash) And ChainSwapHash.Length <> 64 Then
-            Dim Script As List(Of ClsScriptEntry) = ClsTransaction.ConvertLockingScriptStrToList(ChainSwapHash)
+            Dim Script As List(Of ClsScriptEntry) = ClsBitcoinTransaction.ConvertLockingScriptStrToList(ChainSwapHash)
             Dim PureChainSwapHash As String = ClsBitcoinNET.GetXFromScript(Script, ClsScriptEntry.E_OP_Code.ChainSwapHash)
             Return PureChainSwapHash
         End If
@@ -690,7 +690,7 @@
     Public Overrides Function ClaimXItemTransactionWithChainSwapKey(ByVal TransactionID As String, ByVal ChainSwapHash As String, ByVal ChainSwapKey As String) As String
 
         Dim RedeemScript As String = GetBitcoinRedeemScriptFromINI(TransactionID, ChainSwapHash)
-        Dim T_BTCTransaction As ClsTransaction = New ClsTransaction(TransactionID, GetBitcoinMainAddress(), RedeemScript, ChainSwapKey)
+        Dim T_BTCTransaction As ClsBitcoinTransaction = New ClsBitcoinTransaction(TransactionID, GetBitcoinMainAddress(), RedeemScript, ChainSwapKey)
 
         For i As Integer = 0 To T_BTCTransaction.Inputs.Count - 1
 
@@ -717,9 +717,9 @@
 
     End Function
 
-    Public Function ClaimBitcoinTransaction(ByVal TransactionID As String, ByVal RedeemScript As String) As ClsTransaction
+    Public Function ClaimBitcoinTransaction(ByVal TransactionID As String, ByVal RedeemScript As String) As ClsBitcoinTransaction
 
-        Dim T_BTCTransaction As ClsTransaction = New ClsTransaction(TransactionID, GetBitcoinMainAddress(), RedeemScript)
+        Dim T_BTCTransaction As ClsBitcoinTransaction = New ClsBitcoinTransaction(TransactionID, GetBitcoinMainAddress(), RedeemScript)
 
         For i As Integer = 0 To T_BTCTransaction.Inputs.Count - 1
 
@@ -750,7 +750,7 @@
 
         Dim RedeemScript As String = GetBitcoinRedeemScriptFromINI(TransactionID, ChainSwapHash)
 
-        Dim T_BitcoinTransaction As ClsTransaction = New ClsTransaction(TransactionID, GetBitcoinMainAddress(), RedeemScript)
+        Dim T_BitcoinTransaction As ClsBitcoinTransaction = New ClsBitcoinTransaction(TransactionID, GetBitcoinMainAddress(), RedeemScript)
 
         If T_BitcoinTransaction.IsTimeOut() Then
 

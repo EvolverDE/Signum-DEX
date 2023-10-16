@@ -7,7 +7,7 @@ Imports System.Security.Cryptography
 
 Module ModBitcoinFunctions
 
-    Property BitcoinAddressPrefix As String = GlobalBitcoinPreFix ' "6f" '00=main; 6f=testnet
+    Property BitcoinAddressPrefix As String = GlobalBitcoinPrefix ' "6f" '00=main; 6f=testnet
     Property BitcoinConfigFile As String = Application.StartupPath + "\Settings.ini"
     Property BitcoinConfigFileSection As String = "Bitcoin"
 

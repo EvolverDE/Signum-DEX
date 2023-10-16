@@ -12,6 +12,7 @@ Public Class ClsOrderSettings
     Public Property Infotext As String
     Public Property AutoSendInfotext As Boolean
     Public Property AutoCompleteSmartContract As Boolean
+    Public Property AllowKnownAccountsAcceptOrdersOverDEXNET As Boolean
     Public Property Status As String
 
     Public Enum E_PayType
@@ -84,9 +85,11 @@ Public Class ClsOrderSettings
         Try
             AutoSendInfotext = CBool(GetINISetting(E_Setting.AutoSendPaymentInfo, False))
             AutoCompleteSmartContract = CBool(GetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False))
+            AllowKnownAccountsAcceptOrdersOverDEXNET = CBool(GetINISetting(E_Setting.AllowKnownAccountsAcceptOrdersOverDEXNET, False))
         Catch ex As Exception
             AutoSendInfotext = False
             AutoCompleteSmartContract = False
+            AllowKnownAccountsAcceptOrdersOverDEXNET = False
         End Try
 
         Status = T_Status.ToString
@@ -106,9 +109,11 @@ Public Class ClsOrderSettings
         Try
             AutoSendInfotext = CBool(GetINISetting(E_Setting.AutoSendPaymentInfo, False))
             AutoCompleteSmartContract = CBool(GetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False))
+            AllowKnownAccountsAcceptOrdersOverDEXNET = CBool(GetINISetting(E_Setting.AllowKnownAccountsAcceptOrdersOverDEXNET, False))
         Catch ex As Exception
             AutoSendInfotext = False
             AutoCompleteSmartContract = False
+            AllowKnownAccountsAcceptOrdersOverDEXNET = False
         End Try
 
         Status = ""

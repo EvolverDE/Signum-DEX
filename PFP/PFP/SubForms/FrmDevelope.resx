@@ -117,12 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="CMSTestLiBoDEXNETStatus.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>120, 17</value>
-  </metadata>
   <data name="TBTestJSONInput.Text" xml:space="preserve">
     <value>{"transaction_details":[],"account_number":"226HFCQJADVLE","start_date":"2021-06-12T13:30:38+0000","end_date":"2021-07-12T00:59:59+0000","last_refreshed_datetime":"2021-07-12T00:59:59+0000","page":1,"total_items":0,"total_pages":0,"links":[{"href":"https://api.sandbox.paypal.com/v1/reporting/transactions?end_date=2021-07-12T06%3A30%3A38-0700&amp;fields=all&amp;start_date=2021-06-12T06%3A30%3A38-0700&amp;page_size=100&amp;page=1","rel":"self","method":"GET"}]}</value>
   </data>
+  <metadata name="CMSTestLiBoDEXNETStatus.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>120, 17</value>
+  </metadata>
   <metadata name="DevTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>

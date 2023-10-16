@@ -25,7 +25,7 @@ Partial Class FrmDevelope
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmDevelope))
         Me.TestTabControl = New System.Windows.Forms.TabControl()
-        Me.TabPage6 = New System.Windows.Forms.TabPage()
+        Me.TPgConvertings = New System.Windows.Forms.TabPage()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.TBTestHashHEX = New System.Windows.Forms.TextBox()
         Me.Label58 = New System.Windows.Forms.Label()
@@ -76,7 +76,7 @@ Partial Class FrmDevelope
         Me.BtTestConvert = New System.Windows.Forms.Button()
         Me.BtTestConvert2 = New System.Windows.Forms.Button()
         Me.BtTestDatStr2ULngList = New System.Windows.Forms.Button()
-        Me.TabPage7 = New System.Windows.Forms.TabPage()
+        Me.TPgINITools = New System.Windows.Forms.TabPage()
         Me.TestGrpBoxINITests = New System.Windows.Forms.GroupBox()
         Me.TBTestSetTXINI = New System.Windows.Forms.TextBox()
         Me.BtTestSetTXINI = New System.Windows.Forms.Button()
@@ -84,7 +84,7 @@ Partial Class FrmDevelope
         Me.BtTestDelTXINI = New System.Windows.Forms.Button()
         Me.TBTestGetTXINI = New System.Windows.Forms.TextBox()
         Me.TBTestDelTXINI = New System.Windows.Forms.TextBox()
-        Me.TabPage8 = New System.Windows.Forms.TabPage()
+        Me.TPgPayPal = New System.Windows.Forms.TabPage()
         Me.SplitContainer10 = New System.Windows.Forms.SplitContainer()
         Me.GroupBox7 = New System.Windows.Forms.GroupBox()
         Me.BtTestPPPayout = New System.Windows.Forms.Button()
@@ -112,7 +112,7 @@ Partial Class FrmDevelope
         Me.TBTestPPTXNote = New System.Windows.Forms.TextBox()
         Me.BtTestPPCheckAPI = New System.Windows.Forms.Button()
         Me.LiBoPayPalComs = New System.Windows.Forms.ListBox()
-        Me.TabPage9 = New System.Windows.Forms.TabPage()
+        Me.TPgAT_SC_Comm = New System.Windows.Forms.TabPage()
         Me.RTBTestDebug = New System.Windows.Forms.RichTextBox()
         Me.TestGrpBxATCom = New System.Windows.Forms.GroupBox()
         Me.NUDTestAmount = New System.Windows.Forms.NumericUpDown()
@@ -180,7 +180,7 @@ Partial Class FrmDevelope
         Me.LVTestCurrentOrder = New System.Windows.Forms.ListView()
         Me.ColumnHeader9 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader12 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.TabPage10 = New System.Windows.Forms.TabPage()
+        Me.TPgMultithreadings = New System.Windows.Forms.TabPage()
         Me.TestGrpBoxMultithreadings = New System.Windows.Forms.GroupBox()
         Me.SplitContainer9 = New System.Windows.Forms.SplitContainer()
         Me.LabActiveNodes = New System.Windows.Forms.Label()
@@ -202,21 +202,23 @@ Partial Class FrmDevelope
         Me.LVActiveNodes = New System.Windows.Forms.ListView()
         Me.ColumnHeader1 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader15 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
-        Me.TabPage11 = New System.Windows.Forms.TabPage()
+        Me.TPgTCPAPI = New System.Windows.Forms.TabPage()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.ChBxTestTCPAPIEnable = New System.Windows.Forms.CheckBox()
         Me.ChBxTestTCPAPIShowStatus = New System.Windows.Forms.CheckBox()
         Me.LiBoTCPAPIStatus = New System.Windows.Forms.ListBox()
-        Me.TabPage12 = New System.Windows.Forms.TabPage()
+        Me.TPgMultiinvokes = New System.Windows.Forms.TabPage()
         Me.LVTestMultiInvoke = New System.Windows.Forms.ListView()
         Me.ColumnHeader7 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader8 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader10 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.ColumnHeader11 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.BtTestMultiInvokeSetInLV = New System.Windows.Forms.Button()
-        Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.TPgDEXNET = New System.Windows.Forms.TabPage()
         Me.SplitContainer6 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer2 = New System.Windows.Forms.SplitContainer()
+        Me.LiBoDEXNETPublicKeys = New System.Windows.Forms.ListBox()
+        Me.Label63 = New System.Windows.Forms.Label()
         Me.ChBxDEXNETEncryptMsg = New System.Windows.Forms.CheckBox()
         Me.BtTestBroadcastMsg = New System.Windows.Forms.Button()
         Me.TBTestRecipientPubKey = New System.Windows.Forms.TextBox()
@@ -249,7 +251,7 @@ Partial Class FrmDevelope
         Me.SplitContainer8 = New System.Windows.Forms.SplitContainer()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.LiBoTestPeers = New System.Windows.Forms.ListBox()
-        Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.TPgBitcoin = New System.Windows.Forms.TabPage()
         Me.SplitContainer15 = New System.Windows.Forms.SplitContainer()
         Me.TBTestBitcoinAddress = New System.Windows.Forms.TextBox()
         Me.GroupBox12 = New System.Windows.Forms.GroupBox()
@@ -288,18 +290,28 @@ Partial Class FrmDevelope
         Me.Label29 = New System.Windows.Forms.Label()
         Me.TBTestMyPublicKey = New System.Windows.Forms.TextBox()
         Me.Label28 = New System.Windows.Forms.Label()
-        Me.Label63 = New System.Windows.Forms.Label()
-        Me.LiBoDEXNETPublicKeys = New System.Windows.Forms.ListBox()
+        Me.TPgSignumTX = New System.Windows.Forms.TabPage()
+        Me.Label64 = New System.Windows.Forms.Label()
+        Me.TBTestSigTX_TXID = New System.Windows.Forms.TextBox()
+        Me.TBTestSigTX_PassPhrase = New System.Windows.Forms.TextBox()
+        Me.Label65 = New System.Windows.Forms.Label()
+        Me.BtTestSigTX_ReadTX = New System.Windows.Forms.Button()
+        Me.LVTestSigTX = New System.Windows.Forms.ListView()
+        Me.ColumnHeader16 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.ColumnHeader17 = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
+        Me.BtTestSigTX_Decrypt = New System.Windows.Forms.Button()
+        Me.Label66 = New System.Windows.Forms.Label()
+        Me.RTBTestSigTX = New System.Windows.Forms.RichTextBox()
         Me.TestTabControl.SuspendLayout()
-        Me.TabPage6.SuspendLayout()
+        Me.TPgConvertings.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox5.SuspendLayout()
         Me.TestGrpBoxConvertings.SuspendLayout()
-        Me.TabPage7.SuspendLayout()
+        Me.TPgINITools.SuspendLayout()
         Me.TestGrpBoxINITests.SuspendLayout()
-        Me.TabPage8.SuspendLayout()
+        Me.TPgPayPal.SuspendLayout()
         CType(Me.SplitContainer10, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer10.Panel1.SuspendLayout()
         Me.SplitContainer10.Panel2.SuspendLayout()
@@ -307,7 +319,7 @@ Partial Class FrmDevelope
         Me.GroupBox7.SuspendLayout()
         Me.GroupBox6.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
-        Me.TabPage9.SuspendLayout()
+        Me.TPgAT_SC_Comm.SuspendLayout()
         Me.TestGrpBxATCom.SuspendLayout()
         CType(Me.NUDTestAmount, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NUDTestXAmount, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -320,7 +332,7 @@ Partial Class FrmDevelope
         Me.Panel6.SuspendLayout()
         Me.Panel7.SuspendLayout()
         CType(Me.NUDTestMediateAmount, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.TabPage10.SuspendLayout()
+        Me.TPgMultithreadings.SuspendLayout()
         Me.TestGrpBoxMultithreadings.SuspendLayout()
         CType(Me.SplitContainer9, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer9.Panel1.SuspendLayout()
@@ -338,13 +350,13 @@ Partial Class FrmDevelope
         Me.SplitContainer14.Panel1.SuspendLayout()
         Me.SplitContainer14.Panel2.SuspendLayout()
         Me.SplitContainer14.SuspendLayout()
-        Me.TabPage11.SuspendLayout()
+        Me.TPgTCPAPI.SuspendLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
         Me.SplitContainer1.SuspendLayout()
-        Me.TabPage12.SuspendLayout()
-        Me.TabPage1.SuspendLayout()
+        Me.TPgMultiinvokes.SuspendLayout()
+        Me.TPgDEXNET.SuspendLayout()
         CType(Me.SplitContainer6, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer6.Panel1.SuspendLayout()
         Me.SplitContainer6.Panel2.SuspendLayout()
@@ -374,7 +386,7 @@ Partial Class FrmDevelope
         Me.SplitContainer8.Panel1.SuspendLayout()
         Me.SplitContainer8.Panel2.SuspendLayout()
         Me.SplitContainer8.SuspendLayout()
-        Me.TabPage2.SuspendLayout()
+        Me.TPgBitcoin.SuspendLayout()
         CType(Me.SplitContainer15, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer15.Panel1.SuspendLayout()
         Me.SplitContainer15.Panel2.SuspendLayout()
@@ -388,19 +400,21 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel1.SuspendLayout()
         Me.SplitContainer11.Panel2.SuspendLayout()
         Me.SplitContainer11.SuspendLayout()
+        Me.TPgSignumTX.SuspendLayout()
         Me.SuspendLayout()
         '
         'TestTabControl
         '
-        Me.TestTabControl.Controls.Add(Me.TabPage6)
-        Me.TestTabControl.Controls.Add(Me.TabPage7)
-        Me.TestTabControl.Controls.Add(Me.TabPage8)
-        Me.TestTabControl.Controls.Add(Me.TabPage9)
-        Me.TestTabControl.Controls.Add(Me.TabPage10)
-        Me.TestTabControl.Controls.Add(Me.TabPage11)
-        Me.TestTabControl.Controls.Add(Me.TabPage12)
-        Me.TestTabControl.Controls.Add(Me.TabPage1)
-        Me.TestTabControl.Controls.Add(Me.TabPage2)
+        Me.TestTabControl.Controls.Add(Me.TPgAT_SC_Comm)
+        Me.TestTabControl.Controls.Add(Me.TPgSignumTX)
+        Me.TestTabControl.Controls.Add(Me.TPgMultithreadings)
+        Me.TestTabControl.Controls.Add(Me.TPgDEXNET)
+        Me.TestTabControl.Controls.Add(Me.TPgTCPAPI)
+        Me.TestTabControl.Controls.Add(Me.TPgBitcoin)
+        Me.TestTabControl.Controls.Add(Me.TPgPayPal)
+        Me.TestTabControl.Controls.Add(Me.TPgMultiinvokes)
+        Me.TestTabControl.Controls.Add(Me.TPgINITools)
+        Me.TestTabControl.Controls.Add(Me.TPgConvertings)
         Me.TestTabControl.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TestTabControl.Location = New System.Drawing.Point(0, 0)
         Me.TestTabControl.Name = "TestTabControl"
@@ -408,20 +422,20 @@ Partial Class FrmDevelope
         Me.TestTabControl.Size = New System.Drawing.Size(1240, 712)
         Me.TestTabControl.TabIndex = 39
         '
-        'TabPage6
+        'TPgConvertings
         '
-        Me.TabPage6.Controls.Add(Me.GroupBox4)
-        Me.TabPage6.Controls.Add(Me.GroupBox2)
-        Me.TabPage6.Controls.Add(Me.GroupBox1)
-        Me.TabPage6.Controls.Add(Me.GroupBox5)
-        Me.TabPage6.Controls.Add(Me.TestGrpBoxConvertings)
-        Me.TabPage6.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage6.Name = "TabPage6"
-        Me.TabPage6.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage6.Size = New System.Drawing.Size(1232, 686)
-        Me.TabPage6.TabIndex = 0
-        Me.TabPage6.Text = "Convertings"
-        Me.TabPage6.UseVisualStyleBackColor = True
+        Me.TPgConvertings.Controls.Add(Me.GroupBox4)
+        Me.TPgConvertings.Controls.Add(Me.GroupBox2)
+        Me.TPgConvertings.Controls.Add(Me.GroupBox1)
+        Me.TPgConvertings.Controls.Add(Me.GroupBox5)
+        Me.TPgConvertings.Controls.Add(Me.TestGrpBoxConvertings)
+        Me.TPgConvertings.Location = New System.Drawing.Point(4, 22)
+        Me.TPgConvertings.Name = "TPgConvertings"
+        Me.TPgConvertings.Padding = New System.Windows.Forms.Padding(3)
+        Me.TPgConvertings.Size = New System.Drawing.Size(1232, 686)
+        Me.TPgConvertings.TabIndex = 0
+        Me.TPgConvertings.Text = "Convertings"
+        Me.TPgConvertings.UseVisualStyleBackColor = True
         '
         'GroupBox4
         '
@@ -908,16 +922,16 @@ Partial Class FrmDevelope
         Me.BtTestDatStr2ULngList.Text = "DataStr2ULngList"
         Me.BtTestDatStr2ULngList.UseVisualStyleBackColor = True
         '
-        'TabPage7
+        'TPgINITools
         '
-        Me.TabPage7.Controls.Add(Me.TestGrpBoxINITests)
-        Me.TabPage7.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage7.Name = "TabPage7"
-        Me.TabPage7.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage7.Size = New System.Drawing.Size(1232, 686)
-        Me.TabPage7.TabIndex = 1
-        Me.TabPage7.Text = "INI-Tools-Tests"
-        Me.TabPage7.UseVisualStyleBackColor = True
+        Me.TPgINITools.Controls.Add(Me.TestGrpBoxINITests)
+        Me.TPgINITools.Location = New System.Drawing.Point(4, 22)
+        Me.TPgINITools.Name = "TPgINITools"
+        Me.TPgINITools.Padding = New System.Windows.Forms.Padding(3)
+        Me.TPgINITools.Size = New System.Drawing.Size(1232, 686)
+        Me.TPgINITools.TabIndex = 1
+        Me.TPgINITools.Text = "INI-Tools-Tests"
+        Me.TPgINITools.UseVisualStyleBackColor = True
         '
         'TestGrpBoxINITests
         '
@@ -985,15 +999,15 @@ Partial Class FrmDevelope
         Me.TBTestDelTXINI.Size = New System.Drawing.Size(97, 20)
         Me.TBTestDelTXINI.TabIndex = 16
         '
-        'TabPage8
+        'TPgPayPal
         '
-        Me.TabPage8.Controls.Add(Me.SplitContainer10)
-        Me.TabPage8.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage8.Name = "TabPage8"
-        Me.TabPage8.Size = New System.Drawing.Size(1232, 686)
-        Me.TabPage8.TabIndex = 2
-        Me.TabPage8.Text = "PayPal-Tests"
-        Me.TabPage8.UseVisualStyleBackColor = True
+        Me.TPgPayPal.Controls.Add(Me.SplitContainer10)
+        Me.TPgPayPal.Location = New System.Drawing.Point(4, 22)
+        Me.TPgPayPal.Name = "TPgPayPal"
+        Me.TPgPayPal.Size = New System.Drawing.Size(1232, 686)
+        Me.TPgPayPal.TabIndex = 2
+        Me.TPgPayPal.Text = "PayPal-Tests"
+        Me.TPgPayPal.UseVisualStyleBackColor = True
         '
         'SplitContainer10
         '
@@ -1272,21 +1286,21 @@ Partial Class FrmDevelope
         Me.LiBoPayPalComs.Size = New System.Drawing.Size(1232, 502)
         Me.LiBoPayPalComs.TabIndex = 0
         '
-        'TabPage9
+        'TPgAT_SC_Comm
         '
-        Me.TabPage9.AutoScroll = True
-        Me.TabPage9.Controls.Add(Me.RTBTestDebug)
-        Me.TabPage9.Controls.Add(Me.TestGrpBxATCom)
-        Me.TabPage9.Controls.Add(Me.Label1)
-        Me.TabPage9.Controls.Add(Me.Label21)
-        Me.TabPage9.Controls.Add(Me.LVTestDEXContractBasic)
-        Me.TabPage9.Controls.Add(Me.LVTestCurrentOrder)
-        Me.TabPage9.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage9.Name = "TabPage9"
-        Me.TabPage9.Size = New System.Drawing.Size(1232, 686)
-        Me.TabPage9.TabIndex = 3
-        Me.TabPage9.Text = "AT Communication"
-        Me.TabPage9.UseVisualStyleBackColor = True
+        Me.TPgAT_SC_Comm.AutoScroll = True
+        Me.TPgAT_SC_Comm.Controls.Add(Me.RTBTestDebug)
+        Me.TPgAT_SC_Comm.Controls.Add(Me.TestGrpBxATCom)
+        Me.TPgAT_SC_Comm.Controls.Add(Me.Label1)
+        Me.TPgAT_SC_Comm.Controls.Add(Me.Label21)
+        Me.TPgAT_SC_Comm.Controls.Add(Me.LVTestDEXContractBasic)
+        Me.TPgAT_SC_Comm.Controls.Add(Me.LVTestCurrentOrder)
+        Me.TPgAT_SC_Comm.Location = New System.Drawing.Point(4, 22)
+        Me.TPgAT_SC_Comm.Name = "TPgAT_SC_Comm"
+        Me.TPgAT_SC_Comm.Size = New System.Drawing.Size(1232, 686)
+        Me.TPgAT_SC_Comm.TabIndex = 3
+        Me.TPgAT_SC_Comm.Text = "AutomatedTransaction / SmartContract Communication"
+        Me.TPgAT_SC_Comm.UseVisualStyleBackColor = True
         '
         'RTBTestDebug
         '
@@ -1325,7 +1339,7 @@ Partial Class FrmDevelope
         Me.TestGrpBxATCom.Size = New System.Drawing.Size(1206, 314)
         Me.TestGrpBxATCom.TabIndex = 36
         Me.TestGrpBxATCom.TabStop = False
-        Me.TestGrpBxATCom.Text = "AT Communication"
+        Me.TestGrpBxATCom.Text = "AT/SC Communication"
         '
         'NUDTestAmount
         '
@@ -1946,15 +1960,15 @@ Partial Class FrmDevelope
         '
         Me.ColumnHeader12.Text = "Value"
         '
-        'TabPage10
+        'TPgMultithreadings
         '
-        Me.TabPage10.Controls.Add(Me.TestGrpBoxMultithreadings)
-        Me.TabPage10.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage10.Name = "TabPage10"
-        Me.TabPage10.Size = New System.Drawing.Size(1232, 686)
-        Me.TabPage10.TabIndex = 4
-        Me.TabPage10.Text = "Multithreading-Tests"
-        Me.TabPage10.UseVisualStyleBackColor = True
+        Me.TPgMultithreadings.Controls.Add(Me.TestGrpBoxMultithreadings)
+        Me.TPgMultithreadings.Location = New System.Drawing.Point(4, 22)
+        Me.TPgMultithreadings.Name = "TPgMultithreadings"
+        Me.TPgMultithreadings.Size = New System.Drawing.Size(1232, 686)
+        Me.TPgMultithreadings.TabIndex = 4
+        Me.TPgMultithreadings.Text = "Multithreading-Tests"
+        Me.TPgMultithreadings.UseVisualStyleBackColor = True
         '
         'TestGrpBoxMultithreadings
         '
@@ -2174,15 +2188,15 @@ Partial Class FrmDevelope
         '
         Me.ColumnHeader15.Text = "Status"
         '
-        'TabPage11
+        'TPgTCPAPI
         '
-        Me.TabPage11.Controls.Add(Me.SplitContainer1)
-        Me.TabPage11.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage11.Name = "TabPage11"
-        Me.TabPage11.Size = New System.Drawing.Size(1232, 686)
-        Me.TabPage11.TabIndex = 5
-        Me.TabPage11.Text = "TCP API"
-        Me.TabPage11.UseVisualStyleBackColor = True
+        Me.TPgTCPAPI.Controls.Add(Me.SplitContainer1)
+        Me.TPgTCPAPI.Location = New System.Drawing.Point(4, 22)
+        Me.TPgTCPAPI.Name = "TPgTCPAPI"
+        Me.TPgTCPAPI.Size = New System.Drawing.Size(1232, 686)
+        Me.TPgTCPAPI.TabIndex = 5
+        Me.TPgTCPAPI.Text = "TCP API"
+        Me.TPgTCPAPI.UseVisualStyleBackColor = True
         '
         'SplitContainer1
         '
@@ -2235,16 +2249,16 @@ Partial Class FrmDevelope
         Me.LiBoTCPAPIStatus.Size = New System.Drawing.Size(1232, 657)
         Me.LiBoTCPAPIStatus.TabIndex = 0
         '
-        'TabPage12
+        'TPgMultiinvokes
         '
-        Me.TabPage12.Controls.Add(Me.LVTestMultiInvoke)
-        Me.TabPage12.Controls.Add(Me.BtTestMultiInvokeSetInLV)
-        Me.TabPage12.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage12.Name = "TabPage12"
-        Me.TabPage12.Size = New System.Drawing.Size(1232, 686)
-        Me.TabPage12.TabIndex = 6
-        Me.TabPage12.Text = "Multiinvoke-Tests"
-        Me.TabPage12.UseVisualStyleBackColor = True
+        Me.TPgMultiinvokes.Controls.Add(Me.LVTestMultiInvoke)
+        Me.TPgMultiinvokes.Controls.Add(Me.BtTestMultiInvokeSetInLV)
+        Me.TPgMultiinvokes.Location = New System.Drawing.Point(4, 22)
+        Me.TPgMultiinvokes.Name = "TPgMultiinvokes"
+        Me.TPgMultiinvokes.Size = New System.Drawing.Size(1232, 686)
+        Me.TPgMultiinvokes.TabIndex = 6
+        Me.TPgMultiinvokes.Text = "Multiinvoke-Tests"
+        Me.TPgMultiinvokes.UseVisualStyleBackColor = True
         '
         'LVTestMultiInvoke
         '
@@ -2269,15 +2283,15 @@ Partial Class FrmDevelope
         Me.BtTestMultiInvokeSetInLV.Text = "Set in LV"
         Me.BtTestMultiInvokeSetInLV.UseVisualStyleBackColor = True
         '
-        'TabPage1
+        'TPgDEXNET
         '
-        Me.TabPage1.Controls.Add(Me.SplitContainer6)
-        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Size = New System.Drawing.Size(1232, 686)
-        Me.TabPage1.TabIndex = 7
-        Me.TabPage1.Text = "DEXNET"
-        Me.TabPage1.UseVisualStyleBackColor = True
+        Me.TPgDEXNET.Controls.Add(Me.SplitContainer6)
+        Me.TPgDEXNET.Location = New System.Drawing.Point(4, 22)
+        Me.TPgDEXNET.Name = "TPgDEXNET"
+        Me.TPgDEXNET.Size = New System.Drawing.Size(1232, 686)
+        Me.TPgDEXNET.TabIndex = 7
+        Me.TPgDEXNET.Text = "DEXNET"
+        Me.TPgDEXNET.UseVisualStyleBackColor = True
         '
         'SplitContainer6
         '
@@ -2330,6 +2344,23 @@ Partial Class FrmDevelope
         Me.SplitContainer2.Size = New System.Drawing.Size(1230, 332)
         Me.SplitContainer2.SplitterDistance = 129
         Me.SplitContainer2.TabIndex = 0
+        '
+        'LiBoDEXNETPublicKeys
+        '
+        Me.LiBoDEXNETPublicKeys.FormattingEnabled = True
+        Me.LiBoDEXNETPublicKeys.Location = New System.Drawing.Point(577, 22)
+        Me.LiBoDEXNETPublicKeys.Name = "LiBoDEXNETPublicKeys"
+        Me.LiBoDEXNETPublicKeys.Size = New System.Drawing.Size(646, 95)
+        Me.LiBoDEXNETPublicKeys.TabIndex = 14
+        '
+        'Label63
+        '
+        Me.Label63.AutoSize = True
+        Me.Label63.Location = New System.Drawing.Point(574, 6)
+        Me.Label63.Name = "Label63"
+        Me.Label63.Size = New System.Drawing.Size(62, 13)
+        Me.Label63.TabIndex = 13
+        Me.Label63.Text = "PublicKeys:"
         '
         'ChBxDEXNETEncryptMsg
         '
@@ -2674,15 +2705,15 @@ Partial Class FrmDevelope
         Me.LiBoTestPeers.Size = New System.Drawing.Size(284, 317)
         Me.LiBoTestPeers.TabIndex = 0
         '
-        'TabPage2
+        'TPgBitcoin
         '
-        Me.TabPage2.Controls.Add(Me.SplitContainer15)
-        Me.TabPage2.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage2.Name = "TabPage2"
-        Me.TabPage2.Size = New System.Drawing.Size(1232, 686)
-        Me.TabPage2.TabIndex = 8
-        Me.TabPage2.Text = "Bitcoin"
-        Me.TabPage2.UseVisualStyleBackColor = True
+        Me.TPgBitcoin.Controls.Add(Me.SplitContainer15)
+        Me.TPgBitcoin.Location = New System.Drawing.Point(4, 22)
+        Me.TPgBitcoin.Name = "TPgBitcoin"
+        Me.TPgBitcoin.Size = New System.Drawing.Size(1232, 686)
+        Me.TPgBitcoin.TabIndex = 8
+        Me.TPgBitcoin.Text = "Bitcoin"
+        Me.TPgBitcoin.UseVisualStyleBackColor = True
         '
         'SplitContainer15
         '
@@ -3082,22 +3113,120 @@ Partial Class FrmDevelope
         Me.Label28.TabIndex = 0
         Me.Label28.Text = "My Public Key:"
         '
-        'Label63
+        'TPgSignumTX
         '
-        Me.Label63.AutoSize = True
-        Me.Label63.Location = New System.Drawing.Point(574, 6)
-        Me.Label63.Name = "Label63"
-        Me.Label63.Size = New System.Drawing.Size(62, 13)
-        Me.Label63.TabIndex = 13
-        Me.Label63.Text = "PublicKeys:"
+        Me.TPgSignumTX.Controls.Add(Me.RTBTestSigTX)
+        Me.TPgSignumTX.Controls.Add(Me.Label66)
+        Me.TPgSignumTX.Controls.Add(Me.BtTestSigTX_Decrypt)
+        Me.TPgSignumTX.Controls.Add(Me.LVTestSigTX)
+        Me.TPgSignumTX.Controls.Add(Me.BtTestSigTX_ReadTX)
+        Me.TPgSignumTX.Controls.Add(Me.TBTestSigTX_PassPhrase)
+        Me.TPgSignumTX.Controls.Add(Me.Label65)
+        Me.TPgSignumTX.Controls.Add(Me.TBTestSigTX_TXID)
+        Me.TPgSignumTX.Controls.Add(Me.Label64)
+        Me.TPgSignumTX.Location = New System.Drawing.Point(4, 22)
+        Me.TPgSignumTX.Name = "TPgSignumTX"
+        Me.TPgSignumTX.Size = New System.Drawing.Size(1232, 686)
+        Me.TPgSignumTX.TabIndex = 9
+        Me.TPgSignumTX.Text = "Signum Transactions"
+        Me.TPgSignumTX.UseVisualStyleBackColor = True
         '
-        'LiBoDEXNETPublicKeys
+        'Label64
         '
-        Me.LiBoDEXNETPublicKeys.FormattingEnabled = True
-        Me.LiBoDEXNETPublicKeys.Location = New System.Drawing.Point(577, 22)
-        Me.LiBoDEXNETPublicKeys.Name = "LiBoDEXNETPublicKeys"
-        Me.LiBoDEXNETPublicKeys.Size = New System.Drawing.Size(646, 95)
-        Me.LiBoDEXNETPublicKeys.TabIndex = 14
+        Me.Label64.AutoSize = True
+        Me.Label64.ForeColor = System.Drawing.Color.Black
+        Me.Label64.Location = New System.Drawing.Point(8, 6)
+        Me.Label64.Name = "Label64"
+        Me.Label64.Size = New System.Drawing.Size(77, 13)
+        Me.Label64.TabIndex = 0
+        Me.Label64.Text = "TransactionID:"
+        '
+        'TBTestSigTX_TXID
+        '
+        Me.TBTestSigTX_TXID.Location = New System.Drawing.Point(11, 22)
+        Me.TBTestSigTX_TXID.Name = "TBTestSigTX_TXID"
+        Me.TBTestSigTX_TXID.Size = New System.Drawing.Size(200, 20)
+        Me.TBTestSigTX_TXID.TabIndex = 1
+        Me.TBTestSigTX_TXID.Text = "8637898249465223694"
+        '
+        'TBTestSigTX_PassPhrase
+        '
+        Me.TBTestSigTX_PassPhrase.Location = New System.Drawing.Point(11, 61)
+        Me.TBTestSigTX_PassPhrase.Name = "TBTestSigTX_PassPhrase"
+        Me.TBTestSigTX_PassPhrase.Size = New System.Drawing.Size(376, 20)
+        Me.TBTestSigTX_PassPhrase.TabIndex = 3
+        Me.TBTestSigTX_PassPhrase.UseSystemPasswordChar = True
+        '
+        'Label65
+        '
+        Me.Label65.AutoSize = True
+        Me.Label65.ForeColor = System.Drawing.Color.Black
+        Me.Label65.Location = New System.Drawing.Point(8, 45)
+        Me.Label65.Name = "Label65"
+        Me.Label65.Size = New System.Drawing.Size(66, 13)
+        Me.Label65.TabIndex = 2
+        Me.Label65.Text = "PassPhrase:"
+        '
+        'BtTestSigTX_ReadTX
+        '
+        Me.BtTestSigTX_ReadTX.ForeColor = System.Drawing.Color.Black
+        Me.BtTestSigTX_ReadTX.Location = New System.Drawing.Point(11, 87)
+        Me.BtTestSigTX_ReadTX.Name = "BtTestSigTX_ReadTX"
+        Me.BtTestSigTX_ReadTX.Size = New System.Drawing.Size(200, 23)
+        Me.BtTestSigTX_ReadTX.TabIndex = 4
+        Me.BtTestSigTX_ReadTX.Text = "read Transaction"
+        Me.BtTestSigTX_ReadTX.UseVisualStyleBackColor = True
+        '
+        'LVTestSigTX
+        '
+        Me.LVTestSigTX.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader16, Me.ColumnHeader17})
+        Me.LVTestSigTX.FullRowSelect = True
+        Me.LVTestSigTX.GridLines = True
+        Me.LVTestSigTX.HideSelection = False
+        Me.LVTestSigTX.Location = New System.Drawing.Point(11, 116)
+        Me.LVTestSigTX.MultiSelect = False
+        Me.LVTestSigTX.Name = "LVTestSigTX"
+        Me.LVTestSigTX.Size = New System.Drawing.Size(1213, 329)
+        Me.LVTestSigTX.TabIndex = 5
+        Me.LVTestSigTX.UseCompatibleStateImageBehavior = False
+        Me.LVTestSigTX.View = System.Windows.Forms.View.Details
+        '
+        'ColumnHeader16
+        '
+        Me.ColumnHeader16.Text = "Property"
+        Me.ColumnHeader16.Width = 184
+        '
+        'ColumnHeader17
+        '
+        Me.ColumnHeader17.Text = "Value"
+        Me.ColumnHeader17.Width = 1020
+        '
+        'BtTestSigTX_Decrypt
+        '
+        Me.BtTestSigTX_Decrypt.ForeColor = System.Drawing.Color.Black
+        Me.BtTestSigTX_Decrypt.Location = New System.Drawing.Point(217, 87)
+        Me.BtTestSigTX_Decrypt.Name = "BtTestSigTX_Decrypt"
+        Me.BtTestSigTX_Decrypt.Size = New System.Drawing.Size(170, 23)
+        Me.BtTestSigTX_Decrypt.TabIndex = 6
+        Me.BtTestSigTX_Decrypt.Text = "decrypt attachment"
+        Me.BtTestSigTX_Decrypt.UseVisualStyleBackColor = True
+        '
+        'Label66
+        '
+        Me.Label66.AutoSize = True
+        Me.Label66.Location = New System.Drawing.Point(8, 448)
+        Me.Label66.Name = "Label66"
+        Me.Label66.Size = New System.Drawing.Size(53, 13)
+        Me.Label66.TabIndex = 7
+        Me.Label66.Text = "Message:"
+        '
+        'RTBTestSigTX
+        '
+        Me.RTBTestSigTX.Location = New System.Drawing.Point(11, 464)
+        Me.RTBTestSigTX.Name = "RTBTestSigTX"
+        Me.RTBTestSigTX.Size = New System.Drawing.Size(1213, 81)
+        Me.RTBTestSigTX.TabIndex = 8
+        Me.RTBTestSigTX.Text = ""
         '
         'FrmDevelope
         '
@@ -3111,7 +3240,7 @@ Partial Class FrmDevelope
         Me.Name = "FrmDevelope"
         Me.Text = "FrmDevelope"
         Me.TestTabControl.ResumeLayout(False)
-        Me.TabPage6.ResumeLayout(False)
+        Me.TPgConvertings.ResumeLayout(False)
         Me.GroupBox4.ResumeLayout(False)
         Me.GroupBox4.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)
@@ -3122,10 +3251,10 @@ Partial Class FrmDevelope
         Me.GroupBox5.PerformLayout()
         Me.TestGrpBoxConvertings.ResumeLayout(False)
         Me.TestGrpBoxConvertings.PerformLayout()
-        Me.TabPage7.ResumeLayout(False)
+        Me.TPgINITools.ResumeLayout(False)
         Me.TestGrpBoxINITests.ResumeLayout(False)
         Me.TestGrpBoxINITests.PerformLayout()
-        Me.TabPage8.ResumeLayout(False)
+        Me.TPgPayPal.ResumeLayout(False)
         Me.SplitContainer10.Panel1.ResumeLayout(False)
         Me.SplitContainer10.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer10, System.ComponentModel.ISupportInitialize).EndInit()
@@ -3136,8 +3265,8 @@ Partial Class FrmDevelope
         Me.GroupBox6.PerformLayout()
         Me.GroupBox3.ResumeLayout(False)
         Me.GroupBox3.PerformLayout()
-        Me.TabPage9.ResumeLayout(False)
-        Me.TabPage9.PerformLayout()
+        Me.TPgAT_SC_Comm.ResumeLayout(False)
+        Me.TPgAT_SC_Comm.PerformLayout()
         Me.TestGrpBxATCom.ResumeLayout(False)
         Me.TestGrpBxATCom.PerformLayout()
         CType(Me.NUDTestAmount, System.ComponentModel.ISupportInitialize).EndInit()
@@ -3157,7 +3286,7 @@ Partial Class FrmDevelope
         Me.Panel7.ResumeLayout(False)
         Me.Panel7.PerformLayout()
         CType(Me.NUDTestMediateAmount, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.TabPage10.ResumeLayout(False)
+        Me.TPgMultithreadings.ResumeLayout(False)
         Me.TestGrpBoxMultithreadings.ResumeLayout(False)
         Me.SplitContainer9.Panel1.ResumeLayout(False)
         Me.SplitContainer9.Panel1.PerformLayout()
@@ -3178,14 +3307,14 @@ Partial Class FrmDevelope
         Me.SplitContainer14.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer14, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer14.ResumeLayout(False)
-        Me.TabPage11.ResumeLayout(False)
+        Me.TPgTCPAPI.ResumeLayout(False)
         Me.SplitContainer1.Panel1.ResumeLayout(False)
         Me.SplitContainer1.Panel1.PerformLayout()
         Me.SplitContainer1.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer1.ResumeLayout(False)
-        Me.TabPage12.ResumeLayout(False)
-        Me.TabPage1.ResumeLayout(False)
+        Me.TPgMultiinvokes.ResumeLayout(False)
+        Me.TPgDEXNET.ResumeLayout(False)
         Me.SplitContainer6.Panel1.ResumeLayout(False)
         Me.SplitContainer6.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer6, System.ComponentModel.ISupportInitialize).EndInit()
@@ -3219,7 +3348,7 @@ Partial Class FrmDevelope
         Me.SplitContainer8.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer8, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer8.ResumeLayout(False)
-        Me.TabPage2.ResumeLayout(False)
+        Me.TPgBitcoin.ResumeLayout(False)
         Me.SplitContainer15.Panel1.ResumeLayout(False)
         Me.SplitContainer15.Panel1.PerformLayout()
         Me.SplitContainer15.Panel2.ResumeLayout(False)
@@ -3239,11 +3368,13 @@ Partial Class FrmDevelope
         Me.SplitContainer11.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer11, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer11.ResumeLayout(False)
+        Me.TPgSignumTX.ResumeLayout(False)
+        Me.TPgSignumTX.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
     Friend WithEvents TestTabControl As TabControl
-    Friend WithEvents TabPage6 As TabPage
+    Friend WithEvents TPgConvertings As TabPage
     Friend WithEvents GroupBox5 As GroupBox
     Friend WithEvents BtTestTimeConvert As Button
     Friend WithEvents TBTestTime As TextBox
@@ -3252,7 +3383,7 @@ Partial Class FrmDevelope
     Friend WithEvents BtTestConvert As Button
     Friend WithEvents BtTestConvert2 As Button
     Friend WithEvents BtTestDatStr2ULngList As Button
-    Friend WithEvents TabPage7 As TabPage
+    Friend WithEvents TPgINITools As TabPage
     Friend WithEvents TestGrpBoxINITests As GroupBox
     Friend WithEvents TBTestSetTXINI As TextBox
     Friend WithEvents BtTestSetTXINI As Button
@@ -3260,11 +3391,11 @@ Partial Class FrmDevelope
     Friend WithEvents BtTestDelTXINI As Button
     Friend WithEvents TBTestGetTXINI As TextBox
     Friend WithEvents TBTestDelTXINI As TextBox
-    Friend WithEvents TabPage8 As TabPage
+    Friend WithEvents TPgPayPal As TabPage
     Friend WithEvents BtTestPPGetAllTX As Button
     Friend WithEvents BtTestCreatePPOrder As Button
-    Friend WithEvents TabPage9 As TabPage
-    Friend WithEvents TabPage10 As TabPage
+    Friend WithEvents TPgAT_SC_Comm As TabPage
+    Friend WithEvents TPgMultithreadings As TabPage
     Friend WithEvents TestGrpBoxMultithreadings As GroupBox
     Friend WithEvents LVTestMulti As ListView
     Friend WithEvents ColumnHeader2 As ColumnHeader
@@ -3274,9 +3405,9 @@ Partial Class FrmDevelope
     Friend WithEvents ColumnHeader6 As ColumnHeader
     Friend WithEvents BtTestExit As Button
     Friend WithEvents BtTestMultiRefresh As Button
-    Friend WithEvents TabPage11 As TabPage
+    Friend WithEvents TPgTCPAPI As TabPage
     Friend WithEvents LiBoTCPAPIStatus As ListBox
-    Friend WithEvents TabPage12 As TabPage
+    Friend WithEvents TPgMultiinvokes As TabPage
     Friend WithEvents LVTestMultiInvoke As ListView
     Friend WithEvents ColumnHeader7 As ColumnHeader
     Friend WithEvents ColumnHeader8 As ColumnHeader
@@ -3292,7 +3423,7 @@ Partial Class FrmDevelope
     Friend WithEvents SplitContainer1 As SplitContainer
     Friend WithEvents ChBxTestTCPAPIEnable As CheckBox
     Friend WithEvents ChBxTestTCPAPIShowStatus As CheckBox
-    Friend WithEvents TabPage1 As TabPage
+    Friend WithEvents TPgDEXNET As TabPage
     Friend WithEvents SplitContainer2 As SplitContainer
     Friend WithEvents LiBoDEXNETStatus As ListBox
     Friend WithEvents ChBxTestDEXNETEnable As CheckBox
@@ -3477,7 +3608,7 @@ Partial Class FrmDevelope
     Friend WithEvents TBTestHashHEX As TextBox
     Friend WithEvents Label58 As Label
     Friend WithEvents RTBTestDebug As RichTextBox
-    Friend WithEvents TabPage2 As TabPage
+    Friend WithEvents TPgBitcoin As TabPage
     Friend WithEvents RTBTestBitcoin As RichTextBox
     Friend WithEvents BtTestBitcoinGetInfo As Button
     Friend WithEvents SplitContainer15 As SplitContainer
@@ -3508,4 +3639,16 @@ Partial Class FrmDevelope
     Friend WithEvents Label62 As Label
     Friend WithEvents LiBoDEXNETPublicKeys As ListBox
     Friend WithEvents Label63 As Label
+    Friend WithEvents TPgSignumTX As TabPage
+    Friend WithEvents LVTestSigTX As ListView
+    Friend WithEvents ColumnHeader16 As ColumnHeader
+    Friend WithEvents ColumnHeader17 As ColumnHeader
+    Friend WithEvents BtTestSigTX_ReadTX As Button
+    Friend WithEvents TBTestSigTX_PassPhrase As TextBox
+    Friend WithEvents Label65 As Label
+    Friend WithEvents TBTestSigTX_TXID As TextBox
+    Friend WithEvents Label64 As Label
+    Friend WithEvents BtTestSigTX_Decrypt As Button
+    Friend WithEvents RTBTestSigTX As RichTextBox
+    Friend WithEvents Label66 As Label
 End Class

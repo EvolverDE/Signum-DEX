@@ -162,7 +162,7 @@
     <Compile Include="Source\Classes\Bitcoin\Transaction\AbsClsOutputs.vb" />
     <Compile Include="Source\Classes\Bitcoin\Transaction\ClsOutput.vb" />
     <Compile Include="Source\Classes\Bitcoin\Transaction\ClsScriptEntry.vb" />
-    <Compile Include="Source\Classes\Bitcoin\Transaction\ClsTransaction.vb" />
+    <Compile Include="Source\Classes\Bitcoin\Transaction\ClsBitcoinTransaction.vb" />
     <Compile Include="Source\Classes\Bitcoin\Transaction\ClsUnspentOutput.vb" />
     <Compile Include="Source\Classes\AtomicSwap\ClsBitcoin.vb" />
     <Compile Include="Source\Classes\ClsCSV.vb" />
@@ -184,6 +184,8 @@
     <Compile Include="Source\Classes\Crypto\Signum_specific\ClsCurve25519.vb" />
     <Compile Include="Source\Classes\Crypto\Signum_specific\ClsEC-KCDSA.vb" />
     <Compile Include="Source\Classes\Crypto\Signum_specific\ClsReedSolomon.vb" />
+    <Compile Include="Source\Classes\Signum\ClsSignumSmartContract.vb" />
+    <Compile Include="Source\Classes\Signum\ClsSignumTransaction.vb" />
     <Compile Include="Source\Classes\TCP_Communications\ClsAPIRequest.vb" />
     <Compile Include="SubForms\FrmDevelope.Designer.vb">
       <DependentUpon>FrmDevelope.vb</DependentUpon>
@@ -215,7 +217,7 @@
     <Compile Include="Source\Modules\ModCSV.vb" />
     <Compile Include="Source\Modules\ModJSON.vb" />
     <Compile Include="Source\Classes\ClsGZip.vb" />
-    <Compile Include="Source\Modules\ModGlobalFunctions.vb" />
+    <Compile Include="Source\Modules\ModGlobals.vb" />
     <Compile Include="Source\Modules\ModINITools.vb" />
     <Compile Include="Source\Classes\ClsMsgs.vb" />
     <Compile Include="Source\Classes\ClsOut.vb" />

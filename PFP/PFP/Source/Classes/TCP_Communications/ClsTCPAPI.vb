@@ -9,7 +9,7 @@ Imports System.Net.Sockets
 Imports System.Runtime.Remoting.Channels
 Imports System.Text
 Imports System.Threading
-Imports PFP.ClsTransaction
+Imports PFP.ClsBitcoinTransaction
 
 Public Class ClsTCPAPI
 
@@ -305,8 +305,8 @@ Public Class ClsTCPAPI
                                     If APIRequest.Parameters.Count > 0 Then
 
                                         Dim Inputs As List(Of String) = New List(Of String)
-                                        Dim PrivateKeys As List(Of ClsTransaction.S_PrivateKey) = New List(Of ClsTransaction.S_PrivateKey)
-                                        Dim SenderAddresses As List(Of ClsTransaction.S_Address) = New List(Of ClsTransaction.S_Address)
+                                        Dim PrivateKeys As List(Of ClsBitcoinTransaction.S_PrivateKey) = New List(Of ClsBitcoinTransaction.S_PrivateKey)
+                                        Dim SenderAddresses As List(Of ClsBitcoinTransaction.S_Address) = New List(Of ClsBitcoinTransaction.S_Address)
                                         Dim RecipientAddress As String = ""
                                         Dim ChainSwapHash As String = ""
                                         Dim Amount As Double = 0.0
@@ -329,26 +329,26 @@ Public Class ClsTCPAPI
                                                         Dim T_Addresses As List(Of String) = New List(Of String)(Parameter.Value.Split(","c))
 
                                                         For Each T_Address As String In T_Addresses
-                                                            SenderAddresses.Add(New ClsTransaction.S_Address(T_Address))
+                                                            SenderAddresses.Add(New ClsBitcoinTransaction.S_Address(T_Address))
                                                         Next
 
                                                     Else
-                                                        SenderAddresses.Add(New ClsTransaction.S_Address(Parameter.Value))
+                                                        SenderAddresses.Add(New ClsBitcoinTransaction.S_Address(Parameter.Value))
                                                     End If
 
                                                 Case ClsAPIRequest.E_Parameter.PrivateKey
 
-                                                    Dim T_PKCSK As ClsTransaction.S_PrivateKey = New ClsTransaction.S_PrivateKey(,)
+                                                    Dim T_PKCSK As ClsBitcoinTransaction.S_PrivateKey = New ClsBitcoinTransaction.S_PrivateKey(,)
 
                                                     If Parameter.Value.Contains(",") Then
 
                                                         Dim T_Privatekeys As List(Of String) = New List(Of String)(Parameter.Value.Split(","c))
 
                                                         For Each T_PrivateKey As String In T_Privatekeys
-                                                            PrivateKeys.Add(New ClsTransaction.S_PrivateKey(T_PrivateKey))
+                                                            PrivateKeys.Add(New ClsBitcoinTransaction.S_PrivateKey(T_PrivateKey))
                                                         Next
                                                     Else
-                                                        PrivateKeys.Add(New ClsTransaction.S_PrivateKey(Parameter.Value))
+                                                        PrivateKeys.Add(New ClsBitcoinTransaction.S_PrivateKey(Parameter.Value))
                                                     End If
 
                                                 Case ClsAPIRequest.E_Parameter.Recipient
@@ -368,8 +368,8 @@ Public Class ClsTCPAPI
                                         Next
 
                                         If SenderAddresses.Count = 0 And PrivateKeys.Count > 0 Then
-                                            For Each T_PrivateKey As ClsTransaction.S_PrivateKey In PrivateKeys
-                                                Dim T_Address As ClsTransaction.S_Address = New ClsTransaction.S_Address()
+                                            For Each T_PrivateKey As ClsBitcoinTransaction.S_PrivateKey In PrivateKeys
+                                                Dim T_Address As ClsBitcoinTransaction.S_Address = New ClsBitcoinTransaction.S_Address()
                                                 T_Address.Address = (PrivKeyToPubKey(T_PrivateKey.PrivateKey))
                                                 T_Address.ChainSwapKey = If(T_PrivateKey.ChainSwapKey.Trim() = "", False, True)
                                                 SenderAddresses.Add(T_Address)
@@ -378,7 +378,7 @@ Public Class ClsTCPAPI
 
                                         If SenderAddresses.Count > 0 And PrivateKeys.Count = 0 Then
 
-                                            Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(Inputs, SenderAddresses, "")
+                                            Dim BitcoinTransaction As ClsBitcoinTransaction = New ClsBitcoinTransaction(Inputs, SenderAddresses, "")
                                             BitcoinTransaction.CreateOutput(RecipientAddress, ChainSwapHash, SenderAddresses(0).Address, Amount)
                                             BitcoinTransaction.FinalizingOutputs()
 
@@ -432,7 +432,7 @@ Public Class ClsTCPAPI
 
                                         If SenderAddresses.Count > 0 And PrivateKeys.Count > 0 Then
 
-                                            Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(Inputs, SenderAddresses, "")
+                                            Dim BitcoinTransaction As ClsBitcoinTransaction = New ClsBitcoinTransaction(Inputs, SenderAddresses, "")
                                             BitcoinTransaction.CreateOutput(RecipientAddress, ChainSwapHash, SenderAddresses(0).Address, Amount)
                                             BitcoinTransaction.FinalizingOutputs()
                                             BitcoinTransaction.SignTransaction(PrivateKeys)
@@ -534,7 +534,7 @@ Public Class ClsTCPAPI
                                         If Not OrderID = "" And PassPhrase = "" And Not PublicKey = "" And Type = "" And AmountNQT = "" And CollateralNQT = "" And XAmountNQT = "" And XItem = "" Then
                                             'Accept
                                             If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
-                                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
                                                     If T_DEXContract.ID.ToString() = OrderID Then
                                                         'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
                                                         'publickey = 6FBE5B0C2A6BA726 12702795B2E25061 6C367BD8B28F965A 36CD59DD13D09A51
@@ -562,7 +562,7 @@ Public Class ClsTCPAPI
                                         ElseIf Not OrderID = "" And Not PassPhrase = "" And Not PublicKey = "" And Type = "" And AmountNQT = "" And CollateralNQT = "" And XAmountNQT = "" And XItem = "" Then
                                             'Accept + Sign
                                             If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
-                                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
                                                     If T_DEXContract.ID.ToString() = OrderID Then
 
                                                         If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
@@ -592,7 +592,7 @@ Public Class ClsTCPAPI
                                                 Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
                                                 Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
 
-                                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
                                                     If T_DEXContract.ID.ToString() = OrderID And (T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey))) Then
 
                                                         Dim T_UnsignedTransactionBytes As String = T_DEXContract.CreateSellOrder(PublicKey, Amount, Collateral, XItem, XAmount, 0.0)
@@ -619,7 +619,7 @@ Public Class ClsTCPAPI
                                                 Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
                                                 Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(XAmountNQT))
 
-                                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
                                                     If T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey)) Then
 
                                                         Dim T_UnsignedTransactionBytes As String = T_DEXContract.CreateSellOrder(PublicKey, Amount, Collateral, XItem, XAmount, 0.0)
@@ -647,7 +647,7 @@ Public Class ClsTCPAPI
                                                 Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
                                                 Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
 
-                                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
                                                     If T_DEXContract.ID.ToString() = OrderID And (T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey))) Then
 
                                                         Dim T_TransactionID As String = T_DEXContract.CreateSellOrder(Masterkeys(0), Amount, Collateral, XItem, XAmount, 0.0, Masterkeys(1))
@@ -674,7 +674,7 @@ Public Class ClsTCPAPI
                                                 Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
                                                 Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
 
-                                                For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                                For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
                                                     If T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey)) Then
 
                                                         Dim T_TransactionID As String = T_DEXContract.CreateSellOrder(Masterkeys(0), Amount, Collateral, XItem, XAmount, 0.0, Masterkeys(1))
@@ -739,7 +739,7 @@ Public Class ClsTCPAPI
 
                                         ElseIf Token = "Signum" Then
 
-                                            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
+                                            Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI("")
                                             Dim T_Result As String = SignumAPI.BroadcastTransaction(SignedTransactionBytes)
                                             If Not IsErrorOrWarning(T_Result,,, False) Then
                                                 ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""broadcast"",""data"":{""message"":""" + T_Result + """}}"
@@ -776,7 +776,7 @@ Public Class ClsTCPAPI
 
                                         Dim T_Response As String = "{""application"":""PFPDEX"",""Interface"":""API"",""version"":""1"",""contentType"":""application/json"",""response"":""smartContract"",""data"":["
 
-                                        For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                        For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
 
                                             If IDs.Contains(T_DEXContract.ID.ToString()) Then
 
@@ -796,7 +796,7 @@ Public Class ClsTCPAPI
                                         T_Response = T_Response.Remove(T_Response.Length - 1)
                                         T_Response += "]}"
 
-                                        If PFPForm.DEXContractList.Count = 0 Then
+                                        If PFPForm.C_DEXContractList.Count = 0 Then
                                             ResponseHTML = T_Response
                                         End If
 
@@ -843,8 +843,8 @@ Public Class ClsTCPAPI
                                     'use Parameters
 
                                     Dim Inputs As List(Of String) = New List(Of String)
-                                    Dim PrivateKeys As List(Of ClsTransaction.S_PrivateKey) = New List(Of ClsTransaction.S_PrivateKey)
-                                    Dim SenderAddresses As List(Of ClsTransaction.S_Address) = New List(Of ClsTransaction.S_Address)
+                                    Dim PrivateKeys As List(Of ClsBitcoinTransaction.S_PrivateKey) = New List(Of ClsBitcoinTransaction.S_PrivateKey)
+                                    Dim SenderAddresses As List(Of ClsBitcoinTransaction.S_Address) = New List(Of ClsBitcoinTransaction.S_Address)
                                     Dim RecipientAddress As String = ""
                                     Dim ChainSwapHash As String = ""
                                     Dim Amount As Double = 0.0
@@ -867,26 +867,26 @@ Public Class ClsTCPAPI
                                                     Dim T_Addresses As List(Of String) = New List(Of String)(Parameter.Value.Split(","c))
 
                                                     For Each T_Address As String In T_Addresses
-                                                        SenderAddresses.Add(New ClsTransaction.S_Address(T_Address))
+                                                        SenderAddresses.Add(New ClsBitcoinTransaction.S_Address(T_Address))
                                                     Next
 
                                                 Else
-                                                    SenderAddresses.Add(New ClsTransaction.S_Address(Parameter.Value))
+                                                    SenderAddresses.Add(New ClsBitcoinTransaction.S_Address(Parameter.Value))
                                                 End If
 
                                             Case ClsAPIRequest.E_Parameter.PrivateKey
 
-                                                Dim T_PKCSK As ClsTransaction.S_PrivateKey = New ClsTransaction.S_PrivateKey(,)
+                                                Dim T_PKCSK As ClsBitcoinTransaction.S_PrivateKey = New ClsBitcoinTransaction.S_PrivateKey(,)
 
                                                 If Parameter.Value.Contains(",") Then
 
                                                     Dim T_Privatekeys As List(Of String) = New List(Of String)(Parameter.Value.Split(","c))
 
                                                     For Each T_PrivateKey As String In T_Privatekeys
-                                                        PrivateKeys.Add(New ClsTransaction.S_PrivateKey(T_PrivateKey))
+                                                        PrivateKeys.Add(New ClsBitcoinTransaction.S_PrivateKey(T_PrivateKey))
                                                     Next
                                                 Else
-                                                    PrivateKeys.Add(New ClsTransaction.S_PrivateKey(Parameter.Value))
+                                                    PrivateKeys.Add(New ClsBitcoinTransaction.S_PrivateKey(Parameter.Value))
                                                 End If
 
                                             Case ClsAPIRequest.E_Parameter.Recipient
@@ -906,8 +906,8 @@ Public Class ClsTCPAPI
                                     Next
 
                                     If SenderAddresses.Count = 0 And PrivateKeys.Count > 0 Then
-                                        For Each T_PrivateKey As ClsTransaction.S_PrivateKey In PrivateKeys
-                                            Dim T_Address As ClsTransaction.S_Address = New ClsTransaction.S_Address()
+                                        For Each T_PrivateKey As ClsBitcoinTransaction.S_PrivateKey In PrivateKeys
+                                            Dim T_Address As ClsBitcoinTransaction.S_Address = New ClsBitcoinTransaction.S_Address()
                                             T_Address.Address = (PrivKeyToPubKey(T_PrivateKey.PrivateKey))
                                             T_Address.ChainSwapKey = If(T_PrivateKey.ChainSwapKey.Trim() = "", False, True)
                                             SenderAddresses.Add(T_Address)
@@ -916,7 +916,7 @@ Public Class ClsTCPAPI
 
                                     If SenderAddresses.Count > 0 And PrivateKeys.Count = 0 Then
 
-                                        Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(Inputs, SenderAddresses, "")
+                                        Dim BitcoinTransaction As ClsBitcoinTransaction = New ClsBitcoinTransaction(Inputs, SenderAddresses, "")
                                         BitcoinTransaction.CreateOutput(RecipientAddress, ChainSwapHash, SenderAddresses(0).Address, Amount)
                                         BitcoinTransaction.FinalizingOutputs()
 
@@ -970,7 +970,7 @@ Public Class ClsTCPAPI
 
                                     If SenderAddresses.Count > 0 And PrivateKeys.Count > 0 Then
 
-                                        Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(Inputs, SenderAddresses, "")
+                                        Dim BitcoinTransaction As ClsBitcoinTransaction = New ClsBitcoinTransaction(Inputs, SenderAddresses, "")
                                         BitcoinTransaction.CreateOutput(RecipientAddress, ChainSwapHash, SenderAddresses(0).Address, Amount)
                                         BitcoinTransaction.FinalizingOutputs()
                                         BitcoinTransaction.SignTransaction(PrivateKeys)
@@ -1028,8 +1028,8 @@ Public Class ClsTCPAPI
                                     If APIRequest.Body.Count > 0 Then
 
                                         Dim InputIDs As List(Of String) = New List(Of String)
-                                        Dim PrivateKeys As List(Of ClsTransaction.S_PrivateKey) = New List(Of ClsTransaction.S_PrivateKey)
-                                        Dim SenderAddresses As List(Of ClsTransaction.S_Address) = New List(Of ClsTransaction.S_Address)
+                                        Dim PrivateKeys As List(Of ClsBitcoinTransaction.S_PrivateKey) = New List(Of ClsBitcoinTransaction.S_PrivateKey)
+                                        Dim SenderAddresses As List(Of ClsBitcoinTransaction.S_Address) = New List(Of ClsBitcoinTransaction.S_Address)
                                         Dim Scripts As List(Of String) = New List(Of String)
 
                                         Dim OutputIDs As List(Of ClsOutput) = New List(Of ClsOutput)
@@ -1053,8 +1053,8 @@ Public Class ClsTCPAPI
                                                     For Each InputEntry As KeyValuePair(Of String, Object) In Inputs
 
                                                         Dim Parameters As List(Of KeyValuePair(Of String, Object)) = DirectCast(InputEntry.Value, List(Of KeyValuePair(Of String, Object)))
-                                                        Dim T_PKCSK As ClsTransaction.S_PrivateKey = New ClsTransaction.S_PrivateKey(,)
-                                                        Dim T_Address As ClsTransaction.S_Address = New ClsTransaction.S_Address(,)
+                                                        Dim T_PKCSK As ClsBitcoinTransaction.S_PrivateKey = New ClsBitcoinTransaction.S_PrivateKey(,)
+                                                        Dim T_Address As ClsBitcoinTransaction.S_Address = New ClsBitcoinTransaction.S_Address(,)
                                                         Dim T_InputID As String = ""
                                                         Dim T_Script As String = ""
 
@@ -1138,8 +1138,8 @@ Public Class ClsTCPAPI
                                         Next
 
                                         If SenderAddresses.Count = 0 And PrivateKeys.Count > 0 Then
-                                            For Each T_PrivateKey As ClsTransaction.S_PrivateKey In PrivateKeys
-                                                Dim T_Address As ClsTransaction.S_Address = New ClsTransaction.S_Address()
+                                            For Each T_PrivateKey As ClsBitcoinTransaction.S_PrivateKey In PrivateKeys
+                                                Dim T_Address As ClsBitcoinTransaction.S_Address = New ClsBitcoinTransaction.S_Address()
                                                 T_Address.Address = (PrivKeyToPubKey(T_PrivateKey.PrivateKey))
                                                 T_Address.ChainSwapKey = If(T_PrivateKey.ChainSwapKey.Trim() = "", False, True)
                                                 SenderAddresses.Add(T_Address)
@@ -1148,7 +1148,7 @@ Public Class ClsTCPAPI
 
                                         If SenderAddresses.Count > 0 And PrivateKeys.Count = 0 Then
 
-                                            Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(InputIDs, SenderAddresses, Scripts)
+                                            Dim BitcoinTransaction As ClsBitcoinTransaction = New ClsBitcoinTransaction(InputIDs, SenderAddresses, Scripts)
 
                                             For Each OP As ClsOutput In OutputIDs
                                                 BitcoinTransaction.CreateOutput(OP)
@@ -1205,7 +1205,7 @@ Public Class ClsTCPAPI
 
                                         If SenderAddresses.Count > 0 And PrivateKeys.Count > 0 Then
 
-                                            Dim BitcoinTransaction As ClsTransaction = New ClsTransaction(InputIDs, SenderAddresses, Scripts)
+                                            Dim BitcoinTransaction As ClsBitcoinTransaction = New ClsBitcoinTransaction(InputIDs, SenderAddresses, Scripts)
 
                                             For Each OP As ClsOutput In OutputIDs
                                                 BitcoinTransaction.CreateOutput(OP)
@@ -1319,7 +1319,7 @@ Public Class ClsTCPAPI
                                     If Not OrderID = "" And PassPhrase = "" And Not PublicKey = "" And Type = "" And AmountNQT = "" And CollateralNQT = "" And XAmountNQT = "" And XItem = "" Then
                                         'Accept
                                         If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
-                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
                                                 If T_DEXContract.ID.ToString() = OrderID Then
                                                     'address = TS-4FCL-YHVW-R94Z-F4D7J ; id = 15570460086676567378
                                                     'publickey = 6FBE5B0C2A6BA726 12702795B2E25061 6C367BD8B28F965A 36CD59DD13D09A51
@@ -1347,7 +1347,7 @@ Public Class ClsTCPAPI
                                     ElseIf Not OrderID = "" And Not PassPhrase = "" And Not PublicKey = "" And Type = "" And AmountNQT = "" And CollateralNQT = "" And XAmountNQT = "" And XItem = "" Then
                                         'Accept + Sign
                                         If MessageIsHEXString(PublicKey) And PublicKey.Length = 64 Then
-                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
                                                 If T_DEXContract.ID.ToString() = OrderID Then
 
                                                     If T_DEXContract.Status = ClsDEXContract.E_Status.OPEN Then 'T_DEXContract.IsSellOrder And
@@ -1377,7 +1377,7 @@ Public Class ClsTCPAPI
                                             Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
                                             Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
 
-                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
                                                 If T_DEXContract.ID.ToString() = OrderID And (T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey))) Then
 
                                                     Dim T_UnsignedTransactionBytes As String = T_DEXContract.CreateSellOrder(Masterkeys(0), Amount, Collateral, XItem, XAmount, 0.0)
@@ -1404,7 +1404,7 @@ Public Class ClsTCPAPI
                                             Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
                                             Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(XAmountNQT))
 
-                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
                                                 If T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey)) Then
 
                                                     Dim T_UnsignedTransactionBytes As String = T_DEXContract.CreateSellOrder(PublicKey, Amount, Collateral, XItem, XAmount, 0.0)
@@ -1432,7 +1432,7 @@ Public Class ClsTCPAPI
                                             Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
                                             Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
 
-                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
                                                 If T_DEXContract.ID.ToString() = OrderID And (T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey))) Then
 
                                                     Dim T_TransactionID As String = T_DEXContract.CreateSellOrder(Masterkeys(0), Amount, Collateral, XItem, XAmount, 0.0, Masterkeys(1))
@@ -1459,7 +1459,7 @@ Public Class ClsTCPAPI
                                             Dim Collateral As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
                                             Dim XAmount As Double = ClsSignumAPI.Planck2Dbl(Convert.ToUInt64(CollateralNQT))
 
-                                            For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                            For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
                                                 If T_DEXContract.Status = ClsDEXContract.E_Status.FREE Or (T_DEXContract.Status = ClsDEXContract.E_Status.NEW_ And T_DEXContract.CreatorID = GetAccountID(PublicKey)) Then
 
                                                     Dim T_TransactionID As String = T_DEXContract.CreateSellOrder(Masterkeys(0), Amount, Collateral, XItem, XAmount, 0.0, Masterkeys(1))
@@ -1543,12 +1543,12 @@ Public Class ClsTCPAPI
 
                                     Dim ReservedOrder As ClsDEXContract
 
-                                    If PFPForm.DEXContractList.Count > 0 Then
-                                        ReservedOrder = PFPForm.DEXContractList.FirstOrDefault(Function(reserved) reserved.Status = ClsDEXContract.E_Status.NEW_ And reserved.CreatorID = GetAccountID(PublicKey))
+                                    If PFPForm.C_DEXContractList.Count > 0 Then
+                                        ReservedOrder = PFPForm.C_DEXContractList.FirstOrDefault(Function(reserved) reserved.Status = ClsDEXContract.E_Status.NEW_ And reserved.CreatorID = GetAccountID(PublicKey))
                                         'Nothing
                                     End If
 
-                                    For Each T_DEXContract As ClsDEXContract In PFPForm.DEXContractList
+                                    For Each T_DEXContract As ClsDEXContract In PFPForm.C_DEXContractList
 
                                         If OrderID.Trim() = "" Then
 
@@ -1733,7 +1733,7 @@ Public Class ClsTCPAPI
 
                                     ElseIf Token = "Signum" Then
 
-                                        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
+                                        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI("")
                                         Dim T_Result As String = SignumAPI.BroadcastTransaction(SignedTransactionBytes)
                                         If Not IsErrorOrWarning(T_Result,,, False) Then
                                             ResponseHTML = "{""application"":""PFPDEX"",""interface"":""API"",""version"":""1.0"",""contentType"":""application/json"",""response"":""broadcast"",""data"":{""message"":""" + T_Result + """}}"
@@ -1777,9 +1777,9 @@ Public Class ClsTCPAPI
 
                                 If Not PublicKey.Trim() = "" Then
 
-                                    Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
+                                    Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI("")
 
-                                    Dim T_Result As String = SignumAPI.CreateSmartContract(PublicKey)
+                                    Dim T_Result As String = SignumAPI.CreateSmartContract(PublicKey, ClsSignumSmartContract.CreationMachineData)
                                     If Not IsErrorOrWarning(T_Result,,, False) Then
 
                                         Dim UnsignedTransactionBytes As String = ""

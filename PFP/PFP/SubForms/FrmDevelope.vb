@@ -3,6 +3,7 @@ Option Explicit On
 
 Public Class FrmDevelope
 
+    Dim C_SignumAPI As ClsSignumAPI = Nothing ' New ClsSignumAPI(C_MainForm.PrimaryNode)
     Dim C_MainForm As PFPForm = CType(Me.ParentForm, PFPForm)
     Dim SpecialTimer As Integer = 0
 
@@ -18,6 +19,7 @@ Public Class FrmDevelope
 
         ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
         C_MainForm = MainForm
+        C_SignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
 
         T_DEXContractList = GetDEXContractsFromCSV(False)
 
@@ -332,7 +334,7 @@ Public Class FrmDevelope
 
     Private Sub BtTestDatStr2ULngList_Click(sender As Object, e As EventArgs) Handles BtTestDatStr2ULngList.Click
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
+        'Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
 
         Dim ULngList As List(Of ULong) = New List(Of ULong)({ClsSignumAPI.String2ULng(TBTestConvert.Text.Trim)})
         Dim MsgStr As String = ClsSignumAPI.ULngList2DataStr(ULngList)
@@ -342,7 +344,7 @@ Public Class FrmDevelope
     End Sub
     Private Sub BtTestConvert_Click(sender As Object, e As EventArgs) Handles BtTestConvert.Click
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
+        'Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
 
         Try
             TBTestConvert.Text = ClsSignumAPI.String2ULng(TBTestConvert.Text).ToString
@@ -353,7 +355,7 @@ Public Class FrmDevelope
     End Sub
     Private Sub BtTestConvert2_Click(sender As Object, e As EventArgs) Handles BtTestConvert2.Click
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
+        'Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
 
         Try
             TBTestConvert.Text = ClsSignumAPI.ULng2String(Convert.ToUInt64(TBTestConvert.Text)).ToString
@@ -363,7 +365,7 @@ Public Class FrmDevelope
 
     End Sub
     Private Sub BtTestTimeConvert_Click(sender As Object, e As EventArgs) Handles BtTestTimeConvert.Click
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
+        ' Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
         TBTestTime.Text = ClsSignumAPI.UnixToTime((139296583).ToString).ToString
     End Sub
     Private Sub BtTestCreateCollWord_Click(sender As Object, e As EventArgs) Handles BtTestCreateCollWord.Click
@@ -997,7 +999,7 @@ Public Class FrmDevelope
 
     Private Sub BtTestHex2ULng_Click(sender As Object, e As EventArgs) Handles BtTestHex2ULng.Click
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
+        'Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI(C_MainForm.PrimaryNode)
 
         Try
             TBTestConvert.Text = ClsSignumAPI.HEX2ULng(TBTestConvert.Text).ToString
@@ -1013,8 +1015,8 @@ Public Class FrmDevelope
 
             CurrentContract.Refresh(False)
 
-            Dim k = New ClsSignumAPI
-            Dim CurrentBlockHeight As Integer = k.GetCurrentBlock()
+            'Dim C_SignumAPI = New ClsSignumAPI("")
+            Dim CurrentBlockHeight As ULong = C_SignumAPI.GetCurrentBlock()
 
 
             LVTestDEXContractBasic.Items.Clear()
@@ -1205,7 +1207,7 @@ Public Class FrmDevelope
 
     Private Sub BtTestChainSwapKeyToHash_Click(sender As Object, e As EventArgs) Handles BtTestChainSwapKeyToHash.Click
 
-        Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI()
+        'Dim SignumAPI As ClsSignumAPI = New ClsSignumAPI("")
         Dim ChainSwapKeyList As List(Of ULong) = HEXStringToULongList(TBTestChainSwapKey.Text)
         Dim Hash As String = GetSHA256HashString(TBTestChainSwapKey.Text)
         Dim ChainSwapHashList As List(Of ULong) = HEXStringToULongList(Hash)
@@ -1462,7 +1464,101 @@ Public Class FrmDevelope
 
     End Sub
 
+    Dim SigTX As ClsSignumTransaction
 
+    Private Sub BtTestSigTX_ReadTX_Click(sender As Object, e As EventArgs) Handles BtTestSigTX_ReadTX.Click
+        SigTX = New ClsSignumTransaction(Convert.ToUInt64(TBTestSigTX_TXID.Text))
+        SetSigTXInLV()
+    End Sub
+
+    Private Sub BtTestSigTX_Decrypt_Click(sender As Object, e As EventArgs) Handles BtTestSigTX_Decrypt.Click
+
+        If Not IsNothing(SigTX) Then
+            SigTX.DecryptAttachment(TBTestSigTX_PassPhrase.Text)
+            SetSigTXInLV()
+        End If
+
+    End Sub
+
+    Private Sub SetSigTXInLV()
+
+        LVTestSigTX.Items.Clear()
+
+        With LVTestSigTX.Items.Add("Timestamp")
+            .SubItems.Add(SigTX.DateTimeStamp.ToString())
+        End With
+
+        With LVTestSigTX.Items.Add("Block")
+            .SubItems.Add(SigTX.Block.ToString())
+        End With
+
+        With LVTestSigTX.Items.Add("Height")
+            .SubItems.Add(SigTX.Height.ToString())
+        End With
+
+        With LVTestSigTX.Items.Add("Confirmations")
+            .SubItems.Add(SigTX.Confirmations.ToString())
+        End With
+
+        With LVTestSigTX.Items.Add("SenderPublicKey")
+            .SubItems.Add(SigTX.SenderPublicKey)
+        End With
+
+        With LVTestSigTX.Items.Add("SenderID")
+            .SubItems.Add(SigTX.SenderID.ToString())
+        End With
+
+        With LVTestSigTX.Items.Add("SenderAddress")
+            .SubItems.Add(SigTX.SenderAddress)
+        End With
+
+        With LVTestSigTX.Items.Add("RecipientPublicKey")
+            .SubItems.Add(SigTX.RecipientPublicKey)
+        End With
+
+        With LVTestSigTX.Items.Add("RecipientID")
+            .SubItems.Add(SigTX.RecipientID.ToString())
+        End With
+
+        With LVTestSigTX.Items.Add("RecipientAddress")
+            .SubItems.Add(SigTX.RecipientAddress)
+        End With
+
+        With LVTestSigTX.Items.Add("Amount")
+            .SubItems.Add(SigTX.AmountString)
+        End With
+
+        With LVTestSigTX.Items.Add("Fee")
+            .SubItems.Add(SigTX.FeeString)
+        End With
+
+        With LVTestSigTX.Items.Add("Balance")
+            .SubItems.Add(SigTX.BalanceString)
+        End With
+
+        With LVTestSigTX.Items.Add("Attachment")
+            .SubItems.Add(SigTX.Attachment)
+        End With
+
+        With LVTestSigTX.Items.Add("Type")
+            .SubItems.Add(SigTX.Type.ToString())
+        End With
+
+        With LVTestSigTX.Items.Add("Message")
+            .SubItems.Add(SigTX.Message)
+        End With
+
+        With LVTestSigTX.Items.Add("Command")
+            .SubItems.Add(SigTX.ReferenceCommand.ToString())
+        End With
+
+        RTBTestSigTX.Clear()
+        RTBTestSigTX.AppendText(SigTX.Message)
+
+        LVTestSigTX.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent)
+        LVTestSigTX.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
+
+    End Sub
 
 #End Region
 

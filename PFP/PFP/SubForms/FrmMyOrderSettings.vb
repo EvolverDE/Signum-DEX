@@ -27,7 +27,7 @@ Public Class FrmMyOrderSettings
         Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettings()
 
         For Each T_OS As ClsOrderSettings In T_OSList
-            With LVOrders.Items.Add(ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(T_OS.SmartContractID))
+            With LVOrders.Items.Add(GlobalSignumPrefix + ClsReedSolomon.Encode(T_OS.SmartContractID))
                 .SubItems.Add(T_OS.TransactionID.ToString) 'TX
                 .SubItems.Add(T_OS.Type) 'Type
                 .SubItems.Add(T_OS.PaytypeString) 'Paytype

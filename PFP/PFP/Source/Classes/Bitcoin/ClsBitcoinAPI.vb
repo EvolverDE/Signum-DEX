@@ -7,7 +7,7 @@ Imports System.Net
 Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.VisualBasic.Devices
-Imports PFP.ClsTransaction
+Imports PFP.ClsBitcoinTransaction
 'Imports BitcoinNET.ClsBitcoinNET
 
 ''' <summary>

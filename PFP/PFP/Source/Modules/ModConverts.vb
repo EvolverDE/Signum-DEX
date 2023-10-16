@@ -52,6 +52,14 @@ Module ModConverts
         Return Output
     End Function
 
+    Function HEXStringToString(ByVal HEXStr As String) As String
+        If Not MessageIsHEXString(HEXStr) Then
+            Return ""
+        End If
+
+        Return Text.Encoding.ASCII.GetString(HEXStringToByteArray(HEXStr))
+
+    End Function
 
     Public Function HEXStringToULongList(ByVal HEXStr As String) As List(Of ULong)
 
@@ -60,7 +68,7 @@ Module ModConverts
         If MessageIsHEXString(HEXStr) Then
             InputBytes = HEXStringToByteArray(HEXStr).ToList
         Else
-            InputBytes = System.Text.Encoding.ASCII.GetBytes(HEXStr).ToList
+            InputBytes = Text.Encoding.ASCII.GetBytes(HEXStr).ToList
         End If
 
         While InputBytes.Count Mod 8 <> 0

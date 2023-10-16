@@ -224,14 +224,14 @@ PFP
  <param name="Amount">the amount in BTC</param>
  <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
 </member>
-<member name="M:PFP.ClsTransaction.CreateOutput(System.String,System.Double)">
+<member name="M:PFP.ClsBitcoinTransaction.CreateOutput(System.String,System.Double)">
  <summary>
  Create a Standard Output
  </summary>
  <param name="RecipientAddress">the Address of the recipient address</param>
  <param name="Amount">the amount in BTC</param>
 </member>
-<member name="M:PFP.ClsTransaction.CreateOutput(System.String,System.String,System.Double)">
+<member name="M:PFP.ClsBitcoinTransaction.CreateOutput(System.String,System.String,System.Double)">
  <summary>
  Create a ChainSwapHash Output
  </summary>
@@ -239,7 +239,7 @@ PFP
  <param name="RecipientAddress">the Address of the recipient address</param>
  <param name="Amount">the amount in BTC</param>
 </member>
-<member name="M:PFP.ClsTransaction.CreateOutput(System.String,System.Double,System.Int32)">
+<member name="M:PFP.ClsBitcoinTransaction.CreateOutput(System.String,System.Double,System.Int32)">
  <summary>
  Create a LockTime Output
  </summary>
@@ -247,7 +247,7 @@ PFP
  <param name="Amount">the amount in BTC</param>
  <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
 </member>
-<member name="M:PFP.ClsTransaction.CreateOutput(System.String,System.String,System.String,System.Double,System.Int32)">
+<member name="M:PFP.ClsBitcoinTransaction.CreateOutput(System.String,System.String,System.String,System.Double,System.Int32)">
  <summary>
  Create a ChainSwapHash Output with LockTime for payback option when the time is up
  </summary>
@@ -443,20 +443,20 @@ PFP
  Receives bytes, returns decompressed bytes.
  </summary>
 </member>
-<member name="M:PFP.ModGlobalFunctions.GetPassPhrase">
+<member name="M:PFP.ModGlobals.GetPassPhrase">
  <summary>
  0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
  </summary>
  <returns></returns>
 </member>
-<member name="M:PFP.ModGlobalFunctions.ConvertAddress(System.String)">
+<member name="M:PFP.ModGlobals.ConvertAddress(System.String)">
  <summary>
  converts accountID (and publicKey) from given address (0=AccountID; 1=PublicKey)
  </summary>
  <param name="Address">the address (e.g. (T)S-2222-2222-2222-22222(-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ))</param>
  <returns>List(Of String)("12345678901234567890","a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2")</returns>
 </member>
-<member name="M:PFP.ModGlobalFunctions.GetLVColNameFromSubItem(System.Windows.Forms.ListView@,System.String,System.Windows.Forms.ListViewItem,System.Int32)">
+<member name="M:PFP.ModGlobals.GetLVColNameFromSubItem(System.Windows.Forms.ListView@,System.String,System.Windows.Forms.ListViewItem,System.Int32)">
  <summary>
  Von einer ListView das subitem aus dem item lesen
  </summary>

@@ -28,8 +28,9 @@ Module ModINITools
         'Default
         AutoSendPaymentInfo = 100
         AutoCheckAndFinishSmartContract = 101
-        PaymentType = 102
-        PaymentInfoText = 103
+        AllowKnownAccountsAcceptOrdersOverDEXNET = 102
+        PaymentType = 103
+        PaymentInfoText = 104
         'Filter
         ShowMaxSellOrders = 200
         ShowMaxBuyOrders = 201
@@ -51,7 +52,8 @@ Module ModINITools
         'Temp
         AutoSignalTransactions = 400
         AutoInfoTransactions = 401
-        BitcoinTransactions = 402
+        'BlockingTransactions = 402
+        BitcoinTransactions = 403
         'Develope
         InfoOut = 500
         TCPAPIShowStatus = 501
@@ -113,6 +115,7 @@ Module ModINITools
 
             Temp = SetINISetting(E_Setting.AutoSendPaymentInfo, False)
             Temp = SetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False)
+            Temp = SetINISetting(E_Setting.AllowKnownAccountsAcceptOrdersOverDEXNET, False)
             Temp = SetINISetting(E_Setting.PaymentType, "Other")
             Temp = SetINISetting(E_Setting.PaymentInfoText, "self pickup")
 
@@ -157,6 +160,7 @@ Module ModINITools
 
             Temp = SetINISetting(E_Setting.AutoSignalTransactions, "")
             Temp = SetINISetting(E_Setting.AutoInfoTransactions, "")
+            'Temp = SetINISetting(E_Setting.BlockingTransactions, "")
 
 #End Region
 
@@ -215,6 +219,7 @@ Module ModINITools
 
         Temp = GetINISetting(E_Setting.AutoSendPaymentInfo, False).ToString
         Temp = GetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False).ToString
+        Temp = GetINISetting(E_Setting.AllowKnownAccountsAcceptOrdersOverDEXNET, False).ToString
         Temp = GetINISetting(E_Setting.PaymentType, "Other").ToString
         Temp = GetINISetting(E_Setting.PaymentInfoText, "self pickup")
 
@@ -256,6 +261,7 @@ Module ModINITools
 #Region "Temp"
         Temp = GetINISetting(E_Setting.AutoSignalTransactions, "")
         Temp = GetINISetting(E_Setting.AutoInfoTransactions, "")
+        'Temp = GetINISetting(E_Setting.BlockingTransactions, "")
 #End Region
 
         Temp = GetINISetting(E_Setting.InfoOut, True).ToString

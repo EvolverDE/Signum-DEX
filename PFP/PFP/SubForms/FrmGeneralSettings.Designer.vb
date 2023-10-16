@@ -62,6 +62,7 @@ Partial Class FrmGeneralSettings
         Me.Label10 = New System.Windows.Forms.Label()
         Me.TBBitcoinAPINode = New System.Windows.Forms.TextBox()
         Me.Label8 = New System.Windows.Forms.Label()
+        Me.ChBxAllowKnownAccOverDEXNET = New System.Windows.Forms.CheckBox()
         Me.GroupBox3.SuspendLayout()
         Me.GrpBxSeller.SuspendLayout()
         Me.TabControl2.SuspendLayout()
@@ -155,7 +156,7 @@ Partial Class FrmGeneralSettings
         '
         Me.Label4.AutoSize = True
         Me.Label4.ForeColor = System.Drawing.Color.White
-        Me.Label4.Location = New System.Drawing.Point(6, 45)
+        Me.Label4.Location = New System.Drawing.Point(7, 68)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(48, 13)
         Me.Label4.TabIndex = 26
@@ -165,7 +166,7 @@ Partial Class FrmGeneralSettings
         '
         Me.CoBxPayType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.CoBxPayType.FormattingEnabled = True
-        Me.CoBxPayType.Location = New System.Drawing.Point(60, 42)
+        Me.CoBxPayType.Location = New System.Drawing.Point(61, 65)
         Me.CoBxPayType.Name = "CoBxPayType"
         Me.CoBxPayType.Size = New System.Drawing.Size(265, 21)
         Me.CoBxPayType.TabIndex = 25
@@ -173,7 +174,7 @@ Partial Class FrmGeneralSettings
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(6, 72)
+        Me.Label1.Location = New System.Drawing.Point(7, 95)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(45, 13)
         Me.Label1.TabIndex = 20
@@ -182,18 +183,18 @@ Partial Class FrmGeneralSettings
         'ChBxCheckXItemTX
         '
         Me.ChBxCheckXItemTX.AutoSize = True
-        Me.ChBxCheckXItemTX.Location = New System.Drawing.Point(6, 95)
+        Me.ChBxCheckXItemTX.Location = New System.Drawing.Point(7, 118)
         Me.ChBxCheckXItemTX.Name = "ChBxCheckXItemTX"
-        Me.ChBxCheckXItemTX.Size = New System.Drawing.Size(270, 17)
+        Me.ChBxCheckXItemTX.Size = New System.Drawing.Size(334, 17)
         Me.ChBxCheckXItemTX.TabIndex = 16
-        Me.ChBxCheckXItemTX.Text = "automatically check XItem transaction and finish AT"
+        Me.ChBxCheckXItemTX.Text = "automatically check XItem transaction and finish AT (PayPal only)"
         Me.ChBxCheckXItemTX.UseVisualStyleBackColor = True
         '
         'BtSaveSettings
         '
         Me.BtSaveSettings.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BtSaveSettings.ForeColor = System.Drawing.Color.White
-        Me.BtSaveSettings.Location = New System.Drawing.Point(12, 405)
+        Me.BtSaveSettings.Location = New System.Drawing.Point(12, 464)
         Me.BtSaveSettings.Name = "BtSaveSettings"
         Me.BtSaveSettings.Size = New System.Drawing.Size(758, 30)
         Me.BtSaveSettings.TabIndex = 9
@@ -203,7 +204,7 @@ Partial Class FrmGeneralSettings
         'ChBxAutoSendPaymentInfo
         '
         Me.ChBxAutoSendPaymentInfo.AutoSize = True
-        Me.ChBxAutoSendPaymentInfo.Location = New System.Drawing.Point(6, 19)
+        Me.ChBxAutoSendPaymentInfo.Location = New System.Drawing.Point(7, 42)
         Me.ChBxAutoSendPaymentInfo.Name = "ChBxAutoSendPaymentInfo"
         Me.ChBxAutoSendPaymentInfo.Size = New System.Drawing.Size(319, 17)
         Me.ChBxAutoSendPaymentInfo.TabIndex = 4
@@ -212,7 +213,7 @@ Partial Class FrmGeneralSettings
         '
         'TBPaymentInfo
         '
-        Me.TBPaymentInfo.Location = New System.Drawing.Point(60, 69)
+        Me.TBPaymentInfo.Location = New System.Drawing.Point(61, 92)
         Me.TBPaymentInfo.Name = "TBPaymentInfo"
         Me.TBPaymentInfo.Size = New System.Drawing.Size(265, 20)
         Me.TBPaymentInfo.TabIndex = 7
@@ -222,7 +223,7 @@ Partial Class FrmGeneralSettings
         Me.GrpBxSeller.BackColor = System.Drawing.Color.Transparent
         Me.GrpBxSeller.Controls.Add(Me.TabControl2)
         Me.GrpBxSeller.ForeColor = System.Drawing.Color.White
-        Me.GrpBxSeller.Location = New System.Drawing.Point(12, 275)
+        Me.GrpBxSeller.Location = New System.Drawing.Point(12, 334)
         Me.GrpBxSeller.Name = "GrpBxSeller"
         Me.GrpBxSeller.Size = New System.Drawing.Size(347, 124)
         Me.GrpBxSeller.TabIndex = 10
@@ -344,6 +345,7 @@ Partial Class FrmGeneralSettings
         'GroupBox1
         '
         Me.GroupBox1.BackColor = System.Drawing.Color.Transparent
+        Me.GroupBox1.Controls.Add(Me.ChBxAllowKnownAccOverDEXNET)
         Me.GroupBox1.Controls.Add(Me.Label4)
         Me.GroupBox1.Controls.Add(Me.ChBxAutoSendPaymentInfo)
         Me.GroupBox1.Controls.Add(Me.CoBxPayType)
@@ -353,7 +355,7 @@ Partial Class FrmGeneralSettings
         Me.GroupBox1.ForeColor = System.Drawing.Color.White
         Me.GroupBox1.Location = New System.Drawing.Point(12, 142)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(347, 127)
+        Me.GroupBox1.Size = New System.Drawing.Size(347, 186)
         Me.GroupBox1.TabIndex = 13
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Default Non-Cryptocurrency Settings"
@@ -373,7 +375,7 @@ Partial Class FrmGeneralSettings
         Me.GroupBox2.ForeColor = System.Drawing.Color.White
         Me.GroupBox2.Location = New System.Drawing.Point(365, 12)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(402, 387)
+        Me.GroupBox2.Size = New System.Drawing.Size(402, 446)
         Me.GroupBox2.TabIndex = 14
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Bitcoin Settings (Testnet)"
@@ -397,7 +399,7 @@ Partial Class FrmGeneralSettings
         Me.LVBitcoinAddress.HideSelection = False
         Me.LVBitcoinAddress.Location = New System.Drawing.Point(12, 124)
         Me.LVBitcoinAddress.Name = "LVBitcoinAddress"
-        Me.LVBitcoinAddress.Size = New System.Drawing.Size(384, 253)
+        Me.LVBitcoinAddress.Size = New System.Drawing.Size(384, 315)
         Me.LVBitcoinAddress.TabIndex = 25
         Me.LVBitcoinAddress.UseCompatibleStateImageBehavior = False
         Me.LVBitcoinAddress.View = System.Windows.Forms.View.Details
@@ -467,6 +469,16 @@ Partial Class FrmGeneralSettings
         Me.Label8.TabIndex = 16
         Me.Label8.Text = "Bitcoin API Node :"
         '
+        'ChBxAllowKnownAccOverDEXNET
+        '
+        Me.ChBxAllowKnownAccOverDEXNET.AutoSize = True
+        Me.ChBxAllowKnownAccOverDEXNET.Location = New System.Drawing.Point(7, 19)
+        Me.ChBxAllowKnownAccOverDEXNET.Name = "ChBxAllowKnownAccOverDEXNET"
+        Me.ChBxAllowKnownAccOverDEXNET.Size = New System.Drawing.Size(285, 17)
+        Me.ChBxAllowKnownAccOverDEXNET.TabIndex = 27
+        Me.ChBxAllowKnownAccOverDEXNET.Text = "allow known accounts to accept Orders over DEXNET"
+        Me.ChBxAllowKnownAccOverDEXNET.UseVisualStyleBackColor = True
+        '
         'FrmGeneralSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -474,7 +486,7 @@ Partial Class FrmGeneralSettings
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.BackgroundImage = Global.PFP.My.Resources.Resources.signum_back3
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.ClientSize = New System.Drawing.Size(783, 445)
+        Me.ClientSize = New System.Drawing.Size(783, 505)
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.GrpBxSeller)
@@ -540,4 +552,5 @@ Partial Class FrmGeneralSettings
     Friend WithEvents TBBitcoinAPIUser As TextBox
     Friend WithEvents Label10 As Label
     Friend WithEvents BtBitcoinAddresses As Button
+    Friend WithEvents ChBxAllowKnownAccOverDEXNET As CheckBox
 End Class

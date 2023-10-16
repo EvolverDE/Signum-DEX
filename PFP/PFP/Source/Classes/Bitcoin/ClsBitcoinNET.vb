@@ -348,7 +348,7 @@ Public Class ClsBitcoinNET
             T_PrevTX.TransactionID = Converter.FirstValue("txid").ToString()
             T_PrevTX.VoutIDX = Converter.GetFirstInteger("vout")
             T_PrevTX.Addresses.Add(Converter.FirstValue("address").ToString())
-            T_PrevTX.LockingScript = ClsTransaction.ConvertLockingScriptStrToList(Converter.FirstValue("scriptPubKey").ToString())
+            T_PrevTX.LockingScript = ClsBitcoinTransaction.ConvertLockingScriptStrToList(Converter.FirstValue("scriptPubKey").ToString())
 
             Dim T_RIPE160List As List(Of String) = GetRIPE160FromScript(T_PrevTX.LockingScript)
 
@@ -362,7 +362,7 @@ Public Class ClsBitcoinNET
 
                 Next
             End If
-            T_PrevTX.Typ = ClsTransaction.GetScriptType(T_PrevTX.LockingScript)
+            T_PrevTX.Typ = ClsBitcoinTransaction.GetScriptType(T_PrevTX.LockingScript)
 
             T_PrevTX.AmountNQT = ClsSignumAPI.Dbl2Planck(Converter.GetFirstDouble("amount"))
             T_PrevTX.Confirmations = Converter.GetFirstInteger("confirmations")
@@ -616,7 +616,7 @@ Public Class ClsBitcoinNET
     End Function
 
     Public Shared Function GetXFromScript(ByVal Script As String, Optional ByVal OP_Code As ClsScriptEntry.E_OP_Code = ClsScriptEntry.E_OP_Code.OP_HASH160) As String
-        Dim T_ScriptList As List(Of ClsScriptEntry) = ClsTransaction.ConvertLockingScriptStrToList(Script)
+        Dim T_ScriptList As List(Of ClsScriptEntry) = ClsBitcoinTransaction.ConvertLockingScriptStrToList(Script)
         Return GetXFromScript(T_ScriptList, OP_Code)
     End Function
 

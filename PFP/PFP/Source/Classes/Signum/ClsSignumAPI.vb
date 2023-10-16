@@ -31,11 +31,11 @@ Public Class ClsSignumAPI
 
 #End Region
 
-    Public Const _ReferenceTX As ULong = 14302362561079850525UL
-    Public Const _ReferenceTXFullHash As String = "1db602def8327cc6650b90d857c079107d4fc542ad7ad60161e83b15929c441a"
-    Public Const _DeployFeeNQT As ULong = 240000000UL
-    Public Const _GasFeeNQT As ULong = 50000000UL
-    Public Const _AddressPreFix As String = "TS-"
+    'Public Const _ReferenceTX As ULong = 14302362561079850525UL
+    'Public Const _ReferenceTXFullHash As String = "1db602def8327cc6650b90d857c079107d4fc542ad7ad60161e83b15929c441a"
+    'Public Const _DeployFeeNQT As ULong = 240000000UL
+    'Public Const _GasFeeNQT As ULong = 50000000UL
+    'Public Const _AddressPreFix As String = "TS-"
     Public Const _DefaultNode As String = "https://testnet.signum.zone/api"
     Public Const _Nodes As String = _DefaultNode '+ ";" + "http://tordek.ddns.net:6876/api" + ";" + "http://lmsi.club:6876/api"
 
@@ -46,23 +46,23 @@ Public Class ClsSignumAPI
     'Public ReadOnly Property ReferenceInjectChainSwapHash As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(2770910189976301362L), 0)
     'Public ReadOnly Property ReferenceFinishOrderWithChainSwapKey As ULong = BitConverter.ToUInt64(BitConverter.GetBytes(-3992805468895771487L), 0)
 
-    ReadOnly Property C_ReferenceMachineCode As String
-    ReadOnly Property C_ReferenceMachineCodeHash As String
-    ReadOnly Property C_ReferenceMachineCodeHashID As ULong
+    'ReadOnly Property C_ReferenceMachineCode As String
+    'ReadOnly Property C_ReferenceMachineCodeHash As String
+    'ReadOnly Property C_ReferenceMachineCodeHashID As ULong
 
-    Private ReadOnly Property C_CreationMachineData As String = "0000000000000000000000000000000000000000000000000100000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001f00000000000000"
-    Private ReadOnly Property C_ReferenceMachineData As String = C_CreationMachineData + "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    'Private ReadOnly Property C_CreationMachineData As String = "0000000000000000000000000000000000000000000000000100000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001f00000000000000"
+    'Private ReadOnly Property C_ReferenceMachineData As String = C_CreationMachineData + "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 
     Property C_Node As String = ""
 
-    Property C_AccountID As ULong
+    'Property C_AccountID As ULong
     Property C_Address As String
 
     Property C_UTXList As List(Of List(Of String)) = New List(Of List(Of String))
 
     Public Property DEXSmartContractList As List(Of String) = New List(Of String)
 
-    Sub New(Optional ByVal Node As String = "", Optional ByVal Account As ULong = 0UL, Optional ByVal ReferenceTX As ULong = _ReferenceTX)
+    Sub New(ByVal Node As String) ', ByVal ReferenceTX As ULong)
 
         If Not Node.Trim = "" Then
             C_Node = Node
@@ -70,18 +70,23 @@ Public Class ClsSignumAPI
             C_Node = GetINISetting(E_Setting.DefaultNode, _DefaultNode)
         End If
 
-        If Not Account = 0UL Then
-            C_AccountID = Account
-        End If
+        'If Not Account = 0UL Then
+        '    C_AccountID = Account
+        'End If
 
-        Dim ReferenceTXDetails As List(Of String) = GetTransaction(ReferenceTX)
+        'If ReferenceTX = 0UL Then
+        '    ReferenceTX = _ReferenceTX
+        'End If
 
-        Dim ReferenceSmartContractDetails = GetSmartContractDetails(ReferenceTX)
-        C_ReferenceMachineCode = GetStringBetweenFromList(ReferenceSmartContractDetails, "<machineCode>", "</machineCode>")
-        C_ReferenceMachineCodeHashID = GetULongBetweenFromList(ReferenceSmartContractDetails, "<machineCodeHashId>", "</machineCodeHashId>")
-        C_ReferenceMachineData = GetStringBetweenFromList(ReferenceSmartContractDetails, "<creationMachineData>", "</creationMachineData>")
+        'Dim ReferenceTXDetails As List(Of String) = GetTransaction(ReferenceTX)
+
+        'Dim ReferenceSmartContractDetails As List(Of String) = GetSmartContractDetails(ReferenceTX)
+        'C_ReferenceMachineCode = GetStringBetweenFromList(ReferenceSmartContractDetails, "<machineCode>", "</machineCode>")
+        'C_ReferenceMachineCodeHashID = GetULongBetweenFromList(ReferenceSmartContractDetails, "<machineCodeHashId>", "</machineCodeHashId>")
+        'C_ReferenceMachineData = GetStringBetweenFromList(ReferenceSmartContractDetails, "<creationMachineData>", "</creationMachineData>")
 
     End Sub
+
 
 
 #Region "Blockchain Communication"
@@ -240,127 +245,127 @@ Public Class ClsSignumAPI
         Dim Confirmations As ULong
     End Structure
 
-    Public Function IsValidDEXContract(ByVal ContractID As ULong, ByVal MachineData As String) As Boolean
+    'Public Function IsValidDEXContract(ByVal ContractID As ULong, ByVal MachineData As String) As Boolean
 
-        If C_ReferenceMachineData = MachineData Or MachineData.Contains(C_ReferenceMachineData) Then
-            Return True
-        End If
+    '    If C_ReferenceMachineData = MachineData Or MachineData.Contains(C_ReferenceMachineData) Then
+    '        Return True
+    '    End If
 
-        Dim T_ContractTransactionsPieceList As List(Of List(Of String)) = GetAccountTransactions(ContractID)
-        Dim T_ContractTransactionsList As List(Of List(Of String)) = New List(Of List(Of String))
-        T_ContractTransactionsList.AddRange(T_ContractTransactionsPieceList.ToArray)
+    '    Dim T_ContractTransactionsPieceList As List(Of List(Of String)) = GetAccountTransactions(ContractID)
+    '    Dim T_ContractTransactionsList As List(Of List(Of String)) = New List(Of List(Of String))
+    '    T_ContractTransactionsList.AddRange(T_ContractTransactionsPieceList.ToArray)
 
-        Dim W500 As Integer = T_ContractTransactionsPieceList.Count
-        While W500 >= 500
+    '    Dim W500 As Integer = T_ContractTransactionsPieceList.Count
+    '    While W500 >= 500
 
-            T_ContractTransactionsPieceList = GetAccountTransactions(ContractID, 0, Convert.ToUInt64(W500))
+    '        T_ContractTransactionsPieceList = GetAccountTransactions(ContractID, 0, Convert.ToUInt64(W500))
 
-            Dim T_W500 As Integer = T_ContractTransactionsPieceList.Count
+    '        Dim T_W500 As Integer = T_ContractTransactionsPieceList.Count
 
-            If T_W500 >= 500 Then
-                W500 += 500
-            Else
-                W500 = 0
-            End If
+    '        If T_W500 >= 500 Then
+    '            W500 += 500
+    '        Else
+    '            W500 = 0
+    '        End If
 
-            T_ContractTransactionsList.AddRange(T_ContractTransactionsPieceList.ToArray)
+    '        T_ContractTransactionsList.AddRange(T_ContractTransactionsPieceList.ToArray)
 
-        End While
+    '    End While
 
 
-        Dim T_TXList As List(Of S_TX) = New List(Of S_TX)
+    '    Dim T_TXList As List(Of S_TX) = New List(Of S_TX)
 
-        For Each TX As List(Of String) In T_ContractTransactionsList
-            Dim T_TX As S_TX = New S_TX
+    '    For Each TX As List(Of String) In T_ContractTransactionsList
+    '        Dim T_TX As S_TX = New S_TX
 
-            T_TX.Transaction = GetULongBetweenFromList(TX, "<transaction>", "</transaction>")
-            T_TX.Type = GetIntegerBetweenFromList(TX, "<type>", "</type>")
-            T_TX.Timestamp = GetULongBetweenFromList(TX, "<timestamp>", "</timestamp>")
+    '        T_TX.Transaction = GetULongBetweenFromList(TX, "<transaction>", "</transaction>")
+    '        T_TX.Type = GetIntegerBetweenFromList(TX, "<type>", "</type>")
+    '        T_TX.Timestamp = GetULongBetweenFromList(TX, "<timestamp>", "</timestamp>")
 
-            T_TX.DateTimestamp = ClsSignumAPI.UnixToTime(T_TX.Timestamp.ToString)
+    '        T_TX.DateTimestamp = ClsSignumAPI.UnixToTime(T_TX.Timestamp.ToString)
 
-            T_TX.Sender = GetULongBetweenFromList(TX, "<sender>", "</sender>")
-            T_TX.SenderRS = GetStringBetweenFromList(TX, "<senderRS>", "</senderRS>")
+    '        T_TX.Sender = GetULongBetweenFromList(TX, "<sender>", "</sender>")
+    '        T_TX.SenderRS = GetStringBetweenFromList(TX, "<senderRS>", "</senderRS>")
 
-            T_TX.AmountNQT = GetULongBetweenFromList(TX, "<amountNQT>", "</amountNQT>")
-            T_TX.FeeNQT = GetULongBetweenFromList(TX, "<feeNQT>", "</feeNQT>")
-            T_TX.Attachment = GetStringBetweenFromList(TX, "<attachment>", "</attachment>")
+    '        T_TX.AmountNQT = GetULongBetweenFromList(TX, "<amountNQT>", "</amountNQT>")
+    '        T_TX.FeeNQT = GetULongBetweenFromList(TX, "<feeNQT>", "</feeNQT>")
+    '        T_TX.Attachment = GetStringBetweenFromList(TX, "<attachment>", "</attachment>")
 
-            T_TX.Recipient = GetULongBetweenFromList(TX, "<recipient>", "</recipient>")
-            T_TX.RecipientRS = GetStringBetweenFromList(TX, "<recipientRS>", "</recipientRS>")
+    '        T_TX.Recipient = GetULongBetweenFromList(TX, "<recipient>", "</recipient>")
+    '        T_TX.RecipientRS = GetStringBetweenFromList(TX, "<recipientRS>", "</recipientRS>")
 
-            T_TX.Confirmations = GetULongBetweenFromList(TX, "<confirmations>", "</confirmations>")
+    '        T_TX.Confirmations = GetULongBetweenFromList(TX, "<confirmations>", "</confirmations>")
 
-            T_TXList.Add(T_TX)
+    '        T_TXList.Add(T_TX)
 
-        Next
+    '    Next
 
-        If T_TXList.Count > 0 Then
+    '    If T_TXList.Count > 0 Then
 
-            T_TXList = T_TXList.OrderBy(Function(T_TX As S_TX) T_TX.DateTimestamp).ToList
+    '        T_TXList = T_TXList.OrderBy(Function(T_TX As S_TX) T_TX.DateTimestamp).ToList
 
-            Dim T_LastTX As S_TX = T_TXList(T_TXList.Count - 1)
+    '        Dim T_LastTX As S_TX = T_TXList(T_TXList.Count - 1)
 
-            'Dim T_ContractOrderHistoryList As List(Of S_Order) = New List(Of S_Order)
+    '        'Dim T_ContractOrderHistoryList As List(Of S_Order) = New List(Of S_Order)
 
-            T_TXList = T_TXList.Where(Function(c As S_TX) c.Sender = ContractID).ToList()
+    '        T_TXList = T_TXList.Where(Function(c As S_TX) c.Sender = ContractID).ToList()
 
-            Dim FirstTX As S_TX = T_TXList.FirstOrDefault(Function(c As S_TX) c.Sender = ContractID)
+    '        Dim FirstTX As S_TX = T_TXList.FirstOrDefault(Function(c As S_TX) c.Sender = ContractID)
 
-            For Each ContractTX As S_TX In T_TXList
+    '        For Each ContractTX As S_TX In T_TXList
 
-                Dim ReferenceTXIDs As String = GetStringBetween(ContractTX.Attachment, "<message>", "</message>")
-                If Not ReferenceTXIDs.Trim = "" Then
-                    Dim ReferenceTXIDList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceTXIDs)
-                    If Not ReferenceTXIDList(0) = 0UL And ReferenceTXIDList(1) = 0UL And ReferenceTXIDList(2) = 0UL And ReferenceTXIDList(3) = 0UL Then
-                        If T_TXList.Where(Function(s As S_TX) s.Transaction = ReferenceTXIDList(0)).Any() Then
-                            Return True
-                        End If
-                    End If
-                End If
+    '            Dim ReferenceTXIDs As String = GetStringBetween(ContractTX.Attachment, "<message>", "</message>")
+    '            If Not ReferenceTXIDs.Trim = "" Then
+    '                Dim ReferenceTXIDList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceTXIDs)
+    '                If Not ReferenceTXIDList(0) = 0UL And ReferenceTXIDList(1) = 0UL And ReferenceTXIDList(2) = 0UL And ReferenceTXIDList(3) = 0UL Then
+    '                    If T_TXList.Where(Function(s As S_TX) s.Transaction = ReferenceTXIDList(0)).Any() Then
+    '                        Return True
+    '                    End If
+    '                End If
+    '            End If
 
-            Next
+    '        Next
 
-            'For i As Integer = 0 To T_TXList.Count - 1
+    '        'For i As Integer = 0 To T_TXList.Count - 1
 
-            '    Dim T_TX As S_TX = T_TXList(i)
+    '        '    Dim T_TX As S_TX = T_TXList(i)
 
-            '    If T_TX.Sender = ContractID Then
+    '        '    If T_TX.Sender = ContractID Then
 
-            '        Dim ReferenceTXIDs As String = GetStringBetween(T_TX.Attachment, "<message>", "</message>")
-            '        If Not ReferenceTXIDs.Trim = "" Then
+    '        '        Dim ReferenceTXIDs As String = GetStringBetween(T_TX.Attachment, "<message>", "</message>")
+    '        '        If Not ReferenceTXIDs.Trim = "" Then
 
-            '            Dim ReferenceTXIDList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceTXIDs)
+    '        '            Dim ReferenceTXIDList As List(Of ULong) = ClsSignumAPI.DataStr2ULngList(ReferenceTXIDs)
 
-            '            If Not ReferenceTXIDList(0) = 0UL And ReferenceTXIDList(1) = 0UL And ReferenceTXIDList(2) = 0UL And ReferenceTXIDList(3) = 0UL Then
+    '        '            If Not ReferenceTXIDList(0) = 0UL And ReferenceTXIDList(1) = 0UL And ReferenceTXIDList(2) = 0UL And ReferenceTXIDList(3) = 0UL Then
 
-            '                If T_TXList.Where(Function(s As S_TX) s.Transaction = ReferenceTXIDList(0)).Any() Then
+    '        '                If T_TXList.Where(Function(s As S_TX) s.Transaction = ReferenceTXIDList(0)).Any() Then
 
-            '                End If
+    '        '                End If
 
-            '                For Each R_TX As S_TX In T_TXList
+    '        '                For Each R_TX As S_TX In T_TXList
 
-            '                    If R_TX.Transaction = ReferenceTXIDList(0) Then
-            '                        Return True
-            '                    End If
+    '        '                    If R_TX.Transaction = ReferenceTXIDList(0) Then
+    '        '                        Return True
+    '        '                    End If
 
-            '                Next
+    '        '                Next
 
-            '            End If
+    '        '            End If
 
-            '        End If
+    '        '        End If
 
-            '        Exit For
+    '        '        Exit For
 
-            '    End If
+    '        '    End If
 
-            'Next
+    '        'Next
 
-        End If
+    '    End If
 
-        Return False
+    '    Return False
 
-    End Function
+    'End Function
 
     'Public Function GetAccountFromPassPhrase() As List(Of String)
 
@@ -448,7 +453,7 @@ Public Class ClsSignumAPI
         Try
 
             Dim AccountRS As String = ClsReedSolomon.Encode(AccountID)
-            Dim x As List(Of String) = New List(Of String)({"<account>" + AccountID.ToString + "</account>", "<accountRS>" + ClsSignumAPI._AddressPreFix + AccountRS + "</accountRS>"})
+            Dim x As List(Of String) = New List(Of String)({"<account>" + AccountID.ToString + "</account>", "<accountRS>" + GlobalSignumPrefix + AccountRS + "</accountRS>"})
             Return x
 
         Catch ex As Exception
@@ -456,6 +461,7 @@ Public Class ClsSignumAPI
         End Try
 
     End Function
+
     ''' <summary>
     ''' Converts the given Address to AccountID
     ''' </summary>
@@ -474,7 +480,7 @@ Public Class ClsSignumAPI
                 Return x
             Else
                 Dim AccountRS As String = ClsReedSolomon.Encode(ULong.Parse(Address))
-                Dim x As List(Of String) = New List(Of String)({"<account>" + Address + "</account>", "<accountRS>" + ClsSignumAPI._AddressPreFix + AccountRS + "</accountRS>"})
+                Dim x As List(Of String) = New List(Of String)({"<account>" + Address + "</account>", "<accountRS>" + GlobalSignumPrefix + AccountRS + "</accountRS>"})
                 Return x
             End If
 
@@ -525,7 +531,7 @@ Public Class ClsSignumAPI
 
         Dim Address As String = ClsReedSolomon.Encode(AccountID)
 
-        Dim CoinBal As List(Of String) = New List(Of String)({"<coin>SIGNA</coin>", "<account>" + AccountID.ToString + "</account>", "<address>" + ClsSignumAPI._AddressPreFix + Address + "</address>", "<balance>0</balance>", "<available>0</available>", "<pending>0</pending>"})
+        Dim CoinBal As List(Of String) = New List(Of String)({"<coin>SIGNA</coin>", "<account>" + AccountID.ToString + "</account>", "<address>" + GlobalSignumPrefix + Address + "</address>", "<balance>0</balance>", "<available>0</available>", "<pending>0</pending>"})
 
         Dim Response As String = SignumRequest("requestType=getAccount&account=" + AccountID.ToString)
 
@@ -953,11 +959,11 @@ Public Class ClsSignumAPI
 
     End Function
 
-    Public Function GetCurrentBlock() As Integer
+    Public Function GetCurrentBlock() As ULong
 
         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
 
-        Dim BlockHeightInt As Integer = 0
+        Dim BlockHeightInt As ULong = 0UL
 
         Dim Response As String = SignumRequest("requestType=getMiningInfo")
 
@@ -965,7 +971,7 @@ Public Class ClsSignumAPI
             If GetINISetting(E_Setting.InfoOut, False) Then
                 Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): -> " + Response)
             End If
-            Return 0
+            Return 0UL
         End If
 
         Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
@@ -980,19 +986,19 @@ Public Class ClsSignumAPI
             If GetINISetting(E_Setting.InfoOut, False) Then
                 Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): " + Response)
             End If
-            Return 0
+            Return 0UL
         End If
 
         'Dim BlockHeightStr As Object = Converter.FirstValue("height") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "height")
 
         Try
-            BlockHeightInt = Convert.ToInt32(Converter.FirstValue("height"))
+            BlockHeightInt = Convert.ToUInt64(Converter.FirstValue("height"))
         Catch ex As Exception
             If GetINISetting(E_Setting.InfoOut, False) Then
                 Out.ErrorLog2File(Application.ProductName + "-error in GetCurrentBlock(): -> " + ex.Message)
             End If
 
-            Return 0
+            Return 0UL
         End Try
 
         Return BlockHeightInt
@@ -1032,6 +1038,10 @@ Public Class ClsSignumAPI
         End If
 
         Dim RecipientAccountID As String = Converter.Search("recipient", ClsJSONAndXMLConverter.E_ParseType.XML)
+        If RecipientAccountID.Contains("<recipient>") Then
+            RecipientAccountID = GetStringBetween(RecipientAccountID, "<recipient>", "</recipient>")
+        End If
+
         Dim RecipientPublicKey As String = GetAccountPublicKeyFromAccountID_RS(RecipientAccountID)
 
         If IsErrorOrWarning(RecipientPublicKey, "", False, False) Then
@@ -1048,7 +1058,8 @@ Public Class ClsSignumAPI
         TXDetailList.Add(Converter.Search("feeNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("balanceNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("transaction", ClsJSONAndXMLConverter.E_ParseType.XML))
-        TXDetailList.Add(Converter.Search("attachment", ClsJSONAndXMLConverter.E_ParseType.XML))
+        Dim T_Attachment As String = Converter.Search("attachment", ClsJSONAndXMLConverter.E_ParseType.XML)
+        TXDetailList.Add(If(T_Attachment.Contains("attachment"), T_Attachment, "<attachment>" + T_Attachment + "</attachment>"))
         TXDetailList.Add(Converter.Search("sender", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("senderRS", ClsJSONAndXMLConverter.E_ParseType.XML))
         TXDetailList.Add(Converter.Search("senderPublicKey", ClsJSONAndXMLConverter.E_ParseType.XML))
@@ -1460,11 +1471,11 @@ Public Class ClsSignumAPI
 
     End Function
 
-    Public Function GetSmartContractIds() As List(Of String)
+    Public Function GetSmartContractIds(ByVal ReferenceMachineCodeHashID As ULong) As List(Of String)
 
         Dim Out As ClsOut = New ClsOut(Application.StartupPath)
 
-        Dim Response As String = SignumRequest("requestType=getATIds&machineCodeHashId=" + C_ReferenceMachineCodeHashID.ToString())
+        Dim Response As String = SignumRequest("requestType=getATIds&machineCodeHashId=" + ReferenceMachineCodeHashID.ToString())
 
         If Response.Contains(Application.ProductName + "-error") Then
             'PFPForm.StatusLabel.Text = Application.ProductName + "-error in GetSmartContractIds(): -> " + Response
@@ -1593,28 +1604,28 @@ Public Class ClsSignumAPI
 
 
         SmartContractDetailList.Add(Converter.Search("machineCode", ClsJSONAndXMLConverter.E_ParseType.XML))
-        If Not C_ReferenceMachineCode Is Nothing Then
-            If C_ReferenceMachineCode.Trim() = GetStringBetween(Converter.Search("machineCode", ClsJSONAndXMLConverter.E_ParseType.XML), "<machineCode>", "</machineCode>") Then
-                SmartContractDetailList.Add("<referenceMachineCode>True</referenceMachineCode>")
-            Else
-                SmartContractDetailList.Add("<referenceMachineCode>False</referenceMachineCode>")
-            End If
-        Else
-            SmartContractDetailList.Add("<referenceMachineCode>False</referenceMachineCode>")
-        End If
+        'If Not C_ReferenceMachineCode Is Nothing Then
+        '    If C_ReferenceMachineCode.Trim() = GetStringBetween(Converter.Search("machineCode", ClsJSONAndXMLConverter.E_ParseType.XML), "<machineCode>", "</machineCode>") Then
+        '        SmartContractDetailList.Add("<referenceMachineCode>True</referenceMachineCode>")
+        '    Else
+        '        SmartContractDetailList.Add("<referenceMachineCode>False</referenceMachineCode>")
+        '    End If
+        'Else
+        '    SmartContractDetailList.Add("<referenceMachineCode>False</referenceMachineCode>")
+        'End If
 
         SmartContractDetailList.Add(Converter.Search("machineCodeHashId", ClsJSONAndXMLConverter.E_ParseType.XML))
         SmartContractDetailList.Add(Converter.Search("machineData", ClsJSONAndXMLConverter.E_ParseType.XML))
         SmartContractDetailList.Add(Converter.Search("creationMachineData", ClsJSONAndXMLConverter.E_ParseType.XML))
 
-        If Not C_ReferenceMachineData Is Nothing Then
-            If C_ReferenceMachineData.Trim = GetStringBetween(Converter.Search("creationMachineData", ClsJSONAndXMLConverter.E_ParseType.XML), "<creationMachineData>", "</creationMachineData>") Then
-                SmartContractDetailList.Add("<referenceMachineData>True</referenceMachineData>")
-            Else
-                SmartContractDetailList.Add("<referenceMachineData>False</referenceMachineData>")
-            End If
+        'If Not C_ReferenceMachineData Is Nothing Then
+        '    If C_ReferenceMachineData.Trim = GetStringBetween(Converter.Search("creationMachineData", ClsJSONAndXMLConverter.E_ParseType.XML), "<creationMachineData>", "</creationMachineData>") Then
+        '        SmartContractDetailList.Add("<referenceMachineData>True</referenceMachineData>")
+        '    Else
+        '        SmartContractDetailList.Add("<referenceMachineData>False</referenceMachineData>")
+        '    End If
 
-        End If
+        'End If
 
         SmartContractDetailList.Add(Converter.Search("balanceNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
         SmartContractDetailList.Add(Converter.Search("frozen", ClsJSONAndXMLConverter.E_ParseType.XML))
@@ -2029,7 +2040,7 @@ Public Class ClsSignumAPI
 
 #Region "Send Advance"
 
-    Public Function CreateSmartContract(ByVal SenderPublicKey As String) As String
+    Public Function CreateSmartContract(ByVal SenderPublicKey As String, ByVal CreationMachineData As String) As String
 
         Dim out As ClsOut = New ClsOut(Application.StartupPath)
 
@@ -2040,13 +2051,13 @@ Public Class ClsSignumAPI
         postDataRL += "&description=v12OptimizedContract"
         'postDataRL += "&creationBytes=" + C_ReferenceCreationBytes
         'postDataRL += "&code=" 
-        postDataRL += "&data=" + C_CreationMachineData
+        postDataRL += "&data=" + CreationMachineData
         'postDataRL += "&dpages=2"
         'postDataRL += "&cspages=1"
         'postDataRL += "&uspages=1"
-        postDataRL += "&minActivationAmountNQT=" + _GasFeeNQT.ToString
-        postDataRL += "&referencedTransactionFullHash=" + _ReferenceTXFullHash
-        postDataRL += "&feeNQT=" + _DeployFeeNQT.ToString
+        postDataRL += "&minActivationAmountNQT=" + ClsDEXContract._GasFeeNQT.ToString
+        postDataRL += "&referencedTransactionFullHash=" + ClsDEXContract._ReferenceTXFullHash
+        postDataRL += "&feeNQT=" + ClsDEXContract._DeployFeeNQT.ToString
         'postDataRL += "&secretPhrase=" + C_PassPhrase
         postDataRL += "&publicKey=" + PublicKey
         postDataRL += "&deadline=1440"

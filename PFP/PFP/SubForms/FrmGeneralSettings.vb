@@ -71,7 +71,7 @@ Public Class FrmGeneralSettings
 
         ChBxAutoSendPaymentInfo.Checked = GetINISetting(E_Setting.AutoSendPaymentInfo, False)
         ChBxCheckXItemTX.Checked = GetINISetting(E_Setting.AutoCheckAndFinishSmartContract, False)
-
+        ChBxAllowKnownAccOverDEXNET.Checked = GetINISetting(E_Setting.AllowKnownAccountsAcceptOrdersOverDEXNET, False)
 
         ChBxTCPAPI.Checked = GetINISetting(E_Setting.TCPAPIEnable, False)
         TBTCPAPIPort.Text = GetINISetting(E_Setting.TCPAPIServerPort, 8130).ToString
@@ -205,6 +205,10 @@ Public Class FrmGeneralSettings
             Changes = True
         End If
 
+        If ChBxAllowKnownAccOverDEXNET.Checked <> GetINISetting(E_Setting.AllowKnownAccountsAcceptOrdersOverDEXNET, False) Then
+            Changes = True
+        End If
+
         'If RBUseMyOrdersSettings.Checked <> GetINISetting(E_Setting.UsePayPalSettings, False) Then
         '    Changes = True
         'End If
@@ -272,6 +276,7 @@ Public Class FrmGeneralSettings
 
                 SetINISetting(E_Setting.AutoSendPaymentInfo, ChBxAutoSendPaymentInfo.Checked)
                 SetINISetting(E_Setting.AutoCheckAndFinishSmartContract, ChBxCheckXItemTX.Checked)
+                SetINISetting(E_Setting.AllowKnownAccountsAcceptOrdersOverDEXNET, ChBxAllowKnownAccOverDEXNET.Checked)
 
                 SetINISetting(E_Setting.DEXNETServerPort, TBDEXNETPort.Text)
                 SetINISetting(E_Setting.TCPAPIServerPort, TBTCPAPIPort.Text)
@@ -312,6 +317,7 @@ Public Class FrmGeneralSettings
 
         SetINISetting(E_Setting.AutoSendPaymentInfo, ChBxAutoSendPaymentInfo.Checked)
         SetINISetting(E_Setting.AutoCheckAndFinishSmartContract, ChBxCheckXItemTX.Checked)
+        SetINISetting(E_Setting.AllowKnownAccountsAcceptOrdersOverDEXNET, ChBxAllowKnownAccOverDEXNET.Checked)
 
         SetINISetting(E_Setting.DEXNETServerPort, TBDEXNETPort.Text)
         SetINISetting(E_Setting.TCPAPIServerPort, TBTCPAPIPort.Text)

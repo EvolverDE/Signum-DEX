@@ -102,10 +102,10 @@ Public Class ClsReedSolomon
 
         Try
 
-            Dim PreFix As String = cypher_string.Substring(0, ClsSignumAPI._AddressPreFix.Length)
+            Dim PreFix As String = cypher_string.Substring(0, GlobalSignumPrefix.Length)
 
-            If PreFix = ClsSignumAPI._AddressPreFix Then
-                cypher_string = cypher_string.Substring(ClsSignumAPI._AddressPreFix.Length)
+            If PreFix = GlobalSignumPrefix Then
+                cypher_string = cypher_string.Substring(GlobalSignumPrefix.Length)
             End If
 
             cypher_string = cypher_string.Replace("-", "") 'lets remove the - in the address

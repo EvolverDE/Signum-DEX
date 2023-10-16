@@ -190,7 +190,7 @@ Public Class FrmManual
 
             Dim MasterKeys As List(Of String) = GetMasterKeys(TBManualPassPhrase.Text.Trim)
 
-            Dim T_Address As String = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0)))
+            Dim T_Address As String = GlobalSignumPrefix + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0)))
             Dim T_AddressExtended As String = T_Address + "-" + ClsBase36.EncodeHexToBase36(MasterKeys(0))
 
             TBManualAddress.Text = T_AddressExtended
@@ -228,7 +228,7 @@ Public Class FrmManual
         Else
 
             Dim MasterKeys As List(Of String) = GetMasterKeys(TBManualPassPhrase.Text.Trim)
-            Dim T_Address As String = ClsSignumAPI._AddressPreFix + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0)))
+            Dim T_Address As String = GlobalSignumPrefix + ClsReedSolomon.Encode(GetAccountID(MasterKeys(0)))
             Dim T_AddressExtended As String = T_Address + "-" + ClsBase36.EncodeHexToBase36(MasterKeys(0))
 
 
