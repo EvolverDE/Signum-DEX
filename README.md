@@ -14,6 +14,7 @@ Für die Interaktion mit BTC muss bitcoin core installiert sein und der Daemon m
 
 Für die bitcoin.conf wird folgender Inhalt festgelegt:
 
+[TESTNET]
 ```
 testnet=1
 datadir=C:\pfad\zu\bitcoin_testnet
@@ -25,6 +26,21 @@ rpcauth=bitcointest:64df7b3d85540109cc356d46180b7cfe$79455d660e5b9ec940912bf619c
 #rpcpass=C8_o5A4uu7RHd6Fs8yStABQLSnZ8WWO49tTqp9UD1Bo
 onlynet=ipv4
 rpcbind=0.0.0.0:18332
+rpcallowip=192.168.1.0/24
+```
+
+[MAINNET]
+```
+testnet=0
+datadir=C:\pfad\zu\bitcoin_mainnet
+txindex=1
+blockfilterindex=1
+
+[main]
+rpcauth=bitcoin:a96660a39639686cabe0bc8846e199e3$148bf41f57d597e12fa3a8622857b323b09b9588ce4944fa371e5fea0eecaee8
+#rpcpass=j5Sjnqcxb8KrKGKO7lHyIGHatVfUBJtefatcTWu49jU
+onlynet=ipv4
+rpcbind=0.0.0.0:8332
 rpcallowip=192.168.1.0/24
 ```
 
@@ -68,6 +84,7 @@ To interact with BTC, bitcoin core must be installed and the daemon must be star
 
 The following content is defined for the bitcoin.conf:
 
+[TESTNET]
 ```
 testnet=1
 datadir=C:\path\to\bitcoin_testnet
@@ -79,6 +96,21 @@ rpcauth=bitcointest:64df7b3d85540109cc356d46180b7cfe$79455d660e5b9ec940912bf619c
 #rpcpass=C8_o5A4uu7RHd6Fs8yStABQLSnZ8WWO49tTqp9UD1Bo
 onlynet=ipv4
 rpcbind=0.0.0.0:18332
+rpcallowip=192.168.1.0/24
+```
+
+[MAINNET]
+```
+testnet=0
+datadir=C:\path\to\bitcoin_mainnet
+txindex=1
+blockfilterindex=1
+
+[main]
+rpcauth=bitcoin:a96660a39639686cabe0bc8846e199e3$148bf41f57d597e12fa3a8622857b323b09b9588ce4944fa371e5fea0eecaee8
+#rpcpass=j5Sjnqcxb8KrKGKO7lHyIGHatVfUBJtefatcTWu49jU
+onlynet=ipv4
+rpcbind=0.0.0.0:8332
 rpcallowip=192.168.1.0/24
 ```
 

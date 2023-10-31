@@ -1,0 +1,494 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+SnipSwap
+</name>
+</assembly>
+<members>
+<member name="T:SnipSwap.My.Resources.Resources">
+<summary>
+  Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.ResourceManager">
+<summary>
+  Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.Culture">
+<summary>
+  Überschreibt die CurrentUICulture-Eigenschaft des aktuellen Threads für alle
+  Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources._3DEX">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.bitcoin_logo_512">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.bitcoin_logo_512_bg">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.DEX">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.DEX3D">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.DEX3D2">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.DEXChange">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Icon ähnlich wie (Symbol).
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.signum_back3">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.status_decrypted">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.status_encrypted">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.status_offline">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.status_online">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:SnipSwap.My.Resources.Resources.status_wait">
+<summary>
+  Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="M:SnipSwap.SnipSwapForm.GetThread">
+ <summary>
+ The Thread who coordinates (loadbalance) the API Request subthreads
+ </summary>
+</member>
+<member name="M:SnipSwap.SnipSwapForm.SubGetThread(System.Object)">
+ <summary>
+ The SubThread who process the request
+ </summary>
+ <param name="T_Input">The input to work with Input(0) = List-Index; Input(1) = APIRequest</param>
+</member>
+<member name="T:SnipSwap.ListViewItemExtremeSorter">
+ <summary>
+ Beispiel Standard:
+ ListView1.ListViewItemSorter = New ListViewItemExtremeSorter(SortOrder.Ascending, 0, 0, 1, 0, 3, 1)
+ </summary>
+</member>
+<member name="M:SnipSwap.ListViewItemExtremeSorter.#ctor(System.Windows.Forms.SortOrder,System.Collections.Generic.List{System.Object})">
+ <summary>
+ Sortiert die angegebene(n) Spalte(n) der ListView
+ </summary>
+ <param name="Sortfolge">Die SortierRehenfolge (Aufsteigend oder Absteigend)</param>
+ <param name="SortList">Liste mit Indexschlüssel als Integer und Alphanumerische Angaben als Integer (z.b. New List(Of Object) ({New Object() {0, 0}, New Object() {7, 0}, New Object() {8, 1}}))</param>
+ <remarks></remarks>
+</member>
+<member name="M:SnipSwap.ListViewItemExtremeSorter.#ctor(System.Windows.Forms.SortOrder,System.Windows.Forms.ListView@,System.Collections.Generic.List{System.Object})">
+ <summary>
+ Sortiert die angegebene(n) Spalte(n) der ListView
+ </summary>
+ <param name="Sortfolge">Die SortierRehenfolge (Aufsteigend oder Absteigend)</param>
+ <param name="LV">Die ListView, aus der die ColumnIDX bezogen werden können</param>
+ <param name="SortList">Liste mit Indexschlüssel als Integer und Alphanumerische Angaben als Integer (z.b. New List(Of Object)({New Object() {"Datum", 0}, New Object() {"Mitarbeiter", 0}, New Object() {"Reihenfolge", 1}}))</param>
+ <remarks></remarks>
+</member>
+<member name="M:SnipSwap.ListViewItemExtremeSorter.#ctor(System.Windows.Forms.SortOrder,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+ <summary>
+ Sortiert die angegebene(n) Spalte(n) der ListView
+ </summary>
+ <param name="Sortfolge">Die SortierRehenfolge (Aufsteigend oder Absteigend)</param>
+ <param name="Pri">Primärschlüssel: Index der 1. Spalte (muss vorhanden sein)</param>
+ <param name="AlphaNrPri">Optionaler Parameter für Alphanummerische sortierung für Pri</param>
+ <param name="Sek">Optionaler Sekundärschlüssel: Index der 2. Spalte (-1, falls nicht genutzt)</param>
+ <param name="AlphaNrSek">Optionaler Parameter für Alphanummerische sortierung für Sek</param>
+ <param name="Ter">Optionaler Tertiärschlüssel: Index der 3. Spalte (-1, falls nicht genutzt)</param>
+ <param name="AlphaNrTer">Optionaler Parameter für Alphanummerische sortierung für Ter</param>
+ <param name="Qua">Optionaler Quartärschlüssel: Index der 4. Spalte (-1, falls nicht genutzt)</param>
+ <param name="AlphaNrQua">Optionaler Parameter für Alphanummerische sortierung für Qua</param>
+ <param name="Qui">Optionaler Quintärschlüssel: Index der 5. Spalte (-1, falls nicht genutzt)</param>
+ <param name="AlphaNrQui">Optionaler Parameter für Alphanummerische sortierung für Qui</param>
+ <remarks></remarks>
+</member>
+<member name="M:SnipSwap.ListViewItemExtremeSorter.Compare(System.Object,System.Object)">
+ <summary>
+ Vergleich von Spalten (Primär-/Sekündär-/Tertiärspalte)
+ Benennungen von lateinischen Ordnungszahlen: 1=Primär, 2=Sekundär, 3=Tertiär, 4=Quartär, 5=Quintär, 6=Sextär, 7=Septimär, 8=Oktaviär, 9=Noniär, 10=Dezimär, 11=Un(o)dezimär, 12=Duodezimär, 13=Ter(Tres)dezimär
+ zur Unterstützung des Sorts im ListView
+ </summary>
+ <param name="Element1">Element1 als ListViewItem</param>
+ <param name="Element2">Element2 als ListViewItem</param>
+ <returns>-1, 0 oder 1 (gemäß Vergleich)</returns>
+ <remarks></remarks>
+</member>
+<member name="T:SnipSwap.ClsBitcoinNET">
+ <summary>
+ this class is for data preparation from BTC_API
+ </summary>
+</member>
+<member name="T:SnipSwap.ClsBitcoinAPI">
+ <summary>
+ this class is used for raw communication with the bitcoin-node
+ </summary>
+</member>
+<member name="M:SnipSwap.ClsBitcoinAPI.GetTXOut(System.String,System.Int32,System.Boolean)">
+ <summary>
+ Gets the unconfirmed transaction output
+ </summary>
+ <param name="TX">The Transaction to check</param>
+ <param name="VOut">The output index of the given Transaction</param>
+ <param name="UnconformedToo">The Boolean to check in Unconfirmed ones</param>
+ <returns>vout,confirmations,value and hex of the lockingscript</returns>
+</member>
+<member name="M:SnipSwap.ClsBitcoinAPI.ScanTXOUTSet(System.String,System.String)">
+ <summary>
+ This method needs to be Threaded
+ </summary>
+ <param name="Address"></param>
+ <param name="Command">start, status, abort</param>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ClsBitcoinAPI.ScanBlocks(System.String,System.String)">
+ <summary>
+ This method needs to be Threaded
+ </summary>
+ <param name="Address"></param>
+ <param name="Command">start, status, abort</param>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ClsBitcoinAPI.ImportDescriptors(System.String,System.String)">
+ <summary>
+ This Method needs to be Threaded
+ </summary>
+ <param name="Address"></param>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ClsOutput.#ctor(System.String,System.Double,System.Boolean)">
+ <summary>
+ Create a Standard Script
+ </summary>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="Amount">the amount in BTC</param>
+</member>
+<member name="M:SnipSwap.ClsOutput.#ctor(System.String,System.String,System.Double)">
+ <summary>
+ Create a ChainSwapHash Script
+ </summary>
+ <param name="ChainSwapHash">the chain swap hash to redeem the transaction output</param>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="Amount">the amount in BTC</param>
+</member>
+<member name="M:SnipSwap.ClsOutput.#ctor(System.String,System.Double,System.Int32)">
+ <summary>
+ Create a LockTime Script
+ </summary>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="Amount">the amount in BTC</param>
+ <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
+</member>
+<member name="M:SnipSwap.ClsOutput.#ctor(System.String,System.String,System.String,System.Double,System.Int32)">
+ <summary>
+ Create a ChainSwapHash script with LockTime for payback option when the time is up
+ </summary>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="ChainSwapHash">the chain swap hash to redeem the transaction output</param>
+ <param name="SenderAddress">the Address of the sender address</param>
+ <param name="Amount">the amount in BTC</param>
+ <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
+</member>
+<member name="M:SnipSwap.ClsBitcoinTransaction.CreateOutput(System.String,System.Double)">
+ <summary>
+ Create a Standard Output
+ </summary>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="Amount">the amount in BTC</param>
+</member>
+<member name="M:SnipSwap.ClsBitcoinTransaction.CreateOutput(System.String,System.String,System.Double)">
+ <summary>
+ Create a ChainSwapHash Output
+ </summary>
+ <param name="ChainSwapHash">the chain swap hash to redeem the transaction output</param>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="Amount">the amount in BTC</param>
+</member>
+<member name="M:SnipSwap.ClsBitcoinTransaction.CreateOutput(System.String,System.Double,System.Int32)">
+ <summary>
+ Create a LockTime Output
+ </summary>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="Amount">the amount in BTC</param>
+ <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
+</member>
+<member name="M:SnipSwap.ClsBitcoinTransaction.CreateOutput(System.String,System.String,System.String,System.Double,System.Int32)">
+ <summary>
+ Create a ChainSwapHash Output with LockTime for payback option when the time is up
+ </summary>
+ <param name="RecipientAddress">the Address of the recipient address</param>
+ <param name="ChainSwapHash">the chain swap hash to redeem the transaction output</param>
+ <param name="SenderAddress">the Address of the sender address</param>
+ <param name="Amount">the amount in BTC</param>
+ <param name="ScriptLockTime">the optional LockTime in Blocks as integer</param>
+</member>
+<member name="P:SnipSwap.ClsDEXContract.CurrentDisputeTimeout">
+ <summary>
+ Gets the TimeOut in Block
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ClsDEXContract.#ctor(SnipSwap.SnipSwapForm,System.String,System.UInt64,System.DateTime,System.Boolean)">
+ <summary>
+ Loads the entire DEXContract with its HistoryOrders
+ </summary>
+ <param name="Node">The API node to get the info</param>
+ <param name="ContractID">The Contract ID</param>
+ <param name="StartDateTime">The start date from which the history is loaded</param>
+</member>
+<member name="M:SnipSwap.ClsDEXContract.Refresh(System.Boolean)">
+ <summary>
+ Refreshing DEXContract
+ </summary>
+</member>
+<member name="M:SnipSwap.ClsDEXContract.CheckForUTX">
+ <summary>
+ Checks incoming unconfirmedTransaction for DEXContract 
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ClsDEXContract.CheckForTX">
+ <summary>
+ Checks incoming Transaction for DEXContract
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ClsDEXContract.GetHistoryTransactions(System.UInt64)">
+ <summary>
+ Loads HistoryTransactions
+ </summary>
+ <param name="SetStartTimeStamp"></param>
+</member>
+<member name="M:SnipSwap.ClsCurve25519.Clamp(System.Byte[]@)">
+ <summary>
+ Private key clamping
+ </summary>
+ <param name="AgreementKey">[in] 32 random bytes, [out] your private key for key agreement</param>
+</member>
+<member name="M:SnipSwap.ClsCurve25519.KeyGen(System.Byte[]@,System.Byte[]@,System.Byte[]@)">
+ <summary>
+ Key-Pair generation * WARNING: if s is not NULL, this function has data-dependent timing 
+ </summary>
+ <param name="PublicKey">[out] your public key</param>
+ <param name="SignKey">[out] your private key for signing</param>
+ <param name="AgreementKey">[in] 32 random bytes, [out] your private key for key agreement</param>
+</member>
+<member name="M:SnipSwap.ClsCurve25519.GetSharedSecret(System.Byte[]@,System.Byte[],System.Byte[])">
+ <summary>
+ Key agreement
+ </summary>
+ <param name="SharedSecret">[out] shared secret (needs hashing before use)</param>
+ <param name="AgreementKey">[in]  your private key for key agreement</param>
+ <param name="PublicKey">[in] peer's public key</param>
+</member>
+<member name="T:SnipSwap.ClsCurve25519.Long10">
+ <summary>
+ Using this class instead of long[10] to avoid bounds checks. 
+ </summary>
+</member>
+<member name="M:SnipSwap.ClsCurve25519.Copy32(System.Byte[]@,System.Byte[])">
+ <summary>
+ Copies 32 Bytes from Input to Output
+ </summary>
+ <param name="Output">[out] Copy of Input</param>
+ <param name="Input">[in] Input to Copy to Output</param>
+</member>
+<member name="M:SnipSwap.EC_KCDSA.Sign(System.Byte[],System.Byte[],System.Byte[])">
+ <summary>
+ Signature generation primitive, calculates (x-h)s mod q
+ </summary>
+ <param name="SignHash">signature hash (of message, signature pub key, and context data)</param>
+ <param name="SignPrivKey">signature private key</param>
+ <param name="PrivKey">private key for signing</param>
+ <returns>signature value</returns>
+</member>
+<member name="M:SnipSwap.EC_KCDSA.Verify(System.Byte[],System.Byte[],System.Byte[])">
+ <summary>
+ Signature verification primitive, calculates Y = vP + hG
+ </summary>
+ <param name="SignValue">signature value</param>
+ <param name="SignHash">signature hash</param>
+ <param name="PublicKey">public key</param>
+ <returns>signature public key</returns>
+</member>
+<member name="M:SnipSwap.ClsSignumNET.EncryptMessage(System.String,System.String,System.String)">
+ <summary>
+ Encrypts Message from Parameters 0=Data; 1=Nonce
+ </summary>
+ <param name="Plaintext"></param>
+ <param name="RecipientPublicKeyHex"></param>
+ <param name="SenderAgreementKeyHex"></param>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ClsSignumNET.EncryptData(System.Byte[],System.String,System.String)">
+ <summary>
+ Encrypt Data from Parameters 0=Data; 1=Nonce
+ </summary>
+ <param name="Data"></param>
+ <param name="RecipientPublicKeyHex"></param>
+ <param name="SenderAgreementKeyHex"></param>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ClsSignumAPI.RSConvert(System.UInt64)">
+ <summary>
+ Converts the given AccountID to Address (0= account;1= address)
+ </summary>
+ <param name="AccountID"></param>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ClsSignumAPI.RSConvert(System.String)">
+ <summary>
+ Converts the given Address to AccountID
+ </summary>
+ <param name="Address"></param>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ClsSignumAPI.GetBalance(System.String)">
+ <summary>
+ Gets the Balance from the given Address (HTML-Tags= coin, account, address, balance, available, pending)
+ </summary>
+ <param name="Address"></param>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ClsSignumAPI.GetBalance(System.UInt64)">
+ <summary>
+ Gets the Balance from the given AccountID (HTML-Tags= coin, account, address, balance, available, pending)
+ </summary>
+ <param name="AccountID"></param>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ModCrypto.GetMasterKeys(System.String)">
+ <summary>
+ Generates the Masterkeys from PassPhrase 0=PublicKey; 1=SignKey; 2=AgreementKey
+ </summary>
+ <returns>List of Masterkeys</returns>
+</member>
+<member name="M:SnipSwap.ModCrypto.Keygen(System.Byte[])">
+ <summary>
+ Generates the Masterkeys from KeyHash 0=PublicKey; 1=SignKey; 2=AgreementKey
+ </summary>
+ <param name="KeyHash">The 32 Byte hashed PassPhrase</param>
+ <returns>Array of Masterkeys</returns>
+</member>
+<member name="M:SnipSwap.ModCrypto.GenerateSignature(System.String,System.String)">
+ <summary>
+ Generates the Signature of the MessageHEX
+ </summary>
+ <param name="MessageHEX">Message as HEX String</param>
+ <param name="PrivateKey">The Private Key to Sign with</param>
+ <returns>Signature in HEX String</returns>
+</member>
+<member name="M:SnipSwap.ModCrypto.VerifySignature(System.String,System.String,System.String)">
+ <summary>
+ Verify the Signature of the UnsignedMessageHEX String
+ </summary>
+ <param name="Signature">The Signature as HEX String</param>
+ <param name="UnsignedMessageHex">The Unsigned Message as HEX String</param>
+ <param name="PublicKey">The Public Key as HEX String</param>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ModJSON.GetStringBetween(System.String,System.String,System.String,System.Boolean,System.Boolean)">
+ <summary>
+ Einen String aus einem Bereich auslesen
+ </summary>
+ <param name="input">Der String, aus dem ein Bereich ausgelesen werden soll</param>
+ <param name="startchar">die Startmarkierung ab der gelesen werden soll</param>
+ <param name="endchar">die Endmarkierung bis der gelesen werden soll</param>
+ <param name="LastIdxOf">Legt fest, ob bis zum letzten endchar gelesen werden soll</param>
+ <returns>Vorzugsweise ein Double , andernfalls z.b. ein Integer</returns>
+ <remarks></remarks>
+</member>
+<member name="M:SnipSwap.ClsGZip.Compress(System.Byte[])">
+ <summary>
+ Receives bytes, returns compressed bytes.
+ </summary>
+</member>
+<member name="M:SnipSwap.ClsGZip.Inflate(System.Byte[])">
+ <summary>
+ Receives bytes, returns decompressed bytes.
+ </summary>
+</member>
+<member name="M:SnipSwap.ModGlobals.GetPassPhrase">
+ <summary>
+ 0=PubKeyHEX; 1=SignKeyHEX; 2=AgreeKeyHEX; 3=PassPhrase; 
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ModGlobals.ConvertAddress(System.String)">
+ <summary>
+ converts accountID (and publicKey) from given address (0=AccountID; 1=PublicKey)
+ </summary>
+ <param name="Address">the address (e.g. (T)S-2222-2222-2222-22222(-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ))</param>
+ <returns>List(Of String)("12345678901234567890","a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2")</returns>
+</member>
+<member name="M:SnipSwap.ModGlobals.GetLVColNameFromSubItem(System.Windows.Forms.ListView@,System.String,System.Windows.Forms.ListViewItem,System.Int32)">
+ <summary>
+ Von einer ListView das subitem aus dem item lesen
+ </summary>
+ <param name="LV">Die ListView, aus der gelesen werden soll</param>
+ <param name="ColName">Der Spaltenname, aus dem gelesen werden soll</param>
+ <param name="LVItem">Die Zeile bzw. das item aus dem gelesen werden soll</param>
+ <param name="index">Alternativ das item an index stelle in der ListView</param>
+ <returns>Vorzugsweise einen String, andernfalls den index der Spalte</returns>
+ <remarks></remarks>
+</member>
+<member name="M:SnipSwap.ModFunctions.DateIntToCandle(System.Collections.Generic.List{System.Object})">
+ <summary>
+ 
+ </summary>
+ <param name="DateValueList">Liste mit Datums und dessen Werte</param>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ModFunctions.EMAx(System.Collections.Generic.List{System.Object},System.Int32)">
+ <summary>
+ 
+ </summary>
+ <param name="DateValueList">Liste mit Datums und dessen Werte</param>
+ <param name="EMA">die EMA zahl</param>
+ <returns></returns>
+</member>
+<member name="M:SnipSwap.ModFunctions.MACDx(System.Collections.Generic.List{System.Object},System.Collections.Generic.List{System.Object})">
+ <summary>
+ 
+ </summary>
+ <param name="EMA1">Liste des ersten EMA</param>
+ <param name="EMA2">Liste des zweiten EMA</param>
+ <returns></returns>
+</member>
+</members>
+</doc>
