@@ -1,11 +1,11 @@
 Scroll down for English version
 
-# Was ist PFP?
-PFP (Perls for Pigs) ist der codename für eine dezentrale Krypto-Tauschbörse mit PayPal-Integration.
-# Was kann PFP?
-PFP soll einen einfachen Einstieg in die Krypto-Welt ermöglichen.
+# Was ist SnipSwap?
+SnipSwap ist eine dezentrale Krypto-Tauschbörse mit PayPal-Integration.
+# Was kann SnipSwap?
+SnipSwap soll einen einfachen Einstieg in die Krypto-Welt ermöglichen.
 # Welche Währungen werden unterstützt?
-PFP basiert auf den Smart Contracts der Signum.network Blockchain und unterstützt neben dessen Coin "Signa" alle verfügbaren Fiat-Währungen die PayPal auch unterstützt. Diese sind unter folgendem Link zu finden: https://developer.paypal.com/docs/api/reference/currency-codes/
+SnipSwap basiert auf den Smart Contracts der Signum.network Blockchain und unterstützt neben dessen Coin "Signa" alle verfügbaren Fiat-Währungen die PayPal auch unterstützt. Diese sind unter folgendem Link zu finden: https://developer.paypal.com/docs/api/reference/currency-codes/
 
 Des weiteren wird nun mit der ersten zusätzlichen Blockchain-implementierung AtomicSwaps mit bitcoin (BTC) möglich.
 Für die Interaktion mit BTC muss bitcoin core installiert sein und der Daemon mit zusätzlichen parametern gestartet werden:
@@ -45,12 +45,12 @@ rpcallowip=192.168.1.0/24
 ```
 
 # Welche Vorraussetzungen braucht man?
-Da PFP auf dem .NET-Framework in der Version 4.8 basiert, ist ein Betriebssystem welches dieses unterstützt ebenfalls Vorraussetzung.
-# Wie installiert man PFP?
-In der Entwicklungsphase wird eine PFP.EXE-Datei unter https://github.com/EvolverDE/Signum/blob/master/PFP/PFP/bin/Debug/PFP.exe zur Verfügung gestellt, die an einen beliebigen Ort auf einer Festplatte verschoben und dort genutzt werden kann.
+Da SnipSwap auf dem .NET-Framework in der Version 4.8 basiert, ist ein Betriebssystem welches dieses unterstützt ebenfalls Vorraussetzung.
+# Wie installiert man SnipSwap?
+Die SnipSwap.EXE-Datei wird unter https://github.com/EvolverDE/Signum-DEX/releases/tag/v1 zur Verfügung gestellt, die an einen beliebigen Ort auf einer Festplatte verschoben und dort genutzt werden kann.
 # Welche Einstellungen müssen vorgenommen werden?
-Die Einstellungen werden mit Standard-Werten neben der PFP.EXE-Datei automatisch in einer Settings.ini-Datei erstellt. Neben dem Programm können auch dort direkt Änderungen vorgenommen werden.
-# Was bedeuten die anderen Dateien, die neben der PFP.EXE erstellt werden?
+Die Einstellungen werden mit Standard-Werten neben der SnipSwap.EXE-Datei automatisch in einer Settings.ini-Datei erstellt. Neben dem Programm können auch dort direkt Änderungen vorgenommen werden.
+# Was bedeuten die anderen Dateien, die neben der SnipSwap.EXE erstellt werden?
 Neben der Settings.ini werden noch weitere Dateien wie z.b. "cache.dat" sowie mögliche .LOG-Dateien erstellt. Die cache.dat enthält informationen aller auf der Signum.network blockchain befindlichen Smart Contracts.
 
 # Hier ist eine kleine Funktionsübersicht
@@ -70,12 +70,12 @@ DIE SOFTWARE WIRD SO GELIEFERT, WIE SIE IST. ES WIRD KEINE HAFTUNG FÜR SCHÄDEN
 
 ----------------------------------
 
-# What is PFP?
-PFP (Perls for Pigs) is the codename for a decentralized crypto exchange with PayPal integration.
-# What can PFP do?
-PFP is designed to provide an easy entry into the crypto world.
+# What is SnipSwap?
+SnipSwap is a decentralized crypto exchange with PayPal integration.
+# What can SnipSwap do?
+SnipSwap is designed to provide an easy entry into the crypto world.
 # What currencies are supported?
-PFP is based on the Signum.network blockchain smart contracts and supports all available fiat currencies that PayPal also supports, in addition to its coin "Signa". These can be found at the following link: https://developer.paypal.com/docs/api/reference/currency-codes/
+SnipSwap is based on the Signum.network blockchain smart contracts and supports all available fiat currencies that PayPal also supports, in addition to its coin "Signa". These can be found at the following link: https://developer.paypal.com/docs/api/reference/currency-codes/
 
 Furthermore, with the first additional blockchain implementation, AtomicSwaps with bitcoin (BTC) is now possible.
 To interact with BTC, bitcoin core must be installed and the daemon must be started with additional parameters:
@@ -115,12 +115,12 @@ rpcallowip=192.168.1.0/24
 ```
 
 # What are the prerequisites?
-Since PFP is based on the .NET framework in version 4.8, an operating system that supports it is also required.
-# How to install PFP?
-In the development phase, a PFP.EXE file is provided at https://github.com/EvolverDE/Signum/blob/master/PFP/PFP/bin/Debug/PFP.exe, which can be moved to any location on a hard disk and used there.
+Since SnipSwap is based on the .NET framework in version 4.8, an operating system that supports it is also required.
+# How to install SnipSwap?
+The SnipSwap.EXE file is provided at https://github.com/EvolverDE/Signum-DEX/releases/tag/v1, which can be moved to any location on a hard disk and used there.
 # What settings need to be made?
-The settings are automatically created with default values next to the PFP.EXE file in a Settings.ini file. Besides the program, changes can also be made there directly.
-# What do the other files mean, which are created beside the PFP.EXE?
+The settings are automatically created with default values next to the SnipSwap.EXE file in a Settings.ini file. Besides the program, changes can also be made there directly.
+# What do the other files mean, which are created beside the SnipSwap.EXE?
 Beside the Settings.ini other files like "cache.dat" and possible .LOG files are created. The cache.dat contains information of all smart contracts located on the Signum.network blockchain.
 
 # Here is a small function overview
