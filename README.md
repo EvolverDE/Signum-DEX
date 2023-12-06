@@ -1,4 +1,4 @@
-[![DE (German)](https://img.shields.io/badge/lang-es-yellow.svg)](/README.de.md)
+[![DE](https://img.shields.io/badge/lang-DE-yellow.svg)](/README.de.md)
 
 # What is SnipSwap?
 SnipSwap is a decentralized crypto exchange with PayPal integration.

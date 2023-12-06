@@ -1,5 +1,4 @@
-[![English](https://img.shields.io/badge/lang-es-yellow.svg)](/README.md)
-
+[![English](https://img.shields.io/badge/lang-EN-yellow.svg)](/README.md)
 
 # Was ist SnipSwap?
 SnipSwap ist eine dezentrale Krypto-Tauschbörse mit PayPal-Integration.
