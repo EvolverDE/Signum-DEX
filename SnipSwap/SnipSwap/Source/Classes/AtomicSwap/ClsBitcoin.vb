@@ -15,6 +15,8 @@
             "<ChainSwapKey>" + ChainSwapKey + "</ChainSwapKey>" +
             "<RedeemScript>" + ChainSwapHash + "</RedeemScript>;"
 
+        Dim Returner As Boolean = False
+
         If Not BitcoinTransactions.Contains(SetStr) Then
             If BitcoinTransactions.Trim = "" Then
                 BitcoinTransactions = SetStr
@@ -22,11 +24,11 @@
                 BitcoinTransactions += SetStr
             End If
 
-            SetINISetting(E_Setting.BitcoinTransactions, BitcoinTransactions.Trim)
+            Returner = SetINISetting(E_Setting.BitcoinTransactions, BitcoinTransactions.Trim)
 
         End If
 
-        Return True
+        Return Returner
 
     End Function
 
@@ -42,6 +44,8 @@
             "<ChainSwapKey></ChainSwapKey>" +
             "<RedeemScript>" + ChainSwapHash + "</RedeemScript>;"
 
+        Dim Returner As Boolean = False
+
         If Not BitcoinTransactions.Contains(SetStr) Then
             If BitcoinTransactions.Trim = "" Then
                 BitcoinTransactions = SetStr
@@ -49,11 +53,11 @@
                 BitcoinTransactions += SetStr
             End If
 
-            SetINISetting(E_Setting.BitcoinTransactions, BitcoinTransactions.Trim)
+            Returner = SetINISetting(E_Setting.BitcoinTransactions, BitcoinTransactions.Trim)
 
         End If
 
-        Return True
+        Return Returner
 
     End Function
 
@@ -69,6 +73,8 @@
             "<ChainSwapKey>" + ChainSwapKey + "</ChainSwapKey>" +
             "<RedeemScript>" + ChainSwapHash + "</RedeemScript>;"
 
+        Dim Returner As Boolean = False
+
         If Not BitcoinTransactions.Contains(SetStr) Then
             If BitcoinTransactions.Trim = "" Then
                 BitcoinTransactions = SetStr
@@ -76,11 +82,11 @@
                 BitcoinTransactions += SetStr
             End If
 
-            SetINISetting(E_Setting.BitcoinTransactions, BitcoinTransactions.Trim)
+            Returner = SetINISetting(E_Setting.BitcoinTransactions, BitcoinTransactions.Trim)
 
         End If
 
-        Return True
+        Return Returner
 
     End Function
 
@@ -779,6 +785,10 @@
 
     Public Overrides Function BroadcastTransaction(SignedTransactionBytes As String) As String
         Return SendRawBitcoinTransaction(SignedTransactionBytes)
+    End Function
+
+    Public Overrides Function ToString() As String
+        Return "bitcoin"
     End Function
 
 End Class

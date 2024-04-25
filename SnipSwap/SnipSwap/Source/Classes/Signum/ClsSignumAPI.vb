@@ -1,11 +1,9 @@
 ﻿Option Strict On
 Option Explicit On
 
-Imports System.ComponentModel.Design
 Imports System.IO
 Imports System.Net
 Imports System.Text
-Imports SnipSwap.ClsDEXContract
 
 Public Class ClsSignumAPI
 
@@ -222,6 +220,7 @@ Public Class ClsSignumAPI
             Return False
 
         End If
+
 
     End Function
 
@@ -1007,67 +1006,73 @@ Public Class ClsSignumAPI
 
     Public Function GetTransaction(ByVal TXID As ULong) As List(Of String)
 
-        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-
-        Dim Response As String = SignumRequest("requestType=getTransaction&transaction=" + TXID.ToString)
-
-        If Response.Contains(Application.ProductName + "-error") Then
-            'SnipSwapForm.StatusLabel.Text = Application.ProductName + "-error in GetTransaction(): -> " + Response
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Out.ErrorLog2File(Application.ProductName + "-error in GetTransaction(TXID=" + TXID.ToString + "): -> " + Response)
-            End If
-
-            Return New List(Of String)
-        End If
-
-        Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
-
-        'Dim JSON As ClsJSON = New ClsJSON
-        'Dim RespList As Object = JSON.JSONRecursive(Response)
-
-        Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
-
-        If Error0 <> -1 Then
-            'TX not OK
-            'SnipSwapForm.StatusLabel.Text = Application.ProductName + "-error in GetTransaction(): " + Response
-            If GetINISetting(E_Setting.InfoOut, False) Then
-                Out.ErrorLog2File(Application.ProductName + "-error in GetTransaction(TXID=" + TXID.ToString + "): " + Response)
-            End If
-
-            Return New List(Of String)
-        End If
-
-        Dim RecipientAccountID As String = Converter.Search("recipient", ClsJSONAndXMLConverter.E_ParseType.XML)
-        If RecipientAccountID.Contains("<recipient>") Then
-            RecipientAccountID = GetStringBetween(RecipientAccountID, "<recipient>", "</recipient>")
-        End If
-
-        Dim RecipientPublicKey As String = GetAccountPublicKeyFromAccountID_RS(RecipientAccountID)
-
-        If IsErrorOrWarning(RecipientPublicKey, "", False, False) Then
-            RecipientPublicKey = ""
-        End If
-
         Dim TXDetailList As List(Of String) = New List(Of String)
 
-        TXDetailList.Add(Converter.Search("timestamp", ClsJSONAndXMLConverter.E_ParseType.XML))
-        TXDetailList.Add(Converter.Search("recipient", ClsJSONAndXMLConverter.E_ParseType.XML))
-        TXDetailList.Add(Converter.Search("recipientRS", ClsJSONAndXMLConverter.E_ParseType.XML))
-        TXDetailList.Add("<recipientPublicKey>" + RecipientPublicKey + "</recipientPublicKey>")
-        TXDetailList.Add(Converter.Search("amountNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
-        TXDetailList.Add(Converter.Search("feeNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
-        TXDetailList.Add(Converter.Search("balanceNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
-        TXDetailList.Add(Converter.Search("transaction", ClsJSONAndXMLConverter.E_ParseType.XML))
-        Dim T_Attachment As String = Converter.Search("attachment", ClsJSONAndXMLConverter.E_ParseType.XML)
-        TXDetailList.Add(If(T_Attachment.Contains("attachment"), T_Attachment, "<attachment>" + T_Attachment + "</attachment>"))
-        TXDetailList.Add(Converter.Search("sender", ClsJSONAndXMLConverter.E_ParseType.XML))
-        TXDetailList.Add(Converter.Search("senderRS", ClsJSONAndXMLConverter.E_ParseType.XML))
-        TXDetailList.Add(Converter.Search("senderPublicKey", ClsJSONAndXMLConverter.E_ParseType.XML))
-        TXDetailList.Add(Converter.Search("height", ClsJSONAndXMLConverter.E_ParseType.XML))
-        TXDetailList.Add(Converter.Search("block", ClsJSONAndXMLConverter.E_ParseType.XML))
-        TXDetailList.Add(Converter.Search("confirmations", ClsJSONAndXMLConverter.E_ParseType.XML))
+        Try
 
-        TXDetailList = TXDetailList.Where(Function(l) l <> "").ToList()
+            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+
+            Dim Response As String = SignumRequest("requestType=getTransaction&transaction=" + TXID.ToString)
+
+            If Response.Contains(Application.ProductName + "-error") Then
+                'SnipSwapForm.StatusLabel.Text = Application.ProductName + "-error in GetTransaction(): -> " + Response
+                If GetINISetting(E_Setting.InfoOut, False) Then
+                    Out.ErrorLog2File(Application.ProductName + "-error in GetTransaction(TXID=" + TXID.ToString + "): -> " + Response)
+                End If
+
+                Return New List(Of String)
+            End If
+
+            Dim Converter As ClsJSONAndXMLConverter = New ClsJSONAndXMLConverter(Response, ClsJSONAndXMLConverter.E_ParseType.JSON)
+
+            'Dim JSON As ClsJSON = New ClsJSON
+            'Dim RespList As Object = JSON.JSONRecursive(Response)
+
+            Dim Error0 As Integer = Converter.GetFirstInteger("errorCode") ' JSON.RecursiveListSearch(DirectCast(RespList, List(Of Object)), "errorCode")
+
+            If Error0 <> -1 Then
+                'TX not OK
+                'SnipSwapForm.StatusLabel.Text = Application.ProductName + "-error in GetTransaction(): " + Response
+                If GetINISetting(E_Setting.InfoOut, False) Then
+                    Out.ErrorLog2File(Application.ProductName + "-error in GetTransaction(TXID=" + TXID.ToString + "): " + Response)
+                End If
+
+                Return New List(Of String)
+            End If
+
+            Dim RecipientAccountID As String = Converter.Search("recipient", ClsJSONAndXMLConverter.E_ParseType.XML)
+            If RecipientAccountID.Contains("<recipient>") Then
+                RecipientAccountID = GetStringBetween(RecipientAccountID, "<recipient>", "</recipient>")
+            End If
+
+            Dim RecipientPublicKey As String = GetAccountPublicKeyFromAccountID_RS(RecipientAccountID)
+
+            If IsErrorOrWarning(RecipientPublicKey, "", False, False) Then
+                RecipientPublicKey = ""
+            End If
+
+            TXDetailList.Add(Converter.Search("timestamp", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TXDetailList.Add(Converter.Search("recipient", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TXDetailList.Add(Converter.Search("recipientRS", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TXDetailList.Add("<recipientPublicKey>" + RecipientPublicKey + "</recipientPublicKey>")
+            TXDetailList.Add(Converter.Search("amountNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TXDetailList.Add(Converter.Search("feeNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TXDetailList.Add(Converter.Search("balanceNQT", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TXDetailList.Add(Converter.Search("transaction", ClsJSONAndXMLConverter.E_ParseType.XML))
+            Dim T_Attachment As String = Converter.Search("attachment", ClsJSONAndXMLConverter.E_ParseType.XML)
+            TXDetailList.Add(If(T_Attachment.Contains("attachment"), T_Attachment, "<attachment>" + T_Attachment + "</attachment>"))
+            TXDetailList.Add(Converter.Search("sender", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TXDetailList.Add(Converter.Search("senderRS", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TXDetailList.Add(Converter.Search("senderPublicKey", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TXDetailList.Add(Converter.Search("height", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TXDetailList.Add(Converter.Search("block", ClsJSONAndXMLConverter.E_ParseType.XML))
+            TXDetailList.Add(Converter.Search("confirmations", ClsJSONAndXMLConverter.E_ParseType.XML))
+
+            TXDetailList = TXDetailList.Where(Function(l) l <> "").ToList()
+
+        Catch ex As Exception
+            IsErrorOrWarning(ex.Message, Application.ProductName + "-error in GetTransaction(TXID=" + TXID.ToString + "): ", True, True)
+        End Try
 
 #Region "deprecaded"
         'For Each T_Entry In DirectCast(RespList, List(Of Object))
@@ -1795,7 +1800,7 @@ Public Class ClsSignumAPI
 
 
         If Not RecipientPublicKey.Trim = "" Then
-            postDataRL += " &recipientPublicKey=" + RecipientPublicKey
+            postDataRL += "&recipientPublicKey=" + RecipientPublicKey
         End If
 
         Dim Response As String = SignumRequest(postDataRL)
@@ -2034,7 +2039,6 @@ Public Class ClsSignumAPI
 
 
     End Function
-
 
 #End Region 'Send
 

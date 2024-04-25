@@ -1353,7 +1353,7 @@ Public Class FrmDevelope
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinGetWalletInfo.Click
+    Private Sub BtTestBitcoinGetWalletInfo_Click(sender As Object, e As EventArgs) Handles BtTestBitcoinGetWalletInfo.Click
 
         Dim XItem As ClsBitcoin = New ClsBitcoin
         Dim WalletInfo As String = XItem.GetWalletInfo()

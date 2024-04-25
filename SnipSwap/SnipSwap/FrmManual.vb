@@ -60,7 +60,7 @@ Public Class FrmManual
 
         Dim WelcomeStr As String = "Welcome to a decentrailze exchange for SIGNA." + vbCrLf
         WelcomeStr += "" + vbCrLf
-        WelcomeStr += "###This is just a testapplication! You use it at your own risk!###" + vbCrLf
+        WelcomeStr += "THE SOFTWARE IS DELIVERED AS IS. NO LIABILITY IS ASSUMED FOR DAMAGES OF ANY KIND." + vbCrLf
         WelcomeStr += "" + vbCrLf
         WelcomeStr += "Why Should use that instead of centralized ones?" + vbCrLf
         WelcomeStr += "Because you don’t have to verify your real identity to a company, just to that one you deal with." + vbCrLf

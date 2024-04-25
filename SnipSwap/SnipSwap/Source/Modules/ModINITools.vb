@@ -325,24 +325,23 @@ Module ModINITools
     '    DeletePrivateProfileSection(Section, 0, 0, INIFile)
     'End Sub
 
-    Private Sub INISetValueToFile(ByVal INI As String, ByVal Section As String, ByVal Key As String, ByVal Value As String)
-        Dim Result As String = ""
-        Result = INISettings.SetValueToSectionKey(Section, Key, Value).ToString
-    End Sub
+    Private Function INISetValueToFile(ByVal INI As String, ByVal Section As String, ByVal Key As String, ByVal Value As String) As Boolean
+        Return INISettings.SetValueToSectionKey(Section, Key, Value)
+    End Function
 
     Private Function INIGetValueFromFile(ByVal File As String, ByVal Section As String, ByVal Key As String, Optional ByVal Def As String = "") As String
         Return INISettings.GetValueFromSectionKey(Section, Key, Def)
     End Function
 
-    Public Sub INISetValue(ByVal File As String, ByVal Section As String, ByVal Key As String, ByVal Value As String)
+    Public Function INISetValue(ByVal File As String, ByVal Section As String, ByVal Key As String, ByVal Value As String) As Boolean
 
         Try
-            INISetValueToFile(File, Section, Key, Value)
+            Return INISetValueToFile(File, Section, Key, Value)
         Catch EXC As Exception
-
+            Return False
         End Try
 
-    End Sub
+    End Function
     Public Function INIGetValue(ByVal File As String, ByVal Section As String, ByVal Key As String, Optional ByVal Def As String = "") As String
 
         Dim T As String = ""
@@ -427,44 +426,49 @@ Module ModINITools
     End Function
 
     Function SetINISetting(ByVal Setting As E_Setting, ByVal Value As String, Optional ByVal File As String = "/" + "Settings.ini") As Boolean
+
         Dim Section As E_SettingSection = GetINISection(Setting)
 
         If GlobalInDevelope Then
-            INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.Trim)
+            Return INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.Trim)
         Else
             If Not Section = E_SettingSection.Develope Then
-                INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.Trim)
+                Return INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.Trim)
             End If
         End If
 
-        Return True
+        Return False
 
     End Function
     Function SetINISetting(ByVal Setting As E_Setting, ByVal Value As Integer, Optional ByVal File As String = "/" + "Settings.ini") As Boolean
+
         Dim Section As E_SettingSection = GetINISection(Setting)
 
         If GlobalInDevelope Then
-            INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.ToString.Trim)
+            Return INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.ToString.Trim)
         Else
             If Not Section = E_SettingSection.Develope Then
-                INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.ToString.Trim)
+                Return INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.ToString.Trim)
             End If
         End If
 
-        Return True
+        Return False
+
     End Function
     Function SetINISetting(ByVal Setting As E_Setting, ByVal Value As Boolean, Optional ByVal File As String = "/" + "Settings.ini") As Boolean
+
         Dim Section As E_SettingSection = GetINISection(Setting)
 
         If GlobalInDevelope Then
-            INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.ToString.Trim)
+            Return INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.ToString.Trim)
         Else
             If Not Section = E_SettingSection.Develope Then
-                INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.ToString.Trim)
+                Return INISetValue(Application.StartupPath + File, Section.ToString, Setting.ToString, Value.ToString.Trim)
             End If
         End If
 
-        Return True
+        Return False
+
     End Function
 
 End Module

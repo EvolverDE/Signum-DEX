@@ -46,4 +46,6 @@ Public MustInherit Class AbsClsXItem
 
     Public MustOverride Function BroadcastTransaction(ByVal SignedTransactionBytes As String) As String
 
+    Public MustOverride Overrides Function ToString() As String
+
 End Class

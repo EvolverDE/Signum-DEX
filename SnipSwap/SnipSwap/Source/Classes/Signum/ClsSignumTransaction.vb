@@ -218,6 +218,7 @@ Public Class ClsSignumTransaction
 
         If C_Attachment.Trim() = "" Then
             C_Attachment = TXL.FirstOrDefault(Function(c) c.ToLower().Contains("message"))
+            C_Attachment = If(IsNothing(C_Attachment), "", C_Attachment)
         End If
 
         If C_Attachment.Trim() = "" Then
@@ -287,10 +288,5 @@ Public Class ClsSignumTransaction
         Return Returner
 
     End Function
-
-
-
-
-
 
 End Class

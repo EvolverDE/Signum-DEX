@@ -6026,7 +6026,7 @@ Public Class SnipSwapForm
                                             If Not T_DEXContract.Status = ClsDEXContract.E_Status.UTX_PENDING And Not T_DEXContract.Status = ClsDEXContract.E_Status.TX_PENDING Then 'skip pendings
 
                                                 If Not GetAutoinfoTXFromINI(T_DEXContract.CurrentCreationTransaction) Then 'Check for autosend-info-TX in Settings.ini and skip if founded (already sended)
-                                                    'TODO: No info in Settings
+
                                                     Dim PayInfo As String = GetPaymentInfoFromOrderSettings(T_DEXContract.CurrentCreationTransaction, T_DEXContract.CurrentBuySellAmount, T_DEXContract.CurrentXAmount, T_DEXContract.CurrentXItem)
 
                                                     If Not PayInfo.Trim = "" Then
@@ -6043,14 +6043,22 @@ Public Class SnipSwapForm
                                                         If Not IsErrorOrWarning(TXr) Then
                                                             SetAutoinfoTX2INI(T_DEXContract.CurrentCreationTransaction) 'Set autosend-info-TX in Settings.ini
                                                         End If
+                                                    Else
+                                                        IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(" + T_DEXContract.Status.ToString + ") -> No PayInfo to send")
                                                     End If
 
+                                                Else
 
+                                                End If
+                                            Else
+                                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                    Out.Info2File("Seller->" + T_DEXContract.Status.ToString + "->UnexpectedStatus")
                                                 End If
                                             End If
 
                                         Catch ex As Exception
-                                            IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->Autosend PaymentInfotext): -> " + ex.Message)
+                                            IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(" + T_DEXContract.Status.ToString + "->Autosend PaymentInfotext): -> " + ex.Message)
                                         End Try
 #End Region
 
@@ -6060,64 +6068,100 @@ Public Class SnipSwapForm
 
 #Region "Inject ChainSwapHash into SmartContract for AtomicSwap"
 
-                                    Dim Message As String = T_DEXContract.GetLastDecryptedMessageFromChat(TBSNOAddress.Text, True)
-                                    If Message.Contains(T_DEXContract.CurrentXItem + ":") And Message.Contains(" ChainSwapHash=") Then
+                                    If T_DEXContract.CurrencyIsCrypto() Then
 
-                                        Dim T_XItemTransactionID As String = GetStringBetween(Message, T_DEXContract.CurrentXItem + ":", " ChainSwapHash=")
+                                        Dim Message As String = T_DEXContract.GetLastDecryptedMessageFromChat(TBSNOAddress.Text, True)
+                                        If Message.Contains(T_DEXContract.CurrentXItem + ":") And Message.Contains(" ChainSwapHash=") Then
 
-                                        If T_DEXContract.BlocksLeft <= 2 And T_DEXContract.Status = ClsDEXContract.E_Status.RESERVED Then
+                                            Dim T_XItemTransactionID As String = GetStringBetween(Message, T_DEXContract.CurrentXItem + ":", " ChainSwapHash=")
 
-                                            'AtomicSwap: RejectResponder / cancel broken swap
+                                            If T_DEXContract.BlocksLeft <= 2 And T_DEXContract.Status = ClsDEXContract.E_Status.RESERVED Then
 
-                                            If Not T_DEXContract.CheckForUTX() And Not T_DEXContract.CheckForTX() Then
+                                                'AtomicSwap: RejectResponder / cancel broken swap
 
-                                                Dim Response As String = T_Interactions.RejectResponder(False)
+                                                If Not T_DEXContract.CheckForUTX() And Not T_DEXContract.CheckForTX() Then
 
-                                                If Not IsErrorOrWarning(Response) Then
-                                                    Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(XItemTicker)
-                                                    Dim T_ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID)
-                                                    XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID, T_ChainSwapHash, "RejectResponder: " + Response)
+                                                    Dim Response As String = T_Interactions.RejectResponder(False)
+
+                                                    If Not IsErrorOrWarning(Response) Then
+                                                        Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(XItemTicker)
+                                                        Dim T_ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID)
+                                                        XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID, T_ChainSwapHash, "RejectResponder: " + Response)
+                                                    End If
+
+                                                End If
+
+                                            Else
+
+                                                'AtomicSwap: Get ChainSwapHash from XCryptoTXID from message and inject into smart contract
+                                                Dim T_ChainSwapHash As String = Message.Substring(Message.IndexOf(" ChainSwapHash=") + " ChainSwapHash=".Length)
+
+                                                If T_DEXContract.BlocksLeft > 8 Then
+                                                    Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(T_DEXContract.CurrentXItem)
+                                                    If XItem2.CheckXItemTransactionConditions(T_XItemTransactionID, T_ChainSwapHash) Then
+
+                                                        Dim ChainSwapHashINI As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID)
+                                                        If ChainSwapHashINI.Trim() = "" And T_DEXContract.CurrentChainSwapHash.Trim() = "" Then
+
+                                                            Dim SCTX As String = T_Interactions.InjectChainSwapHash(XItem2.ChainSwapHash, False)
+
+                                                            If Not IsErrorOrWarning(SCTX) Then
+
+                                                                If GetINISetting(E_Setting.InfoOut, False) Then
+                                                                    Dim out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                    out.Info2File(T_ChainSwapHash + " successfully injected in " + T_DEXContract.ID.ToString + " with " + SCTX)
+                                                                End If
+
+                                                                If Not XItem2.SetXItemTransactionToINI(T_DEXContract, T_XItemTransactionID, T_ChainSwapHash) Then
+                                                                    IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(Seller->" + T_DEXContract.Status.ToString + ") -> SetXItemTransactionToINI(" + T_DEXContract.ID.ToString + ", " + T_XItemTransactionID + ", " + T_ChainSwapHash + ") was False")
+                                                                End If
+
+                                                            End If
+                                                        Else
+                                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                Dim OutString As String = "Waiting..." + vbCrLf
+                                                                OutString += "BlocksLeftOnDEXContract=" + T_DEXContract.BlocksLeft.ToString + vbCrLf
+                                                                OutString += "XItem=" + XItem2.ToString + vbCrLf
+                                                                OutString += "ChainSwapHashINI=" + ChainSwapHashINI + vbCrLf
+                                                                OutString += "T_DEXContract.CurrentChainSwapHash=" + T_DEXContract.CurrentChainSwapHash
+                                                                Out.Info2File(OutString)
+                                                            End If
+                                                        End If
+                                                    Else
+                                                        IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(Seller->" + T_DEXContract.Status.ToString + ") -> Condition of XItem(" + XItem2.ToString + ") was False")
+                                                    End If
+                                                Else
+                                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                        Dim OutString As String = "Waiting..." + vbCrLf
+                                                        OutString += "BlocksLeftOnDEXContract=" + T_DEXContract.BlocksLeft.ToString + vbCrLf
+                                                        OutString += "ChainSwapHash=" + T_ChainSwapHash
+                                                        Out.Info2File(OutString)
+                                                    End If
                                                 End If
 
                                             End If
 
                                         Else
-
-                                            'AtomicSwap: Get ChainSwapHash from XCryptoTXID from message and inject into smart contract
-                                            Dim T_ChainSwapHash As String = Message.Substring(Message.IndexOf(" ChainSwapHash=") + " ChainSwapHash=".Length)
-
-                                            If T_DEXContract.BlocksLeft > 8 Then
-                                                Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(T_DEXContract.CurrentXItem)
-                                                If XItem2.CheckXItemTransactionConditions(T_XItemTransactionID, T_ChainSwapHash) Then
-
-                                                    Dim ChainSwapHashINI As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTransactionID)
-                                                    If ChainSwapHashINI.Trim() = "" And T_DEXContract.CurrentChainSwapHash.Trim() = "" Then
-
-                                                        Dim SCTX As String = T_Interactions.InjectChainSwapHash(XItem2.ChainSwapHash, False)
-
-                                                        If Not IsErrorOrWarning(SCTX) Then
-
-                                                            XItem2.SetXItemTransactionToINI(T_DEXContract, T_XItemTransactionID, T_ChainSwapHash)
-
-                                                            'If GetINISetting(E_Setting.InfoOut, False) Then
-                                                            '    Dim out As ClsOut = New ClsOut(Application.StartupPath)
-                                                            '    out.Info2File(ChainSwapHash + " successfully injected in " + T_DEXContract.ID.ToString + " with " + SCTX)
-                                                            'End If
-                                                        End If
-
-                                                    End If
-
-                                                End If
-
+                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                Dim OutString As String = "Message is:" + vbCrLf
+                                                OutString += Message + vbCrLf + vbCrLf
+                                                OutString += "BlocksLeftOnDEXContract=" + T_DEXContract.BlocksLeft.ToString + vbCrLf
+                                                Out.Info2File(OutString)
                                             End If
+
+                                            Message = T_DEXContract.GetLastDecryptedMessageFromChat(T_DEXContract.CurrentBuyerAddress, True)
+                                            Message = Message
 
                                         End If
 
-                                    Else
-                                        'TODO: handle Errors and warnings
-                                        Message = T_DEXContract.GetLastDecryptedMessageFromChat(T_DEXContract.CurrentBuyerAddress, True)
-                                        Message = Message
-
+                                    Else 'Currency Is no Crypto
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                            Out.Info2File("Seller->" + T_DEXContract.Status.ToString + "->CurrencyIsNoCrypto!")
+                                        End If
                                     End If
 
 #End Region
@@ -6249,390 +6293,453 @@ Public Class SnipSwapForm
 
                         ElseIf TBSNOAddress.Text = T_DEXContract.CurrentBuyerAddress Then ' Order.BuyerRS Then
 
-                            'Save/ Update() my RESERVED SellOrder to cache.dat (MyOrders Settings)
-                            Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(T_DEXContract.CurrentCreationTransaction) ' Order.FirstTransaction)
-                            Dim T_OS As ClsOrderSettings = New ClsOrderSettings(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_DEXContract.IsSellOrder, T_DEXContract.Status)
+                            Try
 
-                            Dim Autosendinfotext As String = "False"
-                            Dim AutocompleteSmartContract As String = "False"
+                                'Save/ Update() my RESERVED SellOrder to cache.dat (MyOrders Settings)
+                                Dim T_OSList As List(Of ClsOrderSettings) = GetOrderSettingsFromBuffer(T_DEXContract.CurrentCreationTransaction) ' Order.FirstTransaction)
+                                Dim T_OS As ClsOrderSettings = New ClsOrderSettings(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_DEXContract.IsSellOrder, T_DEXContract.Status)
 
-                            If Not T_DEXContract.IsSellOrder Then ' Order.Type = "BuyOrder" Then
-                                If T_OSList.Count = 0 Then
-                                    T_OS.PaytypeString = GetINISetting(E_Setting.PaymentType, "Other")
-                                    T_OS.Infotext = GetINISetting(E_Setting.PaymentInfoText, "Unknown")
+                                Dim Autosendinfotext As String = "False"
+                                Dim AutocompleteSmartContract As String = "False"
+
+                                If Not T_DEXContract.IsSellOrder Then ' Order.Type = "BuyOrder" Then
+                                    If T_OSList.Count = 0 Then
+                                        T_OS.PaytypeString = GetINISetting(E_Setting.PaymentType, "Other")
+                                        T_OS.Infotext = GetINISetting(E_Setting.PaymentInfoText, "Unknown")
+                                    Else
+                                        T_OS = T_OSList(0)
+                                        T_OS.Status = T_DEXContract.Status.ToString ' Order.Status
+                                        PayMet = T_OS.PaytypeString
+                                        Autosendinfotext = T_OS.AutoSendInfotext.ToString
+                                        AutocompleteSmartContract = T_OS.AutoCompleteSmartContract.ToString
+                                    End If
+
+                                    OrderSettingsBuffer.Add(T_OS)
+                                    'Broadcast info over DEXNET
+                                    C_BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
+
                                 Else
-                                    T_OS = T_OSList(0)
-                                    T_OS.Status = T_DEXContract.Status.ToString ' Order.Status
-                                    PayMet = T_OS.PaytypeString
-                                    Autosendinfotext = T_OS.AutoSendInfotext.ToString
-                                    AutocompleteSmartContract = T_OS.AutoCompleteSmartContract.ToString
-                                End If
-
-                                OrderSettingsBuffer.Add(T_OS)
-                                'Broadcast info over DEXNET
-                                C_BroadcastMsgs.Add("<SCID>" + T_DEXContract.ID.ToString + "</SCID><PayType>" + PayMet.Trim + "</PayType><Autosendinfotext>" + Autosendinfotext + "</Autosendinfotext><AutocompleteSC>" + AutocompleteSmartContract + "</AutocompleteSC>")
-
-                            Else
 
 #Region "BuyOrder-Info from DEXNET"
 
-                                Dim RelMsgs As List(Of ClsDEXNET.S_RelevantMessage) = New List(Of ClsDEXNET.S_RelevantMessage)
+                                    Dim RelMsgs As List(Of ClsDEXNET.S_RelevantMessage) = New List(Of ClsDEXNET.S_RelevantMessage)
 
-                                If Not DEXNET Is Nothing Then
-                                    RelMsgs = DEXNET.GetRelevantMsgs()
-                                End If
+                                    If Not DEXNET Is Nothing Then
+                                        RelMsgs = DEXNET.GetRelevantMsgs()
+                                    End If
 
-                                Dim RelKeyFounded As Boolean = False
+                                    Dim RelKeyFounded As Boolean = False
 
-                                For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
+                                    For Each RelMsg As ClsDEXNET.S_RelevantMessage In RelMsgs
 
-                                    If RelMsg.RelevantKey.Name = "<SCID>" + T_DEXContract.ID.ToString + "</SCID>" Then
+                                        If RelMsg.RelevantKey.Name = "<SCID>" + T_DEXContract.ID.ToString + "</SCID>" Then
 
-                                        RelKeyFounded = True
+                                            RelKeyFounded = True
 
-                                        If Not RelMsg.RelevantMessage.Trim = "" Then
+                                            If Not RelMsg.RelevantMessage.Trim = "" Then
 
-                                            Dim PublicKey As String = GetStringBetween(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>")
+                                                Dim PublicKey As String = GetStringBetween(RelMsg.RelevantMessage, "<PublicKey>", "</PublicKey>")
 
-                                            If T_DEXContract.CurrentSellerID = GetAccountID(PublicKey) Then
-                                                Dim PayMethod As String = GetStringBetween(RelMsg.RelevantMessage, "<PayType>", "</PayType>")
-                                                PayMet = PayMethod
+                                                If T_DEXContract.CurrentSellerID = GetAccountID(PublicKey) Then
+                                                    Dim PayMethod As String = GetStringBetween(RelMsg.RelevantMessage, "<PayType>", "</PayType>")
+                                                    PayMet = PayMethod
 
-                                                Dim T_Autosendinfotext As String = GetStringBetween(RelMsg.RelevantMessage, "<Autosendinfotext>", "</Autosendinfotext>")
-                                                Autosendinfotext = T_Autosendinfotext
+                                                    Dim T_Autosendinfotext As String = GetStringBetween(RelMsg.RelevantMessage, "<Autosendinfotext>", "</Autosendinfotext>")
+                                                    Autosendinfotext = T_Autosendinfotext
 
-                                                Dim T_AutocompleteSmartContract As String = GetStringBetween(RelMsg.RelevantMessage, "<AutocompleteSC>", "</AutocompleteSC>")
-                                                AutocompleteSmartContract = T_AutocompleteSmartContract
+                                                    Dim T_AutocompleteSmartContract As String = GetStringBetween(RelMsg.RelevantMessage, "<AutocompleteSC>", "</AutocompleteSC>")
+                                                    AutocompleteSmartContract = T_AutocompleteSmartContract
+
+                                                End If
 
                                             End If
 
                                         End If
 
-                                    End If
+                                    Next
 
-                                Next
-
-                                If Not RelKeyFounded Then
-                                    If Not DEXNET Is Nothing Then
-                                        DEXNET.AddRelevantKey("<SCID>" + T_DEXContract.ID.ToString + "</SCID>")
+                                    If Not RelKeyFounded Then
+                                        If Not DEXNET Is Nothing Then
+                                            DEXNET.AddRelevantKey("<SCID>" + T_DEXContract.ID.ToString + "</SCID>")
+                                        End If
                                     End If
-                                End If
 #End Region
 
-                            End If
+                                End If
 
 
-                            Dim AlreadySend As String = CheckBillingInfosAlreadySend(T_DEXContract)
+                                Dim AlreadySend As String = CheckBillingInfosAlreadySend(T_DEXContract)
 
-                            If IsErrorOrWarning(AlreadySend) Then
-                                AlreadySend = "ENCRYPTED"
-                            ElseIf AlreadySend = "" Then
+#Region "Automentation"
 
-                                'T_DEXContract.Refresh()
-                                'If T_DEXContract.Status = ClsDEXContract.E_Status.TX_PENDING Or T_DEXContract.Status = ClsDEXContract.E_Status.UTX_PENDING Then
-                                '    AlreadySend = "PENDING"
-                                'Else
-                                '    AlreadySend = "RESERVED"
-                                'End If
+                                If IsErrorOrWarning(AlreadySend) Then
+                                    AlreadySend = "ENCRYPTED"
 
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                        Out.Info2File("Buyer->AlreadySend is encrypted")
+                                    End If
 
-                            ElseIf AlreadySend.Trim <> "" Then
+                                ElseIf AlreadySend = "" Then
 
-                                'Dim PayPalOrder As String = ""
-                                'If AlreadySend.Contains("PayPal-Order=") Then
-                                'PayPalOrder = AlreadySend.Substring(AlreadySend.IndexOf("PayPal-Order=") + 13).Trim
+                                    'T_DEXContract.Refresh()
+                                    'If T_DEXContract.Status = ClsDEXContract.E_Status.TX_PENDING Or T_DEXContract.Status = ClsDEXContract.E_Status.UTX_PENDING Then
+                                    '    AlreadySend = "PENDING"
+                                    'Else
+                                    '    AlreadySend = "RESERVED"
+                                    'End If
 
-                                'If PayPalOrder.Trim <> "" Then
-                                '    Dim PPAPI As ClsPayPal = New ClsPayPal()
+                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                        Out.Info2File("Buyer->AlreadySend is empty")
+                                    End If
 
-                                '    AlreadySend = PPAPI.URL + "/checkoutnow?token=" + PayPalOrder '"https://www.sandbox.paypal.com/checkoutnow?token=" 
-                                '    'Process.Start(AlreadySend)
-                                'End If
+                                ElseIf AlreadySend.Trim <> "" Then
 
-                                'End If
+                                    'Dim PayPalOrder As String = ""
+                                    'If AlreadySend.Contains("PayPal-Order=") Then
+                                    'PayPalOrder = AlreadySend.Substring(AlreadySend.IndexOf("PayPal-Order=") + 13).Trim
+
+                                    'If PayPalOrder.Trim <> "" Then
+                                    '    Dim PPAPI As ClsPayPal = New ClsPayPal()
+
+                                    '    AlreadySend = PPAPI.URL + "/checkoutnow?token=" + PayPalOrder '"https://www.sandbox.paypal.com/checkoutnow?token=" 
+                                    '    'Process.Start(AlreadySend)
+                                    'End If
+
+                                    'End If
 
 #Region "ChainSwap/AtomicSwap"
 
-                                If Not T_DEXContract.Status = ClsDEXContract.E_Status.UTX_PENDING And Not T_DEXContract.Status = ClsDEXContract.E_Status.TX_PENDING Then
-
-                                    If (AlreadySend.Contains("AtomicSwap=" + T_DEXContract.CurrentXItem) Or T_DEXContract.CurrentChainSwapHash <> "") And T_DEXContract.CurrencyIsCrypto() Then
-
-                                        If T_DEXContract.CurrentChainSwapHash = "" Then
-
-                                            Dim T_ChainSwapKey As String = ByteArrayToHEXString(RandomBytes(31)) ' "aaaa1111aaaa1111" ' 'aaaa1111aaaa1111bbbb2222bbbb2222cccc3333cccc3333dddd4444dddd4444
-                                            'T_ChainSwapKey += "bbbb2222bbbb2222"
-                                            'T_ChainSwapKey += "cccc3333cccc3333"
-                                            'T_ChainSwapKey += "dddd4444dddd4444"
-
-                                            Dim T_FullChainSwapHash As String = GetSHA256HashString(T_ChainSwapKey).ToLower() '5682f300723e84bc877b0ebce916618415edc43663930cff67ef2381bedc3618
-                                            Dim T_Key As String = "AtomicSwap=" + T_DEXContract.CurrentXItem + ":"
-                                            Dim T_XCryptoAddress As String = AlreadySend.Substring(AlreadySend.IndexOf(T_Key) + T_Key.Length).Trim
-                                            Dim PayInfo As String = "Infotext=" + T_DEXContract.CurrentXItem + ":"
-                                            Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(T_DEXContract.CurrentXItem)
-                                            Dim T_XItemTX As String = XItem2.GetXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction)
-
-                                            If T_DEXContract.BlocksLeft > 8 Then
-
-                                                If T_XItemTX.Trim = "" Then
-
-                                                    Dim T_S_TX As ClsBitcoin.S_Transaction = XItem2.CreateXItemTransactionWithChainSwapHash(T_XCryptoAddress, T_DEXContract.CurrentXAmount, T_FullChainSwapHash)
-
-                                                    'AtomicSwap: create chainswapkey/chainswaphash pair and send XItemTX
-
-                                                    If Not IsErrorOrWarning(T_S_TX.TransactionID) And Not IsErrorOrWarning(T_S_TX.ScriptHex) Then
-                                                        PayInfo += T_S_TX.TransactionID
-                                                        PayInfo += " ChainSwapHash=" + T_S_TX.ScriptHex
-
-                                                        Dim T_MsgStr As String = "SmartContract=" + T_DEXContract.Address + " Transaction=" + T_DEXContract.CurrentCreationTransaction.ToString + " " + PayInfo
-                                                        Dim TXr As String = T_Interactions.SendBillingInfos(T_DEXContract.CurrentSellerID, T_MsgStr, False, True)
-
-                                                        If Not IsErrorOrWarning(TXr) Then
-                                                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
-                                                            Out.Info2File("ChainSwapHash BTC TX:" + T_S_TX.TransactionID)
-
-                                                            XItem2.SetXItemTransactionToINI(T_DEXContract, T_S_TX.TransactionID, T_ChainSwapKey, T_S_TX.ScriptHex)
-                                                        End If
-
-                                                    End If
-
-                                                End If
-
-                                            Else
-                                                'getting xitem back
-                                                If Not T_XItemTX.Trim = "" Then
-
-                                                    Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTX)
-
-                                                    If Not IsErrorOrWarning(XItem2.GetBackXItemTransaction(T_XItemTX, ChainSwapHash)) Then
-                                                        'AtomicSwap: cancel sellers Contract ?
-
-                                                        XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTX, ChainSwapHash, "GetBackXItem")
-
-                                                    End If
-
-                                                End If
-
-                                            End If
-
-                                        Else 'T_DEXContract.CurrentChainSwapHash <> ""
-                                            'AtmicSwap: Redeem Smart Contract with ChainSwapKey
-                                            Dim T_ChainSwapKey As String = ""
-
-                                            Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(T_DEXContract.CurrentXItem)
-
-                                            Dim T_BitcoinTransactionID As String = XItem2.GetXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_DEXContract.CurrentChainSwapHash)
-
-                                            If Not T_BitcoinTransactionID.Trim = "" Then
-
-                                                If T_DEXContract.BlocksLeft > 2L Then '504446
-                                                    T_ChainSwapKey = XItem2.GetXItemChainSwapKeyFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID)
-
-                                                    If Not T_ChainSwapKey.Trim = "" Then
-
-                                                        Dim Response As String = T_Interactions.FinishWithChainSwapKey(T_ChainSwapKey, False)
-
-                                                        If Not IsErrorOrWarning(Response, Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->FinishOrderWithChainSwapKey) -> " + vbCrLf, True) Then
-                                                            XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID, T_DEXContract.CurrentChainSwapHash, "FinishWithChainSwapKey: " + Response)
-                                                        End If
-
-                                                    End If
-
-                                                Else 'reject Order
-
-                                                    Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID)
-
-                                                    If Not IsErrorOrWarning(XItem2.GetBackXItemTransaction(T_BitcoinTransactionID, ChainSwapHash)) Then
-                                                        Dim MasterKeys As List(Of String) = GetPassPhrase()
-                                                        If MasterKeys.Count > 0 Then
-
-                                                            Dim Response As String = T_DEXContract.RejectResponder(MasterKeys(0), C_Fee)
-
-                                                            If Not IsErrorOrWarning(Response, Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->RejectResponder): -> " + vbCrLf, True) Then
-
-                                                                Dim UTX As String = Response
-                                                                Dim SignumNET As ClsSignumNET = New ClsSignumNET
-                                                                Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
-                                                                Dim TX As String = C_SignumAPI.BroadcastTransaction(STX.SignedTransaction)
-
-                                                                IsErrorOrWarning(TX, Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->RejectResponder2): -> " + vbCrLf, True)
-
-                                                            End If
-                                                        Else
-                                                            IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->RejectResponder) -> No Keys")
-                                                        End If
-                                                    End If
-
-                                                End If
-
-                                            End If
-
-
-                                        End If
-
-                                    Else ' AlreadySend has no AtomicSwap-string and DEXContract has no ChainSwapHash
+                                    If Not T_DEXContract.Status = ClsDEXContract.E_Status.UTX_PENDING And Not T_DEXContract.Status = ClsDEXContract.E_Status.TX_PENDING Then
 
                                         If T_DEXContract.CurrencyIsCrypto() Then
 
-                                            Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(XItemTicker)
+                                            If (AlreadySend.Contains("AtomicSwap=" + T_DEXContract.CurrentXItem) Or T_DEXContract.CurrentChainSwapHash <> "") Then
 
-                                            Dim T_BitcoinTransactionID As String = XItem2.GetXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction)
+                                                If T_DEXContract.CurrentChainSwapHash = "" Then
 
-                                            If Not T_BitcoinTransactionID.Trim = "" Then
+                                                    Dim T_ChainSwapKey As String = ByteArrayToHEXString(RandomBytes(31)) ' "aaaa1111aaaa1111" ' 'aaaa1111aaaa1111bbbb2222bbbb2222cccc3333cccc3333dddd4444dddd4444
+                                                    'T_ChainSwapKey += "bbbb2222bbbb2222"
+                                                    'T_ChainSwapKey += "cccc3333cccc3333"
+                                                    'T_ChainSwapKey += "dddd4444dddd4444"
 
-                                                If T_DEXContract.BlocksLeft <= 3L Then
+                                                    Dim T_FullChainSwapHash As String = GetSHA256HashString(T_ChainSwapKey).ToLower() '5682f300723e84bc877b0ebce916618415edc43663930cff67ef2381bedc3618
+                                                    Dim T_Key As String = "AtomicSwap=" + T_DEXContract.CurrentXItem + ":"
+                                                    Dim T_XCryptoAddress As String = AlreadySend.Substring(AlreadySend.IndexOf(T_Key) + T_Key.Length).Trim
+                                                    Dim PayInfo As String = "Infotext=" + T_DEXContract.CurrentXItem + ":"
+                                                    Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(T_DEXContract.CurrentXItem)
+                                                    Dim T_XItemTX As String = XItem2.GetXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction)
 
-                                                    Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID)
+                                                    If T_DEXContract.BlocksLeft > 8L Then
 
-                                                    'Dim T_BTCTransaction As ClsTransaction = XItem2.RedeemBitcoinTransaction(T_BitcoinTransactionID, GetBitcoinMainAddress(), T_RedeemScript)
+                                                        If T_XItemTX.Trim = "" Then
 
-                                                    'Dim T_BitcoinRAWTX As String = XItem2.SignBitcoinTransaction(T_BTCTransaction, GetBitcoinMainPrivateKey().ToLower())
+                                                            Dim T_S_TX As ClsBitcoin.S_Transaction = XItem2.CreateXItemTransactionWithChainSwapHash(T_XCryptoAddress, T_DEXContract.CurrentXAmount, T_FullChainSwapHash)
 
-                                                    'Dim T_BitcoinTXID As String = ""
-                                                    'If Not T_BitcoinRAWTX.Trim = "" Then
-                                                    '    T_BitcoinTXID = XItem2.SendRawBitcoinTransaction(T_BitcoinRAWTX)
-                                                    'End If
+                                                            'AtomicSwap: create chainswapkey/chainswaphash pair and send XItemTX
 
-                                                    If Not IsErrorOrWarning(XItem2.GetBackXItemTransaction(T_BitcoinTransactionID, ChainSwapHash)) Then
-                                                        XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID, T_DEXContract.CurrentChainSwapHash, "GetBackXItemTransaction: noChainSwapHash")
+                                                            If Not IsErrorOrWarning(T_S_TX.TransactionID) And Not IsErrorOrWarning(T_S_TX.ScriptHex) Then
+                                                                PayInfo += T_S_TX.TransactionID
+                                                                PayInfo += " ChainSwapHash=" + T_S_TX.ScriptHex
+
+                                                                Dim T_MsgStr As String = "SmartContract=" + T_DEXContract.Address + " Transaction=" + T_DEXContract.CurrentCreationTransaction.ToString + " " + PayInfo
+                                                                Dim TXr As String = T_Interactions.SendBillingInfos(T_DEXContract.CurrentSellerID, T_MsgStr, False, True)
+
+                                                                If Not IsErrorOrWarning(TXr) Then
+                                                                    Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                    Out.Info2File("ChainSwapHash BTC TX:" + T_S_TX.TransactionID)
+
+                                                                    XItem2.SetXItemTransactionToINI(T_DEXContract, T_S_TX.TransactionID, T_ChainSwapKey, T_S_TX.ScriptHex)
+                                                                End If
+                                                            End If
+                                                        Else
+
+                                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                Out.Info2File("Buyer->" + T_DEXContract.Status.ToString + "->SendBillinginfos(" + T_XItemTX.Trim + ")")
+                                                            End If
+
+                                                        End If
+
+                                                    Else
+                                                        'getting xitem back
+                                                        If Not T_XItemTX.Trim = "" Then
+
+                                                            Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTX)
+
+                                                            If Not IsErrorOrWarning(XItem2.GetBackXItemTransaction(T_XItemTX, ChainSwapHash)) Then
+                                                                'AtomicSwap: cancel sellers Contract ?
+
+                                                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                Out.Info2File("XItem Cancel:" + T_XItemTX + vbCrLf + "ChainSwaphash:" + ChainSwapHash)
+
+                                                                XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_XItemTX, ChainSwapHash, "GetBackXItem")
+
+                                                            End If
+                                                        Else
+
+                                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                                Out.Info2File("Buyer->" + T_DEXContract.Status.ToString + "->XItemCancel")
+                                                            End If
+
+                                                        End If
+
+                                                    End If
+
+                                                Else 'T_DEXContract.CurrentChainSwapHash <> ""
+                                                    'AtmicSwap: Redeem Smart Contract with ChainSwapKey
+                                                    Dim T_ChainSwapKey As String = ""
+
+                                                    Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(T_DEXContract.CurrentXItem)
+
+                                                    Dim T_BitcoinTransactionID As String = XItem2.GetXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_DEXContract.CurrentChainSwapHash)
+
+                                                    If Not T_BitcoinTransactionID.Trim = "" Then
+
+                                                        If T_DEXContract.BlocksLeft > 2L Then '504446
+                                                            T_ChainSwapKey = XItem2.GetXItemChainSwapKeyFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID)
+
+                                                            If Not T_ChainSwapKey.Trim = "" Then
+
+                                                                Dim Response As String = T_Interactions.FinishWithChainSwapKey(T_ChainSwapKey, False)
+
+                                                                If Not IsErrorOrWarning(Response, Application.ProductName + "-error in MultiThreadSetSmartContract2LV(" + T_DEXContract.Status.ToString + "->FinishOrderWithChainSwapKey) -> " + vbCrLf, True) Then
+                                                                    XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID, T_DEXContract.CurrentChainSwapHash, "FinishWithChainSwapKey: " + Response)
+                                                                End If
+                                                            Else
+                                                                IsErrorOrWarning("ChainSwapHash=" + T_DEXContract.CurrentChainSwapHash + vbCrLf + "Key in INI was empty!", Application.ProductName + "-error in MultiThreadSetSmartContract2LV(Buyer->" + T_DEXContract.Status.ToString + "->FinishOrderWithChainSwapKey -> " + vbCrLf, True)
+                                                            End If
+
+                                                        Else 'reject Order
+
+                                                            Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID)
+
+                                                            If Not IsErrorOrWarning(XItem2.GetBackXItemTransaction(T_BitcoinTransactionID, ChainSwapHash)) Then
+                                                                Dim MasterKeys As List(Of String) = GetPassPhrase()
+                                                                If MasterKeys.Count > 0 Then
+
+                                                                    Dim Response As String = T_DEXContract.RejectResponder(MasterKeys(0), C_Fee)
+
+                                                                    If Not IsErrorOrWarning(Response, Application.ProductName + "-error in MultiThreadSetSmartContract2LV(Buyer->" + T_DEXContract.Status.ToString + "->RejectResponder): -> " + vbCrLf, True) Then
+
+                                                                        Dim UTX As String = Response
+                                                                        Dim SignumNET As ClsSignumNET = New ClsSignumNET
+                                                                        Dim STX As ClsSignumNET.S_Signature = SignumNET.SignHelper(UTX, MasterKeys(1))
+                                                                        Dim TX As String = C_SignumAPI.BroadcastTransaction(STX.SignedTransaction)
+
+                                                                        IsErrorOrWarning(TX, Application.ProductName + "-error in MultiThreadSetSmartContract2LV(Buyer->" + T_DEXContract.Status.ToString + "->RejectResponder2): -> " + vbCrLf, True)
+
+                                                                    End If
+                                                                Else
+                                                                    IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(Buyer->" + T_DEXContract.Status.ToString + "->RejectResponder) -> No Keys")
+                                                                End If
+                                                            End If
+
+                                                        End If
+
+                                                    Else
+                                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                            Out.Info2File("No XItemID1.")
+                                                        End If
                                                     End If
 
                                                 End If
 
+                                            Else ' AlreadySend has no AtomicSwap-string and DEXContract has no ChainSwapHash
+
+                                                Dim XItem2 As AbsClsXItem = ClsXItemAdapter.NewXItem(XItemTicker)
+
+                                                Dim T_BitcoinTransactionID As String = XItem2.GetXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction)
+
+                                                If Not T_BitcoinTransactionID.Trim = "" Then
+
+                                                    If T_DEXContract.BlocksLeft <= 3L Then
+
+                                                        Dim ChainSwapHash As String = XItem2.GetXItemChainSwapHashFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID)
+
+                                                        'Dim T_BTCTransaction As ClsTransaction = XItem2.RedeemBitcoinTransaction(T_BitcoinTransactionID, GetBitcoinMainAddress(), T_RedeemScript)
+
+                                                        'Dim T_BitcoinRAWTX As String = XItem2.SignBitcoinTransaction(T_BTCTransaction, GetBitcoinMainPrivateKey().ToLower())
+
+                                                        'Dim T_BitcoinTXID As String = ""
+                                                        'If Not T_BitcoinRAWTX.Trim = "" Then
+                                                        '    T_BitcoinTXID = XItem2.SendRawBitcoinTransaction(T_BitcoinRAWTX)
+                                                        'End If
+
+                                                        If Not IsErrorOrWarning(XItem2.GetBackXItemTransaction(T_BitcoinTransactionID, ChainSwapHash)) Then
+                                                            XItem2.DelXItemTransactionFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_BitcoinTransactionID, T_DEXContract.CurrentChainSwapHash, "GetBackXItemTransaction: noChainSwapHash")
+                                                        End If
+
+                                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                            Out.Info2File("Initiate AutoCancel because of to less blocks left for a swap." + vbCrLf + "BlocksLeftOnDEXContract=" + T_DEXContract.BlocksLeft.ToString + vbCrLf + "XItem=" + XItem2.ToString + vbCrLf + "XItemTransactionID=" + T_BitcoinTransactionID)
+                                                        End If
+
+                                                    Else
+                                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                            Out.Info2File("Waiting for AtomicSwap/ChainSwapHash..." + vbCrLf + "BlocksLeftOnDEXContract=" + T_DEXContract.BlocksLeft.ToString)
+                                                        End If
+                                                    End If
+                                                Else
+                                                    If GetINISetting(E_Setting.InfoOut, False) Then
+                                                        Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                        Out.Info2File("No XItemID2.")
+                                                    End If
+                                                End If
+
+
+                                                Dim PayInfoList As List(Of String) = New List(Of String)
+
+                                                If AlreadySend.Contains(" ") Then
+                                                    PayInfoList.AddRange(AlreadySend.Split(" "c))
+                                                End If
+
+                                                If PayInfoList.Count > 2 Then
+                                                    Dim NuPayInfo As String = ""
+                                                    For i As Integer = 2 To PayInfoList.Count - 1
+                                                        Dim T_PayInfo As String = PayInfoList(i)
+                                                        If Not T_PayInfo.Trim = "" Then
+                                                            NuPayInfo += T_PayInfo + " "
+                                                        End If
+                                                    Next
+                                                    AlreadySend = NuPayInfo.Trim
+                                                End If
+
                                             End If
+
+                                        Else 'Currency Is no Crypto
+
+                                            If GetINISetting(E_Setting.InfoOut, False) Then
+                                                Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                                Out.Info2File("Buyer->" + T_DEXContract.Status.ToString + "->CurrencyIsNoCrypto!")
+                                            End If
+
+                                        End If
+
+                                    ElseIf Not T_DEXContract.Status = ClsDEXContract.E_Status.RESERVED Then
+
+                                        If GetINISetting(E_Setting.InfoOut, False) Then
+                                            Dim Out As ClsOut = New ClsOut(Application.StartupPath)
+                                            Out.Info2File("Buyer->" + T_DEXContract.Status.ToString + "->UnexpectedStatus")
+                                        End If
+
+                                        If T_DEXContract.CurrencyIsCrypto Then
+
+                                            'Dim T_BitcoinTransactionID As String = GetBitcoinTXFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_DEXContract.CurrentChainSwapHash)
+
+                                            'If Not T_BitcoinTransactionID.Trim = "" Then
+
+                                            '    If T_DEXContract.BlocksLeft <= 3L Then
+
+                                            '        Dim T_BTCTransaction As ClsTransaction = RedeemBitcoinTransaction(T_BitcoinTransactionID, GetBitcoinMainAddress())
+
+                                            '        Dim T_BitcoinRAWTX As String = SignBitcoinTransaction(T_BTCTransaction, GetBitcoinMainPrivateKey())
+
+                                            '        Dim T_BitcoinTXID As String = ""
+                                            '        If Not T_BitcoinRAWTX.Trim = "" Then
+                                            '            T_BitcoinTXID = SendRawBitcoinTransaction(T_BitcoinRAWTX)
+                                            '        End If
+
+                                            '        If Not IsErrorOrWarning(T_BitcoinTXID) Then
+
+                                            '        End If
+
+                                            '    End If
+
+                                            'End If
 
                                         Else
 
                                         End If
 
-                                        Dim PayInfoList As List(Of String) = New List(Of String)
-
-                                        If AlreadySend.Contains(" ") Then
-                                            PayInfoList.AddRange(AlreadySend.Split(" "c))
-                                        End If
-
-                                        If PayInfoList.Count > 2 Then
-                                            Dim NuPayInfo As String = ""
-                                            For i As Integer = 2 To PayInfoList.Count - 1
-                                                Dim T_PayInfo As String = PayInfoList(i)
-                                                If Not T_PayInfo.Trim = "" Then
-                                                    NuPayInfo += T_PayInfo + " "
-                                                End If
-                                            Next
-                                            AlreadySend = NuPayInfo.Trim
-                                        End If
-
                                     End If
 
-                                ElseIf Not T_DEXContract.Status = ClsDEXContract.E_Status.RESERVED Then
-
-                                    If T_DEXContract.CurrencyIsCrypto Then
-
-                                        'Dim T_BitcoinTransactionID As String = GetBitcoinTXFromINI(T_DEXContract.ID, T_DEXContract.CurrentCreationTransaction, T_DEXContract.CurrentChainSwapHash)
-
-                                        'If Not T_BitcoinTransactionID.Trim = "" Then
-
-                                        '    If T_DEXContract.BlocksLeft <= 3L Then
-
-                                        '        Dim T_BTCTransaction As ClsTransaction = RedeemBitcoinTransaction(T_BitcoinTransactionID, GetBitcoinMainAddress())
-
-                                        '        Dim T_BitcoinRAWTX As String = SignBitcoinTransaction(T_BTCTransaction, GetBitcoinMainPrivateKey())
-
-                                        '        Dim T_BitcoinTXID As String = ""
-                                        '        If Not T_BitcoinRAWTX.Trim = "" Then
-                                        '            T_BitcoinTXID = SendRawBitcoinTransaction(T_BitcoinRAWTX)
-                                        '        End If
-
-                                        '        If Not IsErrorOrWarning(T_BitcoinTXID) Then
-
-                                        '        End If
-
-                                        '    End If
-
-                                        'End If
-
-                                    Else
-
-                                    End If
+#End Region
 
                                 End If
 
 #End Region
 
-                            End If
-
-                            Dim CheckAttachment As String = ClsSignumAPI.ULngList2DataStr(New List(Of ULong)({C_SignumAPI.ReferenceFinishOrder}))
+                                Dim CheckAttachment As String = ClsSignumAPI.ULngList2DataStr(New List(Of ULong)({C_SignumAPI.ReferenceFinishOrder}))
 
 
-                            T_LVI = New ListViewItem
+                                T_LVI = New ListViewItem
 
-                            T_LVI.Text = Confirms 'confirms
-                            T_LVI.SubItems.Add(T_DEXContract.Address) 'SmartContract
-                            'T_LVI.SubItems.Add(T_DEXContract.CreatorAddress) 'creator
+                                T_LVI.Text = Confirms 'confirms
+                                T_LVI.SubItems.Add(T_DEXContract.Address) 'SmartContract
+                                'T_LVI.SubItems.Add(T_DEXContract.CreatorAddress) 'creator
 
-                            If T_DEXContract.IsSellOrder Then
-                                T_LVI.SubItems.Add("SellOrder") 'type
-                            Else
-                                T_LVI.SubItems.Add("BuyOrder") 'type
-                            End If
+                                If T_DEXContract.IsSellOrder Then
+                                    T_LVI.SubItems.Add("SellOrder") 'type
+                                Else
+                                    T_LVI.SubItems.Add("BuyOrder") 'type
+                                End If
 
-                            T_LVI.SubItems.Add(PayMet) 'method
+                                T_LVI.SubItems.Add(PayMet) 'method
 
-                            'If MarketIsCrypto Then
-                            '    T_LVI.SubItems.Add("Auto/Auto") 'autoinfo
-                            'Else
-                            T_LVI.SubItems.Add(Autosendinfotext + "/" + AutocompleteSmartContract) 'autoinfo
-                            'End If
+                                'If MarketIsCrypto Then
+                                '    T_LVI.SubItems.Add("Auto/Auto") 'autoinfo
+                                'Else
+                                T_LVI.SubItems.Add(Autosendinfotext + "/" + AutocompleteSmartContract) 'autoinfo
+                                'End If
 
-                            T_LVI.SubItems.Add(T_DEXContract.CurrentSellerAddress)  'seller
-                            T_LVI.SubItems.Add("Me") 'buyer
+                                T_LVI.SubItems.Add(T_DEXContract.CurrentSellerAddress)  'seller
+                                T_LVI.SubItems.Add("Me") 'buyer
 
-                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, C_Decimals) + " " + XItemTicker) 'xamount + xitem
-                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentBuySellAmount)) 'buysellamount
-                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral)) 'collateral
-                            T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, C_Decimals) + " " + XItemTicker) 'price
+                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentXAmount, C_Decimals) + " " + XItemTicker) 'xamount + xitem
+                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentBuySellAmount)) 'buysellamount
+                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentInitiatorsCollateral)) 'collateral
+                                T_LVI.SubItems.Add(Dbl2LVStr(T_DEXContract.CurrentPrice, C_Decimals) + " " + XItemTicker) 'price
 
 #Region "Dispute"
 
-                            Dim Proposal As String = T_DEXContract.StatusMessage
+                                Dim Proposal As String = T_DEXContract.StatusMessage
 
-                            'If T_DEXContract.CurrentDisputeTimeout <> 0UL And Not ClsDEXContract.CurrencyIsCrypto(T_DEXContract.CurrentXItem) Then
+                                'If T_DEXContract.CurrentDisputeTimeout <> 0UL And Not ClsDEXContract.CurrencyIsCrypto(T_DEXContract.CurrentXItem) Then
 
-                            '    Dim percentage As Double = 100 / T_DEXContract.CurrentBuySellAmount * T_DEXContract.CurrentConciliationAmount
-                            '    Proposal = " (Proposal:" + Dbl2LVStr(T_DEXContract.CurrentConciliationAmount, 2) + " Signa =" + Dbl2LVStr(percentage, 2) + "%)"
-                            '    Dim diffblock As Long = 0
-                            '    diffblock = CLng(T_DEXContract.CurrentDisputeTimeout) - CLng(Block)
+                                '    Dim percentage As Double = 100 / T_DEXContract.CurrentBuySellAmount * T_DEXContract.CurrentConciliationAmount
+                                '    Proposal = " (Proposal:" + Dbl2LVStr(T_DEXContract.CurrentConciliationAmount, 2) + " Signa =" + Dbl2LVStr(percentage, 2) + "%)"
+                                '    Dim diffblock As Long = 0
+                                '    diffblock = CLng(T_DEXContract.CurrentDisputeTimeout) - CLng(Block)
 
-                            '    If diffblock < 0 Then
-                            '        Proposal += " accepted"
-                            '    ElseIf diffblock <= 1 Then
-                            '        Proposal += " not appealable"
-                            '    Else
-                            '        Proposal += " autoaccept in: ~" + CStr(diffblock * 4) + " Min"
-                            '    End If
-                            'ElseIf T_DEXContract.CurrentDisputeTimeout <> 0UL And ClsDEXContract.CurrencyIsCrypto(T_DEXContract.CurrentXItem) Then
-                            '    Dim diffblock As Long = 0
-                            '    diffblock = CLng(T_DEXContract.CurrentDisputeTimeout) - CLng(Block)
-                            '    AlreadySend += "reserved for ~" + CStr(diffblock * 4) + " Min"
-                            'End If
+                                '    If diffblock < 0 Then
+                                '        Proposal += " accepted"
+                                '    ElseIf diffblock <= 1 Then
+                                '        Proposal += " not appealable"
+                                '    Else
+                                '        Proposal += " autoaccept in: ~" + CStr(diffblock * 4) + " Min"
+                                '    End If
+                                'ElseIf T_DEXContract.CurrentDisputeTimeout <> 0UL And ClsDEXContract.CurrencyIsCrypto(T_DEXContract.CurrentXItem) Then
+                                '    Dim diffblock As Long = 0
+                                '    diffblock = CLng(T_DEXContract.CurrentDisputeTimeout) - CLng(Block)
+                                '    AlreadySend += "reserved for ~" + CStr(diffblock * 4) + " Min"
+                                'End If
 
-                            'T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString + " " + Proposal) 'deniability/dispute
+                                'T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString + " " + Proposal) 'deniability/dispute
 
-                            If Proposal.Trim = "" Then
-                                T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString) 'deniability/dispute
-                            Else
-                                T_LVI.SubItems.Add(Proposal) 'deniability/dispute
-                            End If
+                                If Proposal.Trim = "" Then
+                                    T_LVI.SubItems.Add(T_DEXContract.Deniability.ToString + "/" + T_DEXContract.Dispute.ToString) 'deniability/dispute
+                                Else
+                                    T_LVI.SubItems.Add(Proposal) 'deniability/dispute
+                                End If
 
 #End Region
-                            T_LVI.SubItems.Add(T_DEXContract.Status.ToString) 'status
-                            T_LVI.SubItems.Add(AlreadySend) 'infotext
+                                T_LVI.SubItems.Add(T_DEXContract.Status.ToString) 'status
+                                T_LVI.SubItems.Add(AlreadySend) 'infotext
 
-                            T_LVI.Tag = T_DEXContract
+                                T_LVI.Tag = T_DEXContract
 
-                            C_MyOpenOrderLVIList.Add(T_LVI)
+                                C_MyOpenOrderLVIList.Add(T_LVI)
+
+                            Catch ex As Exception
+                                IsErrorOrWarning(Application.ProductName + "-error in MultiThreadSetSmartContract2LV(RESERVED->Buyer): -> " + ex.Message)
+                            End Try
 
                         End If 'myaddress
-
 #End Region
 
                     Catch ex As Exception
