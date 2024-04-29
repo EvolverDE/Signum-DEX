@@ -574,63 +574,103 @@ void reset(void) {
 ## Test cases
 The test cases shown here were carried out with the SC simulator.
 
-Test case 1: Create a new contract (creator becomes arbitrator)
+Test case 1: A normal sales process (initiator = seller)
 ```js
-
+[
+	// Set up sales order (sales quantity(amount) = 200 signa, security payment(amount) = 30 signa, XItem quantity(parameter) = 20, XItem(parameter) = USD)
+	{ "blockheight": 2, "sender": "10000n", "recipient": "999n", "amount": "23050000000", "messageHex": "3bcc54cf5f53f209005ed0b20000000000943577000000004453550000000000" },
+	// Accept sales order (security payment(amount) = 30 signa)
+	{ "blockheight": 4, "sender": "10001n", "recipient": "999n", "amount": "3050000000", "messageHex": "86b663494b0b6d41" },
+	// Close/fulfill sales order
+	{ "blockheight": 6, "sender": "10000n", "recipient": "999n", "amount": "150000000", "messageHex": "ebd9d0fdb859602b"}
+]
 ```
 
-Test case 2: Setting up a sales order on a contract (initiator = seller)
+Test case 2: A normal purchase process (initiator = buyer)
 ```js
-
+[
+	// Set up purchase order (security payment(amount) = 30 signa, purchase quantity(parameter) = 200 signa, XItem quantity(parameter) = 20, XItem(parameter) = USD)
+	{ "blockheight": 2, "sender": "10000n", "recipient": "999n", "amount": "3050000000", "messageHex": "3bcc54cf5f53f20900c817a80400000000943577000000004453550000000000" },
+	// Accept purchase order (purchase amount(amount) = 200 signa, security payment(amount) = 30 signa)
+	{ "blockheight": 4, "sender": "10001n", "recipient": "999n", "amount": "23050000000", "messageHex": "86b663494b0b6d41" },
+	// Close/fulfill purchase order
+	{ "blockheight": 6, "sender": "10001n", "recipient": "999n", "amount": "150000000", "messageHex": "ebd9d0fdb859602b" }
+]
 ```
 
-Test case 3: Accept a sales order (responder = buyer)
+Test case 3: Cancel a sales order (initiator = seller)
 ```js
-
+[
+	// Set up sales order (sales quantity(amount) = 200 signa, security payment(amount) = 30 signa, XItem quantity(parameter) = 20, XItem(parameter) = USD)
+	{ "blockheight": 2, "sender": "10000n", "recipient": "999n", "amount": "23050000000", "messageHex": "3bcc54cf5f53f209005ed0b20000000000943577000000004453550000000000" },
+	// Cancel sales order by accepting your own order
+	{ "blockheight": 4, "sender": "10000n", "recipient": "999n", "amount": "50000000", "messageHex": "86b663494b0b6d41"}
+]
 ```
 
-Test case 4: Close/fulfill a sell order (initiator/seller ends the exchange)
+Test case 4: Cancel a purchase order (initiator = buyer)
 ```js
-
+[
+	// Set up purchase order (security payment(amount) = 30 signa, purchase quantity(parameter) = 200 signa, XItem quantity(parameter) = 20, XItem(parameter) = USD)
+	{ "blockheight": 2, "sender": "10000n", "recipient": "999n", "amount": "3050000000", "messageHex": "3bcc54cf5f53f20900c817a80400000000943577000000004453550000000000" },
+	// Cancel purchase order by accepting your own order
+	{ "blockheight": 4, "sender": "10000n", "recipient": "999n", "amount": "50000000", "messageHex": "86b663494b0b6d41" }
+]
 ```
 
-Test Case 5: Reject a sell order (responder/buyer ends the exchange)
+Test case 5: Activate the contestability of a new SmartContract (only the creator can do this)
 ```js
-
+[
+	// Create a placeholder sales order (to enable accessibility later)
+	{ "blockheight": 2, "sender": "555n", "recipient": "999n", "amount": "1050000000", "messageHex": "3bcc54cf5f53f20900a3e1110000000000943577000000004453550000000000"},
+	// Cancel the placeholder sales order by accepting your own order
+	{ "blockheight": 4, "sender": "555n", "recipient": "999n", "amount": "350000000", "messageHex": "86b663494b0b6d41"},
+	// Activate the deniability of the contract
+	{ "blockheight": 6, "sender": "555n", "recipient": "999n", "amount": "50000000", "messageHex": "d37d81a4d2525380"}
+]
 ```
 
-Test Case 6: Open a Sales Order Dispute (Seller OR Buyer)
+Test Case 6: A sales order dispute (Deniability = true, fiat-crypto exchange only)
 ```js
-
+[
+	// Set up sales order (sales quantity(amount) = 200 signa, security payment(amount) = 30 signa, XItem quantity(parameter) = 20, XItem(parameter) = USD)
+	{ "blockheight": 2, "sender": "10000n", "recipient": "999n", "amount": "23050000000", "messageHex": "3bcc54cf5f53f209005ed0b20000000000943577000000004453550000000000"},
+	// Accept sales order (security payment(amount) = 30 signa)
+	{ "blockheight": 4, "sender": "10001n", "recipient": "999n", "amount": "3050000000", "messageHex": "86b663494b0b6d41"},
+	// Open a dispute
+	{ "blockheight": 6, "sender": "10001n", "recipient": "999n", "amount": "50000000", "messageHex": "617c4e505dad3b68"},
+	// Submit an arbitration proposal (arbitration proposal = 100% to responder (parameter:1027=10000=100.00%))
+	{ "blockheight": 8, "sender": "555n", "recipient": "999n", "amount": "3650000000", "messageHex": "bf95cb6cafd4790f102700000000000000000000000000000000000000000000"},
+	// Complete arbitration after 24 hours (block time).
+	{ "blockheight": 10, "sender": "555n", "recipient": "999n", "amount": "50000000", "messageHex": "a1a11c97cf5da9b8"}
+]
 ```
 
-Test case 7: Create an arbitration proposal (creator is mediator)
+Test Case 7: As a seller, inject a buyer into a sell order
 ```js
-
+[
+	// Set up sales order (sales quantity(amount) = 200 signa, security payment(amount) = 30 signa, XItem quantity(parameter) = 20, XItem(parameter) = USD)
+	{ "blockheight": 2, "sender": "10000n", "recipient": "999n", "amount": "23050000000", "messageHex": "3bcc54cf5f53f209005ed0b20000000000943577000000004453550000000000"},
+	// Inject a buyer into the sell order (Responder(parameter) = 1127=10001n)
+	{ "blockheight": 4, "sender": "10000n", "recipient": "999n", "amount": "50000000", "messageHex": "fc6a2b09445ddd7f1127000000000000"},
+	// Close/fulfill sales order
+	{ "blockheight": 6, "sender": "10000n", "recipient": "999n", "amount": "150000000", "messageHex": "ebd9d0fdb859602b"}
+]
 ```
 
-Test Case 8: Reject an Arbitration Proposal (Seller OR Buyer Rejects the Arbitration Proposal)
+Test Case 8: A buy order with ChainSwapHash (Crypto-Crypto exchange only)
 ```js
-
+[
+	// Set up purchase order (security payment(amount) = 30 signa, purchase quantity(parameter) = 200 signa, XItem quantity(parameter) = 20, XItem(parameter) = BTC)
+	{ "blockheight": 2,"sender": "10000n","recipient": "999n","amount": "3050000000","messageHex": "3bcc54cf5f53f20900c817a80400000000943577000000004354420000000000"},
+	// Accept purchase order (purchase amount(amount) = 200 signa, security payment(amount) = 30 signa)
+	{ "blockheight": 4,"sender": "10001n","recipient": "999n","amount": "23050000000","messageHex": "86b663494b0b6d41"},
+	
+	// Other Blockchain (BTC) stuff...
+	
+	// Inject ChainSwapHash (seller only, ChainSwapHash(parameter) = 4 longs in HEX)											  
+	{ "blockheight": 6,"sender": "10001n","recipient": "999n","amount": "50000000","messageHex": "322f0c0a23407426789f5b82770379e5cba787f76bb0c7a7a52cbb6d29f613aa89ccccc99b8d7cb1"},
+	// Close/fulfill purchase order (ChainSwapKey(parameter) = "test" in HEX)
+	{ "blockheight": 8,"sender": "10000n","recipient": "999n","amount": "50000000","messageHex": "a1043bb194b496c80000000074657374000000000000000000000000000000000000000000000000"}
+]
 ```
-
-Test case 9: Complete/close an arbitration (everyone)
-```js
-
-```
-
-Test Case 10: The seller injects a ChainSwapHash (only for crypto-crypto swaps)
-```js
-
-```
-
-Test case 11: The buyer closes/fulfills the order with a valid ChainSwapKey (only for crypto-crypto exchange)
-```js
-
-```
-
-Test Case 12: Seller injects a buyer (Seller must simultaneously activate the buyer on the blockchain if not present)
-```js
-
-```
-

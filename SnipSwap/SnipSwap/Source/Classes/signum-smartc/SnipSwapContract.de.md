@@ -574,63 +574,110 @@ void reset(void) {
 ## Testfälle
 Die hier gezeigten Testfälle wurden mit dem SC-Simulator durchgeführt.
 
-Testfall 1: Einen neuen Contract erstellen (Ersteller wird Schlichter)
-```js
+### Legenden
+* Creator = 555n
+* Contract = 999n
+* Initiator = 10000n
+* Responder = 10001n
 
+Testfall 1: Ein normaler Verkaufsvorgang (initiator = Verkäufer)
+```js
+[
+	// Verkaufsauftrag aufsetzen (Verkaufsmenge(amount) = 200 signa, Sicherheitszahlung(amount) = 30 signa, XItemmenge(parameter) = 20, XItem(parameter) = USD)
+	{ "blockheight": 2, "sender": "10000n", "recipient": "999n", "amount": "23050000000", "messageHex": "3bcc54cf5f53f209005ed0b20000000000943577000000004453550000000000" },
+	// Verkaufsauftrag akzeptieren (Sicherheitszahlung(amount) = 30 signa)
+	{ "blockheight": 4, "sender": "10001n", "recipient": "999n", "amount": "3050000000", "messageHex": "86b663494b0b6d41" },
+	// Verkaufsauftrag schließen/erfüllen
+	{ "blockheight": 6, "sender": "10000n", "recipient": "999n", "amount": "150000000", "messageHex": "ebd9d0fdb859602b"}
+]
 ```
 
-Testfall 2: Einen Verkaufsauftrag auf einen Contract aufsetzen (initiator = Verkäufer)
+Testfall 2: Ein normaler Kaufvorgang (initiator = Käufer)
 ```js
-
+[
+	// Kaufauftrag aufsetzen (Sicherheitszahlung(amount) = 30 signa, Kaufmenge(parameter) = 200 signa, XItemmenge(parameter) = 20, XItem(parameter) = USD)
+	{ "blockheight": 2, "sender": "10000n", "recipient": "999n", "amount": "3050000000", "messageHex": "3bcc54cf5f53f20900c817a80400000000943577000000004453550000000000" },
+	// Kaufauftrag akzeptieren (Kaufmenge(amount) = 200 signa, Sicherheitszahlung(amount) = 30 signa)
+	{ "blockheight": 4, "sender": "10001n", "recipient": "999n", "amount": "23050000000", "messageHex": "86b663494b0b6d41" },
+	// Kaufauftrag schließen/erfüllen
+	{ "blockheight": 6, "sender": "10001n", "recipient": "999n", "amount": "150000000", "messageHex": "ebd9d0fdb859602b" }
+]
 ```
 
-Testfall 3: Einen Verkaufsauftrag annehmen (responder = Käufer)
+Testfall 3: Einen Verkaufsauftrag abbrechen (initiator = Verkäufer)
 ```js
-
+[
+	// Verkaufsauftrag aufsetzen (Verkaufsmenge(amount) = 200 signa, Sicherheitszahlung(amount) = 30 signa, XItemmenge(parameter) = 20, XItem(parameter) = USD)
+	{ "blockheight": 2, "sender": "10000n", "recipient": "999n", "amount": "23050000000", "messageHex": "3bcc54cf5f53f209005ed0b20000000000943577000000004453550000000000" },
+	// Verkaufsauftrag durch akzeptieren des eigenen Auftrags abbrechen
+	{ "blockheight": 4, "sender": "10000n", "recipient": "999n", "amount": "50000000", "messageHex": "86b663494b0b6d41"}
+]
 ```
 
-Testfall 4: Einen Verkaufsauftrag schließen/erfüllen (initiator/Verkäufer beendet den Tausch)
+Testfall 4: Einen Kaufauftrag abbrechen (initiator = Käufer)
 ```js
-
+[
+	// Kaufauftrag aufsetzen (Sicherheitszahlung(amount) = 30 signa, Kaufmenge(parameter) = 200 signa, XItemmenge(parameter) = 20, XItem(parameter) = USD)
+	{ "blockheight": 2, "sender": "10000n", "recipient": "999n", "amount": "3050000000", "messageHex": "3bcc54cf5f53f20900c817a80400000000943577000000004453550000000000" },
+	// Kaufauftrag durch akzeptieren des eigenen Auftrags abbrechen
+	{ "blockheight": 4, "sender": "10000n", "recipient": "999n", "amount": "50000000", "messageHex": "86b663494b0b6d41" }
+]
 ```
 
-Testfall 5: Einen Verkaufsauftrag ablehnen (responder/Käufer beendet den Tausch)
+Testfall 5: Die Bestreitbarkeit eines neuen SmartContracts aktivieren (dies kann nur der Creator machen)
 ```js
-
+[
+	// Einen Platzhalterverkaufsauftrag erstellen (um später die Betreitbarkeit zu aktivieren)
+	{ "blockheight": 2, "sender": "555n", "recipient": "999n", "amount": "1050000000", "messageHex": "3bcc54cf5f53f20900a3e1110000000000943577000000004453550000000000"},
+	// Den Platzhalterverkaufsauftrag durchs akzeptieren des eigenen Auftrags abbrechen
+	{ "blockheight": 4, "sender": "555n", "recipient": "999n", "amount": "350000000", "messageHex": "86b663494b0b6d41"},
+	// Die Bestreitbarkeit des Contracts aktivieren
+	{ "blockheight": 6, "sender": "555n", "recipient": "999n", "amount": "50000000", "messageHex": "d37d81a4d2525380"}
+]
 ```
 
-Testfall 6: Einen Streitfall eines Verkaufsauftrags eröffnen (Verkäufer ODER Käufer)
+Testfall 6: Einen Streitfall eines Verkaufsauftrags (Deniability = true, nur Fiat-Crypto-Tausch)
 ```js
-
+[
+	// Verkaufsauftrag aufsetzen (Verkaufsmenge(amount) = 200 signa, Sicherheitszahlung(amount) = 30 signa, XItemmenge(parameter) = 20, XItem(parameter) = USD)
+	{ "blockheight": 2, "sender": "10000n", "recipient": "999n", "amount": "23050000000", "messageHex": "3bcc54cf5f53f209005ed0b20000000000943577000000004453550000000000"},
+	// Verkaufsauftrag akzeptieren (Sicherheitszahlung(amount) = 30 signa)
+	{ "blockheight": 4, "sender": "10001n", "recipient": "999n", "amount": "3050000000", "messageHex": "86b663494b0b6d41"},
+	// Einen Streitfall eröffnen
+	{ "blockheight": 6, "sender": "10001n", "recipient": "999n", "amount": "50000000", "messageHex": "617c4e505dad3b68"},
+	// Einen Schlichtungsvorschlag unterbreiten (Schlichtungsvorschlag = 100% zu Responder (parameter:1027=10000=100.00%))
+	{ "blockheight": 8, "sender": "555n", "recipient": "999n", "amount": "3650000000", "messageHex": "bf95cb6cafd4790f102700000000000000000000000000000000000000000000"},
+	// Nach 24Std.(Blocktime) Schlichtung vollziehen
+	{ "blockheight": 10, "sender": "555n", "recipient": "999n", "amount": "50000000", "messageHex": "a1a11c97cf5da9b8"}
+]
 ```
 
-Testfall 7: Einen Schlichtungsvorschlag erstellen (Ersteller ist Mediator)
+Testfall 7: Als Verkäufer einen Käufer in einen Verkaufsauftrag injizieren
 ```js
-
+[
+	// Verkaufsauftrag aufsetzen (Verkaufsmenge(amount) = 200 signa, Sicherheitszahlung(amount) = 30 signa, XItemmenge(parameter) = 20, XItem(parameter) = USD)
+	{ "blockheight": 2, "sender": "10000n", "recipient": "999n", "amount": "23050000000", "messageHex": "3bcc54cf5f53f209005ed0b20000000000943577000000004453550000000000"},
+	// Einen Käufer in den Verkaufsauftrag injizieren (Responder(parameter) = 1127=10001n)
+	{ "blockheight": 4, "sender": "10000n", "recipient": "999n", "amount": "50000000", "messageHex": "fc6a2b09445ddd7f1127000000000000"},
+	// Verkaufsauftrag schließen/erfüllen
+	{ "blockheight": 6, "sender": "10000n", "recipient": "999n", "amount": "150000000", "messageHex": "ebd9d0fdb859602b"}
+]
 ```
 
-Testfall 8: Einen Schlichtungsvorschlag ablehnen (Verkäufer ODER Käufer lehnt den Schlichtungsvorschlag ab)
+Testfall 8: Einen Kaufauftrag mit ChainSwapHash (nur Crypto-Crypto-Tausch)
 ```js
-
-```
-
-Testfall 9: Eine erfolgte Schlichtung vollziehen/schließen (Jedermann)
-```js
-
-```
-
-Testfall 10: Der Verkäufer injiziert einen ChainSwapHash (nur bei Crypto-Crypto-Tausch)
-```js
-
-```
-
-Testfall 11: Der Käufer schließt/erfüllt den Auftrag mit einem gültigen ChainSwapKey (nur bei Crypto-Crypto-Tausch)
-```js
-
-```
-
-Testfall 12: Der Verkäufer injiziert einen Käufer (Verkäufer muss gleichzeitig den Käufer auf der Blockchain aktivieren, wenn nicht vorhanden)
-```js
-
+[
+	// Kaufauftrag aufsetzen (Sicherheitszahlung(amount) = 30 signa, Kaufmenge(parameter) = 200 signa, XItemmenge(parameter) = 20, XItem(parameter) = BTC)
+	{ "blockheight": 2,"sender": "10000n","recipient": "999n","amount": "3050000000","messageHex": "3bcc54cf5f53f20900c817a80400000000943577000000004354420000000000"},
+	// Kaufauftrag akzeptieren (Kaufmenge(amount) = 200 signa, Sicherheitszahlung(amount) = 30 signa)
+	{ "blockheight": 4,"sender": "10001n","recipient": "999n","amount": "23050000000","messageHex": "86b663494b0b6d41"},
+	
+	// Other Blockchain (BTC) stuff...
+	
+	// ChainSwapHash injizieren (nur Verkäufer, ChainSwapHash(parameter) = 4 longs in HEX)												  
+	{ "blockheight": 6,"sender": "10001n","recipient": "999n","amount": "50000000","messageHex": "322f0c0a23407426789f5b82770379e5cba787f76bb0c7a7a52cbb6d29f613aa89ccccc99b8d7cb1"},
+	// Kaufauftrag schließen/erfüllen (ChainSwapKey(parameter) = "test" in HEX)
+	{ "blockheight": 8,"sender": "10000n","recipient": "999n","amount": "50000000","messageHex": "a1043bb194b496c80000000074657374000000000000000000000000000000000000000000000000"}
+]
 ```
 
