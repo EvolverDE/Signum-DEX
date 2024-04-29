@@ -1,4 +1,4 @@
-[![DE](https://img.shields.io/badge/lang-DE-yellow.svg)](/SnipSwapContract.de.md)
+[![DE](https://img.shields.io/badge/lang-DE-yellow.svg)](/SnipSwap/SnipSwap/Source/Classes/signum-smartc/SnipSwapContract.de.md)
 
 # SnipSwap DEX-Contract
 ## Standard functions
