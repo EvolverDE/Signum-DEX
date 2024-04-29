@@ -574,6 +574,12 @@ void reset(void) {
 ## Test cases
 The test cases shown here were carried out with the SC simulator.
 
+### Legend
+* Creator = 555n
+* Contract = 999n
+* Initiator = 10000n
+* Responder = 10001n
+
 Test case 1: A normal sales process (initiator = seller)
 ```js
 [
