@@ -571,7 +571,13 @@
             ScriptHex = Script
         End Sub
     End Structure
-
+    ''' <summary>
+    ''' creates a P2SH transaction for the XItems network (bitcoin) with 
+    ''' </summary>
+    ''' <param name="RecipientAddress">the coin address of the recipient</param>
+    ''' <param name="Amount">the amount of coins</param>
+    ''' <param name="ChainSwapHash">the hashlock (hash of the preimage)</param>
+    ''' <returns></returns>
     Public Overrides Function CreateXItemTransactionWithChainSwapHash(ByVal RecipientAddress As String, ByVal Amount As Double, ByVal ChainSwapHash As String) As S_Transaction
 
         Dim T_Transaction As S_Transaction = New S_Transaction(Application.ProductName + "-error in CreateXItemTransactionWithChainSwapHash(AtomicSwapError) -> No Keys",)
@@ -609,7 +615,12 @@
         End If
 
     End Function
-
+    ''' <summary>
+    ''' checks conditions of XItem (bitcoin) transaction
+    ''' </summary>
+    ''' <param name="XItemTransaction">the transaction id</param>
+    ''' <param name="ChainSwapHash">the hashlock (hash of the preimage)</param>
+    ''' <returns></returns>
     Public Overrides Function CheckXItemTransactionConditions(ByVal XItemTransaction As String, ByVal ChainSwapHash As String) As Boolean
 
         Dim T_PureChainSwapHash As String = CheckChainSwapHash(ChainSwapHash)
@@ -680,7 +691,11 @@
         Return False
 
     End Function
-
+    ''' <summary>
+    ''' cheching the hash of the preimage
+    ''' </summary>
+    ''' <param name="ChainSwapHash">the hashlock (hash of the preimage)</param>
+    ''' <returns></returns>
     Public Overrides Function CheckChainSwapHash(ByVal ChainSwapHash As String) As String
 
         If MessageIsHEXString(ChainSwapHash) And ChainSwapHash.Length <> 64 Then
@@ -692,7 +707,13 @@
         Return ChainSwapHash
 
     End Function
-
+    ''' <summary>
+    ''' try to claim the XItem from the transaction
+    ''' </summary>
+    ''' <param name="TransactionID">the transaction id</param>
+    ''' <param name="ChainSwapHash">the hashlock (hash of the preimage)</param>
+    ''' <param name="ChainSwapKey">the preimage</param>
+    ''' <returns></returns>
     Public Overrides Function ClaimXItemTransactionWithChainSwapKey(ByVal TransactionID As String, ByVal ChainSwapHash As String, ByVal ChainSwapKey As String) As String
 
         Dim RedeemScript As String = GetBitcoinRedeemScriptFromINI(TransactionID, ChainSwapHash)
@@ -722,7 +743,12 @@
         Return T_BitcoinTXID
 
     End Function
-
+    ''' <summary>
+    ''' try to claim bitcoin from transaction
+    ''' </summary>
+    ''' <param name="TransactionID">the transaction id</param>
+    ''' <param name="RedeemScript">the ScriptSig as redeem script</param>
+    ''' <returns></returns>
     Public Function ClaimBitcoinTransaction(ByVal TransactionID As String, ByVal RedeemScript As String) As ClsBitcoinTransaction
 
         Dim T_BTCTransaction As ClsBitcoinTransaction = New ClsBitcoinTransaction(TransactionID, GetBitcoinMainAddress(), RedeemScript)
@@ -751,7 +777,12 @@
         Return T_BTCTransaction
 
     End Function
-
+    ''' <summary>
+    ''' try to get back the bitcoin from transaction
+    ''' </summary>
+    ''' <param name="TransactionID">the transaction id</param>
+    ''' <param name="ChainSwapHash">the hashlock (hash of the preimage)</param>
+    ''' <returns></returns>
     Public Overrides Function GetBackXItemTransaction(ByVal TransactionID As String, ByVal ChainSwapHash As String) As String
 
         Dim RedeemScript As String = GetBitcoinRedeemScriptFromINI(TransactionID, ChainSwapHash)
@@ -782,7 +813,11 @@
         End If
 
     End Function
-
+    ''' <summary>
+    ''' broadcasts the transaction
+    ''' </summary>
+    ''' <param name="SignedTransactionBytes">the transaction as hex string</param>
+    ''' <returns></returns>
     Public Overrides Function BroadcastTransaction(SignedTransactionBytes As String) As String
         Return SendRawBitcoinTransaction(SignedTransactionBytes)
     End Function
